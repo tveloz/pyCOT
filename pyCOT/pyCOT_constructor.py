@@ -276,7 +276,6 @@ class pyCOT:
             print("Error: get_connected_species_to_species: input is not a list or a species string")
         result=[]
         while len(new)!=0:
-            supp=[]
             prod=[]
             reacs=[]
             result=list(set(result).union(set(new)))
@@ -284,10 +283,58 @@ class pyCOT:
                 r_supp=self.get_reactions_consuming_species(new[i])
                 reacs=list(set(reacs).union(set(r_supp)))
             prod=self.get_prod_from_reactions(reacs)
-            new=list(set(supp).union(set(new)))
             new=list(set(prod).union(set(new)))
             new=list(set(new)-set(result))
         return(result)
+    def get_immediately_forward_connected_species_to_species(self, Spstr):
+        if isinstance(Spstr, list):
+            new=Spstr.copy()
+        elif isinstance(Spstr, str):
+            new=[Spstr]        
+        else:
+            print("Error: get_connected_species_to_species: input is not a list or a species string")
+        prod=[]
+        reacs=[]
+        for i in range(len(new)):
+            r_supp=self.get_reactions_consuming_species(new[i])
+            reacs=list(set(reacs).union(set(r_supp)))
+        prod=self.get_prod_from_reactions(reacs)
+        new=list(set(prod).union(set(new)))
+        return(new)
+    def get_backward_connected_species_to_species(self, Spstr):
+        if isinstance(Spstr, list):
+            new=Spstr.copy()
+        elif isinstance(Spstr, str):
+            new=[Spstr]        
+        else:
+            print("Error: get_connected_species_to_species: input is not a list or a species string")
+        result=[]
+        while len(new)!=0:
+            supp=[]
+            reacs=[]
+            result=list(set(result).union(set(new)))
+            for i in range(len(new)):
+                r_prod=self.get_reactions_producing_species(new[i])
+                reacs=list(set(reacs).union(set(r_prod)))
+            supp=self.get_supp_from_reactions(reacs)
+            new=list(set(supp).union(set(new)))
+            new=list(set(new)-set(result))
+        return(result)
+    def get_immediately_backward_connected_species_to_species(self, Spstr):
+        if isinstance(Spstr, list):
+            new=Spstr.copy()
+        elif isinstance(Spstr, str):
+            new=[Spstr]        
+        else:
+            print("Error: get_connected_species_to_species: input is not a list or a species string")
+        supp=[]
+        reacs=[]
+        for i in range(len(new)):
+            r_prod=self.get_reactions_producing_species(new[i])
+            reacs=list(set(reacs).union(set(r_prod)))
+        supp=self.get_supp_from_reactions(reacs)
+        new=list(set(supp).union(set(new)))
+        return(new)
     
     #############################################################################
     ############# verify relational properties of species/reactions#####################
