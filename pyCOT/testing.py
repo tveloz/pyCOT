@@ -34,7 +34,7 @@ RnVecP= np.array([[0, 2, 0, 0], [0, 1, 1, 0]])  # Updated for reactions
 # print("ProdVec")
 # print(testRN.RnVecP)
 # Example usage:
-file_path = '../networks/autopoietic_ext.txt'
+file_path = '../../networks/autopoietic_ext.txt'
 testRN2 = load_pyCOT_from_file(file_path)
 #print("specs")
 #print(testRN2.SpStr)
@@ -68,15 +68,22 @@ print("species_from_bt")
 # print(testRN2.get_prod_from_reactions(['R3','R2']))
 # print("get supp from reactions")
 # print(testRN2.get_supp_from_reactions(['R3','R1','R7']))
-file_path = '../networks/autopoietic_ext2.txt'
+file_path = '../../networks/autopoietic_ext2.txt'
 testRN2 = load_pyCOT_from_file(file_path)
-print("get connected species to species")
-print(testRN2.get_connected_species_to_species(['s2','x']))
+# print(testRN2.RnStr)
 
-# print("get directly connected species to species")
-# print(testRN2.get_immediately_connected_species_to_species(['s2','x']))
-print("get forward connected species to species")
-print(testRN2.get_forward_connected_species_to_species(['d','y']))
+# print("get inflow")
+# print(testRN2.get_inflow())
+
+# print("get outflow")
+# print(testRN2.get_outflow([]))
+print("get connected species to species")
+print(testRN2.get_connected_species_to_species([]))
+
+# # print("get directly connected species to species")
+# # print(testRN2.get_immediately_connected_species_to_species(['s2','x']))
+# print("get forward connected species to species")
+# print(testRN2.get_forward_connected_species_to_species('x'))
 # print("get reactions consuming")
 # print(testRN2.get_reactions_consuming_species('s1'))
 

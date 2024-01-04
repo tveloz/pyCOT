@@ -5,11 +5,9 @@ from typing import List
 #Created by Tomas Veloz - github.com/tveloz
 #############################################################################
 ##Summary: Create/Load reaction networks and compute COT-related properties
-#############################################################################
+#############################################################################      
+      
 
-     
-      
-      
 #Table of contents:########################################################
 
 #Constructor#############################################################
@@ -18,6 +16,7 @@ from typing import List
 ##*obtaining sets of species/reactions producing/consuming one another####
 ##*Getting various notions of species connectivity#######################
 ##*verify relational properties of species/reactions#####################
+
 
 class pyCOT:
     """
@@ -31,7 +30,7 @@ class pyCOT:
     - RnVecP: Vector (numpy.array) identification for products of reactions
     - RnStr: List of strings (reaction names) identification
 
-    Methods:
+    Methods (not to be updated just read below):
     - __init__: Constructor method to initialize the class with the provided parameters.
     - get_id_from_bt: Function that returns a vector from bitarray representation.
     - set_bt_from_id: Function that returns bitarray from vector representation.
@@ -123,8 +122,8 @@ class pyCOT:
                     selected_reactions.append(self.RnStr[i])
             return selected_reactions
     
-    def get_bt_abstraction(self,vec,t):
-        """Function that returns a the set of species with value larger than t in a vector"""
+    def get_bt_abstraction_from_vector(self,vec,t):
+        """Function that returns a the bitarray of species with value larger than t in a vector"""
         bitarray=bt()
         for i in range(len(vec)):
             if vec[i]>t:
@@ -133,6 +132,11 @@ class pyCOT:
                 bitarray.append(False)
         return(bitarray)  
     
+    def get_species_abstraction_from_vector(self,vec,t):
+        """Function that returns a the list of species string with value larger than t in a vector"""
+        bitarray=self.get_bt_abstraction_from_vector(vec,t)
+        return(self.get_species_from_bt(bitarray))  
+    
     def get_supp_bt_from_reaction(self,reaction_name,t=0):
         if reaction_name not in self.RnStr:
             print(f"Error: Reaction '{reaction_name}' not found in the reactions set.")
@@ -140,7 +144,7 @@ class pyCOT:
         else:
             reaction_index = self.RnStr.index(reaction_name)
             support_vec = self.RnVecS[reaction_index]
-            support_bitarray = self.get_bt_abstraction(support_vec,t)
+            support_bitarray = self.get_bt_abstraction_from_vector(support_vec,t)
         return support_bitarray
 
     def get_prod_bt_from_reaction(self,reaction_name,t=0):
@@ -150,7 +154,7 @@ class pyCOT:
         else:
             reaction_index = self.RnStr.index(reaction_name)
             product_vec = self.RnVecP[reaction_index]
-            product_bitarray = self.get_bt_abstraction(product_vec, t)
+            product_bitarray = self.get_bt_abstraction_from_vector(product_vec, t)
         return product_bitarray
 
     
@@ -168,7 +172,7 @@ class pyCOT:
     # Iterate through reactants and check if the species can trigger the reaction
         for i in range(len(self.RnStr)):
             supp=self.RnVecS[i]
-            supp_bt=self.get_bt_abstraction(supp,t)
+            supp_bt=self.get_bt_abstraction_from_vector(supp,t)
             #checking if supp_bt is contained in species_bitarray
             if (supp_bt&species_bitarray)==supp_bt:
                 triggered_reactions_bitarray[i]=True
@@ -221,15 +225,11 @@ class pyCOT:
     #############Getting various notions of species connectivity##################
     ############################################################################              
       
-    def get_connected_species_to_species(self, Spstr):
-        if isinstance(Spstr, list):
-            new=Spstr.copy()
-        elif isinstance(Spstr, str):
-            new=[Spstr]        
-        else:
-            print("Error: get_connected_species_to_species: input is not a list or a species string")
+    def get_connected_species_to_species(self, Spstr):       
+        new=list(set(Spstr).union(set(self.get_inflow())))       
         result=[]
         while len(new)!=0:
+            print("iter "+ str(new))
             supp=[]
             prod=[]
             reacs=[]
@@ -275,6 +275,7 @@ class pyCOT:
         else:
             print("Error: get_connected_species_to_species: input is not a list or a species string")
         result=[]
+        print("initial list "+str(new))
         while len(new)!=0:
             prod=[]
             reacs=[]
@@ -335,12 +336,37 @@ class pyCOT:
         supp=self.get_supp_from_reactions(reacs)
         new=list(set(supp).union(set(new)))
         return(new)
+    #############################################################################
+    ############# get inflow and outflow########################################
+    ############################################################################
     
+    def get_inflow(self):
+        result=bt(len(self.SpBt))
+        result.setall(0)
+        reacs=self.get_reactions_from_species(self.SpStr)
+        for i in range(len(reacs)):           
+            supp=self.get_supp_bt_from_reaction(reacs[i])
+            prod=self.get_prod_bt_from_reaction(reacs[i])
+            if not supp.any():
+                result=result|prod
+        return(self.get_species_from_bt(result))
+
+    def get_outflow(self,SpStr):
+        result=bt(len(self.SpBt))
+        result.setall(0)
+        reacs=self.get_reactions_from_species(SpStr)
+        for i in range(len(reacs)):           
+            supp=self.get_supp_bt_from_reaction(reacs[i])
+            prod=self.get_prod_bt_from_reaction(reacs[i])
+            if not prod.any():
+                result=result|supp
+        return(self.get_species_from_bt(result))
+
     #############################################################################
     ############# verify relational properties of species/reactions#####################
     ############################################################################              
     
-            
+        
     def is_closed(self,SpStr):
         species_bitarray = self.get_bt_from_species(SpStr)
         reactions_list=self.get_reactions_from_species(SpStr)
@@ -349,7 +375,6 @@ class pyCOT:
         return (prod_bitarray | species_bitarray)==species_bitarray
         
     def is_semi_self_maintaining(self,SpStr):
-        species_bitarray = self.get_bt_from_species(SpStr)
         reactions_list=self.get_reactions_from_species(SpStr)
         prod_of_reactions=self.get_prod_from_reactions(reactions_list)
         prod_bitarray=self.get_bt_from_species(prod_of_reactions)
@@ -357,7 +382,11 @@ class pyCOT:
         supp_bitarray=self.get_bt_from_species(supp_of_reactions)        
         return (supp_bitarray & prod_bitarray)==supp_bitarray
     
-    
+    # def is_connected(self,SpStr):
+    #      if isinstance(Spstr, list):
+    #          if len(Spstr)==0
+    #          spec=
+    #      conn=
    
             
     
