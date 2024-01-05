@@ -81,6 +81,7 @@ class pyCOT:
   ############################################################################
               
     def get_bt_from_species(self, specs):
+        """G: to declare what Function what returns from what.. (Testing commit)."""
         bitarray = bt(len(self.SpStr)) 
         bitarray.setall(0)
         for i in range(len(specs)):
