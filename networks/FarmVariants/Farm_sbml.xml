@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created by libAntimony version v2.7.0 on 2021-03-04 18:00 with libSBML version 5.11.4. -->
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1">
+  <model id="test1" name="test1">
+    <listOfCompartments>
+      <compartment sboTerm="SBO:0000410" id="default_compartment" spatialDimensions="3" size="1" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="water" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="grass" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="cows" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="infrastructure" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="milk" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="dung" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="worms" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="fertilizer" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="chickens" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="eggs" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="grain" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="straw" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="money" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="farmer" compartment="default_compartment" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfReactions>
+      <reaction id="R1" reversible="false" fast="false">
+        <listOfProducts>
+          <speciesReference species="water" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R2" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="grass" stoichiometry="1" constant="true"/>
+          <speciesReference species="cows" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+          <speciesReference species="water" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="milk" stoichiometry="1" constant="true"/>
+          <speciesReference species="cows" stoichiometry="1" constant="true"/>
+          <speciesReference species="dung" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R3" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="dung" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="worms" stoichiometry="1" constant="true"/>
+          <speciesReference species="fertilizer" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R4" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="grass" stoichiometry="1" constant="true"/>
+          <speciesReference species="worms" stoichiometry="1" constant="true"/>
+          <speciesReference species="chickens" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="chickens" stoichiometry="1" constant="true"/>
+          <speciesReference species="eggs" stoichiometry="1" constant="true"/>
+          <speciesReference species="fertilizer" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R5" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="grain" stoichiometry="1" constant="true"/>
+          <speciesReference species="chickens" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="chickens" stoichiometry="1" constant="true"/>
+          <speciesReference species="eggs" stoichiometry="1" constant="true"/>
+          <speciesReference species="fertilizer" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R6" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="water" stoichiometry="1" constant="true"/>
+          <speciesReference species="fertilizer" stoichiometry="1" constant="true"/>
+          <speciesReference species="grass" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="grass" stoichiometry="2" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R7" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="eggs" stoichiometry="1" constant="true"/>
+          <speciesReference species="grass" stoichiometry="1" constant="true"/>
+          <speciesReference species="worms" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="chickens" stoichiometry="1" constant="true"/>
+          <speciesReference species="fertilizer" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R8" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="fertilizer" stoichiometry="1" constant="true"/>
+          <speciesReference species="water" stoichiometry="1" constant="true"/>
+          <speciesReference species="grain" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="grain" stoichiometry="10" constant="true"/>
+          <speciesReference species="straw" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R9" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="straw" stoichiometry="1" constant="true"/>
+          <speciesReference species="cows" stoichiometry="1" constant="true"/>
+          <speciesReference species="water" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="milk" stoichiometry="1" constant="true"/>
+          <speciesReference species="cows" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R10" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="eggs" stoichiometry="1" constant="true"/>
+          <speciesReference species="farmer" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="money" stoichiometry="1" constant="true"/>
+          <speciesReference species="farmer" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R11" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="milk" stoichiometry="1" constant="true"/>
+          <speciesReference species="farmer" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="money" stoichiometry="1" constant="true"/>
+          <speciesReference species="farmer" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R12" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="grain" stoichiometry="1" constant="true"/>
+          <speciesReference species="farmer" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="money" stoichiometry="1" constant="true"/>
+          <speciesReference species="farmer" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R13" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="straw" stoichiometry="1" constant="true"/>
+          <speciesReference species="farmer" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="money" stoichiometry="1" constant="true"/>
+          <speciesReference species="farmer" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R14" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="chickens" stoichiometry="1" constant="true"/>
+          <speciesReference species="farmer" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="money" stoichiometry="1" constant="true"/>
+          <speciesReference species="farmer" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R15" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="worms" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction id="R16" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction id="R17" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="money" stoichiometry="1" constant="true"/>
+          <speciesReference species="farmer" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="farmer" stoichiometry="1" constant="true"/>
+          <speciesReference species="infrastructure" stoichiometry="2" constant="true"/>
+        </listOfProducts>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>

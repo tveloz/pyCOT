@@ -1,0 +1,9 @@
+reaction1: 1STAT5A + 2STAT5A => 1STAT5A + 1pApA;
+reaction2: 1STAT5A + 1STAT5B + 1STAT5A + 1STAT5B => 1STAT5A + 1STAT5B + 1pApB;
+reaction3: 1STAT5B + 2STAT5B => 1STAT5B + 1pBpB;
+reaction4: 1pApA + 1pApA => 1pApA + 1nucpApA;
+reaction5: 1pApB + 1pApB => 1pApB + 1nucpApB;
+reaction6: 1pBpB + 1pBpB => 1pBpB + 1nucpBpB;
+reaction7: 1nucpApA + 1nucpApA => 1nucpApA + 2STAT5A;
+reaction8: 1nucpApB + 1nucpApB => 1nucpApB + 1STAT5A + 1STAT5B;
+reaction9: 1nucpBpB + 1nucpBpB => 1nucpBpB + 2STAT5B;

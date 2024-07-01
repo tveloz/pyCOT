@@ -1,0 +1,3 @@
+v1: 1Hser => 1Phser;
+vCys: 1CGS + 1Phser + 1Cys => 1CGS + 1Cystathionine + 1Phi;
+vThr: 1AdoMet + 1TS + 1Phser => 1AdoMet + 1TS + 1Thr + 1Phi;

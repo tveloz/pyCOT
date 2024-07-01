@@ -1,0 +1,10 @@
+reaction_1:  => 1S_b;
+reaction_2: 1S_b => ;
+reaction_3: 1I_b + 1S_b => 1I_b + 1I_b;
+reaction_4: 1I_b => ;
+reaction_5: 1I_b => ;
+reaction_6:  => 1S_h;
+reaction_7: 1S_h => ;
+reaction_8: 1I_b + 1S_h => 1I_b + 1I_a;
+reaction_9: 1I_a => ;
+reaction_10: 1I_a => ;

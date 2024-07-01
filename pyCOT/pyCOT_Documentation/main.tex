@@ -1,0 +1,114 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage[english]{babel}
+\usepackage{pslatex}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\newcommand{\Rs}{\mathcal{R}}
+\newcommand{\Req}{\text{Req}}
+\newcommand{\Act}{\text{Act}}
+\newcommand{\Ms}{\mathcal{M}}
+\newcommand{\Ss}{{\mathbf S}}
+\newcommand{\vs}{{\mathbf v}}
+\newcommand{\xs}{{\mathbf x}}
+\newcommand{\ks}{{\mathbf k}}
+\newcommand{\Pis}{\mathbf{\Pi}}
+\newcommand{\Ls}{\mathbf{\Lambda}}
+\newcommand{\swater}{\text{water}}
+\newcommand{\sgrass}{\text{grass}}
+\newcommand{\scows}{\text{cows}}
+\newcommand{\sinfrastructure}{\text{infrstr}}
+\newcommand{\smilk}{\text{milk}}
+\newcommand{\sdung}{\text{dung}}
+\newcommand{\sworms}{\text{worms}}
+\newcommand{\sfertilizer}{\text{fertilizer}}
+\newcommand{\schickens}{\text{chickens}}
+\newcommand{\seggs}{\text{eggs}}
+\newcommand{\sgrain}{\text{grain}}
+\newcommand{\sstraw}{\text{straw}}
+\newcommand{\smoney}{\text{money}}
+\newcommand{\sfarmer}{\text{farmer}}
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Definition}{Definition}
+\newtheorem{Lemma}{Lemma}
+\newtheorem{proof}{Proof}
+\newtheorem{Corollary}{Corollary}
+
+
+\setcounter{tocdepth}{3}
+
+\usepackage{url}
+\usepackage{latexsym}
+\usepackage{amsfonts}
+%\usepackage{epsfig}
+%\usepackage{graphicx}
+%\usepackage{color}
+\usepackage{amsmath}
+\begin{document}
+
+\title{Introduction to pyCOT}
+\author{Tom\'as Veloz }
+\date{}
+\maketitle
+\section{Introduction}
+PyCOT is a library to apply chemical organization theory for modeling and analysis purposes. First algorithms aimed to compute organizations and self-maintaining sets were developed by the group of Peter Dittrich between 2007 and 2010. The idea of developing a library was conceived by Tomas Veloz, Pedro Maldonado and Alejandro Bassi in Santiago, Chile, 2017. While Bassi and Maldonado explored how to perform calculations in efficient manners in R and C respectively, the first development in python was pyRN between 2020 and 2022 as part of the Templeton grant "Origins of Goal Directedness", and is available in github\footnote{https://github.com/pmaldona/pyRN}. That preliminary version contains some of the important elements of pyCOT, but the complex handling of data structures implied lack in versatility, so
+Tomas Veloz rebuilt a version of the library using a more efficient class structure, introducing the notion of subRN and supRN that can inherit maximal information, and adding several functions that permit COT analysis, in an effort to integrate and complete the scattered previous developments.
+
+\section{Understanding the pyCOT object}
+
+
+A general COT object of analysis is a part of a reaction network $({\cal M}, {\cal R})$ where $({\cal M}, {\cal R})$ is a set of species and $({\cal M}, {\cal R})$ is a set of reactions. Note that every pair $(X\subset {\cal M}, R\subset {\cal R})$ are in principle a possible choices for a part of the reaction network. This implies that some routines might require exploration of exponential combinations. For this reason, efficiency is important.
+
+Previous work reveals we encounter three levels of analysis: Relational, Stoichiometric and Dynamical. Interestingly, these require different (and increasingly complex) mathematical structures to define properties. 
+
+Relational properties require set-theoretical operations such as union, intersection, containment. Stoichiometric properties require linear algebraic manipulations. Dynamical properties require simulations.
+
+\subsection{Identification of species and reactions}
+For this reason, the basic structure of the pyCOT object identifies species and reactions in two different ways:
+\begin{itemize}
+\item SpBt/RnBt: Bitarray identification
+\item SpStr/RnStr: List of strings (species/reaction names) identification 
+\end{itemize}
+
+By default, users shall work at the 'Str' identification level, which is easier to read, but functions generally operate at the bitarray level in the backend for optimization. te
+
+There are a number of functions to get one representation from another. For example, for a given pyCOT object "MR" and a subset of species $X\subseteq \Ms$ represented as a list of species $x$ we have that "self.get\_bt\_from\_species($x$)" gives the bitarray representation of $x$. So, if $|\Ms|=n$ then "self.get\_bt\_from\_species($x$)" is a a bitarray of length $n$, whose $i-th$ coordinate is True (1) if $s_i\in X$ and False (0) else.
+\subsection{Reactions as pairs of vectors}
+The representation of reactions requires two lists
+\begin{itemize}
+\item RnVecS: Reaction support
+\item RnVecP: Reaction product 
+\end{itemize}
+
+These vectors are defined as numpy.array objects.
+
+The library is built in a way that relational calculations are made at the bitarray (string) identification and stroichiometric calculations are made using the np.array identification. This helps to optimize the speed at which operations are made.
+
+Multiple functions are again developed to deal with the use of reactions in a simple way. For example, "self.get\_supp\_bt\_from\_reaction(reaction\_name,$t$)" gives the bitarray representation of reaction "reaction\_name" of the species that are support of the reaction in question. Note that there is a parameter $t$ that indicates a threshold, so that if the support vector (RnVecS) at the coordinate of a given species is larger than the threshold then
+the species is considered with True in the bitarray returned. Otherwise it gives a False value.
+
+WRITE LIST OF TRANSFORMATIONS
+
+\subsection{Relational Important Functions}
+
+\subsection{Connectivity Relations}
+
+There multiple ways to define connectivity relations. The simplest one, and most widely used in COT algorithms is the topological connectivity, meaning that there is a way to link two species through the reactions. $s_i$ and $s_j$ are {\bf immediately connected} iff and only iff there exists a reaction $r\in\Rs$ such that $\{s_i,s_j\}\subset\supp(r)\cup\prod(r)$. Two species  are {\bf connected} if there is a sequence of immediately connected species starting from one species and ending in the other species. 
+
+Another interesting connectivity relation expresses whether connectivity in a directional way. 
+That is $s_1$ and $s_2$ are {\bf immediately directionally connected} if and only if there is a reaction $r\in\Rs$ such that $s_1\in\supp(r)$ and $s_2\in\prod(r)$. This relation can also be generalized to sequences of reactions leading to the notion of {\bf directionally connected}.
+
+
+
+ 
+
+
+
+
+
+
+
+
+\end{document}

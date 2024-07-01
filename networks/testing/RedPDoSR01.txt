@@ -1,0 +1,17 @@
+r0: => Rainfall;
+r1: Rainfall => ;
+r2: Rodent1 + Seed => 2Rodent1;
+r3: Rodent1 + Plant => 2Rodent1;
+r4: Owl1 + Rodent1 => 2Owl1;
+r5: Owl2 + Rodent1 => 2Owl2;
+r6: 2Rodent1 => Rodent1;
+r7: 2Owl1 => Owl1;
+r8: 2Owl2 => Owl2;
+r9: Rodent2 + Plant => 2Rodent2;
+r10: Fox + Rodent2 => 2Fox;
+r11: 2Rodent2 => Rodent2;
+r12: 2Fox => Fox;
+r13: Seed + Rainfall => Plant;
+r14: Plant + Rainfall => Plant + Seed;
+r15: 2Plant => Plant;
+r16: 2Seed => Seed;
