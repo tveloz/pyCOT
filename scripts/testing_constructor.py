@@ -6,10 +6,10 @@ Created on Thu Apr 25 21:08:29 2024
 @author: tveloz
 """
 
-from pyCOT_constructor import *
-from pyCOT_closure_structure import *
+from pyCOT.pyCOT_constructor import *
+from pyCOT.pyCOT_closure_structure import *
 import networkx as nx
-from File_manipulation import *
+from pyCOT.File_manipulation import *
 import matplotlib.pyplot as plt
 import time
 

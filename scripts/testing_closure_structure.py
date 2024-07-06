@@ -8,11 +8,11 @@ Created on Wed Dec 27 15:28:44 2023
 
 # main.py (or another script)
 
-from pyCOT_constructor import *
-from pyCOT_closure_structure import *
-from pyCOT_reactive_features import *
+from pyCOT.pyCOT_constructor import *
+from pyCOT.pyCOT_closure_structure import *
+from pyCOT.pyCOT_reactive_features import *
 import networkx as nx
-from File_manipulation import *
+from pyCOT.File_manipulation import *
 import matplotlib.pyplot as plt
 import time
 from collections import defaultdict
