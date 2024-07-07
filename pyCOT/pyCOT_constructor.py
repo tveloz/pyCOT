@@ -1,4 +1,4 @@
-from typing import List
+from collections.abc import Sequence
 
 import numpy as np
 from bitarray import bitarray as bt
@@ -39,18 +39,18 @@ class pyCOT:
     - set_bt_from_id: Function that returns bitarray from vector representation.
     """
 
-    def __init__(self, SpStr: List[str], SpBt: bt, RnStr: List[str], RnBt: bt,
+    def __init__(self, SpStr: Sequence[str], SpBt: bt, RnStr: Sequence[str], RnBt: bt,
                  RnMsupp: np.ndarray, RnMprod: np.ndarray):
         """
         Constructor for pyCOT class.
 
         Parameters:
         - SpBt: Bitarray identification for species
-        - SpStr: List of strings (species names) identification
+        - SpStr: Sequence of strings (species names) identification
         - RnBt: Bitarray identification for reactions
         - RnMsupp: Matrix (numpy.darray) identification support of reactions 
         - RnMprod: Matrix (numpy.darray) identification for products of reactions
-        - RnStr: List of strings (reaction names) identification
+        - RnStr: Sequence of strings (reaction names) identification
         """
         # Species
         self.SpStr = SpStr
@@ -66,12 +66,12 @@ class pyCOT:
     #############Vector of positions to bt transformations##################################################
     ########################################################################################################
 
-    def get_id_from_bt(self, bt: bt) -> List[int]:
+    def get_id_from_bt(self, bt: bt) -> list[int]:
         """Function that returns a vector from bitarray representation."""
         vec = [i for i in range(len(bt)) if bt[i] == 1]
         return vec
 
-    def get_bt_from_id(self, vec: List[int], size) -> bt:
+    def get_bt_from_id(self, vec: Sequence[int], size) -> bt:
         """Function that returns bitarray from vector representation."""
         bt_array = bt(size)
         bt_array.setall(0)
