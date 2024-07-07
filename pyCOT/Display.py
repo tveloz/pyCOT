@@ -6,6 +6,7 @@ Created on Sat Dec 30 15:31:23 2023
 @author: tveloz
 """
 import re
+
 import numpy as np
 from bitarray import bitarray
 import networkx as nx

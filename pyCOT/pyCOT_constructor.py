@@ -1,8 +1,9 @@
+from typing import List
+
 import numpy as np
 from bitarray import bitarray as bt
-from typing import List
 import networkx as nx
-import pandas as pd
+# import pandas as pd
 
 # Created by Tomas Veloz - github.com/tveloz
 ############################################################################################################

@@ -5,15 +5,14 @@ Created on Wed Dec 27 15:28:44 2023
 
 @author: tveloz
 """
+import time
 
-# main.py (or another script)
-
-from pyCOT_constructor import *
-from pyCOT_closure_structure import *
 import networkx as nx
 from File_manipulation import *
 import matplotlib.pyplot as plt
-import time
+
+from pyCOT_constructor import *
+from pyCOT_closure_structure import *
 
 # Create an instance of the HelloWorld class
 # SpStr= ['a', 'b', 'c', 'd']  # Default: ['a', 'b', 'c', 'd']

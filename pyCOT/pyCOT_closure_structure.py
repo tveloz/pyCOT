@@ -5,21 +5,25 @@ Created on Fri Dec 29 18:55:14 2023
 
 @author: tveloz
 """
+# import re
+# import random as rm
+# from itertools import combinations
+
 import numpy as np
-import pandas as pd
-import re
-from bitarray import bitarray as bt
-from bitarray import frozenbitarray as fbt
-from scipy.optimize import linprog
-import random as rm
-import matplotlib.pyplot as plt
-from pyvis.network import Network
-import networkx as nx
-from itertools import combinations
+# import pandas as pd
+# from bitarray import bitarray as bt
+# from bitarray import frozenbitarray as fbt
+# from scipy.optimize import linprog
+# import matplotlib.pyplot as plt
+# from pyvis.network import Network
+# import networkx as nx
+
 from Display import *
 from pyCOT_constructor import *
 from itertools import chain
 from File_manipulation import *
+
+
 #def closure_structure(RN,):
     #get generators
     #compute closures     

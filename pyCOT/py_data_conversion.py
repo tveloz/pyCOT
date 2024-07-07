@@ -5,21 +5,24 @@ Created on Fri Dec 29 18:55:14 2023
 
 @author: tveloz
 """
+import re
+import copy
+import random as rm
+from itertools import combinations
+
 import numpy as np
 import pandas as pd
-import re
 from bs4 import BeautifulSoup as bs
-import copy
 from bitarray import bitarray as bt
 from bitarray import frozenbitarray as fbt
-from scipy.optimize import linprog
-import random as rm
+# from scipy.optimize import linprog
 import matplotlib.pyplot as plt
-from pyvis.network import Network
+# from pyvis.network import Network
 import networkx as nx
-from itertools import combinations
-from Displays import *
-from pyCOT_relational_properties import *
+
+# from pyCOT_relational_properties import *
+from Display import *
+
 
 # Function that returns bitarray from vector representation    
 

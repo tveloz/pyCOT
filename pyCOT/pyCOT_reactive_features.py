@@ -7,15 +7,15 @@ Functions that help to analyze basic features of the reaction network
 
 @author: tveloz
 """
+# import time
 
+# import networkx as nx
+# import matplotlib.pyplot as plt
+import pandas as pd
 
 from pyCOT_constructor import *
 from pyCOT_closure_structure import *
-import networkx as nx
 from File_manipulation import *
-import matplotlib.pyplot as plt
-import time
-import pandas as pd
 
 def reac_analysis(RN):
     columns=RN.SpStr

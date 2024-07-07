@@ -5,15 +5,16 @@ Created on Sat Dec 30 15:31:23 2023
 
 @author: tveloz
 """
+import os
+import re
 
 from bitarray import bitarray as bt
 import numpy as np
-from pyCOT_constructor import *
-import re
-import os
 from collections import OrderedDict
 from bs4 import BeautifulSoup as bs
 import requests
+
+from pyCOT_constructor import *
 
 
 def extract_species_and_reactions(file_path):
