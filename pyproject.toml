@@ -13,6 +13,8 @@ networkx = "^3.1"
 matplotlib = "3.8"
 pandas = "^2.1"
 bitarray = "^2.6"
+requests = "^2.32.3"
+bs4 = "^0.0.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
