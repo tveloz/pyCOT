@@ -1,0 +1,6 @@
+# pycot a library for modeling and analysis using Chemical Organization Theory
+
+## Introduction
+
+PyCOT is a library to apply chemical organization theory for modeling and analysis purposes. First algorithms aimed to compute organizations and self-maintaining sets were developed by the group of Peter Dittrich between 2007 and 2010. The idea of developing a library was conceived by Tomas Veloz, Pedro Maldonado and Alejandro Bassi in Santiago, Chile, 2017. While Bassi and Maldonado explored how to perform calculations in efficient manners in R and C respectively, the first development in Python was pyRN between 2020 and 2022 as part of the Templeton grant "Origins of Goal Directedness", and is available in [github](https://github.com/pmaldona/pyRN). That preliminary version contains some of the important elements of pyCOT, but the complex handling of data structures implied lack in versatility, so
+Tomas Veloz rebuilt a version of the library using a more efficient class structure, introducing the notion of subRN and supRN that can inherit maximal information, and adding several functions that permit COT analysis, in an effort to integrate and complete the scattered previous developments.
