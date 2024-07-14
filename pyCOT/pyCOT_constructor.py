@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from numbers import Real
 
 import numpy as np
 from bitarray import bitarray as bt
@@ -37,7 +38,6 @@ class pyCOT:
 
     Methods (not to be updated just read below):
     - __init__: Constructor method to initialize the class with the provided parameters.
-    - get_id_from_bt: Function that returns a vector from bitarray representation.
     - set_bt_from_id: Function that returns bitarray from vector representation.
     """
 
@@ -65,69 +65,6 @@ class pyCOT:
         self.RnMprod = RnMprod
 
 
-
-  ##########################################################################################################
-  #############bt From/To str representations###############################################################
-  ##########################################################################################################
-    def get_species_from_bt(self, bitarray):
-        """Function that returns List of strings (species names) identification from bitarray.""" 
-        species_list = self.SpStr
-        if not isinstance(bitarray, bt):
-            print("get_species_from_bt ERROR: input is not a bitarray ")
-            return None
-        if len(species_list) != len(bitarray):
-            print("get_species_from_bt ERROR: bitarray input has different length than species set size, can't continue")
-        else:
-            selected_species = []
-            for i in range(len(bitarray)):
-                if bitarray[i]:
-                    selected_species.append(species_list[i])
-            return selected_species
-
-    def get_reactions_from_bt(self, bitarray):
-        """Function that returns List of strings (reactions names) identification from bitarray."""
-        selected_reactions = []
-        if not isinstance(bitarray, bt):
-            print("get_reactions_from_bt ERROR: input is not a bitarray ")
-            return None
-        if len(self.RnStr) != len(bitarray):
-            print("get_reactions_from_bt ERROR: bitarray input has different length than reactions set size, can't continue")
-            return None
-        else:
-            for i in range(len(bitarray)):
-                if bitarray[i]:
-                    selected_reactions.append(self.RnStr[i])
-            return selected_reactions
-
-
-    def get_species_abstraction_from_vector(self, vec, t):
-        """Function that returns a the list of species string with value larger than t in a vector"""
-        bitarray = dc.get_bt_abstraction_from_vector(vec, t)
-        return(self.get_species_from_bt(bitarray))
-
-    def get_supp_bt_from_reaction(self, reaction_name, t=0):
-        """Function that returns bitarray (reaction's supports)  from a string (reaction names) identification ¿in t=0?""" #G: To check description about "t"
-        if reaction_name not in self.RnStr:
-            print("get_supp_bt_from_reaction ERROR: Reaction '{reaction_name}' not found in the reactions set.")
-            return None
-        else:
-            reaction_index = self.RnStr.index(reaction_name)
-            support_vec = self.RnMsupp[reaction_index]
-            support_bitarray = dc.get_bt_abstraction_from_vector(support_vec, t)
-        return support_bitarray
-
-    def get_prod_bt_from_reaction(self,reaction_name,t=0):
-        """Function that returns bitarray (reaction's products) from a string (reaction names) identification ¿in t=0?""" #G: To check description about "t"
-        if reaction_name not in self.RnStr:
-            print("get_prod_bt_from_reaction ERROR: Reaction '{reaction_name}' not found in the reactions set.")
-            return None
-        else:
-            reaction_index = self.RnStr.index(reaction_name)
-            product_vec = self.RnMprod[reaction_index]
-            product_bitarray = dc.get_bt_abstraction_from_vector(
-                product_vec, t)
-        return product_bitarray
-
     ########################################################################################################
     #### obtaining sets of species/reactions producing/consuming one another################################
     ########################################################################################################              
@@ -149,31 +86,26 @@ class pyCOT:
     # Iterate through reactants and check if the species can trigger the reaction
         for i in range(len(self.RnStr)):
             supp = self.RnMsupp[i]
-            supp_bt = self.get_bt_abstraction_from_vector(supp, t)
+            supp_bt = dc.get_bt_abstraction_from_vector(supp, t)
             # checking if supp_bt is contained in species_bitarray
             if (supp_bt & species_bitarray) == supp_bt:
                 triggered_reactions_bitarray[i] = True
             else:
                 triggered_reactions_bitarray[i] = False
-        return self.get_reactions_from_bt(triggered_reactions_bitarray)
+        return dc.get_reactions_from_bt(triggered_reactions_bitarray, self.RnStr)
 
     def get_supp_from_reactions(self, RnStr):
         if not isinstance(RnStr, list):
             RnStr = [RnStr]
-        for i in range(len(RnStr)):
-            if RnStr[i] not in self.RnStr:
-                print("ERROR in get_supp_from_reactions: input" +
-                      RnStr[i]+" is not a list of recognized reactions")
-                return []
 
         reactions_bitarray = dc.get_bt_from_reactions(RnStr, self.RnStr)
         specs = bt(len(self.SpStr))
         specs.setall(0)
         for i in range(len(self.RnStr)):
             if reactions_bitarray[i]:
-                supp = self.get_supp_bt_from_reaction(self.RnStr[i])
+                supp = dc.get_supp_bt_from_reaction(self.RnStr[i], self.RnStr, self.RnMsupp)
                 specs = specs | supp
-        return self.get_species_from_bt(specs)
+        return dc.get_species_from_bt(specs, self.SpStr)
 
     def get_prod_from_reactions(self, RnStr):
         if not isinstance(RnStr, list):
@@ -188,11 +120,11 @@ class pyCOT:
         specs.setall(0)
         for i in range(len(self.RnStr)):
             if reactions_bitarray[i]:
-                prod = self.get_prod_bt_from_reaction(self.RnStr[i])
+                prod = dc.get_prod_bt_from_reaction(self.RnStr[i], self.RnStr, self.RnMprod)
                 #print("bit "+str(i)+" adds "+str(prod))
                 specs = specs | prod
                 #print("specs updated "+str(specs))
-        return self.get_species_from_bt(specs)
+        return dc.get_species_from_bt(specs, self.SpStr)
 
     def get_species_from_reactions(self, RnStr):
         if not isinstance(RnStr, list):
@@ -493,11 +425,11 @@ class pyCOT:
         result.setall(0)
         reacs = self.RnStr
         for i in range(len(reacs)):
-            supp = self.get_supp_bt_from_reaction(reacs[i])
-            prod = self.get_prod_bt_from_reaction(reacs[i])
+            supp = dc.get_supp_bt_from_reaction(reacs[i], self.RnStr, self.RnMsupp)
+            prod = dc.get_prod_bt_from_reaction(reacs[i], self.RnStr, self.RnMprod)
             if not prod.any():
                 result = result | supp
-        return(self.get_species_from_bt(result))
+        return dc.get_species_from_bt(result, self.SpStr)
 
     ########################################################################################################
     ############# verify relational properties of species/reactions#########################################

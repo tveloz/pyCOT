@@ -5,44 +5,17 @@ Created on Fri Dec 29 18:55:14 2023
 
 @author: tveloz
 """
-import re
-import copy
-import random as rm
-from itertools import combinations
+from collections.abc import Sequence
 from numbers import Real
 
-import numpy as np
-import pandas as pd
-from bs4 import BeautifulSoup as bs
 from bitarray import bitarray
-from bitarray import frozenbitarray as fbt
-# from scipy.optimize import linprog
-import matplotlib.pyplot as plt
-# from pyvis.network import Network
-import networkx as nx
-
-# from pyCOT_relational_properties import *
-from Display import *
-
+from numpy import ndarray
 
 ########################################################################################################
 #############Vector of positions to bt transformations##################################################
 ########################################################################################################
 
-def get_id_from_bt(bt: bitarray) -> list[int]:
-    """Function that returns a vector from bitarray representation."""
-    vec = [i for i in range(len(bt)) if bt[i] == 1]
-    return vec
-
-def get_bt_from_id(vec: Sequence[int], size) -> bitarray:
-    """Function that returns bitarray from vector representation."""
-    bt_array = bitarray(size)
-    bt_array.setall(0)
-    for i in vec:
-        bt_array[i] = 1
-    return bt_array
-
-def get_bt_abstraction_from_vector(vec: Sequence[Real], t: int):
+def get_bt_abstraction_from_vector(vec: Sequence[Real], t: Real) -> bitarray:
     """Function that returns bitarray of species with value larger than t in a vector."""
     bt = bitarray()
     for i in range(len(vec)):
@@ -50,8 +23,9 @@ def get_bt_abstraction_from_vector(vec: Sequence[Real], t: int):
             bt.append(True)
         else:
             bt.append(False)
-    return(bt)
+    return bt
 
+# TODO: Reconsiderar "names" en la signature de la función
 def get_bt_from_names(names: Sequence[str], names_catalog: Sequence[str]) -> bitarray:
     """Function that returns bitarray from a sequence of names."""
     bt = bitarray(len(names_catalog))
@@ -60,6 +34,7 @@ def get_bt_from_names(names: Sequence[str], names_catalog: Sequence[str]) -> bit
         bt[names_catalog.index(name)] = 1
     return bt
 
+# TODO: Simplificar get_bt_from_species and from_reactions por get_bt_from_names
 def get_bt_from_species(species: str | Sequence[str], species_catalog: Sequence[str]) -> bitarray:
     """
     Function that returns bitarray from a sequence of species names.
@@ -110,3 +85,69 @@ def get_bt_from_reactions(reactions: str | Sequence[str], reaction_catalog: Sequ
         
     return get_bt_from_names(reactions, reaction_catalog)
     
+def filter_by_presence(elements: Sequence, presence_array: bitarray) -> Sequence:
+    if len(elements) != len(presence_array):
+        raise ValueError("elements and presence must have the same length")
+    return [elements[i] for i, presence in zip(elements, presence_array) if presence]
+
+def get_species_from_bt(species_presence: bitarray, species_catalog: Sequence[str]) -> list[str]:
+    """
+    Obtain the corresponding species names from a bitarray.
+
+    Parameters
+    ----------
+    species_presence : bitarray
+        Bitarray of species presence.
+    species_catalog : Sequence[str]
+        Sequence of all species names.
+
+    Returns
+    -------
+    list[str]
+        List of species names.
+    """
+    if len(species_catalog) != len(species_presence):
+        raise ValueError("species_catalog and species_presence must have the same length")
+    return filter_by_presence(species_catalog, species_presence)
+
+def get_reactions_from_bt(reactions_presence: bitarray, reaction_catalog: Sequence[str]) -> list[str]:
+    """
+    Obtain the corresponding reaction names from a bitarray.
+
+    Parameters
+    ----------
+    reactions_presence : bitarray
+        Bitarray of reaction presence.
+    reaction_catalog : Sequence[str]
+        Sequence of all reaction names.
+
+    Returns
+    -------
+    list[str]
+        List of reaction names.
+    """
+    if len(reaction_catalog) != len(reactions_presence):
+        raise ValueError("reaction_catalog and reactions_presence must have the same length")
+    return filter_by_presence(reaction_catalog, reactions_presence)
+
+def get_supp_bt_from_reaction(reaction_name: str, reaction_set: Sequence[str], support_matrix: ndarray, t: Real = 0) -> bitarray:
+    """
+    Function that returns a bitarray for the reaction' support given a threshold t."""
+
+    if reaction_name not in reaction_set:
+        raise ValueError(f"Reaction '{reaction_name}' not found in the reactions set.")
+    
+    reaction_index = reaction_set.index(reaction_name)
+    support = support_matrix[reaction_index]
+    return get_bt_abstraction_from_vector(support, t)
+
+def get_prod_bt_from_reaction(reaction_name: str, reaction_set: Sequence[str], product_matrix: ndarray, t: Real = 0) -> bitarray:
+    """
+    Function that returns a bitarray for the reaction' products given a threshold t."""
+
+    if reaction_name not in reaction_set:
+        raise ValueError(f"Reaction '{reaction_name}' not found in the reactions set.")
+    
+    reaction_index = reaction_set.index(reaction_name)
+    product = product_matrix[reaction_index]
+    return get_bt_abstraction_from_vector(product, t)
