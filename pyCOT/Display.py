@@ -54,7 +54,7 @@ def parse_chemical_reactions(file_path):
         rn_vec_p_list.append(rn_vec_p)
         rn_str_list.append(f'r_{index+1}')  # Label each reaction as r_i where i is the index
 
-    return pyCOT(SpBt=sp_bt, SpVec=sp_vec, SpStr=sp_str, RnBtS=rn_bt_s, RnBtP=rn_bt_p,
+    return ReactionNetwork(SpBt=sp_bt, SpVec=sp_vec, SpStr=sp_str, RnBtS=rn_bt_s, RnBtP=rn_bt_p,
                  RnVecS=np.array(rn_vec_s_list), RnVecP=np.array(rn_vec_p_list), RnStr=rn_str_list)
 
 def build_graph(reaction_network):

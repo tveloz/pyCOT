@@ -99,7 +99,7 @@ def load_pyCOT_from_Txt(file_path):
     RnBt.setall(True)
     RnMsupp, RnMprod = build_stoichiometric_vectors(file_path, species_set)
     
-    return pyCOT(SpStr, SpBt, RnStr, RnBt, RnMsupp, RnMprod)
+    return ReactionNetwork(SpStr, SpBt, RnStr, RnBt, RnMsupp, RnMprod)
 
 def load_pyCOT_from_Sbml(file):
     

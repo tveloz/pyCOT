@@ -250,7 +250,7 @@ def MSORN(sorn):
         ERC_species=sorn[0][0]
         ERC_Bt = bitarray(len(ERC_species))
         ERC_Bt.setall(True)
-        return pyCOT(SpBt=ERC_Bt, RnStr=[], RnBt= bitarray(), SpStr=ERC_species, RnMsupp=np.array([]),RnMprod=np.array([]))
+        return ReactionNetwork(SpBt=ERC_Bt, RnStr=[], RnBt= bitarray(), SpStr=ERC_species, RnMsupp=np.array([]),RnMprod=np.array([]))
 
 #****************Compute Closed sets from terminal nodes of MSORN
 

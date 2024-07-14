@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from numbers import Real
 
 import numpy as np
 from bitarray import bitarray as bt
@@ -24,7 +23,7 @@ import py_data_conversion as dc
 ##*verify relational properties of species/reactions########################################################
 
 
-class pyCOT:
+class ReactionNetwork:
     """
     Class representing pyCOT (Python Chemical Organization Theory Object)
 
