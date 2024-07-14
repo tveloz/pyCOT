@@ -9,9 +9,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-from pyCOT_constructor import *
-from pyCOT_closure_structure import *
-from File_manipulation import *
+from pyCOT.reaction_network import *
+from pyCOT.closure_structure import *
+from file_manipulation import *
 # main.py (or another script)
 
 path='/home/tveloz/Dropbox/Public/AcademicWork/Europe/CLEA/Postdocs/TempletonPostdoc/sftw/networks/biomodels_all'

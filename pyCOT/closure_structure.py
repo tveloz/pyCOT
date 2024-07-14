@@ -18,10 +18,10 @@ import numpy as np
 # from pyvis.network import Network
 # import networkx as nx
 
-from Display import *
-from pyCOT_constructor import *
+from display import *
+from pyCOT.reaction_network import *
 from itertools import chain
-from File_manipulation import *
+from file_manipulation import *
 
 
 #def closure_structure(RN,):

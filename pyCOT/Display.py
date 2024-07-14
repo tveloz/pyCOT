@@ -13,7 +13,7 @@ import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
 import matplotlib.pyplot as plt
 
-from pyCOT_constructor import *
+from pyCOT.reaction_network import *
 
 def parse_chemical_reactions(file_path):
     with open(file_path, 'r') as file:

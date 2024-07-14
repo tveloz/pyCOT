@@ -13,9 +13,9 @@ Functions that help to analyze basic features of the reaction network
 # import matplotlib.pyplot as plt
 import pandas as pd
 
-from pyCOT_constructor import *
-from pyCOT_closure_structure import *
-from File_manipulation import *
+from pyCOT.reaction_network import *
+from pyCOT.closure_structure import *
+from file_manipulation import *
 
 def reac_analysis(RN):
     columns=RN.SpStr

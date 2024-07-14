@@ -14,7 +14,7 @@ from collections import OrderedDict
 from bs4 import BeautifulSoup as bs
 import requests
 
-from pyCOT_constructor import *
+from pyCOT.reaction_network import *
 
 
 def extract_species_and_reactions(file_path):

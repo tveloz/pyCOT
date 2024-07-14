@@ -8,11 +8,11 @@ Created on Wed Dec 27 15:28:44 2023
 import time
 
 import networkx as nx
-from File_manipulation import *
+from file_manipulation import *
 import matplotlib.pyplot as plt
 
-from pyCOT_constructor import *
-from pyCOT_closure_structure import *
+from pyCOT.reaction_network import *
+from pyCOT.closure_structure import *
 
 # Create an instance of the HelloWorld class
 # SpStr= ['a', 'b', 'c', 'd']  # Default: ['a', 'b', 'c', 'd']

@@ -5,7 +5,7 @@ from bitarray import bitarray as bt
 import networkx as nx
 # import pandas as pd
 
-import py_data_conversion as dc
+import pyCOT.data_conversion as dc
 
 # Created by Tomas Veloz - github.com/tveloz
 ############################################################################################################
