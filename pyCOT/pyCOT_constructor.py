@@ -79,7 +79,7 @@ class pyCOT:
                       SpStr[i]+" is not a list of recognized species")
                 return []
 
-        species_bitarray = dc.get_bt_from_species(SpStr, self.SpStr)
+        species_bitarray = dc.get_bt_from_names(SpStr, self.SpStr)
     # Initialize an empty bitarray for triggered reactions
         triggered_reactions_bitarray = bt(len(self.RnStr))
         triggered_reactions_bitarray.setall(0)
@@ -98,7 +98,7 @@ class pyCOT:
         if not isinstance(RnStr, list):
             RnStr = [RnStr]
 
-        reactions_bitarray = dc.get_bt_from_reactions(RnStr, self.RnStr)
+        reactions_bitarray = dc.get_bt_from_names(RnStr, self.RnStr)
         specs = bt(len(self.SpStr))
         specs.setall(0)
         for i in range(len(self.RnStr)):
@@ -115,7 +115,7 @@ class pyCOT:
                 print("ERROR in get_prod_from_reactions: input" +
                       RnStr[i]+" is not a list of recognized reactions")
                 return []
-        reactions_bitarray = dc.get_bt_from_reactions(RnStr, self.RnStr)
+        reactions_bitarray = dc.get_bt_from_names(RnStr, self.RnStr)
         specs = bt(len(self.SpStr))
         specs.setall(0)
         for i in range(len(self.RnStr)):
@@ -436,18 +436,18 @@ class pyCOT:
     ########################################################################################################
 
     def is_closed(self, SpStr):
-        species_bitarray = dc.get_bt_from_species(SpStr, self.SpStr)
+        species_bitarray = dc.get_bt_from_names(SpStr, self.SpStr)
         reactions_list = self.get_reactions_from_species(SpStr)
         prod_of_reactions = self.get_prod_from_reactions(reactions_list)
-        prod_bitarray = dc.get_bt_from_species(prod_of_reactions, self.SpStr)
+        prod_bitarray = dc.get_bt_from_names(prod_of_reactions, self.SpStr)
         return (prod_bitarray | species_bitarray) == species_bitarray
 
     def is_semi_self_maintaining(self, SpStr):
         reactions_list = self.get_reactions_from_species(SpStr)
         prod_of_reactions = self.get_prod_from_reactions(reactions_list)
-        prod_bitarray = dc.get_bt_from_species(prod_of_reactions, self.SpStr)
+        prod_bitarray = dc.get_bt_from_names(prod_of_reactions, self.SpStr)
         supp_of_reactions = self.get_supp_from_reactions(reactions_list)
-        supp_bitarray = dc.get_bt_from_species(supp_of_reactions, self.SpStr)
+        supp_bitarray = dc.get_bt_from_names(supp_of_reactions, self.SpStr)
         return (supp_bitarray & prod_bitarray) == supp_bitarray
      
     def is_connected(self,SpStr):
