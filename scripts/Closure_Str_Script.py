@@ -8,7 +8,7 @@ Created on Wed Dec 27 15:28:44 2023
 import time
 
 import networkx as nx
-from file_manipulation import *
+from pyCOT.file_manipulation import *
 import matplotlib.pyplot as plt
 
 from pyCOT.reaction_network import *
