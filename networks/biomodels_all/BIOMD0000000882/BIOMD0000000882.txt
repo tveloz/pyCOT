@@ -1,6 +1,0 @@
-Birth:  => 1Susceptible;
-Zombification: 1Susceptible + 1Removal => 1Susceptible + 1Removal + 1Zombie;
-Susceptible_to_Zombie_or_death: 1Zombie + 1Susceptible => 1Zombie + ;
-Removal_of_zombie_or_susceptible: 1Susceptible + 1Zombie => 1Susceptible + 1Zombie + 1Removal;
-Resurrection_to_Zombie: 1Susceptible + 1Zombie + 1Removal => 1Susceptible + 1Zombie + ;
-Death_from_Zombie: 1Susceptible + 1Zombie => 1Susceptible + ;

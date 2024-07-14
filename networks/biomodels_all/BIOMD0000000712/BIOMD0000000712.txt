@@ -1,6 +1,0 @@
-reaction_1:  => 1P;
-reaction_2: 1D + 1P => 1D + ;
-reaction_3: 1P => 1P + 1D;
-reaction_4: 1D => ;
-reaction_5:  => 1I;
-reaction_6: 1I => ;
