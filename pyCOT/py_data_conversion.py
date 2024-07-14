@@ -130,24 +130,30 @@ def get_reactions_from_bt(reactions_presence: bitarray, reaction_catalog: Sequen
         raise ValueError("reaction_catalog and reactions_presence must have the same length")
     return filter_by_presence(reaction_catalog, reactions_presence)
 
-def get_supp_bt_from_reaction(reaction_name: str, reaction_set: Sequence[str], support_matrix: ndarray, t: Real = 0) -> bitarray:
+def get_species_bt_from_reaction(reaction_name: str, reaction_set: Sequence[str], matrix: ndarray, t: Real = 0) -> bitarray:
     """
-    Function that returns a bitarray for the reaction' support given a threshold t."""
+    Function that returns a bitarray for the reaction' support or products given a threshold t.
+    
+    Parameters
+    ----------
+    reaction_name : str
+        Name of the reaction.
+    reaction_set : Sequence[str]
+        Sequence of all reaction names.
+    matrix : ndarray
+        Matrix of the reactions' support or products.
+    t : Real
+        Threshold.
+
+    Returns
+    -------
+    bt : bitarray
+        Bitarray representation of reaction's support or products.
+    """
 
     if reaction_name not in reaction_set:
         raise ValueError(f"Reaction '{reaction_name}' not found in the reactions set.")
     
     reaction_index = reaction_set.index(reaction_name)
-    support = support_matrix[reaction_index]
-    return get_bt_abstraction_from_vector(support, t)
-
-def get_prod_bt_from_reaction(reaction_name: str, reaction_set: Sequence[str], product_matrix: ndarray, t: Real = 0) -> bitarray:
-    """
-    Function that returns a bitarray for the reaction' products given a threshold t."""
-
-    if reaction_name not in reaction_set:
-        raise ValueError(f"Reaction '{reaction_name}' not found in the reactions set.")
-    
-    reaction_index = reaction_set.index(reaction_name)
-    product = product_matrix[reaction_index]
-    return get_bt_abstraction_from_vector(product, t)
+    species = matrix[reaction_index]
+    return get_bt_abstraction_from_vector(species, t)

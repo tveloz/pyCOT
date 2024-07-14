@@ -103,7 +103,7 @@ class pyCOT:
         specs.setall(0)
         for i in range(len(self.RnStr)):
             if reactions_bitarray[i]:
-                supp = dc.get_supp_bt_from_reaction(self.RnStr[i], self.RnStr, self.RnMsupp)
+                supp = dc.get_species_bt_from_reaction(self.RnStr[i], self.RnStr, self.RnMsupp)
                 specs = specs | supp
         return dc.get_species_from_bt(specs, self.SpStr)
 
@@ -120,7 +120,7 @@ class pyCOT:
         specs.setall(0)
         for i in range(len(self.RnStr)):
             if reactions_bitarray[i]:
-                prod = dc.get_prod_bt_from_reaction(self.RnStr[i], self.RnStr, self.RnMprod)
+                prod = dc.get_species_bt_from_reaction(self.RnStr[i], self.RnStr, self.RnMprod)
                 #print("bit "+str(i)+" adds "+str(prod))
                 specs = specs | prod
                 #print("specs updated "+str(specs))
@@ -425,8 +425,8 @@ class pyCOT:
         result.setall(0)
         reacs = self.RnStr
         for i in range(len(reacs)):
-            supp = dc.get_supp_bt_from_reaction(reacs[i], self.RnStr, self.RnMsupp)
-            prod = dc.get_prod_bt_from_reaction(reacs[i], self.RnStr, self.RnMprod)
+            supp = dc.get_species_bt_from_reaction(reacs[i], self.RnStr, self.RnMsupp)
+            prod = dc.get_species_bt_from_reaction(reacs[i], self.RnStr, self.RnMprod)
             if not prod.any():
                 result = result | supp
         return dc.get_species_from_bt(result, self.SpStr)
