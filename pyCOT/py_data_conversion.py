@@ -11,10 +11,6 @@ from numbers import Real
 from bitarray import bitarray
 from numpy import ndarray
 
-########################################################################################################
-#############Vector of positions to bt transformations##################################################
-########################################################################################################
-
 def get_bt_abstraction_from_vector(vec: Sequence[Real], t: Real) -> bitarray:
     """Function that returns bitarray of species with value larger than t in a vector."""
     bt = bitarray()
@@ -34,57 +30,31 @@ def get_bt_from_names(names: Sequence[str], names_catalog: Sequence[str]) -> bit
         bt[names_catalog.index(name)] = 1
     return bt
 
-# TODO: Simplificar get_bt_from_species and from_reactions por get_bt_from_names
-def get_bt_from_species(species: str | Sequence[str], species_catalog: Sequence[str]) -> bitarray:
+def get_bt_from_names(names: Sequence[str], names_catalog: Sequence[str]) -> bitarray:
     """
-    Function that returns bitarray from a sequence of species names.
+    Function that returns bitarray from a sequence of names.
 
     Parameters
     ----------
-    species : str or Sequence[str]
-        Sequence of species names to represent as bitarray.
-    species_catalog : Sequence[str]
-        Sequence of all species names.
+    names : Sequence[str]
+        Sequence of names to represent as bitarray.
+    names_catalog : Sequence[str]
+        Sequence of all names.
 
     Returns
     -------
     bt : bitarray
-        Bitarray representation of species.
+        Bitarray representation of names.
     """
-    if isinstance(species, str):
-        species = [species]
+    if isinstance(names, str):
+        names = [names]
     
-    for specie in species:
-        if specie not in species_catalog:
-            raise ValueError("species is not a sequence of recognized species")
+    for name in names:
+        if name not in names_catalog:
+            raise ValueError("names is not a sequence of recognized names")
         
-    return get_bt_from_names(species, species_catalog)
+    return get_bt_from_names(names, names_catalog)
 
-def get_bt_from_reactions(reactions: str | Sequence[str], reaction_catalog: Sequence[str]) -> bitarray:
-    """
-    Function that returns bitarray from a sequence of reaction names.
-
-    Parameters
-    ----------
-    reactions : str or Sequence[str]
-        Sequence of reaction names to represent as bitarray.
-    reaction_catalog : Sequence[str]
-        Sequence of all reaction names.
-
-    Returns
-    -------
-    bt : bitarray
-        Bitarray representation of reaction.
-    """
-    if isinstance(reactions, str):
-        reactions = [reactions]
-    
-    for reaction in reactions:
-        if reaction not in reaction_catalog:
-            raise ValueError("reaction is not a sequence of recognized reactions")
-        
-    return get_bt_from_names(reactions, reaction_catalog)
-    
 def filter_by_presence(elements: Sequence, presence_array: bitarray) -> Sequence:
     if len(elements) != len(presence_array):
         raise ValueError("elements and presence must have the same length")
