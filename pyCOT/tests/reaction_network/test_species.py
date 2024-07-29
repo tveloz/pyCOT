@@ -1,5 +1,5 @@
 import pytest
-from pyCOT.rn_rustworkx import ReactionNetwork, Species
+from pyCOT.rn_rustworkx import ReactionNetwork
 
 @pytest.fixture
 def rn() -> ReactionNetwork:

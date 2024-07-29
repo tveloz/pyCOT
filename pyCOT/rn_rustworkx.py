@@ -1,9 +1,8 @@
-from collections.abc import Collection
 from dataclasses import dataclass
 from numbers import Real
 from typing import Literal
 
-from rustworkx import PyDiGraph, NodeIndices, InvalidNode
+from rustworkx import PyDiGraph, InvalidNode
 
 @dataclass(slots=True)
 class Species:
