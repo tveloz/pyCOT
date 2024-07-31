@@ -29,6 +29,18 @@ class Reaction:
     node: ReactionNode 
     edges: list[ReactionEdge]
 
+    def name(self) -> str:
+        return self.node.name
+
+
+    def support_edges(self) -> list[ReactionEdge]:
+        return [edge for edge in self.edges if edge.type == "reactant"]
+    
+
+    def products_edges(self) -> list[ReactionEdge]:
+        return [edge for edge in self.edges if edge.type == "product"]
+
+
 class ReactionNetwork(PyDiGraph):
 
     ########################################################################################################
@@ -126,6 +138,7 @@ class ReactionNetwork(PyDiGraph):
     
 
     def get_reaction_edges_by_index(self, reaction_index: int) -> list[ReactionEdge]:
+        """Get the list of reaction edges incident to the reaction with the given index."""
         return [edge[2] for edge in self.incident_edge_index_map(reaction_index, all_edges = True).values()]
     
 
@@ -150,6 +163,7 @@ class ReactionNetwork(PyDiGraph):
         if len(index) > 1:  # TODO: Estudiar qué evitar llegar a este punto
             raise ValueError(f"Malformed reaction network. Reaction '{name}' is not unique.")
 
+        index = index[0]
         return Reaction(self[index], self.get_reaction_edges_by_index(index))
 
 
@@ -180,9 +194,8 @@ class ReactionNetwork(PyDiGraph):
             True if the reaction is active, False otherwise.
         """
         reaction = self.get_reaction(reaction_name)
-        support_edges = (edge for edge in reaction.edges if edge.type == "reactant")
 
-        for edge in support_edges:
+        for edge in reaction.support_edges():
             reactant = self.get_species_by_index(edge.source)
             if reactant.quantity < edge.coefficient:
                 active = False
