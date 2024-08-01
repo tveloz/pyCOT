@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "pycot"
+version = "0.1.0"
+description = "Reaction Network library to study Chemical Organization Theory"
+authors = ["Tomas Veloz <tveloz@gmail.com>"]
+license = "GNU v.3"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy = "^1.25.0"
+networkx = "^3.1"
+matplotlib = "3.8"
+pandas = "^2.1"
+bitarray = "^2.6"
+requests = "^2.32.3"
+bs4 = "^0.0.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

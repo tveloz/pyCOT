@@ -1,9 +1,0 @@
-OxPhos: 1ADPi + 1Pi => 1ATPi;
-MiCK: 1ATPi + 1Cri => 1ADPi + 1PCri;
-MMCK: 1ATP + 1Cr => 1PCr + 1ADP;
-ATPase: 1ATP => 1ADP + 1P;
-Pi_diffusion: 1Pi => 1P;
-Cr_diffusion: 1Cri => 1Cr;
-ADP_diffusion: 1ADPi => 1ADP;
-PCr_diffusion: 1PCri => 1PCr;
-ATP_diffusion: 1ATPi => 1ATP;
