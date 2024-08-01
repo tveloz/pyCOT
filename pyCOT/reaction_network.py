@@ -94,8 +94,6 @@ class ReactionNetwork:
         return dc.get_reactions_from_bt(triggered_reactions_bitarray, self.RnStr)
 
     def get_supp_from_reactions(self, RnStr):
-        #Input: list of reactions
-        #Output:  List of reactants of those reactions
         if not isinstance(RnStr, list):
             RnStr = [RnStr]
 
@@ -109,8 +107,6 @@ class ReactionNetwork:
         return dc.get_species_from_bt(specs, self.SpStr)
 
     def get_prod_from_reactions(self, RnStr):
-        #Input: List of reactions
-        #Output: List of products of those reactions
         if not isinstance(RnStr, list):
             RnStr = [RnStr]
         for i in range(len(RnStr)):
@@ -130,8 +126,6 @@ class ReactionNetwork:
         return dc.get_species_from_bt(specs, self.SpStr)
 
     def get_species_from_reactions(self, RnStr):
-        #Input: List of reactions
-        #Output:  List of reactants and products of those reactions
         if not isinstance(RnStr, list):
             RnStr = [RnStr]
         for i in range(len(RnStr)):
@@ -144,8 +138,6 @@ class ReactionNetwork:
         return(list(set(prod).union(set(supp))))
 
     def get_prod_from_species(self, SpStr):
-        #Input: List of species
-        #Output: List of products of reactions triggered by the input
         if not isinstance(SpStr, list):
             SpStr = [SpStr]
         for i in range(len(SpStr)):
@@ -158,8 +150,6 @@ class ReactionNetwork:
         return prod
 
     def get_reactions_consuming_species(self, SpStr):
-        #Input: List of species
-        #Output:  List of reactions triggered by the input
         if not isinstance(SpStr, list):
             SpStr = [SpStr]
         for i in range(len(SpStr)):
@@ -176,8 +166,6 @@ class ReactionNetwork:
         return(reactions_list)
 
     def get_reactions_producing_species(self, SpStr):
-        #Input: List of species
-        #Output:  List of reactions producing species in the input
         if not isinstance(SpStr, list):
             SpStr = [SpStr]
         for i in range(len(SpStr)):
@@ -195,13 +183,72 @@ class ReactionNetwork:
                 reactions_list.append(self.RnStr[i])
         return(reactions_list)
 
+    # ######################################################################################################
+    # ######################################################################################################
+    #********************** IN PROGRESS ******************************######################################
+    # #### obtaining vector of support/prod from reactions/species##########################################
+    # ######################################################################################################
+
+    # def get_indexes_for_reactions(self,RnStr):
+    #     reactions=self.RnStr
+    #     rn_vec=[]
+    #     for i in range(len(reactions)):
+    #         if reactions[i] in RnStr:
+    #             rn_vec.append(i)
+    #     return rn_vec             
+
+    # def get_indexes_for_species(self,SpStr):
+    #     species=self.SpStr
+    #     sp_vec=[]
+    #     for i in range(len(species)):
+    #         if species[i] in SpStr:
+    #             sp_vec.append(i)
+    #     return sp_vec
+
+    # def get_supp_matrix_from_reactions(self, RnStr):
+    #     supp_Ms = self.RnMsupp
+    #     sp_active = self.get_species_from_reactions(RnStr)
+    #     sub_Msupp = np.zeros((len(RnStr), len(sp_active)))
+    #     reactions_index_list = self.get_indexes_for_reactions(RnStr)
+    #     species_index_list = self.get_indexes_for_species(sp_active)
+    #     # print("active reactions")
+    #     # for r in reactions_index_list:
+    #     #     print(self.RnStr[r])
+    #     # print("active species")
+    #     # for s in species_index_list:
+    #     #     print(self.SpStr[s])
+    #     for i, ri in enumerate(reactions_index_list):
+    #         for j, sj in enumerate(species_index_list):
+    #             sub_Msupp[i, j] = supp_Ms[ri][sj]
+    #     return sub_Msupp
+
+    # def get_prod_matrix_from_reactions(self, RnStr):
+    #     supp_Mp = self.RnMprod
+    #     sp_active = self.get_species_from_reactions(RnStr)
+    #     sub_Mprod = np.zeros((len(RnStr), len(sp_active)))
+    #     reactions_index_list = self.get_indexes_for_reactions(RnStr)
+    #     species_index_list = self.get_indexes_for_species(sp_active)
+    #     # print("active reactions")
+    #     # for r in reactions_index_list:
+    #     #     print(self.RnStr[r])
+    #     # print("active species")
+    #     # for s in species_index_list:
+    #     #     print(self.SpStr[s])
+    #     for i, ri in enumerate(reactions_index_list):
+    #         for j, sj in enumerate(species_index_list):
+    #             sub_Mprod[i, j] = supp_Mp[ri][sj]
+    #     return sub_Mprod
+
+    # #######Sub and Super element constructor####################
+    # # def sub_pyCOT(self,SpStr=SpStr,RnStr=None):
+    # #     if RnStr=None:
+    # #         RnStr=
+
     ########################################################################################################
     #############Getting various notions of species connectivity############################################
     ########################################################################################################
 
     def get_connected_species_to_species(self, SpStr):
-        #Input: List of species
-        #Output:  List of species connected to the input
         if not isinstance(SpStr, list):
             SpStr = [SpStr]
         for i in range(len(SpStr)):
@@ -233,8 +280,6 @@ class ReactionNetwork:
         return result
 
     def get_immediately_connected_species_to_species(self, SpStr):
-        #Input: List of species
-        #Output:  List of species directly connected to the input
         if not isinstance(SpStr, list):
             new = [SpStr]
         else:
@@ -260,8 +305,6 @@ class ReactionNetwork:
         return(new)
 
     def get_forward_connected_species_to_species(self, SpStr):
-        #Input: List of species
-        #Output:  List of species that are transitively obtained as products of the input 
         if not isinstance(SpStr, list):
             new = [SpStr]
         else:
@@ -287,8 +330,6 @@ class ReactionNetwork:
         return(result)
 
     def get_immediately_forward_connected_species_to_species(self, SpStr):
-         #Input: List of species
-        #Output:  List of species that are directly obtained as products of the input  
         if not isinstance(SpStr, list):
             new = [SpStr]
         else:
@@ -309,8 +350,6 @@ class ReactionNetwork:
         return(new)
 
     def get_backward_connected_species_to_species(self, SpStr):
-         #Input: List of species
-        #Output:  List of species from which input species can be obtained as transitive product
         if not isinstance(SpStr, list):
             new = [SpStr].copy()
         else:
@@ -335,8 +374,6 @@ class ReactionNetwork:
         return(result)
 
     def get_immediately_backward_connected_species_to_species(self, SpStr):
-         #Input: List of species
-        #Output:  List of species from which input species can be obtained as product
         if not isinstance(SpStr, list):
             new=[SpStr]
         else:
@@ -357,8 +394,6 @@ class ReactionNetwork:
         return new
 
     def get_immediately_strictly_backward_connected_species_to_species(self, SpStr):
-         #Input: List of species
-        #Output:  List of species from which input species can be obtained as product, minus the input
         if not isinstance(SpStr, list):
             new = [SpStr]
         else:
@@ -382,13 +417,9 @@ class ReactionNetwork:
     ########################################################################################################
 
     def get_inflow(self):
-        #Input: 
-        #Output:  List of species that can be produced without any reactants
         return(self.get_prod_from_species([]))
 
     def get_outflow(self):
-        #Input: 
-        #Output:  List of species that can be consumed without generating products
         result = bt(len(self.SpBt))
         result.setall(0)
         reacs = self.RnStr
@@ -404,8 +435,6 @@ class ReactionNetwork:
     ########################################################################################################
 
     def is_closed(self, SpStr):
-        #Input: List of species
-        #Output:  Binary that verifies closure property
         species_bitarray = dc.get_bt_from_names(SpStr, self.SpStr)
         reactions_list = self.get_reactions_from_species(SpStr)
         prod_of_reactions = self.get_prod_from_reactions(reactions_list)
@@ -413,8 +442,6 @@ class ReactionNetwork:
         return (prod_bitarray | species_bitarray) == species_bitarray
 
     def is_semi_self_maintaining(self, SpStr):
-        #Input: List of species
-        #Output:  Binary that verifies semi_self_maintaining property
         reactions_list = self.get_reactions_from_species(SpStr)
         prod_of_reactions = self.get_prod_from_reactions(reactions_list)
         prod_bitarray = dc.get_bt_from_names(prod_of_reactions, self.SpStr)
@@ -423,8 +450,6 @@ class ReactionNetwork:
         return (supp_bitarray & prod_bitarray) == supp_bitarray
      
     def is_connected(self,SpStr):
-        #Input: List of species
-        #Output:  Binary that verifies all species are connected
         if not isinstance(SpStr,list):
             SpStr=[SpStr]
         if len(SpStr)==0:
@@ -444,8 +469,6 @@ class ReactionNetwork:
  ###########################################################################################################
 
     def pyCOT_to_Graph(self, SpStr=None, RnStr=None):
-        #Input: List of species
-        #Output: Networkx object isomorphic to the reaction network
         if SpStr == None:
             SpStr = self.SpStr
         if RnStr == None:
