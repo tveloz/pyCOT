@@ -40,11 +40,11 @@ from collections import Counter # para el gráfico de cantidad de básicos vs re
 # print("ProdVec")
 # print(testRN.RnVecP)
 #Example usage:
-#file_path = '../../networks/testing/in_out.txt'
+file_path = '/home/codespace/pyCOT/networks/testing/Farm.txt'
 # file_path = '../networks/testing/RedPDoSR01.txt'
 # file_path = '../networks/testing/RN_AEP_03.txt'
 # file_path = '../networks/testing/RN_AEP_04.txt'
-file_path = '../networks/testing/navarino.txt'
+#file_path = '/home/codespace/pyCOT/networks/testing/navarino.txt'
 # file_path = '../networks/testing/RedPDoSR01.txt'
 # file_path = '../networks/biomodels_all/BIOMD0000000011/BIOMD0000000011.xml'
 # file_path = '../networks/biomodels_interesting/BIOMD0000000237_manyOrgs.txt'  #ERROR: ZeroDivisionError: division by zero
