@@ -5,14 +5,14 @@ Created on Wed Dec 27 15:28:44 2023
 
 @author: tveloz
 """
-
-# main.py (or another script)
-
-from pyCOT_constructor import *
-from pyCOT_closure_structure import *
 import networkx as nx
-from File_manipulation import *
 import matplotlib.pyplot as plt
+
+
+from pyCOT.reaction_network import *
+from pyCOT.closure_structure import *
+from file_manipulation import *
+# main.py (or another script)
 
 path='/home/tveloz/Dropbox/Public/AcademicWork/Europe/CLEA/Postdocs/TempletonPostdoc/sftw/networks/biomodels_all'
 link_address="https://www.ebi.ac.uk/biomodels/BIOMD0000001079"

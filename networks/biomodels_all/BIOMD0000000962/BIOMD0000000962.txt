@@ -1,3 +1,0 @@
-Susceptible_to_Unquarantined: 1Susceptible => 1Unquarantined_Infected;
-Unquarantined_to_Quarantined: 1Unquarantined_Infected => 1Quarantined_Infected;
-Quarantined_to_Confirmed: 1Quarantined_Infected => 1Confirmed_Infected;

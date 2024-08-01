@@ -1,5 +1,0 @@
-Malignant_Cells_Growth:  => 1x_Malignant_Cells;
-Malignant_Cells_Death_Lymphocytes: 1x_Malignant_Cells => 1y_Lymphocytes;
-Lymphocytes_Production:  => 1y_Lymphocytes;
-Lymphocyte_Death: 1y_Lymphocytes => ;
-Lymphocyte_Elimination_Malignant_Cells: 1x_Malignant_Cells + 1y_Lymphocytes => 1x_Malignant_Cells + ;
