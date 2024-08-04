@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from dataclasses import dataclass
 from numbers import Real
 from typing import Literal
@@ -165,6 +166,10 @@ class ReactionNetwork(PyDiGraph):
 
         index = index[0]
         return Reaction(self[index], self.get_reaction_edges_by_index(index))
+    
+
+    def get_reaction_by_index(self, index: int) -> Reaction:
+        return Reaction(self[index], self.get_reaction_edges_by_index(index))
 
 
     def has_reaction(self, name: str) -> bool:
@@ -205,33 +210,42 @@ class ReactionNetwork(PyDiGraph):
 
         return active
 
-    
+
     ########################################################################################################
-    #### obtaining sets of species/reactions producing/consuming one another################################
+    #### Connectivity queries ##############################################################################
     ########################################################################################################  
-    # def get_reactions_from_species(self, species_names: str | Collection[str]) -> list[NodeIndices]: # TODO: Considerar el tipo de retorno deseado. Ojalá list[Reaction] # TODO: Separar en get_active_reactions_from_species y get_reactions_from_species
-    #     """
-    #     Obtain the reactions activated by a given species set.
 
-    #     Parameters
-    #     ----------
-    #     species : str | Collection[str]
-    #         The species set.
+    def get_reactions_from_species(self, species_names: str | Collection[str]) -> list[Reaction]:
+        """
+        Obtain the reactions potentially activated by a given species set.
 
-    #     Returns
-    #     -------
-    #     list[NodeIndices]
-    #         Indices of the reactions activated by the species set.
-    #     """
-    #     if isinstance(species_names, str):
-    #         species_names = [species_names]
+        Parameters
+        ----------
+        species : str | Collection[str]
+            The species set.
+
+        Returns
+        -------
+        list[NodeIndices]
+            Indices of the reactions potentially activated by the species set (i.e. the amount of species and the stoichiometry of the reaction is not considered).
+        """
+        if isinstance(species_names, str):
+            species_names = [species_names]
         
-    #     species_indices = [self.get_species(specie).index for specie in species_names]
-    #     candidates = [reaction_index for reaction_index in self.adj_direction(species_indices, direction = False).keys()]
-            
-    #     return [reaction_index for reaction_index in candidates.keys() if self.is_active_reaction(self[reaction_index].name, self[species_indices].name)]
+        species_indices = [self.get_species(species_name).index for species_name in species_names]
+        candidates_indices = set(
+            reaction_index 
+            for species_index in species_indices
+            for reaction_index in self.successor_indices(species_index)
+        )
+        candidates = [self.get_reaction_by_index(reaction_index) for reaction_index in candidates_indices]
+        
+        def is_support_present(reaction: Reaction) -> bool:
+            return all(self.get_species_by_index(edge.source).name in species_names for edge in reaction.support_edges())
+        
+        return list(filter(is_support_present, candidates))
     
-    
+
     # def get_supp_from_reactions(self, reaction: str | Collection[str]) -> list[Species]:
     #     if isinstance(reaction, str):
     #         reaction = [reaction]
