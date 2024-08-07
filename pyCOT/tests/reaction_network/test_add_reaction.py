@@ -33,6 +33,42 @@ def test_add_reaction_valid_input(rn: ReactionNetwork):
     assert reaction_edge.target == 1
     assert reaction_edge.type == "product"
     assert reaction_edge.coefficient == 1
+
+def test_add_reaction_inflow_reaction(rn: ReactionNetwork):
+    reaction_node_index = rn.add_reaction("R", None, ["B"], None, [1], 1)
+
+    assert reaction_node_index == 2
+
+    reaction_node = rn[reaction_node_index]
+    assert isinstance(reaction_node, ReactionNode)
+    assert reaction_node.name == "R"
+    assert reaction_node.rate == 1
+
+    assert rn.get_edge_endpoints_by_index(0) == (2, 1)
+    reaction_edge = rn.get_edge_data_by_index(0)
+    assert isinstance(reaction_edge, ReactionEdge)
+    assert reaction_edge.source == 2
+    assert reaction_edge.target == 1
+    assert reaction_edge.type == "product"
+    assert reaction_edge.coefficient == 1
+
+def test_add_reaction_outflow_reaction(rn: ReactionNetwork):
+    reaction_node_index = rn.add_reaction("R", ["A"], None, [1], None, 1)
+
+    assert reaction_node_index == 2
+
+    reaction_node = rn[reaction_node_index]
+    assert isinstance(reaction_node, ReactionNode)
+    assert reaction_node.name == "R"
+    assert reaction_node.rate == 1
+
+    assert rn.get_edge_endpoints_by_index(0) == (0, 2)
+    reaction_edge = rn.get_edge_data_by_index(0)
+    assert isinstance(reaction_edge, ReactionEdge)
+    assert reaction_edge.source == 0
+    assert reaction_edge.target == 2
+    assert reaction_edge.type == "reactant"
+    assert reaction_edge.coefficient == 1
     
 
 # def test_add_reaction_invalid_name(rn):

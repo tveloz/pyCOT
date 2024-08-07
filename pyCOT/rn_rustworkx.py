@@ -103,7 +103,7 @@ class ReactionNetwork(PyDiGraph):
     #### Basic methods for reactions #######################################################################
     ########################################################################################################  
     def add_reaction(
-            self, name: str, support: list[str], products: list[str], 
+            self, name: str, support: list[str] | None, products: list[str] | None, 
             support_coefficients: list[Real], products_coefficients: list[Real], rate: Real = None
     ) -> int:
         """Add a new reaction to the reaction network."""
@@ -112,28 +112,32 @@ class ReactionNetwork(PyDiGraph):
         reaction_node_index = self.add_node(None)
         self[reaction_node_index] = ReactionNode(reaction_node_index, name, rate)
 
-        for reactant in support:
-            if not self.has_species(reactant):
-                raise ValueError(f"Reactant '{reactant}' must be a declared species.")
+        if support is not None:
+            for reactant in support:
+                if not self.has_species(reactant):
+                    raise ValueError(f"Reactant '{reactant}' must be a declared species.")
         
-        for product in products:
-            if not self.has_species(product):
-                raise ValueError(f"Product '{product}' must be a declared species.")
+            support_indices = [self.get_species(reactant).index for reactant in support]
+            n_reactants = len(support)
 
-        support_indices = [self.get_species(reactant).index for reactant in support]
-        n_reactants = len(support)
-        products_indices = [self.get_species(product).index for product in products]
-        n_products = len(products)
+            support_edges_indices = self.add_edges_from(list(zip(support_indices, [reaction_node_index] * n_reactants, [None] * n_reactants)))
+            for i, edge_index in enumerate(support_edges_indices):
+                edge_data = ReactionEdge(edge_index, support_indices[i], reaction_node_index, "reactant", support_coefficients[i])
+                self.update_edge_by_index(edge_index, edge_data)
 
-        support_edges_indices = self.add_edges_from(list(zip(support_indices, [reaction_node_index] * n_reactants, [None] * n_reactants)))
-        for i, edge_index in enumerate(support_edges_indices):
-            edge_data = ReactionEdge(edge_index, support_indices[i], reaction_node_index, "reactant", support_coefficients[i])
-            self.update_edge_by_index(edge_index, edge_data)
+        if products is not None:
+            for product in products:
+                if not None and not self.has_species(product):
+                    raise ValueError(f"Product '{product}' must be a declared species.")
 
-        products_edges_indices = self.add_edges_from(list(zip([reaction_node_index] * n_products, products_indices, [None] * n_products)))
-        for i, edge_index in enumerate(products_edges_indices):
-            edge_data = ReactionEdge(edge_index, reaction_node_index, products_indices[i], "product", products_coefficients[i])
-            self.update_edge_by_index(edge_index, edge_data)
+            products_indices = [self.get_species(product).index for product in products]
+            n_products = len(products)
+
+
+            products_edges_indices = self.add_edges_from(list(zip([reaction_node_index] * n_products, products_indices, [None] * n_products)))
+            for i, edge_index in enumerate(products_edges_indices):
+                edge_data = ReactionEdge(edge_index, reaction_node_index, products_indices[i], "product", products_coefficients[i])
+                self.update_edge_by_index(edge_index, edge_data)
 
         return reaction_node_index
     
