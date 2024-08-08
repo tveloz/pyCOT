@@ -238,8 +238,8 @@ class ReactionNetwork(PyDiGraph):
 
         Returns
         -------
-        list[NodeIndices]
-            Indices of the reactions potentially activated by the species set (i.e. the amount of species and the stoichiometry of the reaction is not considered).
+        list[Reaction]
+            Reactions potentially activated by the species set (i.e. the amount of species and the stoichiometry of the reaction is not considered).
         """
         if isinstance(species_names, str):
             species_names = [species_names]
