@@ -283,19 +283,30 @@ class ReactionNetwork(PyDiGraph):
         return [self[reactant_index] for reactant_index in reactans_indices]
 
 
-    # def get_prod_from_reactions(self, reaction: str | Collection[str]) -> dict[int, Real]:
-    #     if isinstance(reaction, str):
-    #         reaction = [reaction]
-        
-    #     reaction_indices = [self.get_reaction(reac) for reac in reaction]
+    def get_prod_from_reactions(self, reaction_name: str | Collection[str]) -> list[Species]:
+        """
+        Obtain the species in the product sets of a given reaction set.
 
-    #     out = {}
-    #     for reaction_index in reaction_indices:
-    #         reactions_dict = self.adj_direction(reaction_index, direction = False)
-    #         out.update(reactions_dict)
-            
-    #     return out # No estoy aplicando el umbral # TODO: Estudiar caso de que no exista la reacción
-    
+        Parameters
+        ----------
+        reaction : str | Collection[str]
+            The reaction set.
+
+        Returns
+        -------
+        list[Species]
+        """
+        if isinstance(reaction_name, str):
+            reaction_name = [reaction_name]
+        
+        reactions = (self.get_reaction(reaction_name) for reaction_name in reaction_name)
+        products_indices = {
+            product_index
+            for reaction in reactions
+            for product_index in reaction.products_indices()
+        }
+        return [self[product_index] for product_index in products_indices]
+
 
     # def get_species_from_reactions(self, reaction: str | Collection[str]) -> dict[int, Real]:
     #     if isinstance(reaction, str):
