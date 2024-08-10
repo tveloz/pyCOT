@@ -6,11 +6,15 @@ Created on Wed Dec 27 15:28:44 2023
 @author: tveloz
 """
 
-# main.py (or another script)
+import sys
+import os
 
-from pyCOT.reaction_network import *
+# Añadir el directorio raíz al PYTHONPATH
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from pyCOT.reaction_network import ReactionNetwork
 from pyCOT.closure_structure import *
-from pyCOT.reactive_features import *
+from  pyCOT.reactive_features import *
 import networkx as nx
 from pyCOT.file_manipulation import *
 import matplotlib.pyplot as plt
@@ -40,26 +44,29 @@ from collections import Counter # para el gráfico de cantidad de básicos vs re
 # print("ProdVec")
 # print(testRN.RnVecP)
 #Example usage:
-file_path = '/home/codespace/pyCOT/networks/testing/Farm.txt'
+#file_path = '../../networks/testing/in_out.txt'
 # file_path = '../networks/testing/RedPDoSR01.txt'
 # file_path = '../networks/testing/RN_AEP_03.txt'
 # file_path = '../networks/testing/RN_AEP_04.txt'
-#file_path = '/home/codespace/pyCOT/networks/testing/navarino.txt'
+# file_path = '../networks/testing/navarino.txt'
+#file_path = 'networks/testing/ERCs_test.txt'
 # file_path = '../networks/testing/RedPDoSR01.txt'
-# file_path = '../networks/biomodels_all/BIOMD0000000011/BIOMD0000000011.xml'
-# file_path = '../networks/biomodels_interesting/BIOMD0000000237_manyOrgs.txt'  #ERROR: ZeroDivisionError: division by zero
+#file_path = '../networks/biomodels_all/BIOMD0000000011/BIOMD0000000011.xml'
+#file_path = 'networks/biomodels_interesting/BIOMD0000000237_manyOrgs.txt'  #ERROR: ZeroDivisionError: division by zero
 
 
-# file_path = '../networks/biomodels_interesting/BIOMD0000000652_manyOrgs.txt'
+#file_path = 'networks/biomodels_interesting/BIOMD0000000652_manyOrgs.txt'
 
 #file_path = '../networks/testing/ERCs_test.txt'
 #file_path = '../../networks/testing/Synergy_test.txt'
 # file_path = '../networks/testing/Farm.txt'
 #file_path = '../networks/testing/RedPDoSR01.txt'
-#file_path = '../../networks/testing/MSORN_test1.txt'
-#file_path = '../networks/testing/MSORN_test2.txt'
-# file_path = '../networks/RandomAlife/RN_Ns_40_Norg_20_id_396.txt'
-# file_path = '../networks/biomodels_interesting/central_ecoli.txt'
+#file_path = 'networks/testing/MSORN_test1.txt'
+file_path = 'networks/testing/MSORN_test2.txt'
+file_path = 'networks/Navarino/RN_IN_02_PyCOT.txt'
+file_path = "networks/farm.txt"
+#file_path = 'networks/RandomAlife/RN_Ns_40_Norg_20_id_396.txt'
+#file_path = 'networks/biomodels_interesting/central_ecoli.txt'
 #file_path = '../../networks/biomodels_all/BIOMD0000000086_url.xml'
 #file_path = '../../networks/testing/MSORN_test2.txt'
 #msorn= load_pyCOT_from_file(file_path)#load_pyCOT_from_Sbml(file_path)
@@ -299,6 +306,18 @@ with open(file_path, 'w') as file:
         for p in pth:
             file.write(str(p)+'\n')
 
+print("Init computing closed backward paths")
+
+start_time = time.time()
+cl_pth=[]
+cl_pth=Closed_paths_backward(msorn)
+
+end_time = time.time()
+execution_time = end_time - start_time
+for pth in cl_pth:
+    print(str(pth))
+print("Execution time computing closed paths", execution_time, "seconds")
+print("Total number of closed paths = ", str(len(cl_pth)))
 
 # ----------------------------------------------------------
 

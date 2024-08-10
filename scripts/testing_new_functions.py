@@ -6,6 +6,11 @@ Created on Wed Dec 27 15:28:44 2023
 @author: tveloz
 """
 
+import os
+import sys
+# Añadir el directorio raíz al PYTHONPATH
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 # main.py (or another script)
 
 from pyCOT.reaction_network import *
