@@ -6,9 +6,13 @@ Created on Wed Dec 27 15:28:44 2023
 @author: tveloz
 """
 
-# main.py (or another script)
+import sys
+import os
 
-from pyCOT import reaction_network
+# Añadir el directorio raíz al PYTHONPATH
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from pyCOT.reaction_network import ReactionNetwork
 from pyCOT.closure_structure import *
 from  pyCOT.reactive_features import *
 import networkx as nx
@@ -60,6 +64,7 @@ from collections import Counter # para el gráfico de cantidad de básicos vs re
 #file_path = 'networks/testing/MSORN_test1.txt'
 file_path = 'networks/testing/MSORN_test2.txt'
 file_path = 'networks/Navarino/RN_IN_02_PyCOT.txt'
+file_path = "networks/farm.txt"
 #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_20_id_396.txt'
 #file_path = 'networks/biomodels_interesting/central_ecoli.txt'
 #file_path = '../../networks/biomodels_all/BIOMD0000000086_url.xml'

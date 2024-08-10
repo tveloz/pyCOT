@@ -6,6 +6,11 @@ Created on Thu Apr 25 21:08:29 2024
 @author: tveloz
 """
 
+import os
+import sys
+# Añadir el directorio raíz al PYTHONPATH
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from pyCOT.reaction_network import *
 from pyCOT.closure_structure import *
 import networkx as nx
