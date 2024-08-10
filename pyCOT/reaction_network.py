@@ -194,6 +194,67 @@ class ReactionNetwork:
               #      print(str(self.RnStr[i])+" intersection found")
                 reactions_list.append(self.RnStr[i])
         return(reactions_list)
+    
+     # ######################################################################################################
+    # ######################################################################################################
+    #********************** IN PROGRESS ******************************######################################
+    # #### obtaining vector of support/prod from reactions/species##########################################
+    # ######################################################################################################
+
+    # def get_indexes_for_reactions(self,RnStr):
+    #     reactions=self.RnStr
+    #     rn_vec=[]
+    #     for i in range(len(reactions)):
+    #         if reactions[i] in RnStr:
+    #             rn_vec.append(i)
+    #     return rn_vec             
+
+    # def get_indexes_for_species(self,SpStr):
+    #     species=self.SpStr
+    #     sp_vec=[]
+    #     for i in range(len(species)):
+    #         if species[i] in SpStr:
+    #             sp_vec.append(i)
+    #     return sp_vec
+
+    # def get_supp_matrix_from_reactions(self, RnStr):
+    #     supp_Ms = self.RnMsupp
+    #     sp_active = self.get_species_from_reactions(RnStr)
+    #     sub_Msupp = np.zeros((len(RnStr), len(sp_active)))
+    #     reactions_index_list = self.get_indexes_for_reactions(RnStr)
+    #     species_index_list = self.get_indexes_for_species(sp_active)
+    #     # print("active reactions")
+    #     # for r in reactions_index_list:
+    #     #     print(self.RnStr[r])
+    #     # print("active species")
+    #     # for s in species_index_list:
+    #     #     print(self.SpStr[s])
+    #     for i, ri in enumerate(reactions_index_list):
+    #         for j, sj in enumerate(species_index_list):
+    #             sub_Msupp[i, j] = supp_Ms[ri][sj]
+    #     return sub_Msupp
+
+    # def get_prod_matrix_from_reactions(self, RnStr):
+    #     supp_Mp = self.RnMprod
+    #     sp_active = self.get_species_from_reactions(RnStr)
+    #     sub_Mprod = np.zeros((len(RnStr), len(sp_active)))
+    #     reactions_index_list = self.get_indexes_for_reactions(RnStr)
+    #     species_index_list = self.get_indexes_for_species(sp_active)
+    #     # print("active reactions")
+    #     # for r in reactions_index_list:
+    #     #     print(self.RnStr[r])
+    #     # print("active species")
+    #     # for s in species_index_list:
+    #     #     print(self.SpStr[s])
+    #     for i, ri in enumerate(reactions_index_list):
+    #         for j, sj in enumerate(species_index_list):
+    #             sub_Mprod[i, j] = supp_Mp[ri][sj]
+    #     return sub_Mprod
+
+    # #######Sub and Super element constructor####################
+    # # def sub_pyCOT(self,SpStr=SpStr,RnStr=None):
+    # #     if RnStr=None:
+    # #         RnStr=
 
     ########################################################################################################
     #############Getting various notions of species connectivity############################################
