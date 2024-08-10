@@ -1,3 +1,4 @@
+from collections.abc import Collection
 from dataclasses import dataclass
 from numbers import Real
 from typing import Literal
@@ -39,6 +40,14 @@ class Reaction:
 
     def products_edges(self) -> list[ReactionEdge]:
         return [edge for edge in self.edges if edge.type == "product"]
+    
+
+    def support_indices(self) -> list[int]:
+        return [edge.source for edge in self.support_edges()]
+    
+
+    def products_indices(self) -> list[int]:
+        return [edge.target for edge in self.products_edges()]
 
 
 class ReactionNetwork(PyDiGraph):
@@ -102,7 +111,7 @@ class ReactionNetwork(PyDiGraph):
     #### Basic methods for reactions #######################################################################
     ########################################################################################################  
     def add_reaction(
-            self, name: str, support: list[str], products: list[str], 
+            self, name: str, support: list[str] | None, products: list[str] | None, 
             support_coefficients: list[Real], products_coefficients: list[Real], rate: Real = None
     ) -> int:
         """Add a new reaction to the reaction network."""
@@ -111,28 +120,32 @@ class ReactionNetwork(PyDiGraph):
         reaction_node_index = self.add_node(None)
         self[reaction_node_index] = ReactionNode(reaction_node_index, name, rate)
 
-        for reactant in support:
-            if not self.has_species(reactant):
-                raise ValueError(f"Reactant '{reactant}' must be a declared species.")
+        if support is not None:
+            for reactant in support:
+                if not self.has_species(reactant):
+                    raise ValueError(f"Reactant '{reactant}' must be a declared species.")
         
-        for product in products:
-            if not self.has_species(product):
-                raise ValueError(f"Product '{product}' must be a declared species.")
+            support_indices = [self.get_species(reactant).index for reactant in support]
+            n_reactants = len(support)
 
-        support_indices = [self.get_species(reactant).index for reactant in support]
-        n_reactants = len(support)
-        products_indices = [self.get_species(product).index for product in products]
-        n_products = len(products)
+            support_edges_indices = self.add_edges_from(list(zip(support_indices, [reaction_node_index] * n_reactants, [None] * n_reactants)))
+            for i, edge_index in enumerate(support_edges_indices):
+                edge_data = ReactionEdge(edge_index, support_indices[i], reaction_node_index, "reactant", support_coefficients[i])
+                self.update_edge_by_index(edge_index, edge_data)
 
-        support_edges_indices = self.add_edges_from(list(zip(support_indices, [reaction_node_index] * n_reactants, [None] * n_reactants)))
-        for i, edge_index in enumerate(support_edges_indices):
-            edge_data = ReactionEdge(edge_index, support_indices[i], reaction_node_index, "reactant", support_coefficients[i])
-            self.update_edge_by_index(edge_index, edge_data)
+        if products is not None:
+            for product in products:
+                if not None and not self.has_species(product):
+                    raise ValueError(f"Product '{product}' must be a declared species.")
 
-        products_edges_indices = self.add_edges_from(list(zip([reaction_node_index] * n_products, products_indices, [None] * n_products)))
-        for i, edge_index in enumerate(products_edges_indices):
-            edge_data = ReactionEdge(edge_index, reaction_node_index, products_indices[i], "product", products_coefficients[i])
-            self.update_edge_by_index(edge_index, edge_data)
+            products_indices = [self.get_species(product).index for product in products]
+            n_products = len(products)
+
+
+            products_edges_indices = self.add_edges_from(list(zip([reaction_node_index] * n_products, products_indices, [None] * n_products)))
+            for i, edge_index in enumerate(products_edges_indices):
+                edge_data = ReactionEdge(edge_index, reaction_node_index, products_indices[i], "product", products_coefficients[i])
+                self.update_edge_by_index(edge_index, edge_data)
 
         return reaction_node_index
     
@@ -164,6 +177,10 @@ class ReactionNetwork(PyDiGraph):
             raise ValueError(f"Malformed reaction network. Reaction '{name}' is not unique.")
 
         index = index[0]
+        return Reaction(self[index], self.get_reaction_edges_by_index(index))
+    
+
+    def get_reaction_by_index(self, index: int) -> Reaction:
         return Reaction(self[index], self.get_reaction_edges_by_index(index))
 
 
@@ -205,55 +222,91 @@ class ReactionNetwork(PyDiGraph):
 
         return active
 
-    
+
     ########################################################################################################
-    #### obtaining sets of species/reactions producing/consuming one another################################
+    #### Connectivity queries ##############################################################################
     ########################################################################################################  
-    # def get_reactions_from_species(self, species_names: str | Collection[str]) -> list[NodeIndices]: # TODO: Considerar el tipo de retorno deseado. Ojalá list[Reaction] # TODO: Separar en get_active_reactions_from_species y get_reactions_from_species
-    #     """
-    #     Obtain the reactions activated by a given species set.
 
-    #     Parameters
-    #     ----------
-    #     species : str | Collection[str]
-    #         The species set.
+    def get_reactions_from_species(self, species_names: str | Collection[str]) -> list[Reaction]:
+        """
+        Obtain the reactions potentially activated by a given species set.
 
-    #     Returns
-    #     -------
-    #     list[NodeIndices]
-    #         Indices of the reactions activated by the species set.
-    #     """
-    #     if isinstance(species_names, str):
-    #         species_names = [species_names]
+        Parameters
+        ----------
+        species : str | Collection[str]
+            The species set.
+
+        Returns
+        -------
+        list[Reaction]
+            Reactions potentially activated by the species set (i.e. the amount of species and the stoichiometry of the reaction is not considered).
+        """
+        if isinstance(species_names, str):
+            species_names = [species_names]
         
-    #     species_indices = [self.get_species(specie).index for specie in species_names]
-    #     candidates = [reaction_index for reaction_index in self.adj_direction(species_indices, direction = False).keys()]
-            
-    #     return [reaction_index for reaction_index in candidates.keys() if self.is_active_reaction(self[reaction_index].name, self[species_indices].name)]
-    
-    
-    # def get_supp_from_reactions(self, reaction: str | Collection[str]) -> list[Species]:
-    #     if isinstance(reaction, str):
-    #         reaction = [reaction]
+        species_indices = [self.get_species(species_name).index for species_name in species_names]
+        candidates_indices = set(
+            reaction_index 
+            for species_index in species_indices
+            for reaction_index in self.successor_indices(species_index)
+        )
+        candidates = [self.get_reaction_by_index(reaction_index) for reaction_index in candidates_indices]
         
-    #     reaction_indices = [self.get_reaction(reac) for reac in reaction]
-
-    #     return [self[self.adj_direction(reaction_index, direction = True)] for reaction_index in reaction_indices] # TODO: Estudiar caso de que no exista la reacción
-    
-
-    # def get_prod_from_reactions(self, reaction: str | Collection[str]) -> dict[int, Real]:
-    #     if isinstance(reaction, str):
-    #         reaction = [reaction]
+        def is_support_present(reaction: Reaction) -> bool:
+            return all(self.get_species_by_index(edge.source).name in species_names for edge in reaction.support_edges())
         
-    #     reaction_indices = [self.get_reaction(reac) for reac in reaction]
-
-    #     out = {}
-    #     for reaction_index in reaction_indices:
-    #         reactions_dict = self.adj_direction(reaction_index, direction = False)
-    #         out.update(reactions_dict)
-            
-    #     return out # No estoy aplicando el umbral # TODO: Estudiar caso de que no exista la reacción
+        return list(filter(is_support_present, candidates))
     
+
+    def get_supp_from_reactions(self, reaction_names: str | Collection[str]) -> list[Species]:
+        """
+        Obtain the species in the support of a given reaction set.
+
+        Parameters
+        ----------
+        reaction : str | Collection[str]
+            The reaction set.
+
+        Returns
+        -------
+        list[Species]
+        """
+        if isinstance(reaction_names, str):
+            reaction_names = [reaction_names]
+        
+        reactions = (self.get_reaction(reaction_name) for reaction_name in reaction_names)
+        reactans_indices = {
+            reactant_index
+            for reaction in reactions
+            for reactant_index in reaction.support_indices()
+        }
+        return [self[reactant_index] for reactant_index in reactans_indices]
+
+
+    def get_prod_from_reactions(self, reaction_name: str | Collection[str]) -> list[Species]:
+        """
+        Obtain the species in the product sets of a given reaction set.
+
+        Parameters
+        ----------
+        reaction : str | Collection[str]
+            The reaction set.
+
+        Returns
+        -------
+        list[Species]
+        """
+        if isinstance(reaction_name, str):
+            reaction_name = [reaction_name]
+        
+        reactions = (self.get_reaction(reaction_name) for reaction_name in reaction_name)
+        products_indices = {
+            product_index
+            for reaction in reactions
+            for product_index in reaction.products_indices()
+        }
+        return [self[product_index] for product_index in products_indices]
+
 
     # def get_species_from_reactions(self, reaction: str | Collection[str]) -> dict[int, Real]:
     #     if isinstance(reaction, str):
