@@ -21,15 +21,6 @@ def get_bt_abstraction_from_vector(vec: Sequence[Real], t: Real) -> bitarray:
             bt.append(False)
     return bt
 
-# TODO: Reconsiderar "names" en la signature de la función
-def get_bt_from_names(names: Sequence[str], names_catalog: Sequence[str]) -> bitarray:
-    """Function that returns bitarray from a sequence of names."""
-    bt = bitarray(len(names_catalog))
-    bt.setall(0)
-    for name in names:
-        bt[names_catalog.index(name)] = 1
-    return bt
-
 def get_bt_from_names(names: Sequence[str], names_catalog: Sequence[str]) -> bitarray:
     """
     Function that returns bitarray from a sequence of names.
@@ -53,12 +44,15 @@ def get_bt_from_names(names: Sequence[str], names_catalog: Sequence[str]) -> bit
         if name not in names_catalog:
             raise ValueError("names is not a sequence of recognized names")
         
-    return get_bt_from_names(names, names_catalog)
-
+    bt = bitarray(len(names_catalog))
+    bt.setall(0)
+    for name in names:
+        bt[names_catalog.index(name)] = 1
+    return bt
 def filter_by_presence(elements: Sequence, presence_array: bitarray) -> Sequence:
     if len(elements) != len(presence_array):
         raise ValueError("elements and presence must have the same length")
-    return [elements[i] for i, presence in zip(elements, presence_array) if presence]
+    return [elements[i] for i, presence in enumerate(presence_array) if presence]
 
 def get_species_from_bt(species_presence: bitarray, species_catalog: Sequence[str]) -> list[str]:
     """
