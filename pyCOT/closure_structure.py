@@ -16,10 +16,10 @@ import matplotlib.pyplot as plt
 from pyvis.network import Network
 import networkx as nx
 from itertools import combinations
-from display import *
-from reaction_network import *
 from itertools import chain
-from file_manipulation import *
+from pyCOT.file_manipulation import *
+from pyCOT.display import *
+from pyCOT.reaction_network import *
 #def closure_structure(RN,):
     #get generators
     #compute closures     

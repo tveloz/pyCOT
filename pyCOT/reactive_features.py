@@ -15,7 +15,7 @@ import pandas as pd
 
 from pyCOT.reaction_network import *
 from pyCOT.closure_structure import *
-from file_manipulation import *
+from pyCOT.file_manipulation import *
 
 def reac_analysis(RN):
     columns=RN.SpStr
