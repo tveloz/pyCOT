@@ -20,8 +20,9 @@ class ReactionNode:
 @dataclass(slots=True)
 class ReactionEdge:
     index: int
-    source: int
-    target: int
+    source_index: int
+    target_index: int
+    species_name: str
     type: Literal["reactant", "product"]
     coefficient: Real
 
@@ -43,11 +44,19 @@ class Reaction:
     
 
     def support_indices(self) -> list[int]:
-        return [edge.source for edge in self.support_edges()]
+        return [edge.source_index for edge in self.support_edges()]
+
+
+    def support_names(self) -> list[str]:
+        return [edge.species_name for edge in self.support_edges()]
     
 
     def products_indices(self) -> list[int]:
-        return [edge.target for edge in self.products_edges()]
+        return [edge.target_index for edge in self.products_edges()]
+    
+
+    def products_names(self) -> list[str]:
+        return [edge.species_name for edge in self.products_edges()]
 
 
 class ReactionNetwork(PyDiGraph):
@@ -130,7 +139,14 @@ class ReactionNetwork(PyDiGraph):
 
             support_edges_indices = self.add_edges_from(list(zip(support_indices, [reaction_node_index] * n_reactants, [None] * n_reactants)))
             for i, edge_index in enumerate(support_edges_indices):
-                edge_data = ReactionEdge(edge_index, support_indices[i], reaction_node_index, "reactant", support_coefficients[i])
+                edge_data = ReactionEdge(
+                    index = edge_index, 
+                    source_index = support_indices[i], 
+                    target_index = reaction_node_index,
+                    species_name = support[i],
+                    type = "reactant", 
+                    coefficient = support_coefficients[i]
+                )
                 self.update_edge_by_index(edge_index, edge_data)
 
         if products is not None:
@@ -144,7 +160,14 @@ class ReactionNetwork(PyDiGraph):
 
             products_edges_indices = self.add_edges_from(list(zip([reaction_node_index] * n_products, products_indices, [None] * n_products)))
             for i, edge_index in enumerate(products_edges_indices):
-                edge_data = ReactionEdge(edge_index, reaction_node_index, products_indices[i], "product", products_coefficients[i])
+                edge_data = ReactionEdge(
+                    index = edge_index, 
+                    source_index = reaction_node_index, 
+                    target_index = products_indices[i],
+                    species_name = products[i], 
+                    type = "product", 
+                    coefficient = products_coefficients[i]
+                )
                 self.update_edge_by_index(edge_index, edge_data)
 
         return reaction_node_index
@@ -213,7 +236,7 @@ class ReactionNetwork(PyDiGraph):
         reaction = self.get_reaction(reaction_name)
 
         for edge in reaction.support_edges():
-            reactant = self.get_species_by_index(edge.source)
+            reactant = self.get_species_by_index(edge.source_index)
             if reactant.quantity < edge.coefficient:
                 active = False
                 break
@@ -253,7 +276,7 @@ class ReactionNetwork(PyDiGraph):
         candidates = [self.get_reaction_by_index(reaction_index) for reaction_index in candidates_indices]
         
         def is_support_present(reaction: Reaction) -> bool:
-            return all(self.get_species_by_index(edge.source).name in species_names for edge in reaction.support_edges())
+            return all(self.get_species_by_index(edge.source_index).name in species_names for edge in reaction.support_edges())
         
         return list(filter(is_support_present, candidates))
     
