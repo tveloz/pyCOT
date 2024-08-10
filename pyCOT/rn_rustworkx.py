@@ -283,11 +283,11 @@ class ReactionNetwork(PyDiGraph):
 
     def get_supp_from_reactions(self, reaction_names: str | Collection[str]) -> list[Species]:
         """
-        Obtain the species in the support of a given reaction set.
+        Obtain the species in the support of a given set of reactions.
 
         Parameters
         ----------
-        reaction : str | Collection[str]
+        reaction_names : str | Collection[str]
             The reaction set.
 
         Returns
@@ -298,31 +298,31 @@ class ReactionNetwork(PyDiGraph):
             reaction_names = [reaction_names]
         
         reactions = (self.get_reaction(reaction_name) for reaction_name in reaction_names)
-        reactans_indices = {
+        reactants_indices = {
             reactant_index
             for reaction in reactions
             for reactant_index in reaction.support_indices()
         }
-        return [self[reactant_index] for reactant_index in reactans_indices]
+        return [self[reactant_index] for reactant_index in reactants_indices]
 
 
-    def get_prod_from_reactions(self, reaction_name: str | Collection[str]) -> list[Species]:
+    def get_prod_from_reactions(self, reaction_names: str | Collection[str]) -> list[Species]:
         """
-        Obtain the species in the product sets of a given reaction set.
+        Obtain the species in the product sets of a given set of reactions.
 
         Parameters
         ----------
-        reaction : str | Collection[str]
+        reaction_names : str | Collection[str]
             The reaction set.
 
         Returns
         -------
         list[Species]
         """
-        if isinstance(reaction_name, str):
-            reaction_name = [reaction_name]
+        if isinstance(reaction_names, str):
+            reaction_names = [reaction_names]
         
-        reactions = (self.get_reaction(reaction_name) for reaction_name in reaction_name)
+        reactions = (self.get_reaction(reaction_name) for reaction_name in reaction_names)
         products_indices = {
             product_index
             for reaction in reactions
