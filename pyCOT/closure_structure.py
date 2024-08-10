@@ -5,25 +5,21 @@ Created on Fri Dec 29 18:55:14 2023
 
 @author: tveloz
 """
-# import re
-# import random as rm
-# from itertools import combinations
-
 import numpy as np
-# import pandas as pd
-# from bitarray import bitarray as bt
-# from bitarray import frozenbitarray as fbt
-# from scipy.optimize import linprog
-# import matplotlib.pyplot as plt
-# from pyvis.network import Network
-# import networkx as nx
-
+import pandas as pd
+import re
+from bitarray import bitarray as bt
+from bitarray import frozenbitarray as fbt
+from scipy.optimize import linprog
+import random as rm
+import matplotlib.pyplot as plt
+from pyvis.network import Network
+import networkx as nx
+from itertools import combinations
 from display import *
-from pyCOT.reaction_network import *
+from reaction_network import *
 from itertools import chain
 from file_manipulation import *
-
-
 #def closure_structure(RN,):
     #get generators
     #compute closures     
@@ -349,14 +345,18 @@ def backward_chain_closed(msorn,erc):
                 condition=False 
     return finished_paths
 
+def remove_sublist(input_list, sublist_to_remove):
+    return [sublist for sublist in input_list if sublist != sublist_to_remove]
 
 def Closed_paths_backward(msorn):
     print("Computing closed paths of MSORN")
-    '''paths is the main computing variable:
-        paths[0] is a list storing each closed set as a list of ERCs. 
-        paths[0] is a list storing the list of ERCs that still need to be visited
+    '''open_paths is the list of paths to be closed:
+        open_paths[i,0] is a chain of ERCs that where open_paths[i,0,j+1] is the support of open_path[i,0,j]. 
+        paths[i,1] keeps the last element to be generated in open_paths[i,0], as open_paths[i,0,-1] can contain a pair of ERCs. 
+    Idea: The algorithm checks the MSORN backwards, storing each step as a closed_path. It keeps information about the last node to be generated. 
+          If such last node is already in the open_path it means there is a loop, so the open_path is not built further.
     '''
-    paths=[]
+    open_paths=[]
     ERC=msorn.SpStr    
     terminal_ERCs=terminal_species(msorn)
     if terminal_ERCs==[]:
@@ -364,87 +364,69 @@ def Closed_paths_backward(msorn):
     for i in range(len(terminal_ERCs)):
         erc=terminal_ERCs[i]
         print(str(erc))
-        backward_i=msorn.get_backward_connected_species_to_species([erc])
-        backward_i.remove(erc)
-        pair=([[erc]],backward_i)
-        paths.append(pair)
-    print("before computing closed paths, we have the paths and pending")
-    for i in range(len(paths)):
-        print(str(paths[i][0])+" has to for "+ str(len(paths[i][1]))+" nodes")
-    total=0
-    for i in range(len(paths)):
-        total=total+len(paths[i][1])
+        open_paths.append([[[erc]],[erc]])
+    total=len(open_paths)
     itera=0    
     closed_paths=[]
     print("terminated")
-    while itera<30:
+    while itera<10:
+        paths_to_delete=[]
+        new_open_paths=[]
         #print("********** NEW ITERATION **********")        
-        print("itera = "+str(itera)+", |total paths| = "+str(len(paths))+" |finished_paths| = "+str(len(closed_paths)))
-        for i in range(len(paths)):
+        print("itera = "+str(itera)+", |total open paths| = "+str(len(open_paths))+" |finished closed_paths| = "+str(len(closed_paths)))
+        for i in range(len(open_paths)):
             #This conditions checks whether the path still requires to add more nodes
-            if len(paths[i][1])==0:
-                None
-                #print("Path "+str(paths[i])+" completed")
+            print("working on open_path "+str(i)+" out of "+str(len(open_paths)))
+            print(str(open_paths[i]))
+            if len(open_paths[i][1])==0:
+                print("Path "+str(open_paths[i])+" completed")
             else:
-                #print("Working on path "+str(i)+ "="+str(paths[i][0]))
-                #print("w.r.t pending nodes to add "+str(paths[i][1]))                
+                #print("Working on path "+str(i)+ "="+str(open_paths[i]))
                 #tail is the last ERC (can be a single element or a pair of ERCs) added to the path
-                tail=paths[i][0][-1].copy()
-                #print("tail is "+str(tail))
-                if len(tail)==0:
-                    #print("Empty tail!")
-                    None
+                tail=open_paths[i][1]          
+                reactions_tail=[]
+                reactions_tail=msorn.get_reactions_producing_species(tail)
+                #print("for tail "+str(tail[k])+" the reactions_tail is "+str(reactions_tail))                       
+                if len(reactions_tail)==0:
+                    paths_to_delete.append(open_paths[i])
                 else:
-                    if not isinstance(tail,list):
-                        tail=[tail]  
-                        #print("tail turned into a list!")
-                    for j in range(len(paths[i][0])-1):    
-                        for s in paths[i][0][j]:
-                            if s in tail:
-                                tail.remove(s)
-                                #print("reactant "+str(s)+" removed from tail because already in "+str(paths[i][0][j])) 
-                    reactions_tail=[]
-                    for k in range(len(tail)):
-                        reactions_tail=msorn.get_reactions_producing_species(tail[k])
-                        #print("for tail "+str(tail[k])+" the reactions_tail is "+str(reactions_tail))                       
-                        to_add=False
-                        for r in reactions_tail:
-                            reactants=msorn.get_supp_from_reactions([r])
-                            if not isinstance(reactants,list):
-                                reactants=[reactants]
-                            #print("for reaction "+str(r)+" the reactants are "+str(reactants))                                
-                            for s in reactants:
-                                if s in paths[i][1]:
-                                    to_add=True
+                    for r in reactions_tail:
+                        reactants=msorn.get_supp_from_reactions([r])
+                        if not isinstance(reactants,list):
+                            reactants=[reactants]
+                        print("for reaction "+str(r)+" the reactants are "+str(reactants))                                
+                        for s in reactants:
+                            if s in flatten_list(open_paths[i][0]):
+                                to_add=False
+                                print("species "+s+" already in "+str(open_paths[i][0]))
+                                paths_to_delete.append(open_paths[i])
+                            else:
+                                to_add=True
+                                print("species "+s+" is new tail of "+str(open_paths[i][0]))
                             if to_add:
-                                new_path=paths[i][0].copy()
-                                new_path.append(reactants)
-                                to_explore=paths[i][1].copy()
-                                for s in reactants:
-                                    if s in to_explore:
-                                        to_explore.remove(s)
-                                paths.append([new_path,to_explore])
-                                #print("new path = ["+str(new_path)+","+str(to_explore)+"]")
-                #print("End of path "+str(i))
-                paths[i]=[paths[i][0],[]]
-                closed_paths.append(paths[i][0])
-                
-                #print("will remain now as")
-                #print(paths[i])
+                                paths_to_delete.append(open_paths[i])
+                                new_open_path=open_paths[i][0].copy()
+                                new_open_path.append(reactants)
+                                new_tail=s
+                                new_open_paths.append([new_open_path,new_tail])
+        paths_to_delete=remove_duplicates_pairs2(paths_to_delete)
+        for path in paths_to_delete:
+            closed_paths.append(path)
+            open_paths=remove_sublist(open_paths,path)
+        for path in new_open_paths:
+            open_paths.append(path)
+        print("BEFORE DELETING DUPLICATES")
+        print("Current number of closed_paths = "+str(len(closed_paths)))
+        print("Current number of open_paths = "+str(len(open_paths)))
         print("********* END OF ITERATION******************")
-        #print("Path removal")
-        #print("Total number before removal = "+str(len(paths)))
-        paths=remove_duplicates_pairs2(paths)    
-        #print("Total number after removal = "+str(len(paths)))
-        total=0
-        for i in range(len(paths)):
-            total=total+len(paths[i][1])
-            #print("path "+str(i)+" = " +str(paths[i]))
-        print("Current number of paths = "+str(len(paths)))
-        print("Total number of pending nodes = "+str(total))
-        print("Iteration Number = "+str(itera))
+        print("AFTER DELETING DUPLICATES")
+        open_paths=remove_duplicates_pairs2(open_paths)
+        closed_paths=remove_duplicates_pairs2(closed_paths)    
+        print("Current number of closed_paths = "+str(len(closed_paths)))
+        print("Current number of open_paths = "+str(len(open_paths)))
+        #print("Total number of pending nodes = "+str(total))
         itera=itera+1
-        if total==0:
+        if len(open_paths)==0:
             break
     return closed_paths
 
@@ -533,5 +515,5 @@ def remove_duplicates_pairs2(input_list):
         if unique==True:
             unique_sublists.append([input_list[i][0],input_list[i][1]])
             seen_list1.append(input_list[i][0])
-    print("unique removed "+str(len(input_list)-len(unique_sublists))+" elements")
+    #print("unique removed "+str(len(input_list)-len(unique_sublists))+" elements")
     return unique_sublists
