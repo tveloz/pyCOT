@@ -37,3 +37,13 @@ def test_reaction_products_indices(reaction: Reaction, reaction_edge_product: Re
 
 def test_reaction_products_names(reaction: Reaction, reaction_edge_product: ReactionEdge):
     assert reaction.products_names() == [reaction_edge_product.species_name]
+
+def test_reaction_species_indices(reaction: Reaction, reaction_edge_reactant: ReactionEdge, reaction_edge_product: ReactionEdge):
+    indices = reaction.species_indices()
+    assert reaction_edge_reactant.source_index in indices
+    assert reaction_edge_product.target_index in indices
+
+def test_reaction_species_names(reaction: Reaction, reaction_edge_reactant: ReactionEdge, reaction_edge_product: ReactionEdge):
+    names = reaction.species_names()
+    assert reaction_edge_reactant.species_name in names
+    assert reaction_edge_product.species_name in names

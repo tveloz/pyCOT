@@ -57,6 +57,13 @@ class Reaction:
 
     def products_names(self) -> list[str]:
         return [edge.species_name for edge in self.products_edges()]
+    
+    def species_indices(self) -> list[int]:
+        return [edge.source_index if edge.type == "reactant" else edge.target_index for edge in self.edges]
+    
+
+    def species_names(self) -> list[str]:
+        return [edge.species_name for edge in self.edges]
 
 
 class ReactionNetwork(PyDiGraph):
@@ -331,19 +338,19 @@ class ReactionNetwork(PyDiGraph):
         return [self[product_index] for product_index in products_indices]
 
 
-    # def get_species_from_reactions(self, reaction: str | Collection[str]) -> dict[int, Real]:
-    #     if isinstance(reaction, str):
-    #         reaction = [reaction]
+    def get_species_from_reactions(self, reaction_names: str | Collection[str]) -> list[Species]:
+        if isinstance(reaction_names, str):
+            reaction_names = [reaction_names]
         
-    #     reaction_indices = [self.get_reaction(reac) for reac in reaction]
+        reactions = (self.get_reaction(reaction_name) for reaction_name in reaction_names)
 
-    #     out = {}
-    #     for reaction_index in reaction_indices:
-    #         reactions_dict = self.adj(reaction_index)
-    #         out.update(reactions_dict)
-            
-    #     return out # No estoy aplicando el umbral # TODO: Estudiar caso de que no exista la reacción
-    
+        species_indices = {
+            reactant_index
+            for reaction in reactions
+            for reactant_index in reaction.species_indices()
+        }
+
+        return [self[species_index] for species_index in species_indices]    
 
     # def get_prod_from_species(self):
     #     ...
