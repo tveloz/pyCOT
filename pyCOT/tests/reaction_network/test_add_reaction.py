@@ -21,16 +21,18 @@ def test_add_reaction_valid_input(rn: ReactionNetwork):
     assert rn.get_edge_endpoints_by_index(0) == (0, 2)
     reaction_edge = rn.get_edge_data_by_index(0)
     assert isinstance(reaction_edge, ReactionEdge)
-    assert reaction_edge.source == 0
-    assert reaction_edge.target == 2
+    assert reaction_edge.source_index == 0
+    assert reaction_edge.target_index == 2
+    assert reaction_edge.species_name == "A"
     assert reaction_edge.type == "reactant"
     assert reaction_edge.coefficient == 2
 
     assert rn.get_edge_endpoints_by_index(1) == (2, 1)
     reaction_edge = rn.get_edge_data_by_index(1)
     assert isinstance(reaction_edge, ReactionEdge)
-    assert reaction_edge.source == 2
-    assert reaction_edge.target == 1
+    assert reaction_edge.source_index == 2
+    assert reaction_edge.target_index == 1
+    assert reaction_edge.species_name == "B"
     assert reaction_edge.type == "product"
     assert reaction_edge.coefficient == 1
 
@@ -47,8 +49,9 @@ def test_add_reaction_inflow_reaction(rn: ReactionNetwork):
     assert rn.get_edge_endpoints_by_index(0) == (2, 1)
     reaction_edge = rn.get_edge_data_by_index(0)
     assert isinstance(reaction_edge, ReactionEdge)
-    assert reaction_edge.source == 2
-    assert reaction_edge.target == 1
+    assert reaction_edge.source_index == 2
+    assert reaction_edge.target_index == 1
+    assert reaction_edge.species_name == "B"
     assert reaction_edge.type == "product"
     assert reaction_edge.coefficient == 1
 
@@ -65,8 +68,9 @@ def test_add_reaction_outflow_reaction(rn: ReactionNetwork):
     assert rn.get_edge_endpoints_by_index(0) == (0, 2)
     reaction_edge = rn.get_edge_data_by_index(0)
     assert isinstance(reaction_edge, ReactionEdge)
-    assert reaction_edge.source == 0
-    assert reaction_edge.target == 2
+    assert reaction_edge.source_index == 0
+    assert reaction_edge.target_index == 2
+    assert reaction_edge.species_name == "A"
     assert reaction_edge.type == "reactant"
     assert reaction_edge.coefficient == 1
     

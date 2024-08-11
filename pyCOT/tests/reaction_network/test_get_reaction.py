@@ -17,13 +17,13 @@ def test_get_reaction_existing(rn: ReactionNetwork):
 
     reactant_edge = reaction.support_edges()[0]
     assert reactant_edge.type == "reactant"
-    assert reactant_edge.source == 0
-    assert reactant_edge.target == 2
+    assert reactant_edge.source_index == 0
+    assert reactant_edge.target_index == 2
     
     product_edge = reaction.products_edges()[0]
     assert product_edge.type == "product"
-    assert product_edge.source == 2
-    assert product_edge.target == 1
+    assert product_edge.source_index == 2
+    assert product_edge.target_index == 1
 
 def test_get_reaction_not_existing(rn: ReactionNetwork):
     with pytest.raises(InvalidNode):
