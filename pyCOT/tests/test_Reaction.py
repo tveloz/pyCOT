@@ -47,3 +47,7 @@ def test_reaction_species_names(reaction: Reaction, reaction_edge_reactant: Reac
     names = reaction.species_names()
     assert reaction_edge_reactant.species_name in names
     assert reaction_edge_product.species_name in names
+
+def test_reaction_str(reaction):
+    expected_str = "Reaction R1 (rate = 0.5): S1 -> 2*S2"
+    assert str(reaction) == expected_str

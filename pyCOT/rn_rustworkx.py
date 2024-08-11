@@ -26,6 +26,16 @@ class ReactionEdge:
     type: Literal["reactant", "product"]
     coefficient: Real
 
+    def print_term(self, precision: int = 4, decimals: int = 1) -> str:
+        coeff_precision = round(self.coefficient, precision)
+
+        if coeff_precision == 1:
+            coeff_str = f"{self.species_name}"
+        else:
+            coeff_str = f"{coeff_precision:.{decimals}g}*{self.species_name}"
+        return coeff_str
+
+
 @dataclass(slots=True)
 class Reaction:
     node: ReactionNode 
@@ -64,6 +74,12 @@ class Reaction:
 
     def species_names(self) -> list[str]:
         return [edge.species_name for edge in self.edges]
+    
+
+    def __str__(self) -> str:
+        support_str = " + ".join([edge.print_term() for edge in self.support_edges()])
+        products_str = " + ".join([edge.print_term() for edge in self.products_edges()])
+        return f"Reaction {self.name()} (rate = {self.node.rate}): {support_str} -> {products_str}"
 
 
 class ReactionNetwork(PyDiGraph):
