@@ -64,7 +64,7 @@ from collections import Counter # para el gráfico de cantidad de básicos vs re
 #file_path = 'networks/testing/MSORN_test1.txt'
 file_path = 'networks/testing/MSORN_test2.txt'
 file_path = 'networks/Navarino/RN_IN_02_PyCOT.txt'
-file_path = "networks/farm.txt"
+file_path = "../networks/farm.txt"
 #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_20_id_396.txt'
 #file_path = 'networks/biomodels_interesting/central_ecoli.txt'
 #file_path = '../../networks/biomodels_all/BIOMD0000000086_url.xml'
