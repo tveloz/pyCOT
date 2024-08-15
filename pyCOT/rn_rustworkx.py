@@ -9,7 +9,7 @@ from rustworkx import PyDiGraph, InvalidNode
 class Species:
     index: int
     name: str
-    quantity: Real
+    quantity: Real | None = None
 
 @dataclass(slots=True)
 class ReactionNode:
@@ -87,7 +87,7 @@ class ReactionNetwork(PyDiGraph):
     ########################################################################################################
     #### Basic methods for species #######################################################################
     ########################################################################################################
-    def add_species(self, name: str, quantity: Real) -> int:
+    def add_species(self, name: str, quantity: Real | None = None) -> int:
         """Add a new species to the reaction network."""
         if self.has_species(name):
             raise ValueError(f"Species '{name}' already exists.")
@@ -260,6 +260,9 @@ class ReactionNetwork(PyDiGraph):
 
         for edge in reaction.support_edges():
             reactant = self.get_species_by_index(edge.source_index)
+
+            if reactant.quantity is None:
+                raise ValueError(f"Reactant '{reactant.name}' does not have a quantity.")
             if reactant.quantity < edge.coefficient:
                 active = False
                 break
