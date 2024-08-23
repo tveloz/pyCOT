@@ -20,6 +20,15 @@ def test_add_species_existing_species(rn: ReactionNetwork):
     with pytest.raises(ValueError):
         rn.add_species("A", 20)
 
+def test_add_species_unknown_quantity(rn: ReactionNetwork):
+    new_index = rn.add_species("A", None)
+    new_species = rn[new_index]
+    assert new_index == 0
+    assert isinstance(new_species, Species)
+    assert new_species.index == 0
+    assert new_species.name == "A"
+    assert new_species.quantity is None
+
 # def test_add_species_invalid_name(rn: ReactionNetwork):
 #     with pytest.raises(ValueError):
 #         rn.add_species(10, 10)

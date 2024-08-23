@@ -20,3 +20,9 @@ def test_is_active_reaction_false(rn: ReactionNetwork):
 def test_is_active_reaction_empty_reaction_network(rn: ReactionNetwork):
     with pytest.raises(InvalidNode):
         rn.is_active_reaction("R3")
+
+def test_is_active_reaction_unknown_quantity(rn: ReactionNetwork):
+    rn.add_species("C", None)
+    rn.add_reaction("R3", ["A", "C"], ["B"], [1, 1], [1], 1)
+    with pytest.raises(ValueError):
+        rn.is_active_reaction("R3")

@@ -1,15 +1,18 @@
 from collections.abc import Collection
 from dataclasses import dataclass
+from itertools import starmap
 from numbers import Real
 from typing import Literal
+from re import findall, compile
 
 from rustworkx import PyDiGraph, InvalidNode
+from pyCOT.io._utils import simplify_terms, str2int_or_float
 
 @dataclass(slots=True)
 class Species:
     index: int
     name: str
-    quantity: Real
+    quantity: Real | None = None
 
 @dataclass(slots=True)
 class ReactionNode:
@@ -25,6 +28,16 @@ class ReactionEdge:
     species_name: str
     type: Literal["reactant", "product"]
     coefficient: Real
+
+    def print_term(self, precision: int = 4, decimals: int = 1) -> str:
+        coeff_precision = round(self.coefficient, precision)
+
+        if coeff_precision == 1:
+            coeff_str = f"{self.species_name}"
+        else:
+            coeff_str = f"{coeff_precision:.{decimals}g}*{self.species_name}"
+        return coeff_str
+
 
 @dataclass(slots=True)
 class Reaction:
@@ -64,6 +77,13 @@ class Reaction:
 
     def species_names(self) -> list[str]:
         return [edge.species_name for edge in self.edges]
+    
+    # TODO: add *_coefficients getter methods
+
+    def __str__(self) -> str:
+        support_str = " + ".join([edge.print_term() for edge in self.support_edges()])
+        products_str = " + ".join([edge.print_term() for edge in self.products_edges()])
+        return f"Reaction {self.name()} (rate = {self.node.rate}): {support_str} -> {products_str}"
 
 
 class ReactionNetwork(PyDiGraph):
@@ -71,7 +91,7 @@ class ReactionNetwork(PyDiGraph):
     ########################################################################################################
     #### Basic methods for species #######################################################################
     ########################################################################################################
-    def add_species(self, name: str, quantity: Real) -> int:
+    def add_species(self, name: str, quantity: Real | None = None) -> int:
         """Add a new species to the reaction network."""
         if self.has_species(name):
             raise ValueError(f"Species '{name}' already exists.")
@@ -224,7 +244,66 @@ class ReactionNetwork(PyDiGraph):
 
         return is_present
     
-    
+
+    def add_from_reaction_string(self, string: str) -> int:
+        """
+        Add a new species and reaction from a string.
+        
+        Parameters
+        ----------
+        string : str
+            The string to parse.
+        
+        Returns
+        -------
+        int
+            The index of the added reaction.
+
+        Details
+        -------
+        The string must be in the following format:
+            'reaction_name: coef1*reactant1 + coef2*reactant2 + ... => coef3*product1 + coef4*product2 + ...'
+        """
+        reaction_string_error = ValueError("Reaction equation must be in the format 'reaction_name: reactant1 + reactant2 + ... => product1 + product2 + ...'")
+
+        parts = string.split(':')
+
+        if len(parts) != 2:
+            raise reaction_string_error
+
+        reaction_name = parts[0].strip()
+        reaction_equation = parts[1].split("=>")
+
+        if len(reaction_equation) != 2:
+            raise reaction_string_error
+
+        if self.has_reaction(reaction_name):
+            raise ValueError(f"Reaction '{reaction_name}' already exists in the ReactionNetwork.")
+        
+        term_regex = compile(r'(\d*(?:\.\d+)?)?\*?([a-zA-Z_]\w*)')
+        support_terms = findall(term_regex, reaction_equation[0]) # TODO: Evaluar en soportes o productos vacíos
+        support_terms = starmap(lambda coef, term: (str2int_or_float(coef) if coef != '' else 1, term), support_terms)
+        support_terms = simplify_terms(support_terms)
+
+        products_terms = findall(term_regex, reaction_equation[1])
+        products_terms = starmap(lambda coef, term: (str2int_or_float(coef) if coef != '' else 1, term), products_terms)
+        products_terms = simplify_terms(products_terms)
+
+        # Add species to the ReactionNetwork if they don't already exist
+        reaction_terms = support_terms + products_terms
+        for term in reaction_terms:
+            if not self.has_species(term[1]):
+                self.add_species(term[1], None)
+
+
+        # Add reaction to the ReactionNetwork
+        support_coefficients = [term[0] for term in support_terms]
+        support_species = [term[1] for term in support_terms]
+
+        products_coefficients = [term[0] for term in products_terms]
+        products_species = [term[1] for term in products_terms]
+
+        return self.add_reaction(reaction_name, support_species, products_species, support_coefficients, products_coefficients, None)
 
     def is_active_reaction(self, reaction_name: str) -> bool: # TODO: Considerar overloads
         """
@@ -244,6 +323,9 @@ class ReactionNetwork(PyDiGraph):
 
         for edge in reaction.support_edges():
             reactant = self.get_species_by_index(edge.source_index)
+
+            if reactant.quantity is None:
+                raise ValueError(f"Reactant '{reactant.name}' does not have a quantity.")
             if reactant.quantity < edge.coefficient:
                 active = False
                 break
