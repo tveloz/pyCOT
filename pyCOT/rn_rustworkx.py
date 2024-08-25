@@ -434,8 +434,20 @@ class ReactionNetwork(PyDiGraph):
 
         return [self[species_index] for species_index in species_indices]    
 
-    # def get_prod_from_species(self):
-    #     ...
+    def get_prod_from_species(self, species_names: str | Collection[str]) -> list[Species]:
+        """Obtain the species produced by a given set of reactants."""
+        if isinstance(species_names, str):
+            species_names = [species_names]
+
+        potencially_active_reactions = self.get_reactions_from_species(species_names)
+
+        products_indices = {
+            product_index
+            for reaction in potencially_active_reactions
+            for product_index in reaction.products_indices()
+        }
+
+        return [self[product_index] for product_index in products_indices]
     
 
     # def get_reactions_consuming_species(self):
