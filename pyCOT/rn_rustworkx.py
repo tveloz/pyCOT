@@ -13,6 +13,7 @@ class Species:
     index: int
     name: str
     quantity: Real | None = None
+    # TODO: Implementar __hash__
 
 @dataclass(slots=True)
 class ReactionNode:
@@ -79,6 +80,16 @@ class Reaction:
         return [edge.species_name for edge in self.edges]
     
     # TODO: add *_coefficients getter methods
+
+    def is_inflow(self) -> bool:
+        """Checks if the reaction is an inflow reaction."""
+        return all(edge.type == "product" for edge in self.edges)
+    
+    
+    def is_outflow(self) -> bool:
+        """Checks if the reaction is an outflow reaction."""
+        return all(edge.type == "reactant" for edge in self.edges)
+
 
     def __str__(self) -> str:
         support_str = " + ".join([edge.print_term() for edge in self.support_edges()])
