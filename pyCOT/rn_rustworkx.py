@@ -13,6 +13,9 @@ class Species:
     index: int
     name: str
     quantity: Real | None = None
+    
+    def __hash__(self):
+        return hash(self.index)
 
 @dataclass(slots=True)
 class ReactionNode:
@@ -79,6 +82,16 @@ class Reaction:
         return [edge.species_name for edge in self.edges]
     
     # TODO: add *_coefficients getter methods
+
+    def is_inflow(self) -> bool:
+        """Checks if the reaction is an inflow reaction."""
+        return all(edge.type == "product" for edge in self.edges)
+    
+    
+    def is_outflow(self) -> bool:
+        """Checks if the reaction is an outflow reaction."""
+        return all(edge.type == "reactant" for edge in self.edges)
+
 
     def __str__(self) -> str:
         support_str = " + ".join([edge.print_term() for edge in self.support_edges()])
@@ -434,8 +447,20 @@ class ReactionNetwork(PyDiGraph):
 
         return [self[species_index] for species_index in species_indices]    
 
-    # def get_prod_from_species(self):
-    #     ...
+    def get_prod_from_species(self, species_names: str | Collection[str]) -> list[Species]:
+        """Obtain the species produced by a given set of reactants."""
+        if isinstance(species_names, str):
+            species_names = [species_names]
+
+        potencially_active_reactions = self.get_reactions_from_species(species_names)
+
+        products_indices = {
+            product_index
+            for reaction in potencially_active_reactions
+            for product_index in reaction.products_indices()
+        }
+
+        return [self[product_index] for product_index in products_indices]
     
 
     # def get_reactions_consuming_species(self):
@@ -444,3 +469,23 @@ class ReactionNetwork(PyDiGraph):
 
     # def get_reactions_producing_species(self):
     #     ...
+
+
+    def inflow_species(self) -> list[Species]: # TODO: Add tests
+        """Get the list of species produced by the inflow reactions in the reaction network."""
+        inflow_reactions = filter(lambda r: r.is_inflow(), self.reactions())
+        return self.get_prod_from_reactions([r.name() for r in inflow_reactions])
+
+
+    def generated_closure(self, species_names: str | Collection[str]) -> list[Species]:
+        """Obtain the smallest closure set containing a given set of species."""
+        species = {self.get_species(name) for name in species_names}
+        species = species.union(self.inflow_species())
+
+        while True:
+            products = set(self.get_prod_from_species([species.name for species in species]))
+            if products.issubset(species):
+                break
+            species = species.union(products)
+
+        return species

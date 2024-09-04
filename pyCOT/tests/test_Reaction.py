@@ -51,3 +51,19 @@ def test_reaction_species_names(reaction: Reaction, reaction_edge_reactant: Reac
 def test_reaction_str(reaction):
     expected_str = "Reaction R1 (rate = 0.5): S1 -> 2*S2"
     assert str(reaction) == expected_str
+
+def test_is_inflow_true(reaction_node, reaction_edge_product):
+    reaction = Reaction(reaction_node, [reaction_edge_product])
+    assert reaction.is_inflow()
+
+def test_is_inflow_false(reaction_node, reaction_edge_reactant, reaction_edge_product):
+    reaction = Reaction(reaction_node, [reaction_edge_reactant, reaction_edge_product])
+    assert not reaction.is_inflow()
+
+def test_is_outflow_true(reaction_node, reaction_edge_reactant):
+    reaction = Reaction(reaction_node, [reaction_edge_reactant])
+    assert reaction.is_outflow()
+
+def test_is_outflow_false(reaction_node, reaction_edge_reactant, reaction_edge_product):
+    reaction = Reaction(reaction_node, [reaction_edge_reactant, reaction_edge_product])
+    assert not reaction.is_outflow()
