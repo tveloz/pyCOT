@@ -477,8 +477,8 @@ class ReactionNetwork(PyDiGraph):
         return self.get_prod_from_reactions([r.name() for r in inflow_reactions])
 
 
-    def clousure(self, species_names: str | Collection[str]) -> list[Species]:
-        """Obtain the closure of a given set of species."""
+    def generated_closure(self, species_names: str | Collection[str]) -> list[Species]:
+        """Obtain the smallest closure set containing a given set of species."""
         species = {self.get_species(name) for name in species_names}
         species = species.union(self.inflow_species())
 

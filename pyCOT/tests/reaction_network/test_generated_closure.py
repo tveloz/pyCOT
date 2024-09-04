@@ -25,13 +25,13 @@ def rn():
     return rn
 
 def test_closure_bigger(rn: ReactionNetwork):
-    """Test a species set that generates a clousure with more species."""
-    closure = rn.clousure(["S1", "S5", "S6"])
+    """Test a species set that generates a closure with more species."""
+    closure = rn.generated_closure(["S1", "S5", "S6"])
 
     assert {s.name for s in closure} == {"S1", "S2", "S3", "S4", "S5", "S6"}
 
 def test_non_reactive(rn: ReactionNetwork):
     """Test closure for a non reactive species."""
-    closure = rn.clousure(["S7"])
+    closure = rn.generated_closure(["S7"])
 
     assert {s.name for s in closure} == {"S4", "S6", "S7"}
