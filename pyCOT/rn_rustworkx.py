@@ -13,7 +13,9 @@ class Species:
     index: int
     name: str
     quantity: Real | None = None
-    # TODO: Implementar __hash__
+    
+    def __hash__(self):
+        return hash(self.index)
 
 @dataclass(slots=True)
 class ReactionNode:
@@ -467,3 +469,23 @@ class ReactionNetwork(PyDiGraph):
 
     # def get_reactions_producing_species(self):
     #     ...
+
+
+    def inflow_species(self) -> list[Species]: # TODO: Add tests
+        """Get the list of species produced by the inflow reactions in the reaction network."""
+        inflow_reactions = filter(lambda r: r.is_inflow(), self.reactions())
+        return self.get_prod_from_reactions([r.name() for r in inflow_reactions])
+
+
+    def clousure(self, species_names: str | Collection[str]) -> list[Species]:
+        """Obtain the closure of a given set of species."""
+        species = {self.get_species(name) for name in species_names}
+        species = species.union(self.inflow_species())
+
+        while True:
+            products = set(self.get_prod_from_species([species.name for species in species]))
+            if products.issubset(species):
+                break
+            species = species.union(products)
+
+        return species
