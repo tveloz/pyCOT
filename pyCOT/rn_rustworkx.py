@@ -352,13 +352,13 @@ class ReactionNetwork(PyDiGraph):
     #### Connectivity queries ##############################################################################
     ########################################################################################################  
 
-    def get_reactions_from_species(self, species_names: str | Collection[str]) -> list[Reaction]:
+    def get_reactions_from_species(self, species: str | Species | Collection[str] | Collection[Species]) -> list[Reaction]:
         """
         Obtain the reactions potentially activated by a given species set.
 
         Parameters
         ----------
-        species : str | Collection[str]
+        species : str | Species | Collection[str] | Collection[Species]
             The species set.
 
         Returns
@@ -366,10 +366,16 @@ class ReactionNetwork(PyDiGraph):
         list[Reaction]
             Reactions potentially activated by the species set (i.e. the amount of species and the stoichiometry of the reaction is not considered).
         """
-        if isinstance(species_names, str):
-            species_names = [species_names]
+        if isinstance(species, str):
+            species = [species]
+
+        if isinstance(species, Species):
+            species = [species]
+
+        if all(isinstance(species_item, str) for species_item in species):
+            species = [self.get_species(species_name) for species_name in species]
         
-        species_indices = [self.get_species(species_name).index for species_name in species_names]
+        species_indices = [sp.index for sp in species]
         candidates_indices = set(
             reaction_index 
             for species_index in species_indices
@@ -378,7 +384,7 @@ class ReactionNetwork(PyDiGraph):
         candidates = [self.get_reaction_by_index(reaction_index) for reaction_index in candidates_indices]
         
         def is_support_present(reaction: Reaction) -> bool:
-            return all(self.get_species_by_index(edge.source_index).name in species_names for edge in reaction.support_edges())
+            return all(reactant_index in species_indices for reactant_index in reaction.support_indices())
         
         return list(filter(is_support_present, candidates))
     
