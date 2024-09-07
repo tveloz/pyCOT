@@ -358,6 +358,19 @@ class ReactionNetwork(PyDiGraph):
             active = True
 
         return active
+    
+
+    def _parse_reactions_input(self, reactions: str | Reaction | Iterable[str] | Iterable[Reaction]) -> list[Reaction]:
+        if isinstance(reactions, str):
+            reactions = [reactions]
+
+        if isinstance(reactions, Reaction):
+            reactions = [reactions]
+        
+        if all(isinstance(r, str) for r in reactions):
+            reactions = [self.get_reaction(r) for r in reactions]
+
+        return list(reactions)
 
 
     ########################################################################################################
@@ -394,23 +407,20 @@ class ReactionNetwork(PyDiGraph):
         return list(filter(is_support_present, candidates))
 
     
-    def get_supp_from_reactions(self, reaction_names: str | Collection[str]) -> list[Species]:
+    def get_supp_from_reactions(self, reaction: str | Reaction | Iterable[str] | Iterable[Reaction]) -> list[Species]:
         """
         Obtain the species in the support of a given set of reactions.
 
         Parameters
         ----------
-        reaction_names : str | Collection[str]
+        reaction : str | Reaction | Iterable[str] | Iterable[Reaction]
             The reaction set.
 
         Returns
         -------
         list[Species]
         """
-        if isinstance(reaction_names, str):
-            reaction_names = [reaction_names]
-        
-        reactions = (self.get_reaction(reaction_name) for reaction_name in reaction_names)
+        reactions = self._parse_reactions_input(reaction)
         reactants_indices = {
             reactant_index
             for reaction in reactions
@@ -419,23 +429,20 @@ class ReactionNetwork(PyDiGraph):
         return [self[reactant_index] for reactant_index in reactants_indices]
 
 
-    def get_prod_from_reactions(self, reaction_names: str | Collection[str]) -> list[Species]:
+    def get_prod_from_reactions(self, reaction: str | Reaction | Iterable[str] | Iterable[Reaction]) -> list[Species]:
         """
         Obtain the species in the product sets of a given set of reactions.
 
         Parameters
         ----------
-        reaction_names : str | Collection[str]
+        reaction : str | Reaction | Iterable[str] | Iterable[Reaction]
             The reaction set.
 
         Returns
         -------
         list[Species]
         """
-        if isinstance(reaction_names, str):
-            reaction_names = [reaction_names]
-        
-        reactions = (self.get_reaction(reaction_name) for reaction_name in reaction_names)
+        reactions = self._parse_reactions_input(reaction)
         products_indices = {
             product_index
             for reaction in reactions
@@ -444,11 +451,9 @@ class ReactionNetwork(PyDiGraph):
         return [self[product_index] for product_index in products_indices]
 
 
-    def get_species_from_reactions(self, reaction_names: str | Collection[str]) -> list[Species]:
-        if isinstance(reaction_names, str):
-            reaction_names = [reaction_names]
-        
-        reactions = (self.get_reaction(reaction_name) for reaction_name in reaction_names)
+    def get_species_from_reactions(self, reaction: str | Reaction | Iterable[str] | Iterable[Reaction]) -> list[Species]:
+        """Obtain the species in the support and product sets of a given set of reactions."""
+        reactions = self._parse_reactions_input(reaction)
 
         species_indices = {
             reactant_index
