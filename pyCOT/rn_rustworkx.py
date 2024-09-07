@@ -101,6 +101,11 @@ class Reaction:
 
 class ReactionNetwork(PyDiGraph):
 
+    def __init__(self):
+        super().__init__()
+        self._species_map = {} 
+        self._reaction_map = {}
+
     ########################################################################################################
     #### Basic methods for species #######################################################################
     ########################################################################################################
@@ -111,6 +116,8 @@ class ReactionNetwork(PyDiGraph):
 
         new_index = self.add_node(None)
         self[new_index] = Species(new_index, name, quantity)
+
+        self._species_map[name] = new_index
 
         return new_index
     
@@ -131,24 +138,18 @@ class ReactionNetwork(PyDiGraph):
 
 
     def get_species(self, name: str) -> Species:
-        def filter_species_by_name(payload: Species | ReactionNode) -> bool:
-            return isinstance(payload, Species) and payload.name == name
-        
-        indices = self.filter_nodes(filter_species_by_name)
-
-        if len(indices) == 0:
+        """Obtain the species with the given name."""
+        if name not in self._species_map:
             raise InvalidNode(f"Species '{name}' does not exist.")
 
-        if len(indices) > 1:  # TODO: Estudiar cómo evitar llegar a este punto
-            raise ValueError(f"Malformed reaction network. Species '{name}' is not unique.")
-
-        return self.get_species_by_index(indices[0])
+        index = self._species_map[name]
+        return self[index]
     
 
     def has_species(self, name: str) -> bool:
         try:
-            self.get_species(name)
-        except InvalidNode:
+            self._species_map[name]
+        except KeyError:
             is_present = False
         else:
             is_present = True
@@ -180,6 +181,8 @@ class ReactionNetwork(PyDiGraph):
             raise ValueError(f"Reaction '{name}' already exists.")
         reaction_node_index = self.add_node(None)
         self[reaction_node_index] = ReactionNode(reaction_node_index, name, rate)
+
+        self._reaction_map[name] = reaction_node_index
 
         if support is not None:
             for reactant in support:
@@ -240,19 +243,12 @@ class ReactionNetwork(PyDiGraph):
 
 
     def get_reaction(self, name: str) -> Reaction:
-        def filter_reactions_by_name(payload: Species | ReactionNode) -> bool:
-            return isinstance(payload, ReactionNode) and payload.name == name
-        
-        index = self.filter_nodes(filter_reactions_by_name)
-
-        if len(index) == 0:
+        """Obtain the reaction with the given name."""
+        if name not in self._reaction_map:
             raise InvalidNode(f"Reaction '{name}' does not exist.")
 
-        if len(index) > 1:  # TODO: Estudiar qué evitar llegar a este punto
-            raise ValueError(f"Malformed reaction network. Reaction '{name}' is not unique.")
-
-        index = index[0]
-        return Reaction(self[index], self.get_reaction_edges_by_index(index))
+        index = self._reaction_map[name]
+        return Reaction(self[index], self.get_reaction_edges_by_index(index)) # TODO: Es get_reaction_edges_by_index
     
 
     def get_reaction_by_index(self, index: int) -> Reaction:
@@ -261,8 +257,8 @@ class ReactionNetwork(PyDiGraph):
 
     def has_reaction(self, name: str) -> bool:
         try:
-            self.get_reaction(name)
-        except InvalidNode:
+            self._reaction_map[name]
+        except KeyError:
             is_present = False
         else:
             is_present = True
