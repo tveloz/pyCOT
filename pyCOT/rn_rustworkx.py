@@ -252,10 +252,12 @@ class ReactionNetwork(PyDiGraph):
     
 
     def get_reaction_by_index(self, index: int) -> Reaction:
+        """Obtain the reaction with the given index."""
         return Reaction(self[index], self.get_reaction_edges_by_index(index))
 
 
     def has_reaction(self, name: str) -> bool:
+        """Checks if the reaction network has a reaction with the given name."""
         try:
             self._reaction_map[name]
         except KeyError:
