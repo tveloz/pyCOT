@@ -238,21 +238,22 @@ class ReactionNetwork(PyDiGraph):
 
         return self.add_reaction(reaction_name, support_species, products_species, support_coefficients, products_coefficients, None)
 
-    def is_active_reaction(self, reaction_name: str) -> bool: # TODO: Considerar overloads
+    def is_active_reaction(self, reaction: str | Reaction) -> bool:
         """
         Check if a reaction is active.
 
         Parameters
         ----------
-        reaction : str
-            The reaction name.
+        reaction : str | Reaction
+            The reaction to check.
 
         Returns
         -------
         bool
             True if the reaction is active, False otherwise.
         """
-        reaction = self.get_reaction(reaction_name)
+        if isinstance(reaction, str):
+            reaction = self.get_reaction(reaction)
 
         for edge in reaction.support_edges():
             reactant = self.get_species_by_index(edge.source_index)
