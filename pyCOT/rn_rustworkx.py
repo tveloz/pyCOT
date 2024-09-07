@@ -1,4 +1,4 @@
-from collections.abc import Collection
+from collections.abc import Collection, Iterable
 from dataclasses import dataclass
 from itertools import starmap
 from numbers import Real
@@ -154,6 +154,18 @@ class ReactionNetwork(PyDiGraph):
             is_present = True
 
         return is_present
+    
+
+    def _parse_species_input(self, species: str | Species | Iterable[str] | Iterable[Species]) -> list[Species]:
+        if isinstance(species, str):
+            species = [species]
+
+        if isinstance(species, Species):
+            species = [species]
+
+        if all(isinstance(species_item, str) for species_item in species):
+            species = [self.get_species(species_name) for species_name in species]
+        return list(species)
 
 
     ########################################################################################################
@@ -346,19 +358,32 @@ class ReactionNetwork(PyDiGraph):
             active = True
 
         return active
+    
+
+    def _parse_reactions_input(self, reactions: str | Reaction | Iterable[str] | Iterable[Reaction]) -> list[Reaction]:
+        if isinstance(reactions, str):
+            reactions = [reactions]
+
+        if isinstance(reactions, Reaction):
+            reactions = [reactions]
+        
+        if all(isinstance(r, str) for r in reactions):
+            reactions = [self.get_reaction(r) for r in reactions]
+
+        return list(reactions)
 
 
     ########################################################################################################
     #### Connectivity queries ##############################################################################
     ########################################################################################################  
 
-    def get_reactions_from_species(self, species_names: str | Collection[str]) -> list[Reaction]:
+    def get_reactions_from_species(self, species: str | Species | Iterable[str] | Iterable[Species]) -> list[Reaction]:
         """
         Obtain the reactions potentially activated by a given species set.
 
         Parameters
         ----------
-        species : str | Collection[str]
+        species : str | Species | Iterable[str] | Iterable[Species]
             The species set.
 
         Returns
@@ -366,10 +391,9 @@ class ReactionNetwork(PyDiGraph):
         list[Reaction]
             Reactions potentially activated by the species set (i.e. the amount of species and the stoichiometry of the reaction is not considered).
         """
-        if isinstance(species_names, str):
-            species_names = [species_names]
+        species = self._parse_species_input(species)
         
-        species_indices = [self.get_species(species_name).index for species_name in species_names]
+        species_indices = [sp.index for sp in species]
         candidates_indices = set(
             reaction_index 
             for species_index in species_indices
@@ -378,28 +402,25 @@ class ReactionNetwork(PyDiGraph):
         candidates = [self.get_reaction_by_index(reaction_index) for reaction_index in candidates_indices]
         
         def is_support_present(reaction: Reaction) -> bool:
-            return all(self.get_species_by_index(edge.source_index).name in species_names for edge in reaction.support_edges())
+            return all(reactant_index in species_indices for reactant_index in reaction.support_indices())
         
         return list(filter(is_support_present, candidates))
-    
 
-    def get_supp_from_reactions(self, reaction_names: str | Collection[str]) -> list[Species]:
+    
+    def get_supp_from_reactions(self, reaction: str | Reaction | Iterable[str] | Iterable[Reaction]) -> list[Species]:
         """
         Obtain the species in the support of a given set of reactions.
 
         Parameters
         ----------
-        reaction_names : str | Collection[str]
+        reaction : str | Reaction | Iterable[str] | Iterable[Reaction]
             The reaction set.
 
         Returns
         -------
         list[Species]
         """
-        if isinstance(reaction_names, str):
-            reaction_names = [reaction_names]
-        
-        reactions = (self.get_reaction(reaction_name) for reaction_name in reaction_names)
+        reactions = self._parse_reactions_input(reaction)
         reactants_indices = {
             reactant_index
             for reaction in reactions
@@ -408,23 +429,20 @@ class ReactionNetwork(PyDiGraph):
         return [self[reactant_index] for reactant_index in reactants_indices]
 
 
-    def get_prod_from_reactions(self, reaction_names: str | Collection[str]) -> list[Species]:
+    def get_prod_from_reactions(self, reaction: str | Reaction | Iterable[str] | Iterable[Reaction]) -> list[Species]:
         """
         Obtain the species in the product sets of a given set of reactions.
 
         Parameters
         ----------
-        reaction_names : str | Collection[str]
+        reaction : str | Reaction | Iterable[str] | Iterable[Reaction]
             The reaction set.
 
         Returns
         -------
         list[Species]
         """
-        if isinstance(reaction_names, str):
-            reaction_names = [reaction_names]
-        
-        reactions = (self.get_reaction(reaction_name) for reaction_name in reaction_names)
+        reactions = self._parse_reactions_input(reaction)
         products_indices = {
             product_index
             for reaction in reactions
@@ -433,11 +451,9 @@ class ReactionNetwork(PyDiGraph):
         return [self[product_index] for product_index in products_indices]
 
 
-    def get_species_from_reactions(self, reaction_names: str | Collection[str]) -> list[Species]:
-        if isinstance(reaction_names, str):
-            reaction_names = [reaction_names]
-        
-        reactions = (self.get_reaction(reaction_name) for reaction_name in reaction_names)
+    def get_species_from_reactions(self, reaction: str | Reaction | Iterable[str] | Iterable[Reaction]) -> list[Species]:
+        """Obtain the species in the support and product sets of a given set of reactions."""
+        reactions = self._parse_reactions_input(reaction)
 
         species_indices = {
             reactant_index
@@ -447,12 +463,9 @@ class ReactionNetwork(PyDiGraph):
 
         return [self[species_index] for species_index in species_indices]    
 
-    def get_prod_from_species(self, species_names: str | Collection[str]) -> list[Species]:
+    def get_prod_from_species(self, species: str | Species | Iterable[str] | Iterable[Species]) -> list[Species]:
         """Obtain the species produced by a given set of reactants."""
-        if isinstance(species_names, str):
-            species_names = [species_names]
-
-        potencially_active_reactions = self.get_reactions_from_species(species_names)
+        potencially_active_reactions = self.get_reactions_from_species(species)
 
         products_indices = {
             product_index
@@ -477,10 +490,11 @@ class ReactionNetwork(PyDiGraph):
         return self.get_prod_from_reactions([r.name() for r in inflow_reactions])
 
 
-    def generated_closure(self, species_names: str | Collection[str]) -> list[Species]:
+    def generated_closure(self, species: str | Species | Iterable[str] | Iterable[Species]) -> list[Species]:
         """Obtain the smallest closure set containing a given set of species."""
-        species = {self.get_species(name) for name in species_names}
-        species = species.union(self.inflow_species())
+        species = self._parse_species_input(species)
+
+        species = set(species).union(self.inflow_species())
 
         while True:
             products = set(self.get_prod_from_species([species.name for species in species]))
