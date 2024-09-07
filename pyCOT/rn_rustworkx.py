@@ -1,4 +1,4 @@
-from collections.abc import Collection
+from collections.abc import Collection, Iterable
 from dataclasses import dataclass
 from itertools import starmap
 from numbers import Real
@@ -154,6 +154,18 @@ class ReactionNetwork(PyDiGraph):
             is_present = True
 
         return is_present
+    
+
+    def _parse_species_input(self, species: str | Species | Iterable[str] | Iterable[Species]) -> list[Species]:
+        if isinstance(species, str):
+            species = [species]
+
+        if isinstance(species, Species):
+            species = [species]
+
+        if all(isinstance(species_item, str) for species_item in species):
+            species = [self.get_species(species_name) for species_name in species]
+        return list(species)
 
 
     ########################################################################################################
@@ -352,13 +364,13 @@ class ReactionNetwork(PyDiGraph):
     #### Connectivity queries ##############################################################################
     ########################################################################################################  
 
-    def get_reactions_from_species(self, species: str | Species | Collection[str] | Collection[Species]) -> list[Reaction]:
+    def get_reactions_from_species(self, species: str | Species | Iterable[str] | Iterable[Species]) -> list[Reaction]:
         """
         Obtain the reactions potentially activated by a given species set.
 
         Parameters
         ----------
-        species : str | Species | Collection[str] | Collection[Species]
+        species : str | Species | Iterable[str] | Iterable[Species]
             The species set.
 
         Returns
@@ -366,14 +378,7 @@ class ReactionNetwork(PyDiGraph):
         list[Reaction]
             Reactions potentially activated by the species set (i.e. the amount of species and the stoichiometry of the reaction is not considered).
         """
-        if isinstance(species, str):
-            species = [species]
-
-        if isinstance(species, Species):
-            species = [species]
-
-        if all(isinstance(species_item, str) for species_item in species):
-            species = [self.get_species(species_name) for species_name in species]
+        species = self._parse_species_input(species)
         
         species_indices = [sp.index for sp in species]
         candidates_indices = set(
@@ -387,8 +392,8 @@ class ReactionNetwork(PyDiGraph):
             return all(reactant_index in species_indices for reactant_index in reaction.support_indices())
         
         return list(filter(is_support_present, candidates))
-    
 
+    
     def get_supp_from_reactions(self, reaction_names: str | Collection[str]) -> list[Species]:
         """
         Obtain the species in the support of a given set of reactions.
@@ -453,12 +458,9 @@ class ReactionNetwork(PyDiGraph):
 
         return [self[species_index] for species_index in species_indices]    
 
-    def get_prod_from_species(self, species_names: str | Collection[str]) -> list[Species]:
+    def get_prod_from_species(self, species: str | Species | Iterable[str] | Iterable[Species]) -> list[Species]:
         """Obtain the species produced by a given set of reactants."""
-        if isinstance(species_names, str):
-            species_names = [species_names]
-
-        potencially_active_reactions = self.get_reactions_from_species(species_names)
+        potencially_active_reactions = self.get_reactions_from_species(species)
 
         products_indices = {
             product_index
@@ -483,10 +485,11 @@ class ReactionNetwork(PyDiGraph):
         return self.get_prod_from_reactions([r.name() for r in inflow_reactions])
 
 
-    def generated_closure(self, species_names: str | Collection[str]) -> list[Species]:
+    def generated_closure(self, species: str | Species | Iterable[str] | Iterable[Species]) -> list[Species]:
         """Obtain the smallest closure set containing a given set of species."""
-        species = {self.get_species(name) for name in species_names}
-        species = species.union(self.inflow_species())
+        species = self._parse_species_input(species)
+
+        species = set(species).union(self.inflow_species())
 
         while True:
             products = set(self.get_prod_from_species([species.name for species in species]))
