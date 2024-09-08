@@ -31,3 +31,15 @@ def test_get_reactions_from_species_incomplete_support(rn: ReactionNetwork):
 def test_get_reactions_from_species_nonexistent_species(rn: ReactionNetwork):
     with pytest.raises(InvalidNode):
         rn.get_reactions_from_species("D")
+
+def test_get_reactions_from_species_species(rn: ReactionNetwork):
+    species = rn[0]
+    reactions = rn.get_reactions_from_species(species)
+    assert len(reactions) == 1
+    assert reactions[0].name() == "R1"
+
+def test_get_reactions_from_species_multiple_species_instances(rn: ReactionNetwork):
+    species = [rn[0], rn[1]]
+    reactions = rn.get_reactions_from_species(species)
+    assert len(reactions) == 2
+    assert {"R1", "R2"} == set(reaction.name() for reaction in reactions)
