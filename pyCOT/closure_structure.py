@@ -53,7 +53,7 @@ def closures(RN,ListX):
 ###ERCs produces a list of triplets:
     #0th coordinate stores the list of minimal generators for a given ERC (sets of species)
     #1st coordinate stores the ERC
-    #3rd coordinate stores the reactions that generate same closure
+    #2nd coordinate stores the reactions that generate same closure (equivalence class)
 
 def ERCs(RN):
     List_gen=generators(RN).copy()
@@ -145,13 +145,17 @@ def get_ERC_from_reaction(ERC,r):
         if r in erc[2]:
             return erc
 
+
+
 def get_synergies(RN, ERCs):
     synergies=[]
     ERC=ERCs.copy()
+    #Can this exploration be optimized? 
     for i in range(len(ERC)):
         erc_i=ERC[i]
         for j in range(i,len(ERC)):
             erc_j=ERC[j]
+            #print("get_synergies, iteration "+str(i)+","+str(j))
             if not (set_containment(erc_i,erc_j) or set_containment(erc_j,erc_i)):
                 compound=list(set(erc_i[1]).union(erc_j[1]))
                 compound_reacs=RN.get_reactions_from_species(compound)
@@ -199,7 +203,6 @@ def get_direct_synergies(RN,ERCs,direct_containment_list,synergies_list):
 def second_order_network(RN,ERC,ERC_containments,ERC_synergies):
     ERC=ERCs(RN)
     erc=[]
-    print("Creating SORN with the following ERCs")
     sorn_species=[]
     ERC_generative_str=ERC_containments.copy()
     for r in ERC_synergies:
@@ -266,95 +269,13 @@ def terminal_species(msorn):
 
             
     
-
-
-
-#***************Algorithms using the pyCOT object turned into a graph
-# DEPRECATED
-
-def find_closed_sets(graph):
-    closed_sets = []
-    visited = set()
-
-    def dfs_species(species, current_set):
-        current_set.add(species)
-        visited.add(species)
-
-        for reaction in graph.get_reactions_for_species(species):
-            if all(reactant in current_set for reactant in graph.get_reactants_for_reaction(reaction)):
-                for product in graph.get_products_for_reaction(reaction):
-                    dfs_species(product, current_set)
-
-        # Check if no new reactions can be activated
-        if all(reactant in current_set for reactant in graph.get_reactants_for_species(species)):
-            closed_sets.append(current_set.copy())
-        current_set.remove(species)
-
-    for species in graph.species_vertices():
-        if species not in visited:
-            dfs_species(species, set())
-
-    return closed_sets
-
-
-
-
-
-
-
-
-def lists_equivalent(list1, list2):
-    Cond1=(len(list1) == len(list2)) and (all(sublist in list2 for sublist in list1))
-    Cond2=list1[-1]==list2[-1]
-    return Cond1 and Cond2 
-
-def backward_chain_closed(msorn,erc):
-    "computes the backward chain of ERCs from erc"
-    condition=True
-    pending_paths=[[erc]]
-    finished_paths=[]
-    back=[]
-    new=[]
-    pending_reacs=msorn.RnStr
-    while condition: # se agregan paths           
-        for path in pending_paths: # buscar si hay algo que agregar a paths
-            #print("working on "+str(path))               
-            tail=path[-1] #we identify the last element in the path
-            candidate_reacs=msorn.get_reactions_producing_species(tail)#get all reactions that produce the tail
-            #print("candidate reac "+str(candidate_reacs))
-            for r in candidate_reacs:
-                support=msorn.get_supp_from_reactions(r)#get the support of the reaction
-                #print("candidate reac "+r+" has supp "+str(support))                    
-                new=[]
-                if len(support)==1:#check that it keeps the chain
-                    condition=True #there is at least one new block to be added
-                    new.append(support[0])#block will be created
-                    #print("current new "+str(new))
-                    for s in new:#time to create and add new blocks
-                        #print("adding "+s+" to new block")
-                        new_block=path.copy()#block creation
-                        new_block.append(s)#adding s to new_block
-                        #print("new block "+str(new_block))
-                        pending_paths.append(new_block)#block addition                        
-            finished_paths.append(path)
-            #print("finished paths "+str(finished_paths))
-            pending_paths.remove(path)
-            #print("pending paths "+str(pending_paths))
-            
-            if len(pending_paths)==0:
-                condition=False 
-    return finished_paths
-
-def remove_sublist(input_list, sublist_to_remove):
-    return [sublist for sublist in input_list if sublist != sublist_to_remove]
-
 def Closed_paths_backward(msorn):
     print("Computing closed paths of MSORN")
     '''open_paths is the list of paths to be closed:
         open_paths[i,0] is a chain of ERCs that where open_paths[i,0,j+1] is the support of open_path[i,0,j]. 
         paths[i,1] keeps the last element to be generated in open_paths[i,0], as open_paths[i,0,-1] can contain a pair of ERCs. 
     Idea: The algorithm checks the MSORN backwards, storing each step as a closed_path. It keeps information about the last node to be generated. 
-          If such last node is already in the open_path it means there is a loop, so the open_path is not built further.
+          If such last node is empty path is terminated, if last node is already in the open_path it means there is a loop, so the open_path is not built further.
     '''
     open_paths=[]
     ERC=msorn.SpStr    
@@ -363,23 +284,24 @@ def Closed_paths_backward(msorn):
         terminal_ERCs.append(ERC[0])
     for i in range(len(terminal_ERCs)):
         erc=terminal_ERCs[i]
-        print(str(erc))
+        #print(str(erc))
         open_paths.append([[[erc]],[erc]])
     total=len(open_paths)
     itera=0    
     closed_paths=[]
-    print("terminated")
+    #print("terminated")
     while itera<10:
         paths_to_delete=[]
         new_open_paths=[]
-        #print("********** NEW ITERATION **********")        
+        print("********** NEW ITERATION **********")        
         print("itera = "+str(itera)+", |total open paths| = "+str(len(open_paths))+" |finished closed_paths| = "+str(len(closed_paths)))
         for i in range(len(open_paths)):
             #This conditions checks whether the path still requires to add more nodes
-            print("working on open_path "+str(i)+" out of "+str(len(open_paths)))
-            print(str(open_paths[i]))
+            #print("working on open_path "+str(i)+" out of "+str(len(open_paths)))
+            #print(str(open_paths[i]))
             if len(open_paths[i][1])==0:
-                print("Path "+str(open_paths[i])+" completed")
+                None
+                #print("Path "+str(open_paths[i])+" completed")
             else:
                 #print("Working on path "+str(i)+ "="+str(open_paths[i]))
                 #tail is the last ERC (can be a single element or a pair of ERCs) added to the path
@@ -394,15 +316,15 @@ def Closed_paths_backward(msorn):
                         reactants=msorn.get_supp_from_reactions([r])
                         if not isinstance(reactants,list):
                             reactants=[reactants]
-                        print("for reaction "+str(r)+" the reactants are "+str(reactants))                                
+                        #print("for reaction "+str(r)+" the reactants are "+str(reactants))                                
                         for s in reactants:
                             if s in flatten_list(open_paths[i][0]):
                                 to_add=False
-                                print("species "+s+" already in "+str(open_paths[i][0]))
+                                #print("species "+s+" already in "+str(open_paths[i][0]))
                                 paths_to_delete.append(open_paths[i])
                             else:
                                 to_add=True
-                                print("species "+s+" is new tail of "+str(open_paths[i][0]))
+                                #print("species "+s+" is new tail of "+str(open_paths[i][0]))
                             if to_add:
                                 paths_to_delete.append(open_paths[i])
                                 new_open_path=open_paths[i][0].copy()
@@ -415,21 +337,23 @@ def Closed_paths_backward(msorn):
             open_paths=remove_sublist(open_paths,path)
         for path in new_open_paths:
             open_paths.append(path)
-        print("BEFORE DELETING DUPLICATES")
-        print("Current number of closed_paths = "+str(len(closed_paths)))
-        print("Current number of open_paths = "+str(len(open_paths)))
-        print("********* END OF ITERATION******************")
-        print("AFTER DELETING DUPLICATES")
+        #print("BEFORE DELETING DUPLICATES")
+        #print("Current number of closed_paths = "+str(len(closed_paths)))
+        #print("Current number of open_paths = "+str(len(open_paths)))
+        #print("********* END OF ITERATION******************")
+        #print("AFTER DELETING DUPLICATES")
         open_paths=remove_duplicates_pairs2(open_paths)
         closed_paths=remove_duplicates_pairs2(closed_paths)    
-        print("Current number of closed_paths = "+str(len(closed_paths)))
-        print("Current number of open_paths = "+str(len(open_paths)))
+        #print("Current number of closed_paths = "+str(len(closed_paths)))
+        #print("Current number of open_paths = "+str(len(open_paths)))
         #print("Total number of pending nodes = "+str(total))
         itera=itera+1
         if len(open_paths)==0:
             break
     return closed_paths
 
+def remove_sublist(main_list, sublist_to_remove):
+   return [sublist for sublist in main_list if sublist != sublist_to_remove]
 
 def flatten_list(lst):
     flattened = []
@@ -451,9 +375,9 @@ def Closed_paths_to_Sp(closed_paths,sorn):
     # Use a list comprehension to filter out duplicates
     erc_closed_sets= [x for x in f_closed_paths if tuple(x) not in seen and not seen.add(tuple(x))]
     erc = sorn[0]
-    print("the ERC list")
-    for i in range(len(erc[0])):
-        print(str([erc[0][i],erc[1][i]]))
+    # print("the ERC list")
+    # for i in range(len(erc[0])):
+    #     print(str([erc[0][i],erc[1][i]]))
     sp_closed_sets=[[]]
     for i in range(len(erc_closed_sets)):
         #print("erc_closed "+str(i)+" = "+str(erc_closed_sets[i]))
@@ -483,21 +407,7 @@ def remove_duplicates(input_list):
             seen_sets.add(sublist_set)
 
     return unique_sublists
-
-def remove_duplicates_pairs(input_list):
-    unique_sublists = []
-    seen_sets1 = set()
-    seen_sets2 = set()
-    for sublist1,sublist2 in input_list:
-        sublist_set1 = frozenset(flatten_list(sublist1))
-        sublist_set2 = frozenset(flatten_list(sublist1))
-        if (sublist_set1 not in seen_sets1) or (sublist_set2 not in seen_sets2):
-
-            unique_sublists.append([sublist1,sublist2])
-            seen_sets1.add(sublist_set1)
-            seen_sets2.add(sublist_set2)
-
-    return unique_sublists
+    
 def remove_duplicates_pairs2(input_list):
     unique_sublists = []
     seen_list1 = []

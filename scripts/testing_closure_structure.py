@@ -64,7 +64,7 @@ from collections import Counter # para el gráfico de cantidad de básicos vs re
 #file_path = 'networks/testing/MSORN_test1.txt'
 file_path = 'networks/testing/MSORN_test2.txt'
 file_path = 'networks/Navarino/RN_IN_02_PyCOT.txt'
-file_path = "../networks/farm.txt"
+#file_path = "networks/farm.txt"
 #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_20_id_396.txt'
 #file_path = 'networks/biomodels_interesting/central_ecoli.txt'
 #file_path = '../../networks/biomodels_all/BIOMD0000000086_url.xml'
@@ -320,6 +320,47 @@ print("Execution time computing closed paths", execution_time, "seconds")
 print("Total number of closed paths = ", str(len(cl_pth)))
 
 # ----------------------------------------------------------
+
+closed_sets=Closed_paths_to_Sp(cl_pth,sorn)
+print("Total number of closed sets = ", str(len(closed_sets)))
+# Count the frequency of each component count
+len_closed_sets=[len(closed_sets[i]) for i in range(len(closed_sets))] 
+count_distribution = Counter(len_closed_sets)
+
+# Extract x and y values for plotting
+x_values = list(count_distribution.keys())
+y_values = list(count_distribution.values())
+
+color = 'darkblue'
+
+# Plot the distribution
+plt.bar(x_values, y_values, align='center', alpha=0.7, color=color)  # Change color here
+plt.xlabel('Closed set size')
+plt.ylabel('Frequency')
+plt.title('Closed set size distribution')
+# plt.grid(True)
+plt.show()
+#---------------------------------------------------------
+ssm_sets=[ssm_set for ssm_set in closed_sets if testRN2.is_semi_self_maintaining (ssm_set)]
+print("Total number of ssm sets = ", str(len(ssm_sets)))
+len_ssm_sets=[len(ssm_sets[i]) for i in range(len(ssm_sets))] 
+count_distribution = Counter(len_ssm_sets)
+
+# Extract x and y values for plotting
+x_values = list(count_distribution.keys())
+y_values = list(count_distribution.values())
+
+color = 'darkblue'
+
+# Plot the distribution
+plt.bar(x_values, y_values, align='center', alpha=0.7, color=color)  # Change color here
+plt.xlabel('SSM set size')
+plt.ylabel('Frequency')
+plt.title('SSM set size distribution')
+# plt.grid(True)
+plt.show()
+
+
 
 # Compute the ratios
 ratios = [len(con)/len(erc), len(dc)/len(erc), len(syn)/len(erc), len(d_syn)/len(erc)]
