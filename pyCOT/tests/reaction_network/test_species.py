@@ -2,7 +2,7 @@ import pytest
 from pyCOT.rn_rustworkx import ReactionNetwork
 
 @pytest.fixture
-def rn() -> ReactionNetwork:
+def rn() -> ReactionNetworK
     rn = ReactionNetwork()
     rn.add_species("A", 10)
     rn.add_species("B", 20)

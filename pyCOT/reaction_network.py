@@ -498,6 +498,7 @@ class ReactionNetwork:
             else:
                 print("False becasue conn= "+str(connected))
                 return False
+
               
 
  ###########################################################################################################

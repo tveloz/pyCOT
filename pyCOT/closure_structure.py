@@ -54,6 +54,7 @@ def closures(RN,ListX):
     #0th coordinate stores the list of minimal generators for a given ERC (sets of species)
     #1st coordinate stores the ERC
     #2nd coordinate stores the reactions that generate same closure (equivalence class)
+    #3rd coordinate stores the label
 
 def ERCs(RN):
     List_gen=generators(RN).copy()
@@ -85,7 +86,7 @@ def ERCs(RN):
                          if len(List_gen[i])<len(ERC[j][0][k]):
                              ERC[j][0][k]=List_gen[i]
                         #If the latter condition does not meet, we skip List_gen[i] because is not minimal    
-                 #In case the new_min_gen never changed to false, we know its minimal generator to keep track:
+                 #In case the new_min_gen never changed to false, we know its minimal generator to keep tracK
                  if new_min_gen:        
                      #print("The generator "+str(List_gen[i])+" is new so far")
                      ERC[j][0].append(List_gen[i])

@@ -27,12 +27,12 @@ RnBt= bt([True, True])  # Default: [r1, r2]
 RnVecS = np.array([[1, 0, 0, 0], [0, 1, 0, 0]])  # Updated for reactions
 RnVecP= np.array([[0, 2, 0, 0], [0, 1, 1, 0]])  # Updated for reactions
 
-file_path = '/home/tveloz/Dropbox/Public/AcademicWork/Europe/CLEA/Postdocs/TempletonPostdoc/sftw/pyCOT/networks/testing/autocat_0_no_R.txt'
+file_path = r'C:\Users\tvelo\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\networks\testing\autocat_0_no_R.txt'
 
 testRN=load_pyCOT_from_file(file_path)
-print(testRN.get_reactions_from_bt(bt('0100')))
+#print(testRN.get_reactions_from_bt(bt('0100')))
 # print("specs")
-# print(testRN.SpStr)
+print(testRN.SpStr)
 # print("specsBt")
 # print(testRN.SpBt)
 # print("reacsBt")

@@ -2,7 +2,7 @@ from pyCOT.rn_rustworkx import ReactionNetwork
 from pyCOT.io._utils import separate_string, remove_comments
 
 
-def from_string(string: str) -> ReactionNetwork:
+def from_string(string: str) -> ReactionNetworK
     """
     Creates a ReactionNetwork from a string
 
@@ -35,7 +35,7 @@ def from_string(string: str) -> ReactionNetwork:
 
     return rn
 
-def read_txt(file: str) -> ReactionNetwork:
+def read_txt(file: str) -> ReactionNetworK
     """
     Loads a ReactionNetwork from a .txt file
 
