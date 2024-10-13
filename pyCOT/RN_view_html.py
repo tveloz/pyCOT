@@ -148,12 +148,21 @@ species_vector  = list(species_set)
 reaction_vector = list(RN.keys())
 
 ######################################################################################
-# Paso 5) Definir colores de los nodos de especies y reacciones
-color_species = 'cyan'       # Color del nodo de especies
-list_color_species = [(color_species, species_vector)] #Color del nodo de especies
+# Paso 5) Definir colores específicos para cada especie
+species_colors = [
+    'cyan', 'magenta', 'yellow', 'green', 'blue', 'orange', 'red', 'purple', 'brown', 'pink',
+    'lime', 'teal', 'indigo', 'violet', 'gold', 'coral', 'turquoise', 'olive', 'navy', 'salmon'
+]  # Paleta de colores 
+list_color_species = [(species_colors[i % len(species_colors)], [spcs]) 
+                      for i, spcs in enumerate(species_vector)]  # Asignar colores cíclicamente
+ 
+reaction_colors = ['lightgray','lightgray','lightgray','lightgray','lightgray',
+    'cyan', 'magenta', 'yellow', 'green', 'blue', 'orange', 'red', 'purple', 'brown', 'pink',
+    'lime', 'teal', 'indigo', 'violet', 'gold', 'coral', 'turquoise', 'olive', 'navy', 'salmon'
+]  # Paleta de colores
+list_color_reaction = [(reaction_colors[i % len(reaction_colors)], [rns]) 
+                       for i, rns in enumerate(reaction_vector)]  # Asignar colores cíclicamente
 
-color_reaction = 'lightgray' #Color del nodo de reacciones
-list_color_reaction = [(color_reaction, reaction_vector)]
 
 # Imprimir la red de reacciones, especies y reacciones.
 print("Network Reaction:", RN)
