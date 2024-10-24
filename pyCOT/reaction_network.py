@@ -3,6 +3,7 @@ from collections.abc import Sequence
 import numpy as np
 from bitarray import bitarray as bt
 import networkx as nx
+import itertools
 # import pandas as pd
 
 import pyCOT.data_conversion as dc
@@ -156,6 +157,13 @@ class ReactionNetwork:
         reactions = self.get_reactions_from_species(SpStr)
         prod = self.get_prod_from_reactions(reactions)
         return prod
+    def get_req_from_species(self, SpStr):
+        #Input: List of species
+        #Output: List of species that are consumed but not produced by the input
+        reactions_list = self.get_reactions_from_species(SpStr)
+        prod_of_reactions = self.get_prod_from_reactions(reactions_list)
+        supp_of_reactions = self.get_supp_from_reactions(reactions_list)
+        return [sp for sp in supp_of_reactions if sp not in prod_of_reactions]
 
     def get_reactions_consuming_species(self, SpStr):
         #Input: List of species
@@ -498,35 +506,3 @@ class ReactionNetwork:
             else:
                 print("False becasue conn= "+str(connected))
                 return False
-
-              
-
- ###########################################################################################################
- ############# Transform and operate the pyCOT object as a bipartite graph in networkx #####################
- ###########################################################################################################
-
-    def pyCOT_to_Graph(self, SpStr=None, RnStr=None):
-        #Input: List of species
-        #Output: Networkx object isomorphic to the reaction network
-        if SpStr == None:
-            SpStr = self.SpStr
-        if RnStr == None:
-            RnStr = self.RnStr
-        
-        G = nx.DiGraph()
-
-        for s in SpStr:
-            G.add_node(s, bipartite=1, type="species")
-        for r in RnStr:
-            G.add_node(r, bipartite=0, type="reaction")
-        for j in range(len(self.RnMsupp)):
-            reaction = self.RnMsupp[j]
-            for i in range(len(self.SpStr)):
-                if reaction[i] > 0:
-                    G.add_edge(self.SpStr[i], self.RnStr[j])
-        for j in range(len(self.RnMprod)):
-            reaction = self.RnMprod[j]
-            for i in range(len(self.SpStr)):
-                if reaction[i] > 0:
-                    G.add_edge(self.RnStr[j], self.SpStr[i])
-        return G

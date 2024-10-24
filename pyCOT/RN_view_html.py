@@ -131,7 +131,7 @@ def interpret_reactions_from_archive(filename):
 
 ######################################################################################
 # Paso 3) Especificar el archivo.txt que se va a leer.
-filename = '/Users/yvanomarbalderamoreno/Desktop/Projects/pyCOT/pyCOT/autopoietic.txt'
+filename = 'networks/testing/autopoietic.txt'
 
 # Interpretar el archivo y obtener la red de reacciones.
 RN = interpret_reactions_from_archive(filename)
@@ -149,25 +149,26 @@ reaction_vector = list(RN.keys())
 
 ######################################################################################
 # Paso 5) Definir colores específicos para cada especie
-species_colors = [
-    'cyan', 'magenta', 'yellow', 'green', 'blue', 'orange', 'red', 'purple', 'brown', 'pink',
-    'lime', 'teal', 'indigo', 'violet', 'gold', 'coral', 'turquoise', 'olive', 'navy', 'salmon'
-]  # Paleta de colores 
-list_color_species = [(species_colors[i % len(species_colors)], [spcs]) 
-                      for i, spcs in enumerate(species_vector)]  # Asignar colores cíclicamente
+# species_colors = [
+#     'cyan', 'magenta', 'yellow', 'green', 'blue', 'orange', 'red', 'purple', 'brown', 'pink',
+#     'lime', 'teal', 'indigo', 'violet', 'gold', 'coral', 'turquoise', 'olive', 'navy', 'salmon'
+# ]  # Paleta de colores 
+# list_color_species = [(species_colors[i % len(species_colors)], [spcs]) 
+#                       for i, spcs in enumerate(species_vector)]  # Asignar colores cíclicamente
  
-reaction_colors = ['lightgray','lightgray','lightgray','lightgray','lightgray',
-    'cyan', 'magenta', 'yellow', 'green', 'blue', 'orange', 'red', 'purple', 'brown', 'pink',
-    'lime', 'teal', 'indigo', 'violet', 'gold', 'coral', 'turquoise', 'olive', 'navy', 'salmon'
-]  # Paleta de colores
-list_color_reaction = [(reaction_colors[i % len(reaction_colors)], [rns]) 
-                       for i, rns in enumerate(reaction_vector)]  # Asignar colores cíclicamente
+# reaction_colors = ['lightgray','lightgray','lightgray','lightgray','lightgray',
+#     'cyan', 'magenta', 'yellow', 'green', 'blue', 'orange', 'red', 'purple', 'brown', 'pink',
+#     'lime', 'teal', 'indigo', 'violet', 'gold', 'coral', 'turquoise', 'olive', 'navy', 'salmon'
+# ]  # Paleta de colores
+# list_color_reaction = [(reaction_colors[i % len(reaction_colors)], [rns]) 
+#                        for i, rns in enumerate(reaction_vector)]  # Asignar colores cíclicamente
 
-
+list_color_species=[] 
+list_color_reaction=[], 
 # Imprimir la red de reacciones, especies y reacciones.
 print("Network Reaction:", RN)
-print("Species:", list_color_species)
-print("Reactions:", list_color_reaction)
+#print("Species:", list_color_species)
+#print("Reactions:", list_color_reaction)
 ######################################################################################
 # Paso 5) Llamar a la función para graficar la red de reacciones y generar archivo HTML.
 RN_view_html(RN, list_color_species, list_color_reaction, filename="RN_autopoietic.html")

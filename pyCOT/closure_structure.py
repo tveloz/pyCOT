@@ -150,6 +150,9 @@ def reactive_semi_orgs(RN):
      print("semiorgs found: "+str(len(reactive_sorgs)))
      return(reactive_sorgs)     
 
+################## END OF DISGRESSION ############################################
+
+
 #define X contains Y
 def set_containment(X,Y):
     return all(item in X for item in Y)

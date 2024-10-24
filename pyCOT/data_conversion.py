@@ -7,7 +7,7 @@ Created on Fri Dec 29 18:55:14 2023
 """
 from collections.abc import Sequence
 from numbers import Real
-
+from pyCOT.reaction_network import *
 from bitarray import bitarray
 from numpy import ndarray
 

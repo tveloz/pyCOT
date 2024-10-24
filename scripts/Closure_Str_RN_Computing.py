@@ -129,7 +129,12 @@ def Closure_Str_RN_Computing(file_path):
               pickle.dump(new_data, file)
 
        print("We found "+str(len(d_syn))+" direct synergies")
-       
+       ####################### EXECUTE EXAMPLE ################
+#file_path=Path("networks/testing/Farm.txt")
+file_path = Path('networks/biomodels_interesting/central_ecoli.txt')
+Closure_Str_RN_Computing(file_path)
+      
+
        ##########---Second Order RN Caculation---################
        # print("Obtaining SORN")
        # start_time = time.time()
@@ -230,7 +235,7 @@ def Closure_Str_RN_Computing(file_path):
        # print("Execution time com3puting ssm paths", execution_time, "seconds")
        # print("Total number of ssm sets = ", str(len(ssm_sets)))
 
-#Closure_Str_RN_Computing(file_path)
+
 #results={"ERC":erc,"Containments": con,"Direct containments":dc,
 #         "Synergies":syn,"Direct Synergies": d_syn,"Sorn": sorn,"Minimal sorn": msorn, 
 #         "Execution time": execution_time,"Closed paths": cl_pth,

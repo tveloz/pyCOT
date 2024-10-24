@@ -34,11 +34,11 @@ from pathlib import Path
 
 #folder_path = 'networks/Navarino'
 #txt_files = glob.glob(os.path.join(folder_path, '*.txt'))
-input_path = Path("networks/Navarino/RN_IN_02_PyCOT.txt")
-#input_path = Path('networks/biomodels_all_txt/BIOMD000000151.txt')
-input_path = Path("networks/biomodels_interesting/bigg_iAF692.txt")
+#input_path = Path("networks/Navarino/RN_IN_02_PyCOT.txt")
+#input_path = Path('networks/biomodels_all_txt/BIOMD0000001018.txt')
+#input_path = Path("networks/biomodels_interesting/bigg_iAF692.txt")
 #input_path = Path("networks/biomodels_all_txt/BIOMD0000000183.txt")
-#input_path = Path('networks/testing/autopoietic_ext.txt')
+
                   
 pkl_file = input_path.with_name(input_path.stem + '.pkl')   
 # Open the pickle file in read-binary mode
@@ -83,76 +83,34 @@ DirectSynergies=objects[8]['Direct Synergies']
 DirectSynergies_ct=objects[9]['Direct Synergies exec time']
 Nspecs=len(objects[10]['Species'][0])
 Nreacs=len(objects[11]['Reactions'][0])
-print("Species: "+str(len(RN.SpStr))+", Reactions: "+str(len(RN.RnStr)))
-print(RN.SpStr)
+# print("Species: "+str(len(RN.SpStr))+", Reactions: "+str(len(RN.RnStr)))
+# print(RN.SpStr)
 ############ ERCs structure in terms of species and reactions ############
-ERCStr=[]
-# store number of minimal generators per ERC
-MinGensize=[len(erc[0]) for erc in ERCs]
-# number species per ERC/number of species
-ERCStr.append(MinGensize)
-#proportion of species per ERC
-PropSizeERC=[round(len(erc[1])/Nspecs,3) for erc in ERCs]
-ERCStr.append(PropSizeERC)
-# proportion of reactions in the equivalence class
-PropReacsERC=[round(len(erc[2])/Nreacs,3) for erc in ERCs]
-ERCStr.append(PropReacsERC)
-# proportion of ERCs in which each species is part of
-ERCclosures=[erc[1] for erc in ERCs] 
-Specs_prop= []
-for sp in objects[10]['Species'][0]:
-    Specs_prop.append([sp,sum(sublist.count(sp) for sublist in ERCclosures)])
-ERCStr.append(Specs_prop)
-#print("ERCs")
-# for el in ERCStr:
-#     print(el)
-
-########## Chain characterization in terms of levels #############
-def build_chains(set_labels, containment_pairs):
-    # Step 1: Build the adjacency list (graph)
-    containment_graph = defaultdict(list)
-    reverse_graph = defaultdict(list)
-    
-    for a, b in containment_pairs:
-        containment_graph[a].append(b)
-        reverse_graph[b].append(a)
-
-    # Step 2: Identify root nodes (nodes that are not children of any other node)
-    root_nodes = set(set_labels) - set(reverse_graph.keys())
-
-    # Step 3: Function to recursively find chains via DFS
-    def find_chains(node, current_chain, all_chains):
-        current_chain.append(node)
-        # If node has no children, it is the end of a chain
-        if node not in containment_graph or not containment_graph[node]:
-            all_chains.append(current_chain[:])  # Add a copy of the current chain
-        else:
-            # Recursively explore each child node
-            for child in containment_graph[node]:
-                find_chains(child, current_chain, all_chains)
-        # Backtrack
-        current_chain.pop()
-
-    # Step 4: Find all chains starting from each root node
-    all_chains = []
-    for root in root_nodes:
-        find_chains(root, [], all_chains)
-
-    return all_chains
-
-# Example usage
+# ERCStr=[]
+# # store number of minimal generators per ERC
+# MinGensize=[len(erc[0]) for erc in ERCs]
+# # number species per ERC/number of species
+# ERCStr.append(MinGensize)
+# #proportion of species per ERC
+# PropSizeERC=[round(len(erc[1])/Nspecs,3) for erc in ERCs]
+# ERCStr.append(PropSizeERC)
+# # proportion of reactions in the equivalence class
+# PropReacsERC=[round(len(erc[2])/Nreacs,3) for erc in ERCs]
+# ERCStr.append(PropReacsERC)
+# # proportion of ERCs in which each species is part of
+# ERCclosures=[erc[1] for erc in ERCs] 
+# Specs_prop= []
+# for sp in objects[10]['Species'][0]:
+#     Specs_prop.append([sp,sum(sublist.count(sp) for sublist in ERCclosures)])
+# ERCStr.append(Specs_prop)
+# #print("ERCs")
+# for el in ERCs:
+#     print("req for set:"+str(el[1])+" is "+str(RN.get_req_from_species(el[1])))
 
 set_labels = [sublist[3] for sublist in ERCs]
 containment_pairs = DirectContainments
-
+#build chains
 chains = build_chains(set_labels, containment_pairs)
-# print("ERCs")
-# print(set_labels)
-# print("Direct Containments")
-# print(containment_pairs)
-# print("Direct Containments resorted as chains")
-# print(chains)
-
 # Step 4: Calculate chain lengths
 chain_lengths = [len(chain) for chain in chains]
 #print("chain lenghts:")
@@ -163,16 +121,15 @@ chain_lengths = [len(chain) for chain in chains]
 ############## Level analysis ##################
 
 
-plt.hist(chain_lengths, bins=5, edgecolor='black')
+# plt.hist(chain_lengths, bins=5, edgecolor='black')
 
 
 # Add titles and labels
-plt.title('Histogram of Chain Lengths')
-plt.xlabel('Length')
-plt.ylabel('Frequency')
-
+# plt.title('Histogram of Chain Lengths')
+# plt.xlabel('Length')
+# plt.ylabel('Frequency')
 # Show the plot
-plt.show()
+# plt.show()
 # Add titles and labels
 
 # Step 1: Find the length of the longest chain
@@ -231,8 +188,8 @@ chains_of_ERCs=[]
 for erc_index in ERCs_indexes:
     chains_of_erc= [x for x in chains if erc_index in x]
     chains_of_ERCs.append([erc_index,chains_of_erc])
-for i in range(len(chains_of_ERCs)):
-    print(chains_of_ERCs[i])
+# for i in range(len(chains_of_ERCs)):
+#        print(chains_of_ERCs[i])
 print('###############')
 ERCs_level=[]
 #ERCs_exp_lenght=[]
@@ -241,11 +198,11 @@ for ch in chains_of_ERCs:
     chs=ch[1]    
     lev=max(len(x)-x.index(erc) for x in chs)
     ERCs_level.append([erc,lev])
-print(ERCs_level)
+#print(ERCs_level)
 
-plt.hist([x[1] for x in ERCs_level], bins=5, edgecolor='black')
+# plt.hist([x[1] for x in ERCs_level], bins=5, edgecolor='black')
 # Add titles and labels
-plt.title('Histogram of ERC Levels')
-plt.xlabel('Level')
-plt.ylabel('Frequency')
-plt.show()
+# plt.title('Histogram of ERC Levels')
+# plt.xlabel('Level')
+# plt.ylabel('Frequency')
+# plt.show()
