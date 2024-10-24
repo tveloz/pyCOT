@@ -5,6 +5,7 @@ Created on Fri Dec 29 18:55:14 2023
 
 @author: tveloz
 """
+#sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 import pandas as pd
 import re
@@ -15,8 +16,11 @@ import random as rm
 import matplotlib.pyplot as plt
 from pyvis.network import Network
 import networkx as nx
+import itertools
 from itertools import combinations
 from itertools import chain
+from collections import defaultdict
+from collections import Counter # para el gráfico de cantidad de básicos vs repeticiones
 from pyCOT.file_manipulation import *
 from pyCOT.display import *
 from pyCOT.reaction_network import *
@@ -52,7 +56,7 @@ def closures(RN,ListX):
     return L
 ###ERCs produces a list of triplets:
     #0th coordinate stores the list of minimal generators for a given ERC (sets of species)
-    #1st coordinate stores the ERC
+    #1st coordinate stores the ERC as a set of species
     #2nd coordinate stores the reactions that generate same closure (equivalence class)
     #3rd coordinate stores the label
 
@@ -97,6 +101,54 @@ def ERCs(RN):
     for i in range(len(ERC)):
         ERC[i].append(i)
     return ERC
+
+###########DISGRESSION TO COMPUTE THE SET OF CLOSED SETS BY BRUTE FORCE ON ERCS###################
+
+
+def remove_duplicate_sublists(list_of_lists):
+    seen = set()
+    unique_list = []
+    
+    for sublist in list_of_lists:
+        # Convert sublist to tuple to make it hashable
+        tuple_sublist = tuple(sublist)
+        if tuple_sublist not in seen:
+            seen.add(tuple_sublist)
+            unique_list.append(sublist)
+    
+    return unique_list
+
+def list_of_lists_to_set(list_of_lists):
+    return set(element for sublist in list_of_lists for element in sublist)
+
+def power_list(list_of_sublists):
+    # Generate all combinations of all lengths
+    combination_cases=list(chain.from_iterable(combinations(list_of_sublists, r) for r in range(len(list_of_sublists) + 1)))
+    result=[]
+    for comb in combination_cases:
+        result.append(list(list_of_lists_to_set(comb)))
+    return(remove_duplicate_sublists(result))
+
+
+def reactive_semi_orgs(RN):
+     print("reactive_semi_orgs starting")
+     ERC_list=ERCs(RN)
+     ERCs_closures=[sublist[1] for sublist in ERC_list if len(sublist) > 1]
+     #print(ERCs_closures)
+     #print("###computing power sets###")
+     power_list_ERCs=power_list(ERCs_closures)
+     #print(power_list_ERCs)
+     #print("###computing power set closures###")
+     power_list_closures=remove_duplicate_sublists(closures(RN,power_list_ERCs))
+     #print(power_list_closures)
+    
+     reactive_sorgs= [sorg for sorg in power_list_closures if RN.is_semi_self_maintaining(sorg)]
+     print("reactive_semi_orgs ending")
+     print("number of ERCs : "+str(len(ERCs_closures)))
+     print("size of power list of ERCs : "+str(len(power_list_ERCs)))
+     print("closures found : "+str(len(power_list_closures)))
+     print("semiorgs found: "+str(len(reactive_sorgs)))
+     return(reactive_sorgs)     
 
 #define X contains Y
 def set_containment(X,Y):
@@ -146,7 +198,38 @@ def get_ERC_from_reaction(ERC,r):
         if r in erc[2]:
             return erc
 
+########## Chain characterization in terms of levels #############
+def build_chains(set_labels, containment_pairs):
+    # Step 1: Build the adjacency list (graph)
+    containment_graph = defaultdict(list)
+    reverse_graph = defaultdict(list)
+    
+    for a, b in containment_pairs:
+        containment_graph[a].append(b)
+        reverse_graph[b].append(a)
 
+    # Step 2: Identify root nodes (nodes that are not children of any other node)
+    root_nodes = set(set_labels) - set(reverse_graph.keys())
+
+    # Step 3: Function to recursively find chains via DFS
+    def find_chains(node, current_chain, all_chains):
+        current_chain.append(node)
+        # If node has no children, it is the end of a chain
+        if node not in containment_graph or not containment_graph[node]:
+            all_chains.append(current_chain[:])  # Add a copy of the current chain
+        else:
+            # Recursively explore each child node
+            for child in containment_graph[node]:
+                find_chains(child, current_chain, all_chains)
+        # Backtrack
+        current_chain.pop()
+
+    # Step 4: Find all chains starting from each root node
+    all_chains = []
+    for root in root_nodes:
+        find_chains(root, [], all_chains)
+
+    return all_chains
 
 def get_synergies(RN, ERCs):
     synergies=[]
@@ -408,7 +491,9 @@ def remove_duplicates(input_list):
             seen_sets.add(sublist_set)
 
     return unique_sublists
-    
+
+
+
 def remove_duplicates_pairs2(input_list):
     unique_sublists = []
     seen_list1 = []

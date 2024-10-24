@@ -18,21 +18,42 @@ import networkx as nx
 from pyCOT.file_manipulation import *
 import matplotlib.pyplot as plt
 import time
+import os
 
+# Get the current working directory
+#current_directory = os.getcwd()
+#print("Current Directory:", current_directory)
 #Create an instance of the HelloWorld class
-SpStr= ['a', 'b', 'c', 'd']  # Default: ['a', 'b', 'c', 'd']
-SpBt=bt([True,True,True,True])  # Default: [a, b, c, d]
-RnStr= ['r1', 'r2']  # Updated: ['r1', 'r2']
-RnBt= bt([True, True])  # Default: [r1, r2]
-RnVecS = np.array([[1, 0, 0, 0], [0, 1, 0, 0]])  # Updated for reactions
-RnVecP= np.array([[0, 2, 0, 0], [0, 1, 1, 0]])  # Updated for reactions
+# l1=["s1","s2"]
+# l2=["s3","s2"]
+# l=[l1,l2,["s3","s4"],["s1","s2"]]
+# lp=power_list(l)
+# for x in lp:
+#     print(x)
 
-file_path = r'C:\Users\tvelo\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\networks\testing\autocat_0_no_R.txt'
+
+
+
+# SpStr= ['a', 'b', 'c', 'd']  # Default: ['a', 'b', 'c', 'd']
+# SpBt=bt([True,True,True,True])  # Default: [a, b, c, d]
+# RnStr= ['r1', 'r2']  # Updated: ['r1', 'r2']
+# RnBt= bt([True, True])  # Default: [r1, r2]
+# RnVecS = np.array([[1, 0, 0, 0], [0, 1, 0, 0]])  # Updated for reactions
+# RnVecP= np.array([[0, 2, 0, 0], [0, 1, 1, 0]])  # Updated for reactions
+
+file_path = r'C:\Users\tvelo\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\networks\testing\Farm.txt'
 
 testRN=load_pyCOT_from_file(file_path)
+print("specs")
+print(testRN.SpStr)
+reactive_sorgs=reactive_semi_orgs(testRN)
+print("printing results!")
+for sorgs in reactive_sorgs:
+    print(sorgs)
+
 #print(testRN.get_reactions_from_bt(bt('0100')))
 # print("specs")
-print(testRN.SpStr)
+# print(testRN.SpStr)
 # print("specsBt")
 # print(testRN.SpBt)
 # print("reacsBt")
