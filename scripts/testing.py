@@ -32,7 +32,8 @@ import os
 #     print(x)
 
 
-
+# print(['s1','s2']==['s2','s1'])
+# print(set(['s1','s2'])==set(['s2','s1']))
 
 # SpStr= ['a', 'b', 'c', 'd']  # Default: ['a', 'b', 'c', 'd']
 # SpBt=bt([True,True,True,True])  # Default: [a, b, c, d]
@@ -48,8 +49,8 @@ print("specs")
 print(testRN.SpStr)
 reactive_sorgs=reactive_semi_orgs(testRN)
 print("printing results!")
-for sorgs in reactive_sorgs:
-    print(sorgs)
+# for sorgs in reactive_sorgs:
+#    print(sorgs)
 
 #print(testRN.get_reactions_from_bt(bt('0100')))
 # print("specs")

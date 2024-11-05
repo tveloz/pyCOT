@@ -15,7 +15,7 @@ from pyCOT.RN_view import *
 # file_path = 'Txt/2019fig1.txt'
 # file_path = 'Txt/2019fig2.txt'
 # file_path = 'Txt/non_connected_example.txt' 
-file_path = 'Txt/Farm.txt'
+file_path = r'C:\Users\tvelo\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\networks\testing\Farm.txt'
 
 # Listas de conjuntos de especies y reaciones con colores 
 lst_color_specs = [("blue", ["farmer","fertilizer"]), ("yellow", ["eggs","chickens"])]

@@ -72,7 +72,7 @@ def ERCs(RN):
         for j in range(len(ERC)):
         #Step1: Check List_gen[i] has the same closure than min_gen[j]    
             #print("Passing by min_gen "+str(j)+" whose closure is "+str(min_gen[j][1]))
-            if List_closures[i]==ERC[j][1]:
+            if set(List_closures[i])==set(ERC[j][1]):
                  #print("Closure same as generator "+str(j))
                  #Then ERC associated to List_gen[i] is already in min_gen, no need to append it as a new ERC
                  novel_min_gen=False
@@ -102,7 +102,7 @@ def ERCs(RN):
         ERC[i].append(i)
     return ERC
 
-###########DISGRESSION TO COMPUTE THE SET OF CLOSED SETS BY BRUTE FORCE ON ERCS###################
+###########DISGRESSION TO COMPUTE THE SET OF SEMIORGS BY BRUTE FORCE ON ERCS###################
 
 
 def remove_duplicate_sublists(list_of_lists):
@@ -122,19 +122,29 @@ def list_of_lists_to_set(list_of_lists):
     return set(element for sublist in list_of_lists for element in sublist)
 
 def power_list(list_of_sublists):
-    # Generate all combinations of all lengths
-    combination_cases=list(chain.from_iterable(combinations(list_of_sublists, r) for r in range(len(list_of_sublists) + 1)))
-    result=[]
+  # Convert each sublist to a set to avoid duplicate elements within sublists
+    list_of_sets = [set(sublist) for sublist in list_of_sublists]
+    
+    # Generate all combinations of these sets
+    combination_cases = list(chain.from_iterable(combinations(list_of_sets, r) for r in range(len(list_of_sets) + 1)))
+    
+    result = []
     for comb in combination_cases:
-        result.append(list(list_of_lists_to_set(comb)))
-    return(remove_duplicate_sublists(result))
-
+        # Merge sets within each combination to avoid duplicates across sublists
+        merged_set = set().union(*comb)
+        # Add as a sorted list to maintain consistency
+        result.append(sorted(merged_set))
+    
+    # Remove duplicate lists by converting to tuples for hashable unique entries
+    unique_result = [list(x) for x in set(tuple(x) for x in result)]
+    return unique_result
 
 def reactive_semi_orgs(RN):
      print("reactive_semi_orgs starting")
      ERC_list=ERCs(RN)
      ERCs_closures=[sublist[1] for sublist in ERC_list if len(sublist) > 1]
-     #print(ERCs_closures)
+     for erc in ERC_list:
+         print(erc)
      #print("###computing power sets###")
      power_list_ERCs=power_list(ERCs_closures)
      #print(power_list_ERCs)
