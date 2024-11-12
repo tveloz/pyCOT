@@ -4,7 +4,7 @@ import sys
 # Add the root directory to the PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from pyCOT.RN_visualize import *
+from pyCOT.rn_visualize import *
 from pyCOT.reaction_network import *
 from pyCOT.closure_structure import * 
 from pyCOT.file_manipulation import * 
