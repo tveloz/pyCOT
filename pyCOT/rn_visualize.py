@@ -2,7 +2,7 @@ from pyvis.network import Network
 
 ######################################################################################
 # Function to plot a reaction network in HTML:
-def RN_visualize(RN, lst_color_spcs=None, lst_color_reacs=None, 
+def rn_visualize(RN, lst_color_spcs=None, lst_color_reacs=None, 
                  global_species_color=None, global_reaction_color=None,
                  global_input_edge_color=None, global_output_edge_color=None,
                  filename="Reaction_network.html", node_size=15):
@@ -31,7 +31,7 @@ def RN_visualize(RN, lst_color_spcs=None, lst_color_reacs=None,
     testRN = load_pyCOT_from_file(file_path)  
 
     # Visualize the reaction network `testRN`, assigning the color yellow to species 's1' and saving the result in an HTML file.
-    RN_visualize(testRN.RN, lst_color_spcs=[('yellow', ['s1'])], filename="Reaction_network.html")  
+    rn_visualize(testRN.RN, lst_color_spcs=[('yellow', ['s1'])], filename="Reaction_network.html")  
    
     """
  
