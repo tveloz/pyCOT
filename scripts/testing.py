@@ -43,6 +43,8 @@ import os
 # RnVecP= np.array([[0, 2, 0, 0], [0, 1, 1, 0]])  # Updated for reactions
 
 file_path = r'C:\Users\tvelo\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\networks\testing\Farm.txt'
+file_path = r'C:\Users\tvelo\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\networks\RandomAlife\RN_Ns_40_Norg_20_id_396.txt'
+#file_path = '../networks/RandomAlife/RN_Ns_40_Norg_24_id_316.txt'
 
 testRN=load_pyCOT_from_file(file_path)
 print("specs")
@@ -76,7 +78,6 @@ print("printing results!")
 # #file_path = '../networks/testing/RedPDoSR01.txt'
 # #file_path = '../../networks/testing/MSORN_test1.txt'
 # #file_path = '../../networks/testing/MSORN_test2.txt'
-#file_path = '../networks/RandomAlife/RN_Ns_40_Norg_24_id_316.txt'
 #file_path = '../networks/biomodels_interesting/central_ecoli.txt'
 # file_path = '../networks/biomodels_all/BIOMD0000000086_url.xml'
 #file_path = '../../networks/testing/MSORN_test2.txt'

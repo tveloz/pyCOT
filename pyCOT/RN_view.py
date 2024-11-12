@@ -95,15 +95,20 @@ def RN_view(RN, lst_color_spcs=None, lst_color_reacs=None,
             connections.add(edge_id)
             
     ######################################
-    # Establecer opciones de visualización
-    net.set_options('''{
-        "physics": {"enabled": false},
-        "edges": {"label": {"enabled": true, "font": {"size": 14}}}
-    }''')
+    # # Establecer opciones de visualización
+    # net.set_options('''{
+    #     "physics": {"enabled": false},
+    #     "edges": {"label": {"enabled": true, "font": {"size": 14}}}
+    # }''')
     
-    # Guardar la visualización en un archivo HTML
-    net.show(filename)
+    # # Guardar la visualización en un archivo HTML
+    # net.show(filename)
+    # Generate HTML content
+    html_content = net.generate_html()
 
+    # Save the HTML content with UTF-8 encoding
+    with open(filename, 'w', encoding='utf-8') as file:
+        file.write(html_content)
 
 
 

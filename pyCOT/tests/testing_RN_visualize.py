@@ -13,23 +13,23 @@ from pyCOT.file_manipulation import *
 # Examples
 
 # File path
-file_path = r'C:\Users\tvelo\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\networks\testing\Farm.txt'
-
+file_path = 'Txt/autopoietic.txt'
 # file_path = 'Txt/2019fig1.txt'
 # file_path = 'Txt/2019fig2.txt'
 # file_path = 'Txt/non_connected_example.txt' 
 # file_path = 'Txt/Farm.txt'
+file_path = r'C:\Users\tvelo\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\networks\testing\Stentor_0.txt'
 
 # Lists of species sets and reactions with colors
-S=[["water"],["eggs","chickens","infr"]]
-lst_color_specs = [("blue", S[0]), ("yellow", S[1])]
+#S=[["water"],["eggs","chickens","infr"]]
+#lst_color_specs = [("blue", S[0]), ("yellow", S[1])]
 
-lst_color_reacs = [("purple", ["R1"]), ("orange", ["R2","R3","R4"]), ("green", ["R12","R13","R14"])]
+#lst_color_reacs = [("purple", ["R1"]), ("orange", ["R2","R3","R4"]), ("green", ["R12","R13","R14"])]
 
 testRN=load_pyCOT_from_file(file_path)
 # print(testRN)
 
-# # print(testRN.RN)
+# # print(testRN.RN) 
 # print(testRN.SpStr)
 # print(testRN.SpBt)
 
@@ -49,7 +49,6 @@ testRN=load_pyCOT_from_file(file_path)
 
 # Visualize the network with lst_color_spcs and lst_color_reacs applied 
 # RN_visualize(testRN) 
-
 RN_visualize(testRN, filename='RN_visualize.html') 
 # RN_visualize(testRN, lst_color_spcs=[("yellow", ["l","s1"])], filename="RN_visualize.html")
 # RN_visualize(testRN, lst_color_spcs=lst_color_specs, filename="RN_visualize.html")
