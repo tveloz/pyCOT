@@ -7,7 +7,7 @@ def rn_visualize(RN, lst_color_spcs=None, lst_color_reacs=None,
                  global_input_edge_color=None, global_output_edge_color=None,
                  filename="Reaction_network.html", node_size=15):
     """
-    Visualizes a reaction network in an interactive HTML file.
+    Visualizes a reaction network in an interactive HTML file. 
 
     Parameters:
     - RN: ReactionNetwork object 
