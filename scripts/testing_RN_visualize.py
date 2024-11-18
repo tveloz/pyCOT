@@ -13,7 +13,7 @@ from pyCOT.file_manipulation import *
 # Examples
 
 # File path
-file_path = r'C:\Users\tvelo\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\networks\testing\Farm.txt'
+file_path = 'Txt/autopoietic.txt' 
 
 # file_path = 'Txt/2019fig1.txt'
 # file_path = 'Txt/2019fig2.txt'
@@ -47,14 +47,14 @@ testRN=load_pyCOT_from_file(file_path)
 # print(dir(testRN))
 
 
-# Visualize the network with lst_color_spcs and lst_color_reacs applied 
-# RN_visualize(testRN) 
+# Visualize the network with lst_color_spcs and lst_color_reacs applied  
+rn_visualize(testRN) 
+# rn_visualize(testRN, filename='RN_visualize.html') 
+# rn_visualize(testRN, lst_color_spcs=[("yellow", ["l","s1"])], filename="RN_visualize.html")
+# rn_visualize(testRN, lst_color_spcs=lst_color_specs, filename="RN_visualize.html")
+# rn_visualize(testRN, lst_color_reacs=lst_color_reacs, filename="RN_visualize.html")
+# rn_visualize(testRN, lst_color_spcs=lst_color_specs, lst_color_reacs=lst_color_reacs, filename="RN_visualize.html")
+# rn_visualize(testRN, global_species_color='yellow', global_reaction_color='orange', filename="RN_visualize.html")
+# rn_visualize(testRN, global_species_color='blue', global_reaction_color='orange',global_input_edge_color='blue', global_output_edge_color='gray', filename="RN_visualize.html")
+# rn_visualize(testRN, lst_color_spcs=lst_color_specs, lst_color_reacs=lst_color_reacs, global_input_edge_color='blue', global_output_edge_color='gray', filename="RN_visualize.html")
 
-RN_visualize(testRN, filename='RN_visualize.html') 
-# RN_visualize(testRN, lst_color_spcs=[("yellow", ["l","s1"])], filename="RN_visualize.html")
-# RN_visualize(testRN, lst_color_spcs=lst_color_specs, filename="RN_visualize.html")
-# RN_visualize(testRN, lst_color_reacs=lst_color_reacs, filename="RN_visualize.html")
-# RN_visualize(testRN, lst_color_spcs=lst_color_specs, lst_color_reacs=lst_color_reacs, filename="RN_visualize.html")
-# RN_visualize(testRN, global_species_color='yellow', global_reaction_color='orange', filename="RN_visualize.html")
-# RN_visualize(testRN,global_species_color='blue', global_reaction_color='orange',global_input_edge_color='blue', global_output_edge_color='gray', filename="RN_visualize.html")
-# RN_visualize(testRN,lst_color_spcs=lst_color_specs, lst_color_reacs=lst_color_reacs, global_input_edge_color='blue', global_output_edge_color='gray', filename="RN_visualize.html")
