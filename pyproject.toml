@@ -18,6 +18,7 @@ bs4 = "^0.0.2"
 rustworkx = "^0.15.1"
 scipy = "^1.14.0"
 pyvis = "^0.3.2"
+mplcursors = "^0.6"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
