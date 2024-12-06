@@ -7,6 +7,7 @@ import os  # For handling paths and checking file existence
 from collections import defaultdict
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
+import tempfile
 
 ##################################################################
 # # Plot a reaction network in HTML:
@@ -189,13 +190,15 @@ def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None,
 
             # Add edge to connections set to avoid redundant edges
             connections.add(edge_id)
-
     # Save the visualization to an HTML file 
+    net.html = net.generate_html()
     with open(filename, "w", encoding="utf-8") as f:
         f.write(net.html)
-    return f
- 
+    return filename
+
 ##################################################################
+
+
 
 def rn_visualize(RN, lst_color_spcs=None, lst_color_reacs=None, 
                  global_species_color=None, global_reaction_color=None,
@@ -214,7 +217,8 @@ def rn_visualize(RN, lst_color_spcs=None, lst_color_reacs=None,
     
     # Convert to an absolute path
     abs_path = os.path.abspath(filename) 
-    
+    print("absolute path")
+    print(abs_path)
     # Check if the file was created correctly
     if not os.path.isfile(abs_path):
         print(f"File not found at {abs_path}")  # Additional message for debugging
