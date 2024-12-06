@@ -24,6 +24,9 @@ from collections import Counter # para el gráfico de cantidad de básicos vs re
 from pyCOT.file_manipulation import *
 from pyCOT.display import *
 from pyCOT.reaction_network import *
+import networkx as nx
+from networkx.drawing.nx_agraph import graphviz_layout
+
 #def closure_structure(RN,):
     #get generators
     #compute closures     
@@ -54,7 +57,7 @@ def closures(RN,ListX):
     for X in ListX:
         L.append(closure(RN,X))
     return L
-###ERCs produces a list of triplets:
+###ERCs produces a list of four-tuple:
     #0th coordinate stores the list of minimal generators for a given ERC (sets of species)
     #1st coordinate stores the ERC as a set of species
     #2nd coordinate stores the reactions that generate same closure (equivalence class)
@@ -102,9 +105,8 @@ def ERCs(RN):
         ERC[i].append(i)
     return ERC
 
-###########DISGRESSION TO COMPUTE THE SET OF SEMIORGS BY BRUTE FORCE ON ERCS###################
 
-
+###########FIRST APPROACH: COMPUTING ALL REACTIVE SEMIORGS BY BRUTE FORCE ON ERCS###################
 def remove_duplicate_sublists(list_of_lists):
     seen = set()
     unique_list = []
@@ -241,8 +243,53 @@ def build_chains(set_labels, containment_pairs):
     all_chains = []
     for root in root_nodes:
         find_chains(root, [], all_chains)
+    
+    return all_chains, containment_graph
 
-    return all_chains
+def plot_containment_forest(set_labels, containment_pairs):
+    all_chains, containment_graph = build_chains(set_labels, containment_pairs)
+    
+    # Create a directed graph
+    G = nx.DiGraph()
+    
+    # Add edges to the graph from the containment pairs
+    G.add_edges_from(containment_pairs)
+    
+    # Generate positions using graphviz layout (hierarchical)
+    pos = nx.nx_agraph.graphviz_layout(G, prog="dot")  # 'dot' layout is good for hierarchical graphs
+    
+    # Draw the graph
+    plt.figure(figsize=(10, 10))
+    nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_size=10, font_weight="bold", arrows=True)
+    
+    plt.title("Containment Forest")
+    plt.show()
+
+# Calculate node levels
+def calculate_levels(graph):
+    levels = defaultdict(int)  # To store the level of each node
+    visited = set()            # Keep track of visited nodes
+    queue = [(node, 0) for node in graph if node not in reverse_graph]  # Start with root nodes (level 0)
+
+    while queue:
+        current, level = queue.pop(0)
+        if current in visited:
+            continue
+        visited.add(current)
+        levels[level] += 1  # Increment the count of nodes at this level
+
+        # Add children to the queue with the next level
+        for child in graph.get(current, []):
+            queue.append((child, level + 1))
+
+    return levels
+
+
+
+
+
+
+
 
 def get_synergies(RN, ERCs):
     synergies=[]
@@ -348,7 +395,9 @@ def MSORN(sorn):
         ERC_Bt.setall(True)
         return ReactionNetwork(SpBt=ERC_Bt, RnStr=[], RnBt= bitarray(), SpStr=ERC_species, RnMsupp=np.array([]),RnMprod=np.array([]))
 
-#****************Compute Closed sets from terminal nodes of MSORN
+
+
+#****************Compute Closed sets from terminal nodes of MSORN - Backward approach*********************
 
 #Compute the ERCs that do not in the support of any reaction
 def terminal_species(msorn):

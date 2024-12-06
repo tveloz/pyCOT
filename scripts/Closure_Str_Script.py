@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 
 from pyCOT.reaction_network import *
 from pyCOT.closure_structure import *
+from networkx.drawing.nx_agraph import graphviz_layout
 
 # Create an instance of the HelloWorld class
 # SpStr= ['a', 'b', 'c', 'd']  # Default: ['a', 'b', 'c', 'd']
@@ -53,26 +54,27 @@ file_path = 'networks/testing/Farm.txt'
 #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_20_id_396.txt'
 # file_path = 'networks/biomodels_interesting/central_ecoli.txt'
 # file_path = 'networks/biomodels_all_txt/BIOMD0000001044.txt'
-# file_path = 'networks/biomodels_all_txt/BIOMD0000001003.txt'
+file_path = 'networks/biomodels_all_txt/BIOMD0000001002.txt'
 # file_path = 'networks/GPT_Generated/EColi.txt   '
 #file_path = '../../networks/biomodels_interesting/BIOMD0000000237_manyOrgs.xml'
 testRN2 = load_pyCOT_from_file(file_path)
 
 # reaction_graph = build_graph(testRN2)
 # visualize_graph(reaction_graph)
-print(testRN2.SpStr)
 print("specs")
 print(testRN2.SpStr)
-print("specsBt")
-print(testRN2.SpBt)
-print("reacsBt")
-print(testRN2.RnBt)
-print("Reac")
-print(testRN2.RnStr)
-print("MSupp")
-print(testRN2.RnMsupp)
-print("MProd")
-print(testRN2.RnMprod)
+
+# print(testRN2.SpStr)
+# print("specsBt")
+# print(testRN2.SpBt)
+# print("reacsBt")
+# print(testRN2.RnBt)
+# print("Reac")
+# print(testRN2.RnStr)
+# print("MSupp")
+# print(testRN2.RnMsupp)
+# print("MProd")
+# print(testRN2.RnMprod)
 #reaction_graph = build_graph(testRN2)
 #visualize_graph(testRN2)
 
@@ -102,7 +104,7 @@ print("Number of ERCs ="+str(len(erc)))
 #Plotting basics of ERC structure
 erc_sizes = [len(entry[1]) for entry in erc]
 reaction_counts = [len(entry[2]) for entry in erc]
-
+erc_names = [entry[3] for entry in erc]
 # Step 2: Sort the data
 sorted_erc_sizes = sorted(erc_sizes)
 sorted_reaction_counts = sorted(reaction_counts)
@@ -164,6 +166,35 @@ nx.draw(G, pos, with_labels=True, node_size=2000, node_color="skyblue", font_siz
 plt.title("ERC Containment Hierarchy (Forest)")
 plt.show()
 
+print("creating ERC hierarchy")
+all_chains, containment_graph =build_chains(erc_names,dc)
+print(all_chains)
+
+plot_containment_forest(erc_names,dc)
+# node_levels = calculate_levels(containment_graph)
+
+# # 2. Calculate chain lengths
+# chain_lengths = [len(chain) for chain in all_chains]
+
+# # 3. Plot histograms
+# plt.figure(figsize=(12, 5))
+
+# # Histogram for number of nodes per level
+# plt.subplot(1, 2, 1)
+# plt.bar(node_levels.keys(), node_levels.values(), color="skyblue")
+# plt.xlabel("Level")
+# plt.ylabel("Number of Nodes")
+# plt.title("Number of Nodes per Level")
+
+# # Histogram for chain lengths
+# plt.subplot(1, 2, 2)
+# plt.hist(chain_lengths, bins=range(1, max(chain_lengths) + 2), color="salmon", edgecolor="black")
+# plt.xlabel("Chain Length")
+# plt.ylabel("Number of Chains")
+# plt.title("Number of Chains by Length")
+
+# plt.tight_layout()
+# plt.show()
 
 # # print("check synergies")
 # syn=get_synergies(testRN2,erc)
