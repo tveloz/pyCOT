@@ -5,6 +5,8 @@ import mplcursors
 import webbrowser  # Allows opening URLs or local files in the system's default browser
 import os  # For handling paths and checking file existence
 from collections import defaultdict
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
 ##################################################################
 # # Plot a reaction network in HTML:
@@ -189,8 +191,9 @@ def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None,
             connections.add(edge_id)
 
     # Save the visualization to an HTML file 
-    net.save_graph(filename) 
-    return filename
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(net.html)
+    return f
  
 ##################################################################
 

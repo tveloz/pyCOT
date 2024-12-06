@@ -3,15 +3,17 @@ import os
 import sys
 # Add the root directory to the PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.stdout.reconfigure(encoding='utf-8')
 
 from pyCOT.rn_visualize import *
 from pyCOT.reaction_network import *
 from pyCOT.closure_structure import * 
 from pyCOT.file_manipulation import *  
 
+
 #####################################################################
 # # File path
-file_path = 'Txt/autopoietic.txt' 
+file_path = 'networks/testing/autopoietic.txt' 
 # file_path = 'Txt/2019fig1.txt'
 # file_path = 'Txt/2019fig2.txt'
 # file_path = 'Txt/non_connected_example.txt' 
@@ -21,18 +23,18 @@ file_path = 'Txt/autopoietic.txt'
 # # Loads the RN from the specified file
 testRN=load_pyCOT_from_file(file_path) # Creates an object (testRN) representing the RN.
 
-# print("Species:",testRN.SpStr)
+print("Species:",testRN.SpStr)
 # print("Binary vector of species:",testRN.SpBt)
 # print("Reactions:",testRN.RnStr) 
 # print("Binary vector of reactions:",testRN.RnBt)
-# print("Reactant Coefficients:",testRN.RnMsupp) 
+print("Reactant Coefficients:",testRN.RnMsupp) 
 # print("Product Coefficients:",testRN.RnMprod) 
 # print(dir(testRN)) # List of all attributes and methods of the object testRN
 
 #####################################################################
 # # Example 1: Reaction network visualisations
 #####################################################################
-# rn_get_visualization(testRN) #Generates the visualisation of the reaction network without showing it directly
+rn_get_visualization(testRN) #Generates the visualisation of the reaction network without showing it directly
 rn_visualize(testRN) #Shows the reaction network visualisation file
 
 # # Reaction network visualisations with options
