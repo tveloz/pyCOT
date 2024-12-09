@@ -1,6 +1,8 @@
 import sys
 import os
 
+import numpy as np
+
 # Añadir el directorio raíz al PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from pyCOT.rn_rustworkx import ReactionNetwork
@@ -22,7 +24,16 @@ def main():
     stoich_matrix = rn.stoichiometry_matrix()
 
     # Print the stoichiometry matrix
+    print("Stoichiometry matrix:")
     print(stoich_matrix)
+
+    vector = np.array([2,])
+
+    # Multiply the stoichiometry matrix by a vector
+    result = stoich_matrix @ vector
+
+    print("Print the result for H2: ")
+    print(result["H2"])
 
 if __name__ == "__main__":
     main()
