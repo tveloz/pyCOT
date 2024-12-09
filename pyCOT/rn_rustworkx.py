@@ -3,9 +3,10 @@ from itertools import starmap
 from numbers import Real
 from re import findall, compile
 
+import numpy as np
 from rustworkx import PyDiGraph, InvalidNode
 from pyCOT.io._utils import simplify_terms, str2int_or_float
-from pyCOT.rn_types import Species, Reaction, ReactionEdge, ReactionNode
+from pyCOT.rn_types import Species, Reaction, ReactionEdge, ReactionNode, StoichiometryMatrix
 
 
 
@@ -280,6 +281,38 @@ class ReactionNetwork(PyDiGraph):
             reactions = [self.get_reaction(r) for r in reactions]
 
         return list(reactions)
+
+
+    ########################################################################################################
+    #### Other representations #############################################################################
+    ########################################################################################################  
+
+    def stoichiometry_matrix(self) -> StoichiometryMatrix:
+        """
+        Obtain the stoichiometry matrix of the reaction network.
+
+        Returns
+        -------
+        StoichiometryMatrix
+            The matrix of stoichiometric coefficients. Each row corresponds to a species and each column corresponds to a reaction.
+        """
+        species = sorted(self.species(), key=lambda s: s.index)
+        species_names = [s.name for s in species]
+        reactions = sorted(self.reactions(), key=lambda r: r.node.index)
+        reactions_names = [r.name() for r in reactions]
+        stoich_matrix = np.zeros((len(species), len(reactions)), dtype=float)
+
+        species_index_map = {s.index: idx for idx, s in enumerate(species)}
+
+        for j, reaction in enumerate(reactions):
+            for edge in reaction.edges:
+                if edge.type == "reactant":
+                    stoich_matrix[species_index_map[edge.source_index], j] -= edge.coefficient
+                elif edge.type == "product":
+                    stoich_matrix[species_index_map[edge.target_index], j] += edge.coefficient
+
+        return StoichiometryMatrix(stoich_matrix, species_names, reactions_names)
+
 
 
     ########################################################################################################
