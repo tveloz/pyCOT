@@ -14,9 +14,9 @@ from pyCOT.file_manipulation import *     # Includes utilities to load and save 
 from pyCOT.rn_visualize import *          # Functions for visualizing reaction networks as graphs or diagrams.
 from pyCOT.hierarchy_visualize import *   # Tools for creating hierarchical visualizations of network structures.
 from pyCOT.simulations import *           # General simulation tools for dynamic systems modeled in pyCOT.
-from pyCOT.rn_simulations import *        # Specialized simulation functions for reaction networks.
 from pyCOT.abstractions import *          # Provides methods to compute abstractions, such as threshold-based state simplifications.
 from pyCOT.plot_dynamics import *         # Functions for plotting dynamic behaviors, such as time series or abstracted data.
+from pyCOT.rn_types import StoichiometryMatrix
 
 # # Load the path of the .txt file of the reaction network 
 file_path = 'Txt/autopoietic.txt' 
@@ -33,7 +33,9 @@ x_inicial = generate_state_vector(len(testRN.SpStr))
 print(x_inicial)
 
 # Calculates the stoichiometric matrix associated with the reaction network
-S=stoichiometric_matrix(testRN) 
+matrix_data=stoichiometric_matrix(testRN) 
+print(matrix_data)
+S=StoichiometryMatrix(matrix_data, species=testRN.SpStr, reactions=testRN.RnStr) 
 print(S)
 
 # Simulates the time series for 20 iterations, using the stoichiometric matrix and the initial vector of states
@@ -101,7 +103,11 @@ y0 = [
 ]
  
 # Solve ODE
-sol = solve_ode(testRN, k, t_span, y0, n_steps=100)
+time_series = solve_ode(testRN, k, t_span, y0,n_steps=500)
+print(time_series)
+
+# Plots the time series of ODE
+plot_series_ode(time_series)
 
 ###########################################################################
 # Histograms

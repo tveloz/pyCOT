@@ -1,8 +1,18 @@
-import matplotlib.pyplot as plt
-import networkx as nx 
+from pyvis.network import Network 
+import networkx as nx
 import pandas as pd
+import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from matplotlib.colors import to_hex
+from matplotlib.colors import to_hex  
+import mplcursors
+import webbrowser  # Allows opening URLs or local files in the system's default browser
+import os  # For handling paths and checking file existence
+from collections import defaultdict
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
+import tempfile
+ 
+
 
 ######################################################################################
 # Plots the time series of ODE concentrations and abstractions
@@ -143,7 +153,7 @@ def plot_abstraction_sets(abstract_time_series, xlabel="Time",ylabel="Species",t
     plt.show()  # Display the plot
 
 ######################################################################################
-# Abstraction graph static and movie
+# Abstraction graph static and movie 
 ######################################################################################
 
 def plot_static_abstraction_graph(abstract_time_series, title="Static Abstraction Graph"):
@@ -213,6 +223,191 @@ def plot_static_abstraction_graph(abstract_time_series, title="Static Abstractio
     plt.title(title)  # Adds a title to the graph
     plt.axis("off")  # Hides the axes
     plt.show()  # Displays the graph
+
+def plot_static_abstraction_graph_hierarchy(abstract_time_series, title="Hierarchical Abstraction Graph"):
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import to_hex
+    import networkx as nx
+    import pandas as pd
+
+    abstractions = abstract_time_series["Abstraction"]
+    times = abstract_time_series["Time"]
+    nodes = abstractions.apply(tuple).value_counts()
+
+    # Compute transition frequencies
+    transitions = [(tuple(abstractions[i]), tuple(abstractions[i + 1])) for i in range(len(abstractions) - 1)]
+    transitions_freq = pd.Series(transitions).value_counts()
+
+    # Create a directed graph
+    G = nx.DiGraph()
+
+    # Add nodes with attributes
+    for node, freq in nodes.items():
+        node_times = times[abstractions.apply(tuple) == node]
+        weighted_time = (node_times * freq).mean()
+        normalized_time = (weighted_time - times.min()) / (times.max() - times.min())
+        color = to_hex(plt.cm.coolwarm(1 - normalized_time))
+        G.add_node(node, size=freq, color=color)
+
+    # Add edges for transitions
+    for (source, target), weight in transitions_freq.items():
+        G.add_edge(source, target, weight=weight)
+
+    # Add edges based on containment relationships
+    node_list = list(G.nodes)
+    for i, smaller in enumerate(node_list):
+        for j, larger in enumerate(node_list):
+            if i != j and set(smaller).issubset(set(larger)):  # Containment relationship
+                if not G.has_edge(smaller, larger):  # Avoid duplicate edges
+                    G.add_edge(smaller, larger, weight=1)  # Default weight
+
+    # Compute hierarchical positions based on containment
+    levels = {}
+    for node in G.nodes:
+        level = sum(1 for other in G.nodes if set(node).issubset(set(other)) and node != other)
+        levels[node] = level
+
+    pos = {node: (0, -level) for node, level in levels.items()}
+
+    # Create the plot
+    plt.figure(figsize=(12, 8))
+
+    # Draw nodes
+    node_sizes = [G.nodes[node]["size"] * 100 for node in G.nodes]
+    node_colors = [G.nodes[node]["color"] for node in G.nodes]
+    nx.draw_networkx_nodes(G, pos, node_size=node_sizes, node_color=node_colors)
+
+    # Draw edges
+    edge_weights = [G.edges[edge].get("weight", 1) for edge in G.edges]  # Use default weight
+    nx.draw_networkx_edges(G, pos, width=[w / 2 for w in edge_weights], alpha=0.7)
+
+    # Draw node labels
+    node_labels = {node: f"({', '.join(map(str, node))})" for node in G.nodes}
+    nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=8, font_color="black")
+
+    # Title and display
+    plt.title(title)
+    plt.axis("off")
+    plt.show()
+
+
+
+
+
+
+
+
+
+
+
+def plot_static_abstraction_graph_html_with_hierarchy(
+    abstract_time_series,
+    filename="static_abstraction_graph_hierarchy.html",
+    node_size_scale=100,
+    edge_width_scale=0.5,
+    default_color="skyblue",
+    title="Static Abstraction Graph with Hierarchy"
+):
+    """
+    Generates an HTML visualization of a static abstraction graph considering hierarchy based on subset relationships.
+
+    Parameters:
+    abstract_time_series (pd.DataFrame): DataFrame with columns:
+        - 'Time': Time of occurrence for each abstraction (numeric).
+        - 'Abstraction': Abstraction sets represented as iterables.
+    filename (str): Name of the output HTML file. Defaults to "static_abstraction_graph_hierarchy.html".
+    node_size_scale (float): Scaling factor for node sizes.
+    edge_width_scale (float): Scaling factor for edge widths.
+    default_color (str): Default color for nodes.
+    title (str): Title of the graph. Defaults to "Static Abstraction Graph with Hierarchy".
+
+    Returns:
+    str: Filename of the generated HTML file.
+    """
+    # Extract data from DataFrame
+    abstractions = abstract_time_series["Abstraction"]
+    times = abstract_time_series["Time"]
+    nodes = abstractions.apply(tuple).value_counts()
+
+    # Compute transition frequencies
+    transitions = [(tuple(abstractions[i]), tuple(abstractions[i + 1])) for i in range(len(abstractions) - 1)]
+    transitions_freq = pd.Series(transitions).value_counts()
+
+    # Create hierarchical levels based on subset relationships
+    hierarchy = {}
+    sorted_nodes = sorted(nodes.keys(), key=lambda x: (len(x), x))  # Sort by size of the set and lexicographically
+    for node in sorted_nodes:
+        hierarchy[node] = []
+        for potential_parent in sorted_nodes:
+            if set(node).issubset(set(potential_parent)) and node != potential_parent:
+                hierarchy[node].append(potential_parent)
+
+    # Initialize the PyVis network
+    net = Network(height="750px", width="100%", directed=True, notebook=False)
+    net.set_options(f"""
+    {{
+      "edges": {{
+        "smooth": false,
+        "color": "gray"
+      }},
+      "physics": {{
+        "enabled": false,
+        "stabilization": {{
+          "enabled": true
+        }}
+      }},
+      "layout": {{
+        "hierarchical": {{
+          "enabled": true,
+          "direction": "DU",
+          "sortMethod": "directed"
+        }}
+      }}
+    }}
+    """)
+
+    # Add nodes
+    for node, freq in nodes.items():
+        node_times = times[abstractions.apply(tuple) == node]
+        weighted_time = (node_times * freq).mean()
+        normalized_time = (weighted_time - times.min()) / (times.max() - times.min())
+        color = to_hex(plt.cm.coolwarm(1 - normalized_time)) if not pd.isna(normalized_time) else default_color
+        net.add_node(
+            str(node),
+            label=f"{node}",
+            title=f"Freq: {freq}, Avg Time: {weighted_time:.2f}" if not pd.isna(weighted_time) else "N/A",
+            color=color,
+            size=freq * node_size_scale
+        )
+
+    # Add edges based on hierarchy
+    for node, parents in hierarchy.items():
+        for parent in parents:
+            net.add_edge(str(parent), str(node), width=1, color="black", title="Subset Relationship")
+
+    # Add transitions as additional edges
+    for (source, target), weight in transitions_freq.items():
+        net.add_edge(str(source), str(target), weight=weight * edge_width_scale, title=f"Freq: {weight}", color="gray")
+
+    # Generate HTML
+    net.html = net.generate_html()
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(net.html)
+    return filename
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def plot_abstraction_graph_movie(abstract_time_series, interval=400, title="Abstraction Graph - Time"):
     """
