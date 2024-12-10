@@ -67,3 +67,18 @@ def test_is_outflow_true(reaction_node, reaction_edge_reactant):
 def test_is_outflow_false(reaction_node, reaction_edge_reactant, reaction_edge_product):
     reaction = Reaction(reaction_node, [reaction_edge_reactant, reaction_edge_product])
     assert not reaction.is_outflow()
+
+def test_stoichiometric_coefficients_single_reactant(reaction_edge_reactant):
+    reaction_node = ReactionNode(index=2, name="R1", rate=0.5)
+    reaction = Reaction(node=reaction_node, edges=[reaction_edge_reactant])
+    assert reaction.stoichiometric_coefficients() == [1.0]
+
+def test_stoichiometric_coefficients_single_product(reaction_edge_product):
+    reaction_node = ReactionNode(index=2, name="R1", rate=0.5)
+    reaction = Reaction(node=reaction_node, edges=[reaction_edge_product])
+    assert reaction.stoichiometric_coefficients() == [2.0]
+
+def test_stoichiometric_coefficients_multiple_edges(reaction_edge_reactant, reaction_edge_product):
+    reaction_node = ReactionNode(index=2, name="R1", rate=0.5)
+    reaction = Reaction(node=reaction_node, edges=[reaction_edge_reactant, reaction_edge_product])
+    assert reaction.stoichiometric_coefficients() == [1.0, 2.0]
