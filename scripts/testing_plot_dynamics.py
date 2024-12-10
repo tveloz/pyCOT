@@ -6,6 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pyCOT.abstractions import abstraction_ordinary
 from pyCOT.plot_dynamics import *
+from pyCOT.rn_visualize import *
 
 #########################################################################
 # Time series of species concentrations
@@ -27,26 +28,29 @@ threshold = 0.5  # Fixed threshold
 # abstract_time_series = abstraction_ordinary(time_series)
 abstract_time_series = abstraction_ordinary(time_series, threshold)
 print(abstract_time_series)
+
 #########################################################################
 
 #########################################################################
 # Examples of Plots
 #########################################################################
 # # Plot of the time series
-# Plot the time series of species concentrations
-plot_series_ode(time_series)
+# # Plot the time series of species concentrations
+# plot_series_ode(time_series)
 
-# # Plot of the number of abstractions
-plot_abstraction_size(abstract_time_series)
+# # # Plot of the number of abstractions
+# plot_abstraction_size(abstract_time_series)
 
-# # Plot the abstractions sorted by size
-plot_abstraction_sets(abstract_time_series)
+# # # Plot the abstractions sorted by size
+# plot_abstraction_sets(abstract_time_series)
 
 ###########################################################################
 # # Graphs
 # # Static graph
-# plot_static_abstraction_graph(abstract_time_series)
-
+plot_static_abstraction_graph(abstract_time_series) 
+plot_static_abstraction_graph_hierarchy(abstract_time_series) 
+# plot_static_abstraction_graph_html_with_hierarchy(abstract_time_series)
+ 
 # # Movie
 # plot_abstraction_graph_movie(abstract_time_series, interval=1000)
 
