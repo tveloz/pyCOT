@@ -99,7 +99,6 @@ class ReactionNetwork:
         #Output:  List of reactants of those reactions
         if not isinstance(RnStr, list):
             RnStr = [RnStr]
-
         reactions_bitarray = dc.get_bt_from_names(RnStr, self.RnStr)
         specs = bt(len(self.SpStr))
         specs.setall(0)

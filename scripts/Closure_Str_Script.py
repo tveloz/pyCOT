@@ -55,7 +55,7 @@ file_path = 'networks/testing/Farm.txt'
 # file_path = 'networks/biomodels_interesting/central_ecoli.txt'
 # file_path = 'networks/biomodels_all_txt/BIOMD0000001044.txt'
 file_path = 'networks/biomodels_all_txt/BIOMD0000001002.txt'
-# file_path = 'networks/GPT_Generated/EColi.txt   '
+file_path = 'networks/GPT_Generated/EColi.txt'
 #file_path = '../../networks/biomodels_interesting/BIOMD0000000237_manyOrgs.xml'
 testRN2 = load_pyCOT_from_file(file_path)
 
@@ -167,7 +167,7 @@ plt.title("ERC Containment Hierarchy (Forest)")
 plt.show()
 
 print("creating ERC hierarchy")
-all_chains, containment_graph =build_chains(erc_names,dc)
+all_chains, containment_graph = build_chains(erc_names,dc)
 print(all_chains)
 
 plot_containment_forest(erc_names,dc)
