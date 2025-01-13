@@ -13,38 +13,78 @@ import tempfile
 # # Plot a reaction network in HTML:
 ##################################################################
 def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None, 
-                 global_species_color=None, global_reaction_color=None,
-                 global_input_edge_color=None, global_output_edge_color=None, 
-                 node_size=1000, curvature=None, physics_enabled=False, 
-                 filename="reaction_network.html"):
+                         global_species_color=None, global_reaction_color=None,
+                         global_input_edge_color=None, global_output_edge_color=None, 
+                         node_size=20, shape_species_node='dot', shape_reactions_node='box', 
+                         curvature=None, physics_enabled=False, 
+                         filename="reaction_network.html"):
     """
-    Visualizes a reaction network in an interactive HTML file. 
+    Visualizes a reaction network as an interactive HTML file.
+
+    This function uses a given reaction network (RN) to generate a visualization in which 
+    species and reactions are represented as nodes, and interactions are represented as edges. 
+    The resulting visualization is saved to an HTML file that can be opened in a browser.
 
     Parameters:
-    - RN: ReactionNetwork object 
-    - lst_color_spcs (list, optional): List of tuples that associates specific colors with species (e.g., [('cyan', ['A', 'B'])]).
-    - lst_color_reacs (list, optional): List of tuples that associates specific colors with reactions (e.g., [('gray', ['R1', 'R2'])]).
-    - global_species_color (str, optional): Default color for species, if no other color is specified.
-    - global_reaction_color (str, optional): Default color for reactions, if no other color is specified.
-    - global_input_edge_color (str, optional): Color of input arrows (consumption) to reactions.
-    - global_output_edge_color (str, optional): Color of output arrows (production) from reactions.
-    - node_size (int, optional): Base size for network nodes.
-    - curvature (str, optional): None=False (Without curvature), True=curvedCCW (Counter Clockwise)
-    - filename (str, optional): Name of the output HTML file.    
+    ----------
+    RN : ReactionNetwork
+        An object representing the reaction network, which includes species (RN.SpStr), 
+        reactions (RN.RnStr), and their stoichiometric relationships(RN.RnMsupp,RN.RnMprod).
+    
+    lst_color_spcs : list of tuples, optional
+        A list of tuples specifying colors for specific species. Each tuple should have the 
+        format (`color`, `species_list`), where `species_list` is a list of species names 
+        to be assigned the given `color`. Example: `[('cyan', ['A', 'B'])]`.
+    
+    lst_color_reacs : list of tuples, optional
+        A list of tuples specifying colors for specific reactions. Each tuple should have 
+        the format (`color`, `reaction_list`), where `reaction_list` is a list of reaction 
+        names to be assigned the given `color`. Example: `[('gray', ['R1', 'R2'])]`.
+    
+    global_species_color : str, optional
+        Default color (`'cyan'`) for all species nodes if no specific color is assigned in `lst_color_spcs`.
+    
+    global_reaction_color : str, optional
+        Default color (`'lightgray'`) for all reaction nodes if no specific color is assigned in `lst_color_reacs`.
+    
+    global_input_edge_color : str, optional
+        Color for edges representing inputs (species consumed in reactions). Default is `'red'`.
+    
+    global_output_edge_color : str, optional
+        Color for edges representing outputs (species produced in reactions). Default is `'green'`.
+    
+    node_size : int, optional
+        The size of the nodes in the visualization. Default is `20`.
+    
+    shape_species_node : str, optional
+        Shape of the nodes representing species. Common options include `'dot'`, `'circle'`, `'box'`, `'ellipse'`, etc. Default is `'dot'`.
+    
+    shape_reactions_node : str, optional
+        Shape of the nodes representing reactions. Common options include `'box'`, `'dot'`,  `'ellipse'`, etc. Default is `'box'`.
+    
+    curvature : str or None, optional
+        Determines whether edges are curved or straight. If `'curvedCCW'` (curved counter-clockwise), 
+        edges will be curved. Default is `None` (straight edges).
+    
+    physics_enabled : bool, optional
+        If `True`, enables physics-based positioning for the nodes in the visualization. Default is `False`.
+    
+    filename : str, optional
+        Name of the output HTML file where the visualization will be saved. Default is `"reaction_network.html"`.
 
     Returns:
-    - None. The function saves the visualization to an HTML file specified by `filename`.
+    -------
+    str
+        The filename of the saved HTML file.
 
-    Example of usage: 
-    # Define the file path where the reaction network model is located.
-    file_path = 'Txt/Farm.txt'  
+    Example:
+    -------
+    # Load a reaction network object
+    file_path = 'Txt/Farm.txt'
+    testRN = load_pyCOT_from_file(file_path)
 
-    # Load the reaction network from the specified file in `file_path`.
-    testRN = load_pyCOT_from_file(file_path)  
-
-    # Visualize the reaction network `testRN`, assigning the color yellow to species 's1' and saving the result in an HTML file.
-    rn_visualize(testRN.RN, lst_color_spcs=[('yellow', ['s1'])], filename="Reaction_network.html")  
-   
+    # Visualize the reaction network, assigning yellow to species 's1'
+    rn_get_visualization(testRN.RN, lst_color_spcs=[('yellow', ['s1'])], filename="reaction_network.html")
     """
  
     # Initialize the network visualization with specific size, settings, and directionality
@@ -60,7 +100,7 @@ def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None,
     }}
     """
     net.set_options(options)
-
+    ######################################
     # Default colors: Define fallback colors for species, reactions, and edges if not provided
     default_species_color = global_species_color or 'cyan'
     default_reaction_color = global_reaction_color or 'lightgray'
@@ -103,6 +143,7 @@ def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None,
         # Agregar el nombre de la reacción a la lista de nombres de reacciones
         reaction_names.append(reaction_name)
 
+    ###################################### 
     # Identify all species in the network to check their presence in lst_color_spcs
     species_vector = sorted(set([spcs for reactants, products in RN_dict.values() for spcs, _ in reactants + products]))
     species_set = set(species_vector)  # Convert to a set for easier comparison
@@ -126,20 +167,20 @@ def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None,
                     print(f"Warning: The reaction '{reaction}' specified in lst_color_reacs does not belong to the network reactions.")
     
     # Calculate node size based on character length of species name for better visualization 
-    longest_species = max(RN.SpStr, key=len)
-    node_size = len(longest_species) * 10   
+    # longest_species = max(RN.SpStr, key=len)
+    # node_size = len(longest_species) * 10   
     # Add species nodes with color defined in `lst_color_spcs` or global/default color
     for species in species_vector:
         color = species_colors.get(species, default_species_color)
-        net.add_node(species, shape='circle', label=species, color=color, 
+        net.add_node(species, shape=shape_species_node, label=species, color=color, 
                      size=node_size, font={'size': 14, 'color': 'black'})
  
-################################################################################################ 
+    ######################################
 
     # Add reaction nodes with color defined in `lst_color_reacs` or global/default color
     for reaction in reaction_vector:
         color = reaction_colors.get(reaction, default_reaction_color)
-        net.add_node(reaction, shape='box', label=reaction, color=color, size=10, font={'size': 14, 'color': 'black'})
+        net.add_node(reaction, shape=shape_reactions_node, label=reaction, color=color, size=10, font={'size': 14, 'color': 'black'})
 
     ######################################
     # Add edges and labels
@@ -190,35 +231,44 @@ def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None,
 
             # Add edge to connections set to avoid redundant edges
             connections.add(edge_id)
+    
+    ######################################            
     # Save the visualization to an HTML file 
     net.html = net.generate_html()
     with open(filename, "w", encoding="utf-8") as f:
         f.write(net.html)
     return filename
 
-##################################################################
-
-
-
-def rn_visualize(RN, lst_color_spcs=None, lst_color_reacs=None, 
+###########################################################################################
+def rn_visualize_html(RN, lst_color_spcs=None, lst_color_reacs=None, 
                  global_species_color=None, global_reaction_color=None,
                  global_input_edge_color=None, global_output_edge_color=None, 
-                 node_size=1000, curvature=None, physics_enabled=False, 
+                 node_size=20, shape_species_node='dot', shape_reactions_node='box', 
+                 curvature=None, physics_enabled=False, 
                  filename="reaction_network.html"):
-    
+    """
+    Example:
+    -------
+    # Load a reaction network object
+    file_path = 'Txt/Farm.txt'
+    testRN = load_pyCOT_from_file(file_path)
+
+    # Visualize the reaction network and open the HTML file in a browser
+    rn_visualize_html(testRN.RN, lst_color_spcs=[('yellow', ['s1'])], filename="reaction_network.html")
+    """    
     # Call the `rn_get_visualization` function to generate the HTML file
     rn_get_visualization(
         RN, lst_color_spcs, lst_color_reacs, 
         global_species_color, global_reaction_color,
         global_input_edge_color, global_output_edge_color, 
-        node_size=node_size, curvature=curvature, 
-        physics_enabled=physics_enabled, filename=filename
+        node_size=node_size, shape_species_node=shape_species_node, shape_reactions_node=shape_reactions_node,
+        curvature=curvature, physics_enabled=physics_enabled, filename=filename
     )
     
     # Convert to an absolute path
     abs_path = os.path.abspath(filename) 
-    print("absolute path")
-    print(abs_path)
+    # print("absolute path")
+    # print(abs_path)
     # Check if the file was created correctly
     if not os.path.isfile(abs_path):
         print(f"File not found at {abs_path}")  # Additional message for debugging
@@ -228,11 +278,24 @@ def rn_visualize(RN, lst_color_spcs=None, lst_color_reacs=None,
     print(f"The reaction network visualization was saved to: {abs_path}")
     
     # Open the HTML file in the default browser
-    webbrowser.open(f"file://{abs_path}") 
+    webbrowser.open(f"file://{abs_path}")
 
-##################################################################
+
+
+
+
+
+
+
+
+
+
+###########################################################################################
 # # Plot the Hierarchy
-##################################################################
+###########################################################################################
+
+import networkx as nx
+from collections import defaultdict
 
 def hierarchy_visualize(input_data):
     """
@@ -245,9 +308,14 @@ def hierarchy_visualize(input_data):
     will be at lower levels, and interactive cursors are used to view set elements 
     when hovering over nodes.
     """
-    
-    # Create a list of tuples (set name, set) for reference
-    Set_of_sets = [(set(s)) for s in input_data]
+    # Convert each subset to a set and then to a list to remove duplicates 
+    unique_subsets = []
+    for sublist in input_data:
+        if set(sublist) not in [set(x) for x in unique_subsets]:
+            unique_subsets.append(sublist)
+
+    # Create a list of unique sets for reference
+    Set_of_sets = [set(s) for s in unique_subsets]
     
     # Dictionary to store the containment graph
     containment_graph = defaultdict(list)
@@ -257,9 +325,6 @@ def hierarchy_visualize(input_data):
     def is_subset(subset, superset):
         """Checks if `subset` is contained within `superset`."""
         return subset.issubset(superset) 
-    # issubset() is a method that returns:
-    # True if all elements of the subset are present in the superset. 
-    # Otherwise, it returns False.
     #######################################################################
 
     # Sort the sets by size (from smallest to largest)
@@ -281,7 +346,8 @@ def hierarchy_visualize(input_data):
     
     # Print tuple with labels and subsets
     label_set_pairs = [(label, s) for label, s in zip(Set_names, Set_of_sets)]
-    print("Tuples of Labels and Subsets:", label_set_pairs)
+    print("Tuples of Labels and Subsets:")
+    print(label_set_pairs)
 
     # Create a directed graph
     G = nx.DiGraph()
@@ -289,6 +355,7 @@ def hierarchy_visualize(input_data):
     # Add nodes to the graph
     for name in Set_names:
         G.add_node(name)
+    
     #######################################################################
     # Add nodes and direct containment relationships
     for i, child_set in enumerate(Set_of_sets):
@@ -365,5 +432,202 @@ def hierarchy_visualize(input_data):
     
     plt.show()  # Display the graph
 
+    # Extract positions and store in a vector
+    node_positions = {node: pos[node] for node in Set_names}  # Return positions in a dictionary form
+    # Return the dictionary with node positions
+    return node_positions
 ##################################################################
 
+def hierarchy_get_visualization_html(
+    input_data, 
+    node_size=20, 
+    node_color="cyan", 
+    edge_color="gray", 
+    shape_node='dot',
+    lst_color_subsets=None,
+    node_font_size=14, 
+    edge_width=2,  
+    filename="hierarchy_visualization.html"
+):
+    """
+    Visualizes the containment hierarchy among sets with automatic positions (inverted hierarchy).
+    
+    Args:
+        input_data (list): List of lists or sets, where each element represents a set.
+        node_size (int): Size of the nodes in the visualization.
+        node_color (str): Default color of the nodes in the visualization.
+        edge_color (str): Color of the edges in the visualization.
+        shape_node (str): Specifies the shape of the nodes in the visualization, options include `'dot'`, `'square'`, `'triangle'`, `'star'`, `'diamond'` (default is `'dot'`).
+        lst_color_subsets (list): List of tuples with color and subsets to highlight specific nodes. Example: lst_color_subsets = [("red", [{"A", "B"}, {"A", "C"}])]
+        node_font_size (int): Font size of the node labels.
+        edge_width (int): Width of the edges. 
+        filename (str): Name of the output HTML file.
+    
+    Saves an interactive HTML graph with automatic positioning (smallest sets at the bottom).
+    """
+    # Convert input data to unique sets
+    unique_subsets = []
+    for sublist in input_data:
+        if set(sublist) not in [set(x) for x in unique_subsets]:
+            unique_subsets.append(sublist)
+
+    # Create a list of unique sets for reference
+    Set_of_sets = [set(s) for s in unique_subsets]
+
+    # Sort the sets by size (from smallest to largest)
+    Set_of_sets.sort(key=lambda x: len(x))
+    
+    # Create set names based on their level
+    Set_names = [f"S{i+1}" for i in range(len(Set_of_sets))]
+    
+    # Create a dictionary of labels for the nodes
+    labels = {f"S{i+1}": f"{', '.join(sorted(s))}" for i, s in enumerate(Set_of_sets)}
+
+    # Create set labels to display when hovering over nodes
+    cursor_labels = [
+        ', '.join(sorted(list(s))) if s else '∅'  # Use ∅ for empty sets
+        for s in Set_of_sets
+    ]
+
+    # Initialize the PyVis network
+    net = Network(height="750px", width="100%", directed=True, notebook=False)
+    net.set_options(f"""
+    {{
+      "nodes": {{
+        "shape": "{shape_node}",  
+        "font": {{
+        "size": {node_font_size},  
+        "align": "center"  
+        }},
+        "borderWidth": 2,  
+        "borderColor": "black"  
+      }},
+      "edges": {{
+        "smooth": false,
+        "color": "{edge_color}",
+        "width": {edge_width}  
+      }},
+      "physics": {{
+        "enabled": false,
+        "stabilization": {{
+          "enabled": false
+        }},
+        "hierarchicalRepulsion": {{
+          "nodeDistance": 150
+        }}
+      }},
+      "layout": {{
+        "hierarchical": {{
+          "enabled": true,
+          "direction": "DU",  
+          "sortMethod": "directed"
+        }}
+      }}
+    }}
+    """) 
+
+    # Assign colors to nodes based on lst_color_subsets
+    color_map = {}
+    if lst_color_subsets:
+        for color, subsets in lst_color_subsets:
+            for subset in subsets:
+                for i, s in enumerate(Set_of_sets):
+                    if s == set(subset):
+                        color_map[Set_names[i]] = color
+
+    # Add nodes to the graph
+    for name, hover_text in zip(Set_names, cursor_labels):
+        color = color_map.get(name, node_color)  # Usa el color específico si está definido, si no usa el predeterminado
+        net.add_node(
+            name,  # Identificador del nodo
+            label=name,  # La etiqueta del nodo que se mostrará dentro
+            title=hover_text,  # Texto que aparece al pasar el cursor
+            color=color,  # Color del nodo
+            size=node_size,  # Tamaño del nodo
+            font={"size": node_font_size},  # Tamaño de la fuente de la etiqueta
+            shape=shape_node  # Forma del nodo (círculo, para asegurar que la etiqueta esté dentro)
+        ) 
+
+    # Add edges based on containment relationships
+    for i, child_set in enumerate(Set_of_sets):
+        for j, parent_set in enumerate(Set_of_sets):
+            if i < j and child_set.issubset(parent_set):  # Add edge if child is a subset of parent
+                # Ensure no intermediate set exists between child and parent
+                is_direct = True
+                for k, intermediate_set in enumerate(Set_of_sets):
+                    if i < k < j and child_set.issubset(intermediate_set) and intermediate_set.issubset(parent_set):
+                        is_direct = False
+                        break
+                if is_direct:
+                    net.add_edge(Set_names[i], Set_names[j])
+
+    # Print tuple with labels and subsets
+    label_set_pairs = [(label, s) for label, s in zip(Set_names, Set_of_sets)]
+    print("Tuples of Labels and Subsets:")
+    print(label_set_pairs)
+
+    # Save the visualization to an HTML file 
+    net.html = net.generate_html() 
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(net.html)
+    return net, label_set_pairs
+
+
+
+
+
+##################################################################
+   
+def hierarchy_visualize_html(
+    input_data, 
+    node_size=20, 
+    node_color="cyan", 
+    edge_color="gray", 
+    shape_node='dot',    
+    lst_color_subsets=None, 
+    node_font_size=14, 
+    edge_width=2,  
+    filename="hierarchy_visualization.html"
+):        
+    """
+    Wrapper function to generate and visualize the containment hierarchy among sets as an HTML file.
+    
+    Args:
+        input_data (list): List of lists or sets, where each element represents a set.
+        node_size (int): Size of the nodes in the visualization.
+        node_color (str): Default color of the nodes in the visualization.
+        edge_color (str): Color of the edges in the visualization.
+        shape_node (str): Specifies the shape of the nodes in the visualization, options include `'dot'`, `'square'`, `'triangle'`, `'star'`, `'diamond'` (default is `'dot'`).
+        lst_color_subsets (list): List of tuples with color and subsets to highlight specific nodes. Example: lst_color_subsets = [("red", [{"A", "B"}, {"A", "C"}])]
+        node_font_size (int): Font size of the node labels.
+        edge_width (int): Width of the edges. 
+        filename (str): Name of the output HTML file.
+    
+    Generates the visualization and opens it in the default web browser.
+    """
+    # Call the `hierarchy_get_visualization_html` function to generate the HTML file with the additional parameters
+    hierarchy_get_visualization_html(
+        input_data,  
+        node_size=node_size, 
+        node_color=node_color, 
+        edge_color=edge_color, 
+        shape_node=shape_node,
+        lst_color_subsets=lst_color_subsets,  
+        node_font_size=node_font_size, 
+        edge_width=edge_width,  
+        filename=filename
+    )
+    
+    # Convert to an absolute path
+    abs_path = os.path.abspath(filename) 
+    
+    # Check if the file was created correctly
+    if not os.path.isfile(abs_path):
+        print(f"File not found at {abs_path}")  # Additional message for debugging
+        raise FileNotFoundError(f"The file {abs_path} was not found. Check if `hierarchy_get_visualization_html` generated the file correctly.")
+    
+    # Inform the user about the file's location
+    print(f"The hierarchy visualization was saved to: {abs_path}")
+    
+    # Open the HTML file in the default browser
+    webbrowser.open(f"file://{abs_path}")
