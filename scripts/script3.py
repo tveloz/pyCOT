@@ -19,7 +19,7 @@ import sys # Imports the 'sys' module to interact with the Python interpreter
 
 # Add the root directory to the PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # Adds the project's root directory to PYTHONPATH to allow importing modules from that location
-sys.stdout.reconfigure(encoding='utf-8')                                     # Set the standard output encoding to UTF-8
+sys.stdout.reconfigure(encoding='utf-8')                                     # Set the standard output encoding to UTF-8 (please comment out if using Windows)
 
 # Imports from the pyCOT library 
 from pyCOT.file_manipulation import load_pyCOT_from_file # Import only the load_pyCOT_from function of the file_manipulation module to load RN  
@@ -36,12 +36,12 @@ from pyCOT.closure_structure import *     # Contains functions to compute and an
 # (a) Load a reaction network
 #####################################################################
 # # File path
-file_path = 'Txt/autopoietic.txt' 
+#file_path = '../Txt/autopoietic.txt' 
 # file_path = 'Txt/2019fig1.txt'
 # file_path = 'Txt/2019fig2.txt'
-# file_path = 'Txt/non_connected_example.txt' 
-# file_path = 'Txt/PassiveUncomforableIndignated_problemsolution.txt'
-# file_path = 'Txt/Farm.txt' 
+# file_path = '../Txt/non_connected_example.txt' 
+# file_path = '../Txt/PassiveUncomforableIndignated_problemsolution.txt'
+file_path = '../Txt/Farm.txt' 
 
 # # Loads the RN from the specified file
 testRN = load_pyCOT_from_file(file_path)           # Creates an object called testRN, which represents the RN
@@ -121,19 +121,19 @@ print(mak_abstract_time_series)
 # (e) plot static dynamics graphs in both cases 
 ##################################################################### 
 # # Static graph with nodes of semi-organisations and abstractions 
-# plot_static_abstraction_graph_hierarchy_html(random_abstract_time_series)
-# plot_static_abstraction_graph_hierarchy_html(mak_abstract_time_series)            
+plot_static_abstraction_graph_hierarchy_html(random_abstract_time_series)
+plot_static_abstraction_graph_hierarchy_html(mak_abstract_time_series)            
  
 ##################################################################### 
 # (f) plot dynamic movie in both cases
 #####################################################################
 # # # Movie  
-# plot_abstraction_graph_movie_html(random_abstract_time_series) # Open the HTML file with the animation of the abstraction graph
-# plot_abstraction_graph_movie_html(mak_abstract_time_series)    # Open the HTML file with the animation of the abstraction graph
+plot_abstraction_graph_movie_html(random_abstract_time_series) # Open the HTML file with the animation of the abstraction graph
+plot_abstraction_graph_movie_html(mak_abstract_time_series)    # Open the HTML file with the animation of the abstraction graph
 
 # # # Movie with nodes of semi-organisations and abstractions 
-# film_semiorganizations_abstractions_html(random_abstract_time_series,input_data) # Open the HTML file with the animation of the abstraction graph
-# film_semiorganizations_abstractions_html(mak_abstract_time_series,input_data)    # Open the HTML file with the animation of the abstraction graph
+film_semiorganizations_abstractions_html(random_abstract_time_series,input_data) # Open the HTML file with the animation of the abstraction graph
+film_semiorganizations_abstractions_html(mak_abstract_time_series,input_data)    # Open the HTML file with the animation of the abstraction graph
 
 # # Plot Hasse diagram 
-# plot_hasse_diagram(testRN.SpStr) # Only can be plotted for RN with less than 10 species, because the number of nodes would be 2^n.
+plot_hasse_diagram(testRN.SpStr) # Only can be plotted for RN with less than 10 species, because the number of nodes would be 2^n.

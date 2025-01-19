@@ -19,7 +19,7 @@ import sys # Imports the 'sys' module to interact with the Python interpreter
 
 # Add the root directory to the PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # Adds the project's root directory to PYTHONPATH to allow importing modules from that location
-sys.stdout.reconfigure(encoding='utf-8')                                     # Set the standard output encoding to UTF-8
+sys.stdout.reconfigure(encoding='utf-8')                                     # Set the standard output encoding to UTF-8 (pls comment out if using Windows)
 
 # Imports from the pyCOT library 
 from pyCOT.file_manipulation import load_pyCOT_from_file # Import only the load_pyCOT_from function of the file_manipulation module to load RN  
@@ -29,30 +29,30 @@ from pyCOT.rn_visualize import *                         # Imports all functions
 # (a) Load reaction network
 #####################################################################
 # # File path
-# file_path = 'Txt/autopoietic.txt' 
-# file_path = 'Txt/2019fig1.txt'
-# file_path = 'Txt/2019fig2.txt'
-# file_path = 'Txt/non_connected_example.txt' 
-# file_path = 'Txt/PassiveUncomforableIndignated_problemsolution.txt'
-file_path = 'Txt/Farm.txt' 
+#file_path = '../Txt/autopoietic.txt' 
+#file_path = '../Txt/2019fig1.txt'
+#file_path = '../Txt/2019fig2.txt'
+# file_path = '../Txt/non_connected_example.txt' 
+# file_path = '../Txt/PassiveUncomforableIndignated_problemsolution.txt'
+file_path = '../Txt/Farm.txt' 
 
 # # Loads the RN from the specified file
 testRN = load_pyCOT_from_file(file_path)           # Creates an object called testRN, which represents the RN
 
-# print("Species:",testRN.SpStr)                   # List of species in the reaction network
-# print("Binary vector of species:",testRN.SpBt).  # Binary vector of species
-# print("Reactions:",testRN.RnStr)                 # List of reactions in the reaction network
-# print("Binary vector of reactions:",testRN.RnBt) # Binary vector of reactions
-# print("Reactant Coefficients:",testRN.RnMsupp)   # Stoichiometric matrix of reactants
-# print("Product Coefficients:",testRN.RnMprod)    # Stoichiometric matrix of products
-# print(dir(testRN))                               # List of all attributes and methods of the object testRN
+print("Species:",testRN.SpStr)                   # List of species in the reaction network
+print("Binary vector of species:",testRN.SpBt)   # Binary vector of species
+print("Reactions:",testRN.RnStr)                 # List of reactions in the reaction network
+print("Binary vector of reactions:",testRN.RnBt) # Binary vector of reactions
+print("Reactant Coefficients:",testRN.RnMsupp)   # Stoichiometric matrix of reactants
+print("Product Coefficients:",testRN.RnMprod)    # Stoichiometric matrix of products
+print(dir(testRN))                               # List of all attributes and methods of the object testRN
 
 #####################################################################
 # (b) Plot reaction network
 #####################################################################
 # # Reaction network visualisations:
-# rn_get_visualization(testRN) # Generates the html of the NR visualisation without showing it directly
-# rn_visualize_html(testRN)    # Open the html of the NR visualisation
+#rn_get_visualization(testRN) # Generates the html of the NR visualisation without showing it directly
+rn_visualize_html(testRN)    # Open the html of the NR visualisation
 """
 By default in rn_visualize_html(): 
   Species are represented by circular nodes colored 'cyan' and 
@@ -67,9 +67,9 @@ If no explicit coefficient is indicated, its value is assumed to be 1.
 # # Reaction network visualisations with options
 # rn_visualize_html(testRN, node_size=30)                              # Visualise the reaction network with a specified node size (30 in this case)
 # rn_visualize_html(testRN, node_size=25, shape_species_node='circle') # Visualise the reaction network with species nodes in a circular shape. Common options include 'dot', 'circle', 'box', 'ellipse', etc. Default is 'dot'.
-# rn_visualize_html(testRN, physics_enabled=True)                      # Enables physical effects in the visualisation, so that moving a node moves the entire network
-# rn_visualize_html(testRN, curvature=True)                            # Shows the network with curved arrows; ‘True’ applies a counter-clockwise curving
-# rn_visualize_html(testRN, filename='my_rn_visualize_html.html')      # Saves the network visualisation as an HTML file with the specified name
+#rn_visualize_html(testRN, physics_enabled=True)                      # Enables physical effects in the visualisation, so that moving a node moves the entire network
+#rn_visualize_html(testRN, curvature=True)                            # Shows the network with curved arrows; ‘True’ applies a counter-clockwise curving
+#rn_visualize_html(testRN, filename='my_rn_visualize_html.html')      # Saves the network visualisation as an HTML file with the specified name
 
 #####################################################################
 # (c) Select set of species
@@ -84,9 +84,10 @@ If no explicit coefficient is indicated, its value is assumed to be 1.
 # # Visualize the network with lst_color_spcs and lst_color_reacs applied  
 # rn_visualize_html(testRN, lst_color_spcs=lst_color_specs)                                   # Visualises the reaction network with personalised colours for some species sets
 # rn_visualize_html(testRN, lst_color_reacs=lst_color_reacs)                                  # Visualises the reaction network with personalised colours for some reaction sets
-# rn_visualize_html(testRN, lst_color_spcs=lst_color_specs, lst_color_reacs=lst_color_reacs)  # Visualises the reaction network with personalised colours for both some sets of species and reactions
+#rn_visualize_html(testRN, lst_color_spcs=lst_color_specs, lst_color_reacs=lst_color_reacs)  # Visualises the reaction network with personalised colours for both some sets of species and reactions
 
 # # Reaction network visualisations with options 
-# rn_visualize_html(testRN, global_species_color='yellow', global_reaction_color='orange')  # Visualiza la red de reacciones asignando el color amarillo a las especies y el color naranja a las reacciones
-# rn_visualize_html(testRN, global_species_color='blue', global_reaction_color='orange',global_input_edge_color='blue', global_output_edge_color='gray')
-# rn_visualize_html(testRN, lst_color_spcs=lst_color_specs, lst_color_reacs=lst_color_reacs, global_input_edge_color='blue', global_output_edge_color='gray')
+#rn_visualize_html(testRN, global_species_color='yellow', global_reaction_color='orange')  # Visualiza la red de reacciones asignando el color amarillo a las especies y el color naranja a las reacciones
+#rn_visualize_html(testRN, global_species_color='blue', global_reaction_color='orange',global_input_edge_color='blue', global_output_edge_color='gray')
+#rn_visualize_html(testRN, lst_color_spcs=lst_color_specs, lst_color_reacs=lst_color_reacs, global_input_edge_color='blue', global_output_edge_color='gray')
+
