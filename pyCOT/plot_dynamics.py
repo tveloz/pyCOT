@@ -2228,3 +2228,51 @@ def plot_combined_species_histogram(reaction_rate_maks, species_names, bins=10, 
     plt.grid(axis="y", linestyle="--", alpha=alpha)
     plt.tight_layout()
     plt.show()
+
+    #############################################################################################
+def plot_series_MP(modules, RN, t_span=None, n_steps=None, species_labels=None):
+    """
+    Grafica los resultados de la simulación espaciotemporal de la metapoblación en subfiguras por especie.
+
+    Parámetros:
+        modules (dict): Resultados de la simulación para cada parche.
+        grid_shape (tuple): Forma de la malla espacial (filas, columnas).
+        t_span (tuple, opcional): Rango de tiempo para la simulación. Por defecto es None.
+        n_steps (int, opcional): Número de pasos para la simulación. Por defecto es None.
+        species_labels (list, opcional): Nombres de las especies. Por defecto es None.
+        RN (dict, opcional): Red de reacciones, para acceder a `SpStr`.
+    """
+    if modules is None or len(modules) == 0:
+        raise ValueError("Debe proporcionar los resultados de la simulación.")
+
+    if n_steps is None:
+        n_steps = 500  # Pasos por defecto  
+
+    if t_span is None:
+        t_span = (0, 20)  # Tiempo de simulación por defecto
+
+    # Usar los nombres de las especies desde RN.SpStr si no se proporcionan labels
+    if species_labels is None and RN is not None:
+        species_labels = RN.SpStr
+    elif species_labels is None:
+        species_labels = [f"Especie {i + 1}" for i in range(next(iter(modules.values())).shape[1])]
+
+    t = np.linspace(t_span[0], t_span[1], n_steps)
+    n_species = len(species_labels)
+
+    # Crear una figura con subplots para cada especie
+    fig, axes = plt.subplots(n_species, 1, figsize=(10, 6 * n_species), sharex=True)
+
+    if n_species == 1:
+        axes = [axes]  # Asegurarse de que 'axes' sea iterable si hay una sola especie
+
+    for idx, ax in enumerate(axes):
+        for patch, values in modules.items():
+            ax.plot(t, values[:, idx], label=f"{patch}") 
+        ax.set_xlabel("Time")
+        ax.set_ylabel(f"{species_labels[idx]}")
+        ax.legend(loc="upper right", fontsize="small", ncol=1)
+        ax.grid(True)
+
+    plt.tight_layout()
+    plt.show()
