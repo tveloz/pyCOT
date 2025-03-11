@@ -10,9 +10,13 @@ import os                                # Handles file and directory operations
 from collections import defaultdict      # Dictionary that provides default values for missing keys.
 import plotly.graph_objects as go        # Generates interactive plots and advanced visualizations using Plotly.
 from itertools import combinations       # Generates all possible combinations of elements in an iterable.
-
+import numpy as np                       # Library for numerical computing in Python.
 import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
+
+import itertools
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 import sys                               # Provides access to system-specific parameters and functions.
 sys.stdout.reconfigure(encoding='utf-8') # Reconfigures the standard output to use UTF-8 encoding, ensuring proper handling of special characters.
@@ -25,7 +29,7 @@ import tempfile                          # Provides utilities for creating tempo
 # Plots the time series of ODE concentrations and abstractions
 ######################################################################################
 
-def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", title="Time Series of Concentrations"):
+def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", title="Time Series of Concentrations", show_grid=True):
     """
     Plots the time series of ODE concentrations.
 
@@ -34,6 +38,7 @@ def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", title="T
     xlabel (str): Label for the x-axis. Default is "Time".
     ylabel (str): Label for the y-axis. Default is "Concentration".
     title (str): Title of the plot. Default is "Time Series of Concentrations".
+    show_grid (bool): Whether to display the grid. Default is True.
 
     Raises:
     ValueError: If the DataFrame does not contain a 'Time' column.
@@ -50,18 +55,18 @@ def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", title="T
     
     # Iterate over the columns to plot each species
     for species in time_series.columns:
-        if species != 'Time':  # Skip the 'Time' column
+        if species != 'Time':                # Skip the 'Time' column
             ax.plot(time_series['Time'], time_series[species], label=species)  # Plot species concentration
     
     # Set axis labels and plot title
     ax.set_xlabel(xlabel)  # Set x-axis label
     ax.set_ylabel(ylabel)  # Set y-axis label
     ax.set_title(title)    # Set the title of the plot
-    ax.grid()              # Enable grid on the plot
+    ax.grid(show_grid)     # Enable grid on the plot
     ax.legend()            # Add a legend for species
     
-    plt.tight_layout()  # Adjust layout to fit all elements
-    plt.show()          # Display the plot
+    plt.tight_layout()     # Adjust layout to fit all elements
+    plt.show()             # Display the plot
 
 ######################################################################################## 
 
@@ -2229,42 +2234,49 @@ def plot_combined_species_histogram(reaction_rate_maks, species_names, bins=10, 
     plt.tight_layout()
     plt.show()
 
-    #############################################################################################
-def plot_series_MP(modules, RN, t_span=None, n_steps=None, species_labels=None):
+#############################################################################################
+def plot_series_MP(modules, RN, t_span=None, n_steps=None, species_labels=None, title_plot="Metapopulation Dynamics"):
     """
-    Grafica los resultados de la simulación espaciotemporal de la metapoblación en subfiguras por especie.
+    Graphs the spatiotemporal simulation results of the metapopulation in subplots per species.
 
-    Parámetros:
-        modules (dict): Resultados de la simulación para cada parche.
-        grid_shape (tuple): Forma de la malla espacial (filas, columnas).
-        t_span (tuple, opcional): Rango de tiempo para la simulación. Por defecto es None.
-        n_steps (int, opcional): Número de pasos para la simulación. Por defecto es None.
-        species_labels (list, opcional): Nombres de las especies. Por defecto es None.
-        RN (dict, opcional): Red de reacciones, para acceder a `SpStr`.
+    Parameters:
+        modules (dict): Simulation results for each patch.
+        RN (dict, optional): Reaction network, used to access `SpStr` for species names.
+        t_span (tuple, optional): Time range for the simulation (t0, tf). Defaults to None.
+        n_steps (int, optional): Number of time steps for the simulation. Defaults to None.
+        species_labels (list, optional): List of species names. If None, they are taken from `RN.SpStr` if available.
+        title_plot (str, optional): Title for the overall figure. Defaults to "Metapopulation Dynamics".
+    
+    Raises:
+        ValueError: If `modules` is None or empty.
     """
+
     if modules is None or len(modules) == 0:
-        raise ValueError("Debe proporcionar los resultados de la simulación.")
+        raise ValueError("Simulation results must be provided.")
 
     if n_steps is None:
-        n_steps = 500  # Pasos por defecto  
+        n_steps = 500  # Default number of steps  
 
     if t_span is None:
-        t_span = (0, 20)  # Tiempo de simulación por defecto
+        t_span = (0, 100)  # Default simulation time range
 
-    # Usar los nombres de las especies desde RN.SpStr si no se proporcionan labels
+    # Use species names from RN.SpStr if not provided
     if species_labels is None and RN is not None:
         species_labels = RN.SpStr
     elif species_labels is None:
-        species_labels = [f"Especie {i + 1}" for i in range(next(iter(modules.values())).shape[1])]
+        species_labels = [f"Species {i + 1}" for i in range(next(iter(modules.values())).shape[1])]
 
     t = np.linspace(t_span[0], t_span[1], n_steps)
     n_species = len(species_labels)
 
-    # Crear una figura con subplots para cada especie
-    fig, axes = plt.subplots(n_species, 1, figsize=(10, 6 * n_species), sharex=True)
+    # Create a figure with subplots for each species
+    fig, axes = plt.subplots(n_species, 1, figsize=(10, 4 * n_species), sharex=True)
+
+    # Add a general title to the figure
+    fig.suptitle(title_plot, fontsize=16, fontweight="bold")
 
     if n_species == 1:
-        axes = [axes]  # Asegurarse de que 'axes' sea iterable si hay una sola especie
+        axes = [axes]  # Ensure 'axes' is iterable if there is only one species
 
     for idx, ax in enumerate(axes):
         for patch, values in modules.items():
@@ -2274,5 +2286,342 @@ def plot_series_MP(modules, RN, t_span=None, n_steps=None, species_labels=None):
         ax.legend(loc="upper right", fontsize="small", ncol=1)
         ax.grid(True)
 
+    plt.tight_layout() 
+    plt.show()
+
+# Function to plot the dynamics of all species in 2D
+def plot_all_species_2d(results, species_names=None):
+    """
+    Generates 2D phase diagrams for all combinations of species.
+
+    Parameters:
+        results (dict): Output from simulate_odes_metapop_mak with data from each patch.
+        species_names (list, optional): Names of species used for labels.
+
+    Returns:
+        None
+    """
+    num_patches = len(results)  # Number of patches
+    num_species = results[list(results.keys())[0]].shape[1]  # Number of species
+
+    # Species names
+    if species_names is None:
+        species_names = [f"Species {i+1}" for i in range(num_species)]
+
+    # Create a figure with subplots for each pair of species
+    fig_cols = min(3, num_species)  # Maximum 3 columns
+    fig_rows = int(np.ceil(num_species * (num_species - 1) / 2 / fig_cols))  # Required rows
+
+    fig, axes = plt.subplots(fig_rows, fig_cols, figsize=(fig_cols * 6, fig_rows * 6))
+    
+    # If there is only one row, make sure axes is 1D
+    if fig_rows == 1:
+        axes = axes.flatten()
+
+    # Iterate over all possible combinations of species
+    idx = 0
+    for i in range(num_species):
+        for j in range(i + 1, num_species):
+            x_label = species_names[i]
+            y_label = species_names[j]
+
+            # Plot all patch combinations for this species pair
+            for patch, data in results.items():
+                x = data[:, i]
+                y = data[:, j]
+
+                ax = axes[idx] if fig_rows == 1 else axes[idx // fig_cols, idx % fig_cols]
+                ax.plot(x, y, label=f"{patch}", alpha=0.7)
+
+            # Adjust titles and labels
+            ax.set_xlabel(x_label)
+            ax.set_ylabel(y_label) 
+            ax.legend()
+
+            idx += 1
+
+    # Adjust layout and display the plot
     plt.tight_layout()
     plt.show()
+
+# Function to plot the dynamics of all species in 3D
+def plot_all_species_3d(results, species_names=None):
+    """
+    Generates 3D plots with all possible combinations of three species in the same graph.
+
+    Parameters:
+        results (dict): Output from simulate_odes_metapop_mak with data from each patch.
+        species_names (list, optional): Names of species used for labels.
+
+    Returns:
+        None
+    """
+    num_species = next(iter(results.values())).shape[1]  # Number of species
+    
+    if num_species < 3:
+        raise ValueError("At least three species are required to generate 3D plots.")
+    
+    # Generate all possible combinations of three species
+    species_combinations = list(itertools.combinations(range(num_species), 3))
+    
+    # Assign species names if not provided
+    if species_names is None:
+        species_names = [f"Species {j+1}" for j in range(num_species)]
+    
+    # Create 3D figures for each species combination
+    for comb in species_combinations:
+        fig = plt.figure(figsize=(10, 8))
+        ax = fig.add_subplot(111, projection='3d')
+        
+        for patch, data in results.items():
+            x, y, z = data[:, comb[0]], data[:, comb[1]], data[:, comb[2]]
+            ax.plot(x, y, z, label=f"{patch}", alpha=0.7)
+        
+        # Labels and title
+        ax.set_xlabel(species_names[comb[0]])
+        ax.set_ylabel(species_names[comb[1]])
+        ax.set_zlabel(species_names[comb[2]])
+        ax.set_title(f"3D Dynamics: {species_names[comb[0]]}, {species_names[comb[1]]}, {species_names[comb[2]]}")
+        
+        ax.legend()
+        plt.tight_layout()
+        plt.show()
+
+#############################################################################################
+import matplotlib.pyplot as plt
+import numpy as np
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+def plot_series_PDE(simulation_data, species_names, t_span, time_points=None):
+    n_species = simulation_data.shape[-1]
+    
+    if time_points is None:
+        time_points = [t_span[0], t_span[1] // 2, t_span[1]]
+    
+    for s in range(n_species):
+        fig, axes = plt.subplots(1, len(time_points), figsize=(15, 5), constrained_layout=True)
+        fig.suptitle(f"Concentration of {species_names[s]}")
+        
+        vmin, vmax = np.min(simulation_data[:, :, :, s]), np.max(simulation_data[:, :, :, s])
+        im = None
+        
+        for idx, t in enumerate(time_points):
+            ax = axes[idx]
+            im = ax.imshow(simulation_data[t, :, :, s], cmap='viridis', origin='lower', vmin=vmin, vmax=vmax)
+            ax.set_title(f"Time: {t}")
+            ax.set_xticks(np.arange(simulation_data.shape[2]))
+            ax.set_yticks(np.arange(simulation_data.shape[1]))
+        
+        fig.colorbar(im, ax=axes.ravel().tolist(), orientation='vertical', fraction=0.02, pad=0.04)
+        plt.show()
+
+
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib.widgets import Slider
+
+def create_animation(simulation_data, species_idx, species_name, interval=100):
+    fig, ax = plt.subplots()
+    
+    # Crear un eje para el deslizador
+    ax_slider = plt.axes([0.1, 0.02, 0.8, 0.03], facecolor='lightgoldenrodyellow')
+    
+    # Inicializar el deslizador con el rango adecuado
+    slider = Slider(ax_slider, 'Time', 0, simulation_data.shape[0]-1, valinit=0, valstep=1)
+
+    # Inicializar la imagen con el primer frame
+    im = ax.imshow(simulation_data[0, :, :, species_idx], cmap='viridis', origin='lower')
+    cbar = fig.colorbar(im, ax=ax)  # Barra de colores
+
+    # Función de actualización para la animación
+    def update(frame):
+        im.set_array(simulation_data[frame, :, :, species_idx]) # Actualizar la imagen
+        ax.set_title(f"{species_name} - Time: {frame}")         # Actualizar el título
+        slider.set_val(frame)                # Sincroniza el deslizador con el frame actual
+        slider.valtext.set_text(f"{frame}")  # Muestra el número en el deslizador
+        return im,
+
+    # Función de actualización para el deslizador
+    def slider_update(val):
+        frame = int(slider.val)
+        update(frame)
+        plt.draw()
+
+    # Conectar el deslizador con la función de actualización
+    slider.on_changed(slider_update)
+    
+    # Crear la animación
+    ani = animation.FuncAnimation(fig, update, frames=simulation_data.shape[0], interval=interval)
+
+    plt.show()
+    return ani
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from scipy.integrate import odeint
+
+# Suponiendo que la función simulate_pde_rd ya está definida
+def create_species_animation(RN, result, interval=50, save=False):
+    """
+    Genera una animación para cada especie en la simulación y opcionalmente la guarda como archivo .mp4.
+    
+    Parámetros:
+    - RN: Red de reacción con nombres de especies en RN.SpStr
+    - result: Array de la simulación con forma (n_steps, grid_x, grid_y, n_species)
+    - interval: Tiempo en milisegundos entre cuadros
+    - save: Si es True, guarda la animación en formato MP4
+    """
+    n_steps, grid_x, grid_y, n_species = result.shape
+    t_values = np.linspace(0, 100, n_steps)
+    
+    for i in range(n_species):
+        fig, ax = plt.subplots()
+        im = ax.imshow(result[0, :, :, i], cmap='viridis', animated=True, vmin=result[:, :, :, i].min(), vmax=result[:, :, :, i].max())
+        ax.set_title(f"Evolución de {RN.SpStr[i]}")
+        
+        def update(frame):
+            im.set_array(result[frame, :, :, i])
+            return im,
+        
+        ani = animation.FuncAnimation(fig, update, frames=n_steps, interval=interval, blit=True)
+        
+        if save:
+            ani.save(f"species_{RN.SpStr[i]}.mp4", writer="ffmpeg")
+        else:
+            plt.show()
+        
+        plt.close(fig)
+
+# Ejemplo de uso
+# RN = definir_red_reaccion()
+# result = simulate_pde_rd(RN)
+# create_species_animation(RN, result, save=True)
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib.widgets import Slider
+
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.widgets import Slider
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib.widgets import Slider, Button
+
+def animate_series_PDE(simulation_data, species_names,t_span):
+    n_species = simulation_data.shape[-1]
+    n_time = t_span[1] 
+    
+    fig, axes = plt.subplots(1, n_species, figsize=(5 * n_species, 5), constrained_layout=True)
+    fig.suptitle("Evolution of Species Concentrations")
+
+    if n_species == 1:
+        axes = [axes]
+    
+    ims = []
+    
+    # Obtener valores mínimo y máximo para normalizar la escala de color
+    vmin, vmax = np.min(simulation_data), np.max(simulation_data)
+    
+    for s, ax in enumerate(axes):
+        im = ax.imshow(simulation_data[0, :, :, s], cmap='viridis', origin='lower', vmin=vmin, vmax=vmax)
+        ax.set_title(f"{species_names[s]}")
+        ims.append(im)
+
+        # Asegurar que los ejes solo tengan valores enteros
+        ax.set_xticks(np.arange(simulation_data.shape[2]))
+        ax.set_yticks(np.arange(simulation_data.shape[1]))
+
+    # Agregar una única barra de colores a la derecha
+    cbar = fig.colorbar(ims[0], ax=axes, orientation='vertical', fraction=0.02, pad=0.04)
+    
+    # Crear slider para el tiempo
+    ax_slider = plt.axes([0.2, 0.02, 0.6, 0.03])
+    slider = Slider(ax_slider, 'Time', 0, n_time, valinit=0, valstep=1)
+    
+    def update(frame):
+        t = int(slider.val)
+        for s in range(n_species):
+            ims[s].set_array(simulation_data[t, :, :, s])
+        fig.canvas.draw_idle()
+    
+    slider.on_changed(update)
+    plt.show()
+
+# def animate_series_PDE(simulation_data, species_names, t_span,interval):
+#     n_species = simulation_data.shape[-1]
+#     n_time = t_span[1]
+    
+#     fig, axes = plt.subplots(1, n_species, figsize=(5 * n_species, 5), constrained_layout=True)
+#     fig.suptitle("Evolution of Species Concentrations")
+
+#     if n_species == 1:
+#         axes = [axes]
+    
+#     ims = []
+    
+#     # Obtener valores mínimo y máximo para normalizar la escala de color
+#     vmin, vmax = np.min(simulation_data), np.max(simulation_data)
+    
+#     for s, ax in enumerate(axes):
+#         im = ax.imshow(simulation_data[0, :, :, s], cmap='viridis', origin='lower', vmin=vmin, vmax=vmax)
+#         ax.set_title(f"{species_names[s]}")
+#         ims.append(im)
+
+#         # Asegurar que los ejes solo tengan valores enteros
+#         ax.set_xticks(np.arange(simulation_data.shape[2]))
+#         ax.set_yticks(np.arange(simulation_data.shape[1]))
+
+#     # Agregar una única barra de colores a la derecha
+#     cbar = fig.colorbar(ims[0], ax=axes, orientation='vertical', fraction=0.02, pad=0.04)
+    
+#     # Crear slider para el tiempo
+#     ax_slider = plt.axes([0.1, 0.02, 0.6, 0.03])
+#     slider = Slider(ax_slider, 'Time', 0, n_time, valinit=0, valstep=1)
+    
+#     # Botones Play y Pause
+#     ax_play = plt.axes([0.75, 0.02, 0.08, 0.04])
+#     ax_pause = plt.axes([0.85, 0.02, 0.08, 0.04])
+    
+#     btn_play = Button(ax_play, "Play")
+#     btn_pause = Button(ax_pause, "Pause")
+
+#     anim_running = [True]  # Variable mutable para controlar la animación
+
+#     def update(frame):
+#         """Actualiza la imagen en cada paso de la animación."""
+#         t = frame % (n_time + 1)
+#         slider.set_val(t)  # Mueve el slider
+#         for s in range(n_species):
+#             ims[s].set_array(simulation_data[t, :, :, s])
+#         return ims
+
+#     ani = animation.FuncAnimation(fig, update, frames=n_time+1, interval=interval, repeat=True)
+
+#     def play(event):
+#         """Reanuda la animación."""
+#         if not anim_running[0]:
+#             ani.event_source.start()
+#             anim_running[0] = True
+
+#     def pause(event):
+#         """Pausa la animación."""
+#         if anim_running[0]:
+#             ani.event_source.stop()
+#             anim_running[0] = False
+
+#     btn_play.on_clicked(play)
+#     btn_pause.on_clicked(pause)
+
+#     plt.show()
+
+

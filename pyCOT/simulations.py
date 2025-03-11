@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 from scipy.integrate import solve_ivp
 from scipy.integrate import odeint
+from matplotlib.widgets import Slider
 
 ###################################################################################
 # Function to calculate the reaction rate 
@@ -27,45 +28,98 @@ def reaction_rate_mak(reaction_name, species_concentrations, RN_dict, k):
 
 ###################################################################################
 # Generate ODEs for the reaction network
+# def generate_odes_mak(species_concentrations, RN_dict, k):
+#     """
+#     Generate the ODE system for the reaction network.
+
+#     Parameters:
+#     species_concentrations (dict): Mapping of species to indices.
+#     RN_dict (dict): Reaction network dictionary mapping reactions to stoichiometry.
+#     k (dict): Dictionary of reaction rate constants.
+
+#     Returns:
+#     function: A function representing the ODE system.
+#     """
+#     def odes(t, y):
+#         # Initialize derivatives for all species
+#         dSdt = {species: 0 for species in species_concentrations.keys()}
+        
+#         # Map current species concentrations
+#         current_concentrations = dict(zip(species_concentrations.keys(), y))
+        
+#         # Compute derivatives for each species
+#         for species in current_concentrations:
+#             for reaction_name, (reactants, products) in RN_dict.items():
+#                 # Reactants contribution
+#                 for reactant, coef in reactants:
+#                     if reactant == species:
+#                         dSdt[species] -= coef * reaction_rate_mak(reaction_name, current_concentrations, RN_dict, k)
+#                 # Products contribution
+#                 for product, coef in products:
+#                     if product == species:
+#                         dSdt[species] += coef * reaction_rate_mak(reaction_name, current_concentrations, RN_dict, k)
+
+#         # Ensure all species are accounted for in dSdt
+#         for key in species_concentrations.keys():
+#             if key not in dSdt:
+#                 raise KeyError(f"Unexpected key '{key}' not found in dSdt.")
+        
+#         return np.array([dSdt[species] for species in species_concentrations.keys()])
+    
+#     return odes
+
 def generate_odes_mak(species_concentrations, RN_dict, k):
     """
-    Generate the ODE system for the reaction network.
-
-    Parameters:
-    species_concentrations (dict): Mapping of species to indices.
-    RN_dict (dict): Reaction network dictionary mapping reactions to stoichiometry.
-    k (dict): Dictionary of reaction rate constants.
-
-    Returns:
-    function: A function representing the ODE system.
+    Genera el sistema de ecuaciones diferenciales para la red de reacciones.
     """
-    def odes(t, y):
-        # Initialize derivatives for all species
+    import numpy as np
+    
+    printed = False  # Flag para controlar la impresión de ecuaciones
+
+    def odes(t, y, printed_once=[False]):  # Se usa una lista mutable como "flag" persistente
+        nonlocal printed
+        
+        # Inicializar derivadas de todas las especies
         dSdt = {species: 0 for species in species_concentrations.keys()}
         
-        # Map current species concentrations
+        # Mapear concentraciones actuales
         current_concentrations = dict(zip(species_concentrations.keys(), y))
         
-        # Compute derivatives for each species
-        for species in current_concentrations:
-            for reaction_name, (reactants, products) in RN_dict.items():
-                # Reactants contribution
-                for reactant, coef in reactants:
-                    if reactant == species:
-                        dSdt[species] -= coef * reaction_rate_mak(reaction_name, current_concentrations, RN_dict, k)
-                # Products contribution
-                for product, coef in products:
-                    if product == species:
-                        dSdt[species] += coef * reaction_rate_mak(reaction_name, current_concentrations, RN_dict, k)
+        # Diccionario para almacenar las ecuaciones diferenciales en texto
+        equation_dict = {species: [] for species in current_concentrations}
         
-        # Ensure all species are accounted for in dSdt
-        for key in species_concentrations.keys():
-            if key not in dSdt:
-                raise KeyError(f"Unexpected key '{key}' not found in dSdt.")
+        # Calcular las derivadas de cada especie
+        for reaction_name, (reactants, products) in RN_dict.items():
+            rate = reaction_rate_mak(reaction_name, current_concentrations, RN_dict, k)
+            
+            # Contribución de los reactantes
+            for reactant, coef in reactants:
+                dSdt[reactant] -= coef * rate
+                equation_dict[reactant].append(f"- {coef} * k_{reaction_name} * " + " * ".join([f"[{r}]" for r, c in reactants]))
+
+            # Contribución de los productos
+            for product, coef in products:
+                dSdt[product] += coef * rate
+                equation_dict[product].append(f"+ {coef} * k_{reaction_name} * " + " * ".join([f"[{r}]" for r, c in reactants]))
+
+        # Imprimir ecuaciones solo en la primera llamada
+        if not printed_once[0]:
+            print("\nDifferential equations of the system:")
+            for species, terms in equation_dict.items():
+                unique_terms = list(set(terms))  # Convertir a set y luego a lista para eliminar duplicados
+                equation_str = f"d[{species}]/dt = " + " ".join(sorted(unique_terms))  # Ordenar para consistencia
+                print(equation_str)
+            printed_once[0] = True  # Cambiar el flag para evitar imprimir nuevamente
         
         return np.array([dSdt[species] for species in species_concentrations.keys()])
     
     return odes
+
+
+
+
+
+
 
 ###################################################################################
 # Solve the ODE system 
@@ -80,9 +134,9 @@ def simulate_ode_mak(RN, x0 = None, t_span = None, n_steps = None, k0 = None):
     Parameters:
     RN (object): Reaction network object containing species and reaction details.
     x0 (list, optional): Initial concentrations of species. If not provided, they will be generated automatically.
-    k0 (dict, optional): Dictionary of reaction rate constants. If not provided, they will be generated automatically.
     t_span (tuple, optional): Time span for the simulation (start, end). Defaults to (0, 100).
     n_steps (int, optional): Number of time steps for the simulation. Defaults to 100.
+    k0 (dict, optional): Dictionary of reaction rate constants. If not provided, they will be generated automatically.
 
     Returns:
     pd.DataFrame: A pandas DataFrame containing the time series of species concentrations over time.
@@ -118,6 +172,7 @@ def simulate_ode_mak(RN, x0 = None, t_span = None, n_steps = None, k0 = None):
     # Automatically generate rate constants if not provided
     if k0 is None: 
         k0 = generate_random_vector(len(RN.RnStr), seed=3).round(2) 
+        print("Constantes de velocidad:", k0)  # Verifica el valor de k
         k = {RN.RnStr[i]: float(k0[i]) for i in range(len(RN.RnStr))}        
     # Asegúrate de que `k` siempre esté definido
     k = {RN.RnStr[i]: float(k0[i]) for i in range(len(RN.RnStr))}
@@ -130,11 +185,12 @@ def simulate_ode_mak(RN, x0 = None, t_span = None, n_steps = None, k0 = None):
 
     # Extract the vector of times and the solutions
     data_concentrations = {"Time": sol.t}
-    for i, species in enumerate(RN.SpStr):
+    for i, species in enumerate(RN.SpStr):     
+    # for i, species in enumerate(sorted(RN.SpStr)):
         data_concentrations[species] = sol.y[i]
 
-    time_series = pd.DataFrame(data_concentrations)
-    # return time_series
+    time_series = pd.DataFrame(data_concentrations) 
+    time_series = time_series[["Time"] + sorted(time_series.columns.difference(["Time"]))]
 
     # Calculate flux vector at each time step
     flux_vector = []
@@ -328,7 +384,7 @@ def reaction_rate_mmk(RN, reaction_name, species_concentrations, k, Vmax_dict, K
     rate = k.get(reaction_name, 1)  # Use rate constant (default k=1 if not defined)
 
     # Check if the reaction follows Michaelis-Menten kinetics
-    for reactant, coef in reactants_coeff:
+    for reactant, coef in reactants_coeff: # For each reactant in the reaction
         if reactant in Vmax_dict:  # Check if the reactant is a substrate in MM kinetics
             rate = rate_mmk(species_concentrations, reactant, Vmax_dict[reactant], Km_dict[reactant])
             break  # Exit loop if Michaelis-Menten is used
@@ -339,64 +395,117 @@ def reaction_rate_mmk(RN, reaction_name, species_concentrations, k, Vmax_dict, K
     return rate
 
 # Function that generates the ODE system for the reaction network
+# def generate_odes_mmk(RN, species_concentrations, k, Vmax_dict, Km_dict):
+#     """
+#     Generates the system of ordinary differential equations (ODEs) for a reaction network, 
+#     considering Michaelis-Menten kinetics and general kinetics.
+
+#     Parameters:
+#     RN (dict): Dictionary defining the reaction network. The keys are reaction names,
+#                and the values are tuples of lists of reactants and products. Each list contains tuples 
+#                in the form (species_name, stoichiometric_coefficient), for example:
+#                {'reaction1': ([(reactant1, coef1), (reactant2, coef2)], [(product1, coef1), ...])}.
+#     species_concentrations (dict): Dictionary mapping species names to their indices in the concentration vector.
+#                                     For example, {'A': 0, 'B': 1, 'C': 2}.
+#     k (dict): Dictionary with reaction rate constants for general reactions. 
+#               The keys are reaction names, and the values are the corresponding constants.
+#     Vmax_dict (dict): Dictionary with maximum velocities for reactions following Michaelis-Menten kinetics.
+#                       The keys are the names of the substrates, and the values are the Vmax values.
+#     Km_dict (dict): Dictionary with Michaelis constants for reactions following Michaelis-Menten kinetics.
+#                     The keys are the names of the substrates, and the values are the Km values.
+
+#     Returns:
+#     function: A function that takes time `t` (float) and the concentration vector `y` (array-like) as input,
+#               and returns an array of derivatives for all species in the system.
+#     """
+#     def odes(t, y):
+#         """
+#         System of ordinary differential equations representing the reaction network dynamics.
+
+#         Parameters:
+#         t (float): Current time (not explicitly used but required by ODE solvers).
+#         y (array-like): Vector of current species concentrations, in the same order as in species_concentrations.
+
+#         Returns:
+#         np.ndarray: Array of concentration derivatives for all species.
+#         """
+#         # Initialize derivatives for all species
+#         dSdt = {species: 0 for species in species_concentrations.keys()}
+        
+#         # Map current species concentrations
+#         current_concentrations = dict(zip(species_concentrations.keys(), y))
+        
+#         # Compute derivatives for each species
+#         for species in current_concentrations:
+#             for reaction_name, (reactants, products) in RN.items():
+#                 # Contribution from reactants
+#                 for reactant, coef in reactants:
+#                     if reactant == species:
+#                         dSdt[species] -= coef * reaction_rate_mmk(RN, reaction_name, current_concentrations, k, Vmax_dict, Km_dict)
+#                 # Contribution from products
+#                 for product, coef in products:
+#                     if product == species:
+#                         dSdt[species] += coef * reaction_rate_mmk(RN, reaction_name, current_concentrations, k, Vmax_dict, Km_dict)
+        
+#         # Convert derivatives to the format required by the integrator
+#         return np.array([dSdt[species] for species in species_concentrations.keys()])
+    
+#     return odes
+
 def generate_odes_mmk(RN, species_concentrations, k, Vmax_dict, Km_dict):
     """
-    Generates the system of ordinary differential equations (ODEs) for a reaction network, 
-    considering Michaelis-Menten kinetics and general kinetics.
-
-    Parameters:
-    RN (dict): Dictionary defining the reaction network. The keys are reaction names,
-               and the values are tuples of lists of reactants and products. Each list contains tuples 
-               in the form (species_name, stoichiometric_coefficient), for example:
-               {'reaction1': ([(reactant1, coef1), (reactant2, coef2)], [(product1, coef1), ...])}.
-    species_concentrations (dict): Dictionary mapping species names to their indices in the concentration vector.
-                                    For example, {'A': 0, 'B': 1, 'C': 2}.
-    k (dict): Dictionary with reaction rate constants for general reactions. 
-              The keys are reaction names, and the values are the corresponding constants.
-    Vmax_dict (dict): Dictionary with maximum velocities for reactions following Michaelis-Menten kinetics.
-                      The keys are the names of the substrates, and the values are the Vmax values.
-    Km_dict (dict): Dictionary with Michaelis constants for reactions following Michaelis-Menten kinetics.
-                    The keys are the names of the substrates, and the values are the Km values.
-
-    Returns:
-    function: A function that takes time `t` (float) and the concentration vector `y` (array-like) as input,
-              and returns an array of derivatives for all species in the system.
+    Genera el sistema de ecuaciones diferenciales para la red de reacciones,
+    considerando cinética de Michaelis-Menten y cinética general.
     """
-    def odes(t, y):
-        """
-        System of ordinary differential equations representing the reaction network dynamics.
+    printed = False  # Flag para controlar la impresión de ecuaciones
 
-        Parameters:
-        t (float): Current time (not explicitly used but required by ODE solvers).
-        y (array-like): Vector of current species concentrations, in the same order as in species_concentrations.
-
-        Returns:
-        np.ndarray: Array of concentration derivatives for all species.
-        """
-        # Initialize derivatives for all species
+    def odes(t, y, printed_once=[False]):
+        nonlocal printed
+        
+        # Inicializar derivadas de todas las especies
         dSdt = {species: 0 for species in species_concentrations.keys()}
         
-        # Map current species concentrations
+        # Mapear concentraciones actuales
         current_concentrations = dict(zip(species_concentrations.keys(), y))
         
-        # Compute derivatives for each species
-        for species in current_concentrations:
-            for reaction_name, (reactants, products) in RN.items():
-                # Contribution from reactants
-                for reactant, coef in reactants:
-                    if reactant == species:
-                        dSdt[species] -= coef * reaction_rate_mmk(RN, reaction_name, current_concentrations, k, Vmax_dict, Km_dict)
-                # Contribution from products
-                for product, coef in products:
-                    if product == species:
-                        dSdt[species] += coef * reaction_rate_mmk(RN, reaction_name, current_concentrations, k, Vmax_dict, Km_dict)
+        # Diccionario para almacenar las ecuaciones diferenciales en texto
+        equation_dict = {species: [] for species in current_concentrations}
         
-        # Convert derivatives to the format required by the integrator
+        # Calcular las derivadas de cada especie
+        for reaction_name, (reactants, products) in RN.items():
+            rate = reaction_rate_mmk(RN, reaction_name, current_concentrations, k, Vmax_dict, Km_dict)
+            
+            # Contribución de los reactantes
+            for reactant, coef in reactants:
+                dSdt[reactant] -= coef * rate 
+                equation_dict[reactant].append(f"- {coef} * r_{reaction_name}")
+                # (f"- {coef} * k_{reaction_name} * " + " * ".join([f"[{r}]" for r, c in reactants])) # 
+                
+            # # Contribución de los productos
+            # for product, coef in products:
+            #     dSdt[product] += coef * rate
+            #     equation_dict[product].append(f"+ {coef} * r_{reaction_name}")
+            #     # (f"+ {coef} * k_{reaction_name} * " + " * ".join([f"[{r}]" for r, c in reactants])) # 
+        
+        # Imprimir ecuaciones solo en la primera llamada
+        if not printed_once[0]:
+            print("\nDifferential equations of the system:")
+            for species, terms in equation_dict.items():
+                unique_terms = list(set(terms))  # Eliminar duplicados
+                equation_str = f"d[{species}]/dt = " + " ".join(sorted(unique_terms))
+                print(equation_str)
+            printed_once[0] = True  # Cambiar el flag para evitar imprimir nuevamente
+        
         return np.array([dSdt[species] for species in species_concentrations.keys()])
     
     return odes
 
-# Function that solves the ODE system
+
+
+
+
+
+# Function that solves the ODE system with Michaelis-Menten kinetics
 def simulate_ode_mmk(RN, x0=None, t_span=None, n_steps=None, k0=None, Vmax_dict=None, Km_dict=None):
     """
     Simulates the dynamics of a chemical reaction network using a system of ordinary differential equations (ODEs). 
@@ -469,7 +578,7 @@ def simulate_ode_mmk(RN, x0=None, t_span=None, n_steps=None, k0=None, Vmax_dict=
 
     # Define the initial state vector
     if x0 is None:
-        x0 = generate_random_vector(len(RN.SpStr), seed=3).round(1)
+        x0 = generate_random_vector(len(RN.SpStr), seed=3).round(1)*20
 
     # Number of steps
     if n_steps is None:
@@ -481,26 +590,28 @@ def simulate_ode_mmk(RN, x0=None, t_span=None, n_steps=None, k0=None, Vmax_dict=
     # Automatically generate rate constants if not provided
     if k0 is None: 
         k0 = generate_random_vector(len(RN.RnStr), seed=3).round(2) 
-        k = {RN.RnStr[i]: float(k0[i]) for i in range(len(RN.RnStr))}     
+        k = {RN.RnStr[i]: float(k0[i]) for i in range(len(RN.RnStr))}   
+
     else:
-        # Handling already existing k
-        k = {species: float(k0.get(species, 0.5)) for species in RN.RnStr}
+        # Handling already existing k 
+        k = {species: float(k0[species]) if species in k0 else 0.5 for species in RN.RnStr}
 
     # Automatically generate Vmax values if not provided 
     if Vmax_dict is None:
-        Vmax = generate_random_vector(len(RN.SpStr), seed=5).round(2)
+        Vmax = generate_random_vector(len(RN.SpStr), seed=5).round(1)*300
         Vmax_dict = {RN.SpStr[i]: float(Vmax[i]) for i in range(len(RN.SpStr))}
-    else:
-        Vmax_dict = {RN.SpStr[i]: float(Vmax_dict.get(RN.SpStr[i], 1.0)) for i in range(len(RN.SpStr))}
-          
+    else: 
+        Vmax_dict = {species: float(Vmax_dict[species]) if species in Vmax_dict else 1.0 for species in RN.SpStr}
 
+          
     # Automatically generate Km values if not provided 
     if Km_dict is None:
-        Km = generate_random_vector(len(RN.SpStr), seed=3).round(2)
+        Km = generate_random_vector(len(RN.SpStr), seed=3).round(2)*5000
         Km_dict = {RN.SpStr[i]: float(Km[i]) for i in range(len(RN.SpStr))}
     else:
-        # Handling already existing Km_dict
-        Km_dict = {species: float(Km_dict.get(species, 0.5)) for species in RN.SpStr}
+        # Handling already existing Km_dict 
+        Km_dict = {species: float(Km_dict[species]) if species in Km_dict else 0.5 for species in RN.SpStr}
+
 
     # Validate t_span
     if not isinstance(t_span, (list, tuple)) or len(t_span) != 2:
@@ -515,7 +626,7 @@ def simulate_ode_mmk(RN, x0=None, t_span=None, n_steps=None, k0=None, Vmax_dict=
         raise ValueError("The mapping of species in species_concentrations is inconsistent with RN.SpStr.")
 
         
-    ## Generate the ODE system
+    ## Generate the ODE system using the Michaelis-Menten model
     odes = generate_odes_mmk(RN_dict, species_concentrations, k, Vmax_dict, Km_dict)
     
     # Solve the ODE system
@@ -527,7 +638,11 @@ def simulate_ode_mmk(RN, x0=None, t_span=None, n_steps=None, k0=None, Vmax_dict=
         data_concentrations[species] = sol.y[i]
 
     time_series = pd.DataFrame(data_concentrations) 
+    time_series = time_series[["Time"] + sorted(time_series.columns.difference(["Time"]))]
 
+
+
+    ###########################################################################################
     # Calculate flux vector at each time step
     flux_vector = []
     for t_idx in range(len(sol.t)):
@@ -586,19 +701,19 @@ def simulate_odes_metapop_mak(RN, x0=None, t_span=None, n_steps=None, k=None, ex
     
     # Default parameters if not specified
     if grid_shape is None:
-        grid_shape = (1, 5)  # Default configuration if not provided
+        grid_shape = (2, 2)                   # Default configuration if not provided
     if x0 is None:
-        x0 = np.random.rand(grid_shape[0], grid_shape[1], len(RN.SpStr)) * 2  # Random initial conditions
+        x0 = np.random.rand(grid_shape[0], grid_shape[1], len(RN.SpStr)) * 2 # Random initial conditions
     if n_steps is None:
-        n_steps = 500  # Default number of steps    
+        n_steps = 500                         # Default number of steps    
     if t_span is None:
-        t_span = (0, 20)  # Default simulation time
+        t_span = (0, 100)                      # Default simulation time
     if k is None:
-        k = np.random.rand(len(RN.RnStr)) * 1  # Random rate constants
+        k = np.random.rand(len(RN.RnStr)) * 1 # Random rate constants
     if exchange_rates is None:
-        exchange_rates = np.zeros((grid_shape[0], grid_shape[1], len(RN.SpStr)))  # No exchange by default
+        exchange_rates = np.ones((grid_shape[0], grid_shape[1], len(RN.SpStr)))  # No exchange by default 
     if D is None:
-        D = np.random.rand(len(RN.SpStr))  # Default uniform diffusion coefficients
+        D = np.random.rand(len(RN.SpStr))     # Default uniform diffusion coefficients
     
     # Function describing the system of differential equations with diffusion
     def ode_system(x_flat, t, k, RN, exchange_rates, D, grid_shape):
@@ -631,21 +746,179 @@ def simulate_odes_metapop_mak(RN, x0=None, t_span=None, n_steps=None, k=None, ex
             dxdt[:, :, i] += exchange_rates[:, :, i]
         
         return dxdt.flatten()
-
+    # Verify that t_span is a tuple with two values
+    if not (isinstance(t_span, tuple) and len(t_span) == 2):
+        raise TypeError(f"t_span must be a tuple (t0, tf), but received {t_span} of type {type(t_span)}.")
+    
     # Define the time range
     t = np.linspace(t_span[0], t_span[1], n_steps)
     
     # Solve the system of ODEs
     result = odeint(ode_system, x0.flatten(), t, args=(k, RN, exchange_rates, D, grid_shape))
     
-    # Reconstruct results as a dictionary
+    # Reconstruct results as a dictionary 
     modules = {
-        f'Patch {j+1}': result[:, (i * grid_shape[1] + j) * len(RN.SpStr):(i * grid_shape[1] + j + 1) * len(RN.SpStr)]
+        f'Patch ({i+1}, {j+1})': result[:, (i * grid_shape[1] + j    ) * len(RN.SpStr):
+                                           (i * grid_shape[1] + j + 1) * len(RN.SpStr)]
+        for i in range(grid_shape[0]) for j in range(grid_shape[1])
+    }
+    # Number of patches
+    num_patches = grid_shape[0] * grid_shape[1]
+    print(f"Number of patches: {num_patches}")
+    
+    return modules
+
+###########################################################################################
+# Function to simulate the dynamics of a metapopulation with Michaelis-Menten kinetics and diffusion
+def simulate_odes_metapop_mmk(RN, x0=None, t_span=None, n_steps=None, Vmax=None, Km=None, D=None, grid_shape=None):
+    """
+    Simulates the dynamics of a metapopulation with Michaelis-Menten kinetics and diffusion on a spatial grid.
+
+    Parameters:
+        RN (dict): Object describing the reaction network.
+        x0 (array-like, optional): Initial conditions of the species.
+        t_span (tuple, optional): Simulation time range.
+        n_steps (int, optional): Number of simulation steps.
+        Vmax (array-like, optional): Maximum reaction rate for each reaction.
+        Km (array-like, optional): Michaelis-Menten constant for each reaction.
+        D (array-like, optional): Diffusion coefficients for each species.
+        grid_shape (tuple, optional): Shape of the spatial grid (rows, columns).
+
+    Returns:
+        dict: Simulation results for each patch (key: patch index).
+    """
+    if RN is None or not hasattr(RN, 'SpStr') or not hasattr(RN, 'RnStr'):
+        raise ValueError("The reaction network (RN) is invalid or incomplete.")
+    
+    if grid_shape is None:
+        grid_shape = (2, 2)
+    if x0 is None:
+        x0 = np.random.rand(grid_shape[0], grid_shape[1], len(RN.SpStr)) * 2
+    if n_steps is None:
+        n_steps = 500
+    if t_span is None:
+        t_span = (0, 100)
+    if Vmax is None:
+        Vmax = np.random.rand(len(RN.RnStr))
+    if Km is None:
+        Km = np.random.rand(len(RN.RnStr))
+    if D is None:
+        D = np.random.rand(len(RN.SpStr))
+    
+    def ode_system(x_flat, t, Vmax, Km, RN, D, grid_shape):
+        x = x_flat.reshape(grid_shape[0], grid_shape[1], -1)
+        dxdt = np.zeros_like(x)
+        
+        S = np.array(RN.RnMsupp)
+        P = np.array(RN.RnMprod)
+        
+        for i in range(len(RN.SpStr)):
+            for r in range(len(RN.RnStr)):
+                rate = Vmax[r] * (x[:, :, :] ** S[r, :]) / (Km[r] + x[:, :, :])
+                dxdt[:, :, i] += np.sum(rate * (P[r, i] - S[r, i]), axis=-1)
+        
+        for i in range(len(RN.SpStr)):
+            dxdt[:, :, i] += D[i] * (
+                np.roll(x[:, :, i],  1, axis=0) + 
+                np.roll(x[:, :, i], -1, axis=0) + 
+                np.roll(x[:, :, i],  1, axis=1) + 
+                np.roll(x[:, :, i], -1, axis=1) - 
+                4 * x[:, :, i]
+            )
+        
+        return dxdt.flatten()
+    
+    t = np.linspace(t_span[0], t_span[1], n_steps)
+    result = odeint(ode_system, x0.flatten(), t, args=(Vmax, Km, RN, D, grid_shape))
+    
+    modules = {
+        f'Patch ({i+1}, {j+1})': result[:, (i * grid_shape[1] + j) * len(RN.SpStr):
+                                           (i * grid_shape[1] + j + 1) * len(RN.SpStr)]
         for i in range(grid_shape[0]) for j in range(grid_shape[1])
     }
     
-    # # Number of patches
-    # num_patches = len(grid_shape) #[0] * grid_shape[1]
-    # print(f"Number of patches: {num_patches}")
-    
+    print(f"Number of patches: {grid_shape[0] * grid_shape[1]}")
     return modules
+
+###########################################################################################
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from scipy.integrate import odeint
+
+# Function to create the simulations of the metapopulation dynamics of a reaction-diffusion model PDE
+def simulate_pde_rd(RN, x0=None, t_span=None, n_steps=None, k=None, exchange_rates=None, D=None, grid_shape=None):
+    if RN is None or not hasattr(RN, 'SpStr') or not hasattr(RN, 'RnStr'):
+        raise ValueError("The reaction network (RN) is invalid or incomplete.")
+    
+    if grid_shape is None:
+        grid_shape = (2, 2)
+    if x0 is None:
+        x0 = np.random.rand(grid_shape[0], grid_shape[1], len(RN.SpStr)) * 2
+        print(f"Values of x0: {x0}")
+    if n_steps is None:
+        n_steps = 500
+    if t_span is None:
+        t_span = (0, 100)
+    if k is None:
+        k = np.random.rand(len(RN.RnStr)) * 1 # Random rate constants into the interval [0, 1]
+    if exchange_rates is None:
+        exchange_rates = np.ones((grid_shape[0], grid_shape[1], len(RN.SpStr)))  # No exchange by default        
+    if D is None:
+        D = np.random.rand(len(RN.SpStr)) # Default diffusion coefficients 
+    
+    def ode_system(x_flat, t, k, RN, D, grid_shape):
+        x = x_flat.reshape(grid_shape[0], grid_shape[1], -1)
+        dxdt = np.zeros_like(x)
+        
+        S = np.array(RN.RnMsupp)
+        P = np.array(RN.RnMprod)
+        
+        for i in range(len(RN.SpStr)):
+            for r in range(len(RN.RnStr)):
+                rate = k[r] * np.prod(x[:, :, :] ** S[r, :], axis=-1) # Calculate the reaction rate 
+                dxdt[:, :, i] += rate * (P[r, i] - S[r, i])           # Mass action kinetics
+            
+            # Difusión con diferencias finitas centradas en una malla 2D con coeficientes D_i específicos para cada especie.
+            dxdt[:, :, i] += D[i] * (
+                np.roll(x[:, :, i],  1, axis=0) +  # Vecino superior
+                np.roll(x[:, :, i], -1, axis=0) +  # Vecino inferior
+                np.roll(x[:, :, i],  1, axis=1) +  # Vecino derecho
+                np.roll(x[:, :, i], -1, axis=1) -  # Vecino izquierdo
+                4 * x[:, :, i]  # Centro (multiplicado por 4)
+            )
+
+            # # Difusión en la dirección vertical
+            # dxdt[:, :, i] += D[i] * (
+            #     np.roll(x[:, :, i],  1, axis=0) +  # Vecino superior
+            #     np.roll(x[:, :, i], -1, axis=0) -  # Vecino inferior
+            #     2 * x[:, :, i]  # Centro (multiplicado por 2 en lugar de 4)
+            # )
+
+            # # Difusión en la dirección horizontal
+            # dxdt[:, :, i] += D[i] * (
+            #     np.roll(x[:, :, i],  1, axis=1) +  # Vecino derecho
+            #     np.roll(x[:, :, i], -1, axis=1) -  # Vecino izquierdo
+            #     2 * x[:, :, i]  # Centro (multiplicado por 2 en lugar de 4)
+            # )
+
+        # Exchange rates between nodes (patches)
+        for i in range(len(RN.SpStr)):
+            dxdt[:, :, i] += exchange_rates[:, :, i]            
+        
+        return dxdt.flatten()
+    
+    if not (isinstance(t_span, tuple) and len(t_span) == 2):
+        raise TypeError(f"t_span must be a tuple (t0, tf), but received {t_span} of type {type(t_span)}.")
+    
+    t = np.linspace(t_span[0], t_span[1], n_steps)
+    
+    result = odeint(ode_system, x0.flatten(), t, args=(k, RN, D, grid_shape))
+    
+    return result.reshape(n_steps, grid_shape[0], grid_shape[1], len(RN.SpStr))
+
+
+
+
+
+
