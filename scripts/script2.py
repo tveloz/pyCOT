@@ -41,6 +41,8 @@ from pyCOT.abstractions import abstraction_ordinary
 # file_path = '../Txt/non_connected_example.txt' 
 # file_path = '../Txt/PassiveUncomforableIndignated_problemsolution.txt'
 file_path = '../Txt/Farm.txt' 
+file_path = 'networks/testing/Riverland0.txt'
+file_path = 'networks/testing/autopoietic.txt'
 
 # # Loads the RN from the specified file
 testRN = load_pyCOT_from_file(file_path)           # Creates an object called testRN, which represents the RN
@@ -49,40 +51,41 @@ testRN = load_pyCOT_from_file(file_path)           # Creates an object called te
 # (b) Select initial conditions of concentration and dynamic parameters for mak
 #####################################################################
 # Initial species concentration conditions
-x0_values = generate_random_vector(len(testRN.SpStr), seed=3).round(1) # Generate random values for the initial concentrations of species
+x0_values = generate_random_vector(len(testRN.SpStr), seed=11).round(2) # Generate random values for the initial concentrations of species
 #x0_values = [0.6, 0.7, 0.3] # Specific initial concentrations for each species, need to modify based on current reaction network
-print("Initial concentrations for species:")
-print(x0_values)
 
 # Dynamic parameters for mak
-k0_values = generate_random_vector(len(testRN.RnStr), seed=3).round(2) # Generate random values for the specific reaction rate constants
+k0_values = generate_random_vector(len(testRN.RnStr), seed=71).round(2) # Generate random values for the specific reaction rate constants
 # k0_values = [0.55, 0.71, 0.29, 0.51, 0.89] # Specific reaction rate constants for each reaction, need to modify based on number of reactions in network
-print("Specific reaction rate constants:")
-print(k0_values)
+print('x_0='+str(x0_values))
+print('k_0='+str(k0_values))
+
 
 #####################################################################
 # (c) generate time series simulation
 #####################################################################
 #time_series, flux_vector = simulate_ode_mak(testRN, t_span = [0, 1], n_steps=10)   (for example 2019fig2.txt)
-# time_series = simulate_ode_mak(testRN, x0=x0_values, k0=k0_values)
-time_series, flux_vector = simulate_ode_mak(testRN, x0=x0_values, t_span = [0, 20], n_steps = 100, k0=k0_values)
-print("time_series:")
-print(time_series)
-
-print("flux_vector:")
-print(flux_vector)
+#time_series = simulate_ode_mak(testRN, x0=x0_values, k0=k0_values)
+time_series, flux_vector = simulate_ode_mak(testRN, x0=x0_values, t_span = [0, 80], n_steps = 400, k0=k0_values)
+#print("time_series:")
+#print(time_series)
+diff_series = time_series.shift(-1) - time_series[:-1]
+#print("flux_vector:")
+#print(flux_vector)
 
 #####################################################################
 # (d) plot concentration and flux time series in all available ways
 #####################################################################
 plot_series_ode(time_series)
-plot_series_ode(flux_vector)
+diff_series.plot()
+plt.show
+#plot_series_ode(flux_vector)
 
 #####################################################################
 # (e) plot abstractions in all possible ways 
 #####################################################################
 # # # Define a fixed threshold or per-species thresholds
-threshold = 0.5  # Fixed threshold
+threshold = 0.01  # Fixed threshold
 #threshold = {"l": 0.4, "s1": 0.5, "s2": 0.4}  # Per-species thresholds for autopoietic.txt
 
 # # # Generates an abstraction with a threshold
@@ -94,7 +97,7 @@ abstract_time_series = abstraction_ordinary(time_series, threshold) # Generates 
 # Plots of abstractions
 #############
 # # Plot of the number of abstractions
-plot_abstraction_size(abstract_time_series)
+#plot_abstraction_size(abstract_time_series)
 
 # # Plot the abstractions sorted by size
 plot_abstraction_sets(abstract_time_series)
@@ -103,14 +106,21 @@ plot_abstraction_sets(abstract_time_series)
 # Histograms
 #############
 # # Generates a histogram of all species concentrations in the NR over time
-plot_join_concentration_histogram(time_series, bins=10)
+#plot_join_concentration_histogram(time_series, bins=10)
 
 # # Print reaction rates v(x,k) 
 # # Generates histogram of reaction rates v(x,k)
-plot_reaction_rate_mak_histogram(flux_vector, bins=5)
+#plot_reaction_rate_mak_histogram(flux_vector, bins=5)
 
 # # Generates individual histograms for each species
-plot_species_histograms(time_series, species_names=testRN.SpStr)
+#plot_species_histograms(time_series, species_names=testRN.SpStr)
 
 # # Generates a combined histogram of the concentrations of all species.
-plot_combined_species_histogram(time_series, species_names=testRN.SpStr)
+#plot_combined_species_histogram(time_series, species_names=testRN.SpStr)
+
+plot_combined_species_histogram(diff_series, species_names=testRN.SpStr)
+
+#Obtener data frame a partir de diff que lleve cuenta del momento de la simulacion, de la abstraccion en operacion, del vector diff, y si el diff representa (challenge, problem, cognitive domain, cognitive control).
+#Extender la construccion a barrido del dataframe que vaya sumando los diffs, y considere entonces intervalos de largo n, y agregue abstraccion inicial, abstraccion final, abtraccion mas repetida, y numero total de abstracciones.
+
+
