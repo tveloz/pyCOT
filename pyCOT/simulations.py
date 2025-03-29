@@ -909,44 +909,6 @@ def simulate_pde_rd(RN, x0=None, t_span=None, n_steps=None, k=None, exchange_rat
     return result.reshape(n_steps, grid_shape[0], grid_shape[1], len(RN.SpStr))
 
 ###########################################################################################
-# Function for solve the Linear Programming Problem: S.v>=0, v>0
-def minimize_sv(S, epsilon=1,method='highs'):
-    """
-    Minimizes c @ v subject to S @ v >= 0 and v > 0.
-    
-    Parameters:
-    ----------
-    S : numpy.ndarray
-        Stoichiometric matrix of the reaction network (RN).
-    epsilon : float, optional
-        Small positive value to ensure all coordinates of v remain strictly positive (default is 1).
-
-    Returns:
-    -------
-    numpy.ndarray
-        Optimal process vector v with all strictly positive coordinates.
-
-    Raises:
-    ------
-    ValueError
-        If no feasible solution is found.
-    """
-    n_species, n_reactions = S.shape  # Dimensions of S
-    c = np.ones(n_reactions)          # Objective function: minimize the sum of v
-    A_ub = -S                         # Reformulate S @ v >= 0 as -S @ v <= 0
-    b_ub = np.zeros(n_species)        # Inequality constraints
-    bounds = [(epsilon, None)] * n_reactions  # v > 0 (avoiding exact zero values) 
-    
-    # Solve the linear programming problem: minimize c @ v subject to (A_ub @ v <= b_ub)
-    result = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds, 
-                     method=method) # 'highs' uses the Dual Simplex method (good for many constraints)
-                                     # 'highs-ipm' uses the Interior Point method (faster for large sparse problems)
-                    
-    
-    if result.success:
-        return result.x
-    else:
-        raise ValueError("No feasible solution was found.")
     
 import numpy as np
 from scipy.optimize import linprog

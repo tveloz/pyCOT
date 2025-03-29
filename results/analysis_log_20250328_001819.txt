@@ -1,0 +1,959 @@
+Analysis started at 2025-03-28 00:18:19
+Input directory: networks/RandomAlife/Ns20
+
+Starting batch analysis of reaction networks in networks/RandomAlife/Ns20
+Found 50 reaction network files
+
+Processing file 1/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_12.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_12.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_4_id_12
+Building hierarchy graph for RN_Ns_20_Norg_4_id_12
+Analyzing lattice properties for RN_Ns_20_Norg_4_id_12
+Analyzing negation properties for RN_Ns_20_Norg_4_id_12
+
+Analysis Summary for RN_Ns_20_Norg_4_id_12:
+  Species: 20, Reactions: 42
+  Semi-organizations: 6
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.75
+  De Morgan Score: 0.92
+
+Processing file 2/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_13.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_13.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_4_id_13
+Building hierarchy graph for RN_Ns_20_Norg_4_id_13
+Analyzing lattice properties for RN_Ns_20_Norg_4_id_13
+Analyzing negation properties for RN_Ns_20_Norg_4_id_13
+
+Analysis Summary for RN_Ns_20_Norg_4_id_13:
+  Species: 20, Reactions: 40
+  Semi-organizations: 9
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.95)
+  Distributive: False (Ratio: 0.88)
+  Negation Score: 0.83
+  De Morgan Score: 0.83
+
+Processing file 3/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_14.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_14.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_4_id_14
+Building hierarchy graph for RN_Ns_20_Norg_4_id_14
+Analyzing lattice properties for RN_Ns_20_Norg_4_id_14
+Analyzing negation properties for RN_Ns_20_Norg_4_id_14
+
+Analysis Summary for RN_Ns_20_Norg_4_id_14:
+  Species: 20, Reactions: 34
+  Semi-organizations: 11
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.67
+  De Morgan Score: 1.00
+
+Processing file 4/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_16.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_16.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_4_id_16
+Building hierarchy graph for RN_Ns_20_Norg_4_id_16
+Analyzing lattice properties for RN_Ns_20_Norg_4_id_16
+Analyzing negation properties for RN_Ns_20_Norg_4_id_16
+
+Analysis Summary for RN_Ns_20_Norg_4_id_16:
+  Species: 20, Reactions: 42
+  Semi-organizations: 6
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.72
+  De Morgan Score: 0.83
+
+Processing file 5/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_17.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_17.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_4_id_17
+Building hierarchy graph for RN_Ns_20_Norg_4_id_17
+Analyzing lattice properties for RN_Ns_20_Norg_4_id_17
+Analyzing negation properties for RN_Ns_20_Norg_4_id_17
+
+Analysis Summary for RN_Ns_20_Norg_4_id_17:
+  Species: 20, Reactions: 40
+  Semi-organizations: 5
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.92
+  De Morgan Score: 1.00
+
+Processing file 6/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_18.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_18.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_4_id_18
+Building hierarchy graph for RN_Ns_20_Norg_4_id_18
+Analyzing lattice properties for RN_Ns_20_Norg_4_id_18
+Analyzing negation properties for RN_Ns_20_Norg_4_id_18
+
+Analysis Summary for RN_Ns_20_Norg_4_id_18:
+  Species: 20, Reactions: 40
+  Semi-organizations: 7
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.53
+  De Morgan Score: 0.90
+
+Processing file 7/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_19.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_19.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_4_id_19
+Building hierarchy graph for RN_Ns_20_Norg_4_id_19
+Analyzing lattice properties for RN_Ns_20_Norg_4_id_19
+Analyzing negation properties for RN_Ns_20_Norg_4_id_19
+
+Analysis Summary for RN_Ns_20_Norg_4_id_19:
+  Species: 20, Reactions: 36
+  Semi-organizations: 19
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.96)
+  Distributive: False (Ratio: 0.88)
+  Negation Score: 0.64
+  De Morgan Score: 0.83
+
+Processing file 8/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_21.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_4_id_21.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_4_id_21
+Building hierarchy graph for RN_Ns_20_Norg_4_id_21
+Analyzing lattice properties for RN_Ns_20_Norg_4_id_21
+Analyzing negation properties for RN_Ns_20_Norg_4_id_21
+
+Analysis Summary for RN_Ns_20_Norg_4_id_21:
+  Species: 19, Reactions: 36
+  Semi-organizations: 16
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.54
+  De Morgan Score: 1.00
+
+Processing file 9/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_5_id_20.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_5_id_20.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_5_id_20
+Building hierarchy graph for RN_Ns_20_Norg_5_id_20
+Analyzing lattice properties for RN_Ns_20_Norg_5_id_20
+Analyzing negation properties for RN_Ns_20_Norg_5_id_20
+
+Analysis Summary for RN_Ns_20_Norg_5_id_20:
+  Species: 20, Reactions: 42
+  Semi-organizations: 5
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.57
+  De Morgan Score: 1.00
+
+Processing file 10/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_5_id_3.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_5_id_3.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_5_id_3
+Building hierarchy graph for RN_Ns_20_Norg_5_id_3
+Analyzing lattice properties for RN_Ns_20_Norg_5_id_3
+Analyzing negation properties for RN_Ns_20_Norg_5_id_3
+
+Analysis Summary for RN_Ns_20_Norg_5_id_3:
+  Species: 20, Reactions: 40
+  Semi-organizations: 5
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.53
+  De Morgan Score: 0.90
+
+Processing file 11/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_5_id_7.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_5_id_7.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_5_id_7
+Building hierarchy graph for RN_Ns_20_Norg_5_id_7
+Analyzing lattice properties for RN_Ns_20_Norg_5_id_7
+Analyzing negation properties for RN_Ns_20_Norg_5_id_7
+
+Analysis Summary for RN_Ns_20_Norg_5_id_7:
+  Species: 20, Reactions: 36
+  Semi-organizations: 5
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.57
+  De Morgan Score: 1.00
+
+Processing file 12/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_10.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_10.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_10
+Building hierarchy graph for RN_Ns_20_Norg_6_id_10
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_10
+Analyzing negation properties for RN_Ns_20_Norg_6_id_10
+
+Analysis Summary for RN_Ns_20_Norg_6_id_10:
+  Species: 20, Reactions: 36
+  Semi-organizations: 25
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.98)
+  Distributive: False (Ratio: 0.96)
+  Negation Score: 1.05
+  De Morgan Score: 1.00
+
+Processing file 13/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_132.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_132.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_132
+Building hierarchy graph for RN_Ns_20_Norg_6_id_132
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_132
+Analyzing negation properties for RN_Ns_20_Norg_6_id_132
+
+Analysis Summary for RN_Ns_20_Norg_6_id_132:
+  Species: 20, Reactions: 40
+  Semi-organizations: 19
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.98)
+  Distributive: False (Ratio: 0.96)
+  Negation Score: 0.51
+  De Morgan Score: 0.97
+
+Processing file 14/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_135.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_135.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_135
+Building hierarchy graph for RN_Ns_20_Norg_6_id_135
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_135
+Analyzing negation properties for RN_Ns_20_Norg_6_id_135
+
+Analysis Summary for RN_Ns_20_Norg_6_id_135:
+  Species: 20, Reactions: 40
+  Semi-organizations: 7
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.67
+  De Morgan Score: 0.67
+
+Processing file 15/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_136.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_136.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_136
+Building hierarchy graph for RN_Ns_20_Norg_6_id_136
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_136
+Analyzing negation properties for RN_Ns_20_Norg_6_id_136
+
+Analysis Summary for RN_Ns_20_Norg_6_id_136:
+  Species: 20, Reactions: 29
+  Semi-organizations: 10
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.67
+  De Morgan Score: 0.94
+
+Processing file 16/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_137.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_137.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_137
+Building hierarchy graph for RN_Ns_20_Norg_6_id_137
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_137
+Analyzing negation properties for RN_Ns_20_Norg_6_id_137
+
+Analysis Summary for RN_Ns_20_Norg_6_id_137:
+  Species: 20, Reactions: 35
+  Semi-organizations: 7
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.55
+  De Morgan Score: 1.00
+
+Processing file 17/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_139.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_139.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_139
+Building hierarchy graph for RN_Ns_20_Norg_6_id_139
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_139
+Analyzing negation properties for RN_Ns_20_Norg_6_id_139
+
+Analysis Summary for RN_Ns_20_Norg_6_id_139:
+  Species: 20, Reactions: 35
+  Semi-organizations: 11
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.65
+  De Morgan Score: 0.95
+
+Processing file 18/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_141.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_141.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_141
+Building hierarchy graph for RN_Ns_20_Norg_6_id_141
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_141
+Analyzing negation properties for RN_Ns_20_Norg_6_id_141
+
+Analysis Summary for RN_Ns_20_Norg_6_id_141:
+  Species: 20, Reactions: 30
+  Semi-organizations: 13
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.95)
+  Distributive: False (Ratio: 0.93)
+  Negation Score: 0.77
+  De Morgan Score: 0.94
+
+Processing file 19/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_142.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_142.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_142
+Building hierarchy graph for RN_Ns_20_Norg_6_id_142
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_142
+Analyzing negation properties for RN_Ns_20_Norg_6_id_142
+
+Analysis Summary for RN_Ns_20_Norg_6_id_142:
+  Species: 20, Reactions: 34
+  Semi-organizations: 6
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.75
+  De Morgan Score: 0.92
+
+Processing file 20/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_145.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_145.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_145
+Building hierarchy graph for RN_Ns_20_Norg_6_id_145
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_145
+Analyzing negation properties for RN_Ns_20_Norg_6_id_145
+
+Analysis Summary for RN_Ns_20_Norg_6_id_145:
+  Species: 20, Reactions: 30
+  Semi-organizations: 6
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.75
+  De Morgan Score: 0.92
+
+Processing file 21/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_146.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_146.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_146
+Building hierarchy graph for RN_Ns_20_Norg_6_id_146
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_146
+Analyzing negation properties for RN_Ns_20_Norg_6_id_146
+
+Analysis Summary for RN_Ns_20_Norg_6_id_146:
+  Species: 20, Reactions: 31
+  Semi-organizations: 13
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.53
+  De Morgan Score: 1.00
+
+Processing file 22/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_147.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_147.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_147
+Building hierarchy graph for RN_Ns_20_Norg_6_id_147
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_147
+Analyzing negation properties for RN_Ns_20_Norg_6_id_147
+
+Analysis Summary for RN_Ns_20_Norg_6_id_147:
+  Species: 20, Reactions: 31
+  Semi-organizations: 12
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.97)
+  Distributive: False (Ratio: 0.96)
+  Negation Score: 1.00
+  De Morgan Score: 1.00
+
+Processing file 23/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_148.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_148.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_148
+Building hierarchy graph for RN_Ns_20_Norg_6_id_148
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_148
+Analyzing negation properties for RN_Ns_20_Norg_6_id_148
+
+Analysis Summary for RN_Ns_20_Norg_6_id_148:
+  Species: 20, Reactions: 33
+  Semi-organizations: 9
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.65
+  De Morgan Score: 0.81
+
+Processing file 24/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_150.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_150.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_150
+Building hierarchy graph for RN_Ns_20_Norg_6_id_150
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_150
+Analyzing negation properties for RN_Ns_20_Norg_6_id_150
+
+Analysis Summary for RN_Ns_20_Norg_6_id_150:
+  Species: 20, Reactions: 28
+  Semi-organizations: 10
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.62
+  De Morgan Score: 0.85
+
+Processing file 25/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_153.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_153.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_153
+Building hierarchy graph for RN_Ns_20_Norg_6_id_153
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_153
+Analyzing negation properties for RN_Ns_20_Norg_6_id_153
+
+Analysis Summary for RN_Ns_20_Norg_6_id_153:
+  Species: 20, Reactions: 31
+  Semi-organizations: 11
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.52
+  De Morgan Score: 0.94
+
+Processing file 26/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_154.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_154.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_154
+Building hierarchy graph for RN_Ns_20_Norg_6_id_154
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_154
+Analyzing negation properties for RN_Ns_20_Norg_6_id_154
+
+Analysis Summary for RN_Ns_20_Norg_6_id_154:
+  Species: 20, Reactions: 32
+  Semi-organizations: 11
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.56
+  De Morgan Score: 0.56
+
+Processing file 27/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_155.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_155.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_155
+Building hierarchy graph for RN_Ns_20_Norg_6_id_155
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_155
+Analyzing negation properties for RN_Ns_20_Norg_6_id_155
+
+Analysis Summary for RN_Ns_20_Norg_6_id_155:
+  Species: 20, Reactions: 33
+  Semi-organizations: 16
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.89)
+  Distributive: False (Ratio: 0.82)
+  Negation Score: 0.75
+  De Morgan Score: 0.75
+
+Processing file 28/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_157.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_157.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_157
+Building hierarchy graph for RN_Ns_20_Norg_6_id_157
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_157
+Analyzing negation properties for RN_Ns_20_Norg_6_id_157
+
+Analysis Summary for RN_Ns_20_Norg_6_id_157:
+  Species: 20, Reactions: 36
+  Semi-organizations: 6
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.67
+  De Morgan Score: 0.67
+
+Processing file 29/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_159.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_159.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_159
+Building hierarchy graph for RN_Ns_20_Norg_6_id_159
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_159
+Analyzing negation properties for RN_Ns_20_Norg_6_id_159
+
+Analysis Summary for RN_Ns_20_Norg_6_id_159:
+  Species: 19, Reactions: 30
+  Semi-organizations: 7
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.69
+  De Morgan Score: 0.75
+
+Processing file 30/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_161.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_161.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_161
+Building hierarchy graph for RN_Ns_20_Norg_6_id_161
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_161
+Analyzing negation properties for RN_Ns_20_Norg_6_id_161
+
+Analysis Summary for RN_Ns_20_Norg_6_id_161:
+  Species: 20, Reactions: 34
+  Semi-organizations: 17
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.91)
+  Distributive: False (Ratio: 0.79)
+  Negation Score: 0.77
+  De Morgan Score: 0.81
+
+Processing file 31/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_162.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_162.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_162
+Building hierarchy graph for RN_Ns_20_Norg_6_id_162
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_162
+Analyzing negation properties for RN_Ns_20_Norg_6_id_162
+
+Analysis Summary for RN_Ns_20_Norg_6_id_162:
+  Species: 20, Reactions: 32
+  Semi-organizations: 23
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.95)
+  Distributive: False (Ratio: 0.90)
+  Negation Score: 0.70
+  De Morgan Score: 0.96
+
+Processing file 32/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_164.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_164.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_164
+Building hierarchy graph for RN_Ns_20_Norg_6_id_164
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_164
+Analyzing negation properties for RN_Ns_20_Norg_6_id_164
+
+Analysis Summary for RN_Ns_20_Norg_6_id_164:
+  Species: 19, Reactions: 34
+  Semi-organizations: 8
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.52
+  De Morgan Score: 0.93
+
+Processing file 33/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_166.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_166.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_166
+Building hierarchy graph for RN_Ns_20_Norg_6_id_166
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_166
+Analyzing negation properties for RN_Ns_20_Norg_6_id_166
+
+Analysis Summary for RN_Ns_20_Norg_6_id_166:
+  Species: 20, Reactions: 34
+  Semi-organizations: 6
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.69
+  De Morgan Score: 0.75
+
+Processing file 34/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_9.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_6_id_9.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_6_id_9
+Building hierarchy graph for RN_Ns_20_Norg_6_id_9
+Analyzing lattice properties for RN_Ns_20_Norg_6_id_9
+Analyzing negation properties for RN_Ns_20_Norg_6_id_9
+
+Analysis Summary for RN_Ns_20_Norg_6_id_9:
+  Species: 20, Reactions: 34
+  Semi-organizations: 17
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.60
+  De Morgan Score: 0.88
+
+Processing file 35/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_133.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_133.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_7_id_133
+Building hierarchy graph for RN_Ns_20_Norg_7_id_133
+Analyzing lattice properties for RN_Ns_20_Norg_7_id_133
+Analyzing negation properties for RN_Ns_20_Norg_7_id_133
+
+Analysis Summary for RN_Ns_20_Norg_7_id_133:
+  Species: 20, Reactions: 40
+  Semi-organizations: 48
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.89)
+  Distributive: False (Ratio: 0.77)
+  Negation Score: 0.56
+  De Morgan Score: 0.68
+
+Processing file 36/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_134.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_134.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_7_id_134
+Building hierarchy graph for RN_Ns_20_Norg_7_id_134
+Analyzing lattice properties for RN_Ns_20_Norg_7_id_134
+Analyzing negation properties for RN_Ns_20_Norg_7_id_134
+
+Analysis Summary for RN_Ns_20_Norg_7_id_134:
+  Species: 20, Reactions: 38
+  Semi-organizations: 14
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.52
+  De Morgan Score: 0.95
+
+Processing file 37/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_143.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_143.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_7_id_143
+Building hierarchy graph for RN_Ns_20_Norg_7_id_143
+Analyzing lattice properties for RN_Ns_20_Norg_7_id_143
+Analyzing negation properties for RN_Ns_20_Norg_7_id_143
+
+Analysis Summary for RN_Ns_20_Norg_7_id_143:
+  Species: 20, Reactions: 32
+  Semi-organizations: 17
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.97)
+  Distributive: False (Ratio: 0.94)
+  Negation Score: 0.69
+  De Morgan Score: 0.75
+
+Processing file 38/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_144.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_144.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_7_id_144
+Building hierarchy graph for RN_Ns_20_Norg_7_id_144
+Analyzing lattice properties for RN_Ns_20_Norg_7_id_144
+Analyzing negation properties for RN_Ns_20_Norg_7_id_144
+
+Analysis Summary for RN_Ns_20_Norg_7_id_144:
+  Species: 20, Reactions: 32
+  Semi-organizations: 15
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.99)
+  Distributive: False (Ratio: 0.98)
+  Negation Score: 0.51
+  De Morgan Score: 0.97
+
+Processing file 39/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_156.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_156.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_7_id_156
+Building hierarchy graph for RN_Ns_20_Norg_7_id_156
+Analyzing lattice properties for RN_Ns_20_Norg_7_id_156
+Analyzing negation properties for RN_Ns_20_Norg_7_id_156
+
+Analysis Summary for RN_Ns_20_Norg_7_id_156:
+  Species: 20, Reactions: 38
+  Semi-organizations: 9
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.95)
+  Distributive: False (Ratio: 0.91)
+  Negation Score: 0.71
+  De Morgan Score: 0.62
+
+Processing file 40/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_158.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_158.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_7_id_158
+Building hierarchy graph for RN_Ns_20_Norg_7_id_158
+Analyzing lattice properties for RN_Ns_20_Norg_7_id_158
+Analyzing negation properties for RN_Ns_20_Norg_7_id_158
+
+Analysis Summary for RN_Ns_20_Norg_7_id_158:
+  Species: 20, Reactions: 35
+  Semi-organizations: 18
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.99)
+  Distributive: False (Ratio: 0.96)
+  Negation Score: 0.67
+  De Morgan Score: 0.90
+
+Processing file 41/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_160.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_7_id_160.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_7_id_160
+Building hierarchy graph for RN_Ns_20_Norg_7_id_160
+Analyzing lattice properties for RN_Ns_20_Norg_7_id_160
+Analyzing negation properties for RN_Ns_20_Norg_7_id_160
+
+Analysis Summary for RN_Ns_20_Norg_7_id_160:
+  Species: 20, Reactions: 30
+  Semi-organizations: 14
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.50
+  De Morgan Score: 0.93
+
+Processing file 42/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_138.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_138.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_8_id_138
+Building hierarchy graph for RN_Ns_20_Norg_8_id_138
+Analyzing lattice properties for RN_Ns_20_Norg_8_id_138
+Analyzing negation properties for RN_Ns_20_Norg_8_id_138
+
+Analysis Summary for RN_Ns_20_Norg_8_id_138:
+  Species: 20, Reactions: 30
+  Semi-organizations: 12
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.76
+  De Morgan Score: 0.71
+
+Processing file 43/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_140.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_140.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_8_id_140
+Building hierarchy graph for RN_Ns_20_Norg_8_id_140
+Analyzing lattice properties for RN_Ns_20_Norg_8_id_140
+Analyzing negation properties for RN_Ns_20_Norg_8_id_140
+
+Analysis Summary for RN_Ns_20_Norg_8_id_140:
+  Species: 20, Reactions: 39
+  Semi-organizations: 9
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 1.04
+  De Morgan Score: 1.00
+
+Processing file 44/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_149.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_149.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_8_id_149
+Building hierarchy graph for RN_Ns_20_Norg_8_id_149
+Analyzing lattice properties for RN_Ns_20_Norg_8_id_149
+Analyzing negation properties for RN_Ns_20_Norg_8_id_149
+
+Analysis Summary for RN_Ns_20_Norg_8_id_149:
+  Species: 20, Reactions: 32
+  Semi-organizations: 35
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.94)
+  Distributive: False (Ratio: 0.88)
+  Negation Score: 0.50
+  De Morgan Score: 0.65
+
+Processing file 45/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_15.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_15.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_8_id_15
+Building hierarchy graph for RN_Ns_20_Norg_8_id_15
+Analyzing lattice properties for RN_Ns_20_Norg_8_id_15
+Analyzing negation properties for RN_Ns_20_Norg_8_id_15
+
+Analysis Summary for RN_Ns_20_Norg_8_id_15:
+  Species: 20, Reactions: 38
+  Semi-organizations: 14
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.61
+  De Morgan Score: 0.92
+
+Processing file 46/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_151.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_151.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_8_id_151
+Building hierarchy graph for RN_Ns_20_Norg_8_id_151
+Analyzing lattice properties for RN_Ns_20_Norg_8_id_151
+Analyzing negation properties for RN_Ns_20_Norg_8_id_151
+
+Analysis Summary for RN_Ns_20_Norg_8_id_151:
+  Species: 20, Reactions: 32
+  Semi-organizations: 13
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.71
+  De Morgan Score: 0.54
+
+Processing file 47/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_152.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_152.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_8_id_152
+Building hierarchy graph for RN_Ns_20_Norg_8_id_152
+Analyzing lattice properties for RN_Ns_20_Norg_8_id_152
+Analyzing negation properties for RN_Ns_20_Norg_8_id_152
+
+Analysis Summary for RN_Ns_20_Norg_8_id_152:
+  Species: 20, Reactions: 29
+  Semi-organizations: 13
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.85
+  De Morgan Score: 0.96
+
+Processing file 48/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_163.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_163.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_8_id_163
+Building hierarchy graph for RN_Ns_20_Norg_8_id_163
+Analyzing lattice properties for RN_Ns_20_Norg_8_id_163
+Analyzing negation properties for RN_Ns_20_Norg_8_id_163
+
+Analysis Summary for RN_Ns_20_Norg_8_id_163:
+  Species: 20, Reactions: 33
+  Semi-organizations: 17
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.53
+  De Morgan Score: 1.00
+
+Processing file 49/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_165.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_8_id_165.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_8_id_165
+Building hierarchy graph for RN_Ns_20_Norg_8_id_165
+Analyzing lattice properties for RN_Ns_20_Norg_8_id_165
+Analyzing negation properties for RN_Ns_20_Norg_8_id_165
+
+Analysis Summary for RN_Ns_20_Norg_8_id_165:
+  Species: 20, Reactions: 33
+  Semi-organizations: 13
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: True (Ratio: 1.00)
+  Distributive: True (Ratio: 1.00)
+  Negation Score: 0.53
+  De Morgan Score: 1.00
+
+Processing file 50/50: networks/RandomAlife/Ns20\RN_Ns_20_Norg_9_id_4.txt
+
+
+=== ANALYZING FILE: networks/RandomAlife/Ns20\RN_Ns_20_Norg_9_id_4.txt ===
+Calculating semi-organisations for RN_Ns_20_Norg_9_id_4
+Building hierarchy graph for RN_Ns_20_Norg_9_id_4
+Analyzing lattice properties for RN_Ns_20_Norg_9_id_4
+Analyzing negation properties for RN_Ns_20_Norg_9_id_4
+
+Analysis Summary for RN_Ns_20_Norg_9_id_4:
+  Species: 20, Reactions: 36
+  Semi-organizations: 14
+  Bounded Lattice: True
+  Complete: True (Ratio: 1.00)
+  Modular: False (Ratio: 0.93)
+  Distributive: False (Ratio: 0.85)
+  Negation Score: 0.94
+  De Morgan Score: 0.92
+
+Raw results saved to results\analysis_results.json
+
+Generating statistics...

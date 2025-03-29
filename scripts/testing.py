@@ -42,15 +42,22 @@ import os
 # RnVecS = np.array([[1, 0, 0, 0], [0, 1, 0, 0]])  # Updated for reactions
 # RnVecP= np.array([[0, 2, 0, 0], [0, 1, 1, 0]])  # Updated for reactions
 
-file_path = r'C:\Users\tvelo\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\networks\testing\Farm.txt'
-file_path = r'C:\Users\tvelo\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\networks\RandomAlife\RN_Ns_40_Norg_20_id_396.txt'
-#file_path = '../networks/RandomAlife/RN_Ns_40_Norg_24_id_316.txt'
-
+file_path = "Txt/autopoietic.txt"
 testRN=load_pyCOT_from_file(file_path)
 print("specs")
 print(testRN.SpStr)
-reactive_sorgs=reactive_semi_orgs(testRN)
-print("printing results!")
+print("reacs")
+print(testRN.RnStr)
+matrix_data = universal_stoichiometric_matrix(testRN) # Calculates the universal stoichiometric matrix associated with the reaction network
+print("reactions to build S")
+X=['s1','s2']
+print("Choosing set X="+str(X))
+RX=testRN.get_reactions_from_species(X)
+print("Getting reactions"+str(RX))
+S = StoichiometryMatrix(matrix_data, species=X, reactions=RX) # Creates a StoichiometryMatrix object with the required set of species and reactions
+print("Stoichiometric Matrix")
+print(S)
+print("Is this correct?")
 # for sorgs in reactive_sorgs:
 #    print(sorgs)
 

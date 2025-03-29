@@ -11,7 +11,8 @@ sys.stdout.reconfigure(encoding='utf-8')                                     # S
 
 # Imports from the pyCOT library 
 from pyCOT.file_manipulation import load_pyCOT_from_file # Import only the load_pyCOT_from function of the file_manipulation module to load RN  
-from pyCOT.simulations import *           # General simulation tools for dynamic systems modeled in pyCOT.
+from pyCOT.closure_structure import *
+from pyCOT.simulations import *            # General simulation tools for dynamic systems modeled in pyCOT.
 from pyCOT.rn_types import StoichiometryMatrix
 
 import numpy as np # Import the numpy library as np
@@ -21,12 +22,12 @@ from scipy.optimize import linprog # Import the linprog function from the scipy.
 # (a) Load a reaction network
 #####################################################################
 # # File path
-file_path = 'Txt/autopoietic.txt' 
-# file_path = 'Txt/2019fig1.txt'        # No solution was found
+file_path = 'networks/autopoietic.txt' 
+file_path = 'Txt/2019fig1.txt'        # No solution was found
 # file_path = 'Txt/2019fig2.txt' 
 # file_path = 'Txt/non_connected_example.txt' 
 # file_path = 'Txt/PassiveUncomforableIndignated_problemsolution.txt'
-# file_path = 'Txt/Farm.txt' 
+#file_path = 'networks/FarmVariants/Farm.txt' 
 
 # (a) Loads the RN from the specified file
 testRN = load_pyCOT_from_file(file_path)           # Creates an object called testRN, which represents the RN
@@ -39,11 +40,7 @@ testRN = load_pyCOT_from_file(file_path)           # Creates an object called te
 #####################################################################
 # Stoichiometric matrix  
 # S = universal_stoichiometric_matrix(testRN)  
-matrix_data = universal_stoichiometric_matrix(testRN) # Calculates the universal stoichiometric matrix associated with the reaction network
-# print(matrix_data)
-S = StoichiometryMatrix(matrix_data, species=testRN.SpStr, reactions=testRN.RnStr) # Creates a StoichiometryMatrix object with the required set of species and reactions
-print(S)  
-print(S.shape)
+
 
 # # # Nombres de las filas (índices)
 # columns = testRN.RnStr
@@ -68,15 +65,22 @@ print(S.shape)
 # print("x_v1 = S.v1 =",xv10)
 
 #####################################################################
-# Calculate the optimal solution
-v_opt = minimize_sv(S)
-print("Optimal solution v_opt =", v_opt)
+print("checking self-maintainance of the whole network")
+X=testRN.SpStr
+res = is_self_maintaining(testRN,X)
+s_orgs=reactive_semi_orgs(testRN)
+
+print("checking self-maintainance of each semi_self")
+for X in s_orgs:
+    print("set X="+str(X))
+    res = is_self_maintaining(testRN,X)
+    print(res)
 
 # Calculate S.v_opt
-x_v = S @ v_opt
-print("x_v=S.v_opt:")
-for i, val in enumerate(x_v):
-    print(f"x_v[{i+1}] = {val} {'✅ Yes' if val >= 0 else '❌ No'}") 
+# x_v = S @ v_opt
+# print("x_v=S.v_opt:")
+# for i, val in enumerate(x_v):
+#     print(f"x_v[{i+1}] = {val} {'✅ Yes' if val >= 0 else '❌ No'}") 
 
 #####################################################################  
 

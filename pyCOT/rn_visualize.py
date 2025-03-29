@@ -281,21 +281,11 @@ def rn_visualize_html(RN, lst_color_spcs=None, lst_color_reacs=None,
     webbrowser.open(f"file://{abs_path}")
 
 
-
-
-
-
-
-
-
-
-
 ###########################################################################################
 # # Plot the Hierarchy
 ###########################################################################################
 
-import networkx as nx
-from collections import defaultdict
+from pyCOT.rn_hierarchy import *
 
 def hierarchy_visualize(input_data):
     """
@@ -308,76 +298,18 @@ def hierarchy_visualize(input_data):
     will be at lower levels, and interactive cursors are used to view set elements 
     when hovering over nodes.
     """
-    # Convert each subset to a set and then to a list to remove duplicates 
-    unique_subsets = []
-    for sublist in input_data:
-        if set(sublist) not in [set(x) for x in unique_subsets]:
-            unique_subsets.append(sublist)
-
-    # Create a list of unique sets for reference
-    Set_of_sets = [set(s) for s in unique_subsets]
+    # Build the graph with species sets stored in nodes
+    G = hierarchy_build(input_data)
     
-    # Dictionary to store the containment graph
-    containment_graph = defaultdict(list)
+    # Extract labels for visualization
+    labels = nx.get_node_attributes(G, 'label')
     
-    #######################################################################
-    # Helper function to check if one set is contained within another
-    def is_subset(subset, superset):
-        """Checks if `subset` is contained within `superset`."""
-        return subset.issubset(superset) 
-    #######################################################################
-
-    # Sort the sets by size (from smallest to largest)
-    Set_of_sets.sort(key=lambda x: len(x))  # Sort `Set_of_sets` by the size of each set
-
-    # Create set names based on their level
-    Set_names = [f"S{i+1}" for i in range(len(Set_of_sets))]
-    
-    # Create a dictionary of labels for the nodes
-    labels = {f"S{i+1}": f"S{i+1}" for i in range(len(Set_of_sets))}
-    
-    # Build the containment graph
-    for i, child_set in enumerate(Set_of_sets):  # Iterate over sets as children
-        for j, parent_set in enumerate(Set_of_sets):  # Iterate over sets as parents
-            if i != j and is_subset(child_set, parent_set):  # If they are not the same and containment exists
-                # Add only if there is no reverse edge (avoid indirect edges)
-                if Set_names[j] not in containment_graph[Set_names[i]]:  # Check subsets of Set_names[i]
-                    containment_graph[Set_names[i]].append(Set_names[j]) # Add the relationship
-    
-    # Print tuple with labels and subsets
-    label_set_pairs = [(label, s) for label, s in zip(Set_names, Set_of_sets)]
-    print("Tuples of Labels and Subsets:")
-    print(label_set_pairs)
-
-    # Create a directed graph
-    G = nx.DiGraph()
-    
-    # Add nodes to the graph
-    for name in Set_names:
-        G.add_node(name)
-    
-    #######################################################################
-    # Add nodes and direct containment relationships
-    for i, child_set in enumerate(Set_of_sets):
-        for j in range(i + 1, len(Set_of_sets)):
-            parent_set = Set_of_sets[j]
-            if child_set.issubset(parent_set):
-                # Check if an intermediate set exists
-                is_direct = True
-                for k in range(i + 1, j):
-                    intermediate_set = Set_of_sets[k]
-                    if child_set.issubset(intermediate_set) and intermediate_set.issubset(parent_set):
-                        is_direct = False
-                        break
-                if is_direct:
-                    G.add_edge(Set_names[i], Set_names[j])  # Add direct edges only
-    #######################################################################        
     # Automatically assign positions by levels in the graph
     levels = {}
     for node in nx.topological_sort(G):  # Topologically sort the nodes
         depth = 0
         for parent in G.predecessors(node):  # Find predecessors of the current node
-            depth = max(depth, levels[parent] + 1)  # Define the depth of the current node
+            depth = max(depth, levels.get(parent, 0) + 1)  # Define the depth of the current node
         levels[node] = depth
     
     # Arrange nodes by levels and center them on the X-axis
@@ -387,7 +319,7 @@ def hierarchy_visualize(input_data):
     for node, level in levels.items():
         nodes_by_level[level].append(node)  # Add nodes to the corresponding level
     
-    max_nodes_in_level = max(len(nodes) for nodes in nodes_by_level.values())  # Maximum number of nodes at any level
+    max_nodes_in_level = max(len(nodes) for nodes in nodes_by_level.values()) if nodes_by_level else 1
     
     # Do not invert levels on the Y-axis; smaller sets will be at the bottom
     for level, nodes in nodes_by_level.items():
@@ -398,44 +330,65 @@ def hierarchy_visualize(input_data):
         # Calculate vertical position without inverting the Y-axis
         for i, node in enumerate(nodes):
             pos[node] = (start_x + i * horizontal_spacing, level)  # Assign position (X, Y) to each node
-
-    # Draw the graph with labels and arrows, adjusting visual properties
-    plt.figure(figsize=(10, 8))
-    nx.draw(
-        G, pos, labels=labels, arrows=True, arrowstyle='-|>', arrowsize=20, 
-        node_size=1000, node_color="skyblue", font_size=12, font_weight="bold", 
-        edge_color="gray"
-    )  
-
-    #######################################################################
-    # Create set labels to display when hovering over nodes
-    cursor_labels = [
-        ', '.join(sorted(list(s))) if s else '∅'
-        for s in Set_of_sets
-    ]
     
-    # Configure interactive cursor to display set labels
-    cursor = mplcursors.cursor(plt.gca(), hover=True)
-    
-    @cursor.connect("add")
-    def on_add(sel):
-        """Displays the content of the set when hovering over a node."""
-        index = sel.index
-        if index < len(cursor_labels):
-            sel.annotation.set_text(cursor_labels[index])
+    try:
+        import matplotlib.pyplot as plt
+        import mplcursors
+
+        # Draw the graph with labels and arrows, adjusting visual properties
+        plt.figure(figsize=(10, 8))
+        nx.draw(
+            G, pos, labels=labels, arrows=True, arrowstyle='-|>', arrowsize=20, 
+            node_size=1000, node_color="skyblue", font_size=12, font_weight="bold", 
+            edge_color="gray"
+        )
+
+        # Create cursor labels using the species sets stored in nodes
+        cursor_texts = {}
+        for node in G.nodes():
+            species_set = G.nodes[node]['species_set']
+            cursor_texts[node] = ', '.join(sorted(list(species_set))) if species_set else '∅'
+        
+        # Configure interactive cursor to display set labels
+        cursor = mplcursors.cursor(plt.gca(), hover=True)
+        
+        @cursor.connect("add")
+        def on_add(sel):
+            """Displays the content of the set when hovering over a node."""
+            node = list(G.nodes())[sel.index]
+            sel.annotation.set_text(cursor_texts.get(node, ''))
             sel.annotation.set_visible(True)
 
-    @cursor.connect("remove")
-    def on_remove(sel):
-        """Hides the annotation when the cursor leaves the node."""
-        sel.annotation.set_visible(False)
+        @cursor.connect("remove")
+        def on_remove(sel):
+            """Hides the annotation when the cursor leaves the node."""
+            sel.annotation.set_visible(False)
+        
+        plt.show()  # Display the graph
+    except ImportError:
+        print("Matplotlib or mplcursors not available, skipping visualization")
     
-    plt.show()  # Display the graph
-
     # Extract positions and store in a vector
-    node_positions = {node: pos[node] for node in Set_names}  # Return positions in a dictionary form
-    # Return the dictionary with node positions
-    return node_positions
+    node_positions = {node: pos[node] for node in G.nodes()}
+    
+    return G, node_positions  # Return both the graph and the positions
+
+# Function to access species sets from nodes
+def get_species_from_node(G, node_name):
+    """
+    Get the species set stored in a node.
+    
+    Args:
+        G (nx.DiGraph): The hierarchy graph
+        node_name (str): The name of the node (e.g., "S1")
+        
+    Returns:
+        set: The set of species stored in the node
+    """
+    if node_name in G:
+        return G.nodes[node_name]['species_set']
+    else:
+        raise ValueError(f"Node {node_name} not found in the graph")
 ##################################################################
 
 def hierarchy_get_visualization_html(

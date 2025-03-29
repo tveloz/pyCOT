@@ -26,7 +26,8 @@ from pyCOT.display import *
 from pyCOT.reaction_network import *
 import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
-
+from pyCOT.simulations import *  
+from pyCOT.rn_types import StoichiometryMatrix
 #def closure_structure(RN,):
     #get generators
     #compute closures     
@@ -158,15 +159,77 @@ def reactive_semi_orgs(RN):
      reactive_sorgs= [sorg for sorg in power_list_closures if RN.is_semi_self_maintaining(sorg)]
      print("reactive_semi_orgs ending")
      print("number of ERCs : "+str(len(ERCs_closures)))
-     print("size of power list of ERCs : "+str(len(power_list_ERCs)))
+     print("size of power list of ERCs with duplicates: "+str(len(power_list_ERCs)))
      print("closures found : "+str(len(power_list_closures)))
      print("semiorgs found: "+str(len(reactive_sorgs)))
      return(reactive_sorgs)     
 
+##################Calcular Self-maintainance####################################################
+# Function for solve the Linear Programming Problem: S.v>=0, v>0
+def minimize_sv(S, epsilon=1,method='highs'):
+    """
+    Minimizes c @ v subject to S @ v >= 0 and v > 0.
+    
+    Parameters:
+    ----------
+    S : numpy.ndarray
+        Stoichiometric matrix of the reaction network (RN).
+    epsilon : float, optional
+        Small positive value to ensure all coordinates of v remain strictly positive (default is 1).
 
+    Returns:
+    -------
+    numpy.ndarray
+        Optimal process vector v with all strictly positive coordinates.
 
+    Raises:
+    ------
+    ValueError
+        If no feasible solution is found.
+    """
+    n_species, n_reactions = S.shape  # Dimensions of S
+    c = np.ones(n_reactions)          # Objective function: minimize the sum of v
+    A_ub = -S                         # Reformulate S @ v >= 0 as -S @ v <= 0
+    b_ub = np.zeros(n_species)        # Inequality constraints
+    bounds = [(epsilon, None)] * n_reactions  # v > 0 (avoiding exact zero values) 
+    
+    # Solve the linear programming problem: minimize c @ v subject to (A_ub @ v <= b_ub)
+    result = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds, 
+                     method=method) # 'highs' uses the Dual Simplex method (good for many constraints)
+                                     # 'highs-ipm' uses the Interior Point method (faster for large sparse problems)
+        
+    if result.success:
+        return [True, result.x]
+    else:
+        print("minimize_sv: No feasible solution was found.")
+        return [False, np.zeros(n_reactions)]
 
-
+def is_self_maintaining(RN,X):
+    """
+    Verifies X is a self-maintaining set w.r.t RN
+    
+    Parameters:
+    ----------
+    X : list of species
+    RN: Reaction network (RN).
+    
+    Returns:
+    -------
+    [Boolean,np.array1,np.array2] 
+    Boolean expresses if it is SelfMaintaining, 
+    np.array1 delivers self-maintaining vector,
+    np.array2 delivers production vector      
+    """
+    matrix_data = universal_stoichiometric_matrix(RN) # Calculates the universal stoichiometric matrix associated with the reaction network
+    print("reactions to build S")
+    print(RN.get_reactions_from_species(X))
+    S = StoichiometryMatrix(matrix_data, species=X, reactions=RN.get_reactions_from_species(X)) # Creates a StoichiometryMatrix object with the required set of species and reactions
+    print("Stoichiometric Matrix")
+    print(S)
+    res=minimize_sv(S, epsilon=1,method='highs')
+    xv=S @ res[1]
+    res.append(xv)
+    return res
 
 
 ################## END OF DISGRESSION ############################################

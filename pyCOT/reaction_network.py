@@ -466,6 +466,7 @@ class ReactionNetwork:
             if not prod.any():
                 result = result | supp
         return dc.get_species_from_bt(result, self.SpStr)
+    
 
     ########################################################################################################
     ############# verify relational properties of species/reactions#########################################
