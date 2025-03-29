@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 from scipy.integrate import odeint
 from matplotlib.widgets import Slider
+from scipy.optimize import linprog 
 
 ###################################################################################
 # Function to calculate the reaction rate 
@@ -264,21 +265,11 @@ def universal_stoichiometric_matrix(RN):
     matrix = np.zeros((len(RN.SpStr), len(RN.RnStr)))  # #species x #reactions
 
     # Iterate over reactions
-    for i in range(len(RN.RnStr)):  # For each reaction
-        # Process reactants
-        for j in range(len(RN.SpStr)):  # For each species
-            coef_r = RN.RnMsupp[i][j]  # Coefficient of the reactant in reaction i for species j
-            if coef_r > 0:  # If greater than 0, it's a reactant
-                matrix[j, i] = -coef_r  # Reactant coefficients are negative (transposition here)
-
-        # Process products
+    for i in range(len(RN.RnStr)):  # For each reaction 
         for j in range(len(RN.SpStr)):  # Same for products
-            coef_r = RN.RnMprod[i][j]  # Coefficient of the product in reaction i for species j
-            if coef_r > 0:  # If greater than 0, it's a product
-                matrix[j, i] = coef_r  # Product coefficients are positive (transposition here)
-
-    # Convert the matrix to integer type
-    matrix = matrix.astype(int)  # Convert all elements to integers
+            coef_p = RN.RnMprod[i][j]  # Coefficient of the product in reaction i for species j
+            coef_r = RN.RnMsupp[i][j]  # Coefficient of the reactant in reaction i for species j
+            matrix[j, i] = coef_p - coef_r  # Product coefficients are positive (transposition here)  
 
     return matrix  # Returns the stoichiometric matrix with integer values
 
@@ -917,8 +908,100 @@ def simulate_pde_rd(RN, x0=None, t_span=None, n_steps=None, k=None, exchange_rat
     
     return result.reshape(n_steps, grid_shape[0], grid_shape[1], len(RN.SpStr))
 
+###########################################################################################
+# Function for solve the Linear Programming Problem: S.v>=0, v>0
+def minimize_sv(S, epsilon=1,method='highs'):
+    """
+    Minimizes c @ v subject to S @ v >= 0 and v > 0.
+    
+    Parameters:
+    ----------
+    S : numpy.ndarray
+        Stoichiometric matrix of the reaction network (RN).
+    epsilon : float, optional
+        Small positive value to ensure all coordinates of v remain strictly positive (default is 1).
 
+    Returns:
+    -------
+    numpy.ndarray
+        Optimal process vector v with all strictly positive coordinates.
 
+    Raises:
+    ------
+    ValueError
+        If no feasible solution is found.
+    """
+    n_species, n_reactions = S.shape  # Dimensions of S
+    c = np.ones(n_reactions)          # Objective function: minimize the sum of v
+    A_ub = -S                         # Reformulate S @ v >= 0 as -S @ v <= 0
+    b_ub = np.zeros(n_species)        # Inequality constraints
+    bounds = [(epsilon, None)] * n_reactions  # v > 0 (avoiding exact zero values) 
+    
+    # Solve the linear programming problem: minimize c @ v subject to (A_ub @ v <= b_ub)
+    result = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds, 
+                     method=method) # 'highs' uses the Dual Simplex method (good for many constraints)
+                                     # 'highs-ipm' uses the Interior Point method (faster for large sparse problems)
+                    
+    
+    if result.success:
+        return result.x
+    else:
+        raise ValueError("No feasible solution was found.")
+    
+import numpy as np
+from scipy.optimize import linprog
 
+def maximize_sv(S, epsilon=1, method='highs'):
+    """
+    Maximizes c @ v subject to S @ v >= 0 and v > 0.
+    
+    Parameters:
+    ----------
+    S : numpy.ndarray
+        Stoichiometric matrix of the reaction network (RN).
+    epsilon : float, optional
+        Small positive value to ensure all coordinates of v remain strictly positive (default is 1).
 
+    Returns:
+    -------
+    numpy.ndarray
+        Optimal process vector v with all strictly positive coordinates.
 
+    Raises:
+    ------
+    ValueError
+        If no feasible solution is found.
+    """
+    n_species, n_reactions = S.shape  # Dimensions of S
+    c = -np.ones(n_reactions)         # Objective function: maximize the sum of -v (equivalent to minimize c @ v)
+    A_ub = -S                         # Reformulate S @ v >= 0 as -S @ v <= 0
+    b_ub = np.zeros(n_species)        # Inequality constraints
+    bounds = [( None,epsilon)] * n_reactions  # v > 0 (avoiding exact zero values) 
+    
+    # Solve the linear programming problem: maximize c @ v subject to (A_ub @ v <= b_ub)
+    result = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds, method=method)
+    
+    if result.success:
+        return result.x
+    else:
+        raise ValueError("No feasible solution was found.")
+
+    
+########################################################################################### 
+# Function to calculate the echenlon form of a matrix
+def row_echelon_form(A):
+    A = A.astype(float)  # Asegurar que los cálculos sean en punto flotante
+    rows, cols = A.shape
+    for i in range(min(rows, cols)):
+        # Encontrar el pivote y hacer intercambio de filas si es necesario
+        max_row = np.argmax(abs(A[i:, i])) + i
+        if A[max_row, i] != 0:
+            A[[i, max_row]] = A[[max_row, i]]  # Intercambio de filas
+        
+        # Hacer ceros debajo del pivote
+        for j in range(i + 1, rows):
+            if A[i, i] != 0:
+                factor = A[j, i] / A[i, i]
+                A[j, i:] -= factor * A[i, i:]
+    
+    return A
