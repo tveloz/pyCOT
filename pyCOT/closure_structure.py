@@ -52,6 +52,7 @@ def closure(RN,X):
         temp=CL
         CL=list(set(temp).union(set(RN.get_prod_from_species(temp))))
     return CL
+
 def closures(RN,ListX):
     L=[]
     for X in ListX:
@@ -161,6 +162,12 @@ def reactive_semi_orgs(RN):
      print("closures found : "+str(len(power_list_closures)))
      print("semiorgs found: "+str(len(reactive_sorgs)))
      return(reactive_sorgs)     
+
+
+
+
+
+
 
 ################## END OF DISGRESSION ############################################
 
