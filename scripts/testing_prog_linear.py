@@ -10,9 +10,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # A
 sys.stdout.reconfigure(encoding='utf-8')                                     # Set the standard output encoding to UTF-8
 
 # Imports from the pyCOT library 
-from pyCOT.file_manipulation import load_pyCOT_from_file # Import only the load_pyCOT_from function of the file_manipulation module to load RN  
+#from pyCOT.file_manipulation import load_pyCOT_from_file # Import only the load_pyCOT_from function of the file_manipulation module to load RN  
+from pyCOT.io.functions import read_txt # Import the load_pyCOT_from_file function from the io.functions module to load RN
 from pyCOT.closure_structure import *
-from pyCOT.simulations import *            # General simulation tools for dynamic systems modeled in pyCOT.
+#from pyCOT.simulations import *            # General simulation tools for dynamic systems modeled in pyCOT.
 from pyCOT.rn_types import StoichiometryMatrix
 
 import numpy as np # Import the numpy library as np
@@ -30,7 +31,7 @@ file_path = 'Txt/2019fig1.txt'        # No solution was found
 #file_path = 'networks/FarmVariants/Farm.txt' 
 
 # (a) Loads the RN from the specified file
-testRN = load_pyCOT_from_file(file_path)           # Creates an object called testRN, which represents the RN
+testRN = read_txt(file_path)           # Creates an object called testRN, which represents the RN
 # print(testRN.RnMprod)
 # print(testRN.RnMsupp) 
 # print(testRN.SpStr)
@@ -66,14 +67,14 @@ testRN = load_pyCOT_from_file(file_path)           # Creates an object called te
 
 #####################################################################
 print("checking self-maintainance of the whole network")
-X=testRN.SpStr
+X=testRN.species() # Get the names of all species in the reaction network
 res = is_self_maintaining(testRN,X)
 s_orgs=reactive_semi_orgs(testRN)
 
 print("checking self-maintainance of each semi_self")
-for X in s_orgs:
-    print("set X="+str(X))
-    res = is_self_maintaining(testRN,X)
+for x in s_orgs:
+    print("set X="+str(x))
+    res = is_self_maintaining(testRN,x)
     print(res)
 
 # Calculate S.v_opt

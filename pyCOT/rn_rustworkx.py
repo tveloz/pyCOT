@@ -1,7 +1,10 @@
+
+from __future__ import annotations
 from collections.abc import Iterable
 from itertools import starmap
 from numbers import Real
 from re import findall, compile
+
 
 import numpy as np
 from rustworkx import PyDiGraph, InvalidNode
@@ -319,6 +322,7 @@ class ReactionNetwork(PyDiGraph):
     #### Connectivity queries ##############################################################################
     ########################################################################################################  
 
+
     def get_reactions_from_species(self, species: str | Species | Iterable[str] | Iterable[Species]) -> list[Reaction]:
         """
         Obtain the reactions potentially activated by a given species set.
@@ -331,7 +335,7 @@ class ReactionNetwork(PyDiGraph):
         Returns
         -------
         list[Reaction]
-            Reactions potentially activated by the species set (i.e. the amount of species and the stoichiometry of the reaction is not considered).
+            Reactions potentially activated by the species set (including inflow reactions).
         """
         species = self._parse_species_input(species)
         
@@ -346,7 +350,23 @@ class ReactionNetwork(PyDiGraph):
         def is_support_present(reaction: Reaction) -> bool:
             return all(reactant_index in species_indices for reactant_index in reaction.support_indices())
         
-        return list(filter(is_support_present, candidates))
+        # Get reactions with support/reactants present in the given species
+        activated_reactions = list(filter(is_support_present, candidates))
+        
+        # Add all inflow reactions (reactions with no reactants/support)
+        inflow_reactions = [reaction for reaction in self.reactions() if not reaction.support_indices()]
+        
+        # Combine and return unique reactions
+        all_reactions = activated_reactions + inflow_reactions
+        # Remove duplicates by reaction name
+        unique_reactions = []
+        seen_names = set()
+        for reaction in all_reactions:
+            if reaction.name() not in seen_names:
+                unique_reactions.append(reaction)
+                seen_names.add(reaction.name())
+        
+        return unique_reactions
 
     
     def get_supp_from_reactions(self, reaction: str | Reaction | Iterable[str] | Iterable[Reaction]) -> list[Species]:
@@ -445,3 +465,18 @@ class ReactionNetwork(PyDiGraph):
             species = species.union(products)
 
         return species
+    
+    def sub_reaction_network(self, species: str | Species | Iterable[str] | Iterable[Species]) -> ReactionNetwork:
+        """Generate a sub-reaction network from the closure of a given set of species."""
+        species = self._parse_species_input(species)
+
+        # Get the closure of the species
+        closure = self.generated_closure(species)
+        reactions = self.get_reactions_from_species(closure)
+        nodes = [sp.index for sp in closure] + [r.node.index for r in reactions]
+        # Create a new ReactionNetwork instance
+        res= ReactionNetwork()
+        
+        res._species_map = closure
+        res._reaction_map= reactions
+        return self.subgraph(nodes)

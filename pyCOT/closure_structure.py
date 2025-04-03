@@ -21,13 +21,17 @@ from itertools import combinations
 from itertools import chain
 from collections import defaultdict
 from collections import Counter # para el gráfico de cantidad de básicos vs repeticiones
-from pyCOT.file_manipulation import *
-from pyCOT.display import *
-from pyCOT.reaction_network import *
+# from pyCOT.file_manipulation import *
+# from pyCOT.display import *
+#from pyCOT.reaction_network import *
 import networkx as nx
-from networkx.drawing.nx_agraph import graphviz_layout
-from pyCOT.simulations import *  
-from pyCOT.rn_types import StoichiometryMatrix
+# from networkx.drawing.nx_agraph import graphviz_layout
+# from pyCOT.simulations import *  
+from pyCOT.rn_types import *
+# from pyCOT.rn_rustworkx import *
+from pyCOT.rn_rustworkx import ReactionNetwork
+
+
 #def closure_structure(RN,):
     #get generators
     #compute closures     
@@ -204,7 +208,7 @@ def minimize_sv(S, epsilon=1,method='highs'):
         print("minimize_sv: No feasible solution was found.")
         return [False, np.zeros(n_reactions)]
 
-def is_self_maintaining(RN,X):
+def is_self_maintaining(RN: ReactionNetwork,X):
     """
     Verifies X is a self-maintaining set w.r.t RN
     
@@ -220,10 +224,11 @@ def is_self_maintaining(RN,X):
     np.array1 delivers self-maintaining vector,
     np.array2 delivers production vector      
     """
-    matrix_data = universal_stoichiometric_matrix(RN) # Calculates the universal stoichiometric matrix associated with the reaction network
+    #matrix_data = universal_stoichiometric_matrix(RN) # Calculates the universal stoichiometric matrix associated with the reaction network
     print("reactions to build S")
     print(RN.get_reactions_from_species(X))
-    S = StoichiometryMatrix(matrix_data, species=X, reactions=RN.get_reactions_from_species(X)) # Creates a StoichiometryMatrix object with the required set of species and reactions
+    sub_RN=RN.sub_reaction_network(X) # Creates a sub-reaction network with the required set of species and reactions
+    S=sub_RN.stoichiometry_matrix()
     print("Stoichiometric Matrix")
     print(S)
     res=minimize_sv(S, epsilon=1,method='highs')

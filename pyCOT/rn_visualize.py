@@ -1,4 +1,5 @@
 from pyvis.network import Network 
+
 import networkx as nx
 import matplotlib.pyplot as plt
 import mplcursors
@@ -12,6 +13,33 @@ import tempfile
 ##################################################################
 # # Plot a reaction network in HTML:
 ##################################################################
+def rn_get_string(rn):
+    # Print basic information about the loaded network
+    print(f"Loaded reaction network with:")
+    print(f"  - {len(rn.species())} species")
+    print(f"  - {len(rn.reactions())} reactions")
+
+    # Print the species
+    print("\nSpecies:")
+    for species in rn.species():
+        print(f"  - {species.name}")
+
+    # Print the reactions
+    print("\nReactions:")
+    for reaction in rn.reactions():
+        support = " + ".join([f"{edge.coefficient}*{edge.species_name}" if edge.coefficient != 1 else edge.species_name 
+                                for edge in reaction.support_edges()])
+        products = " + ".join([f"{edge.coefficient}*{edge.species_name}" if edge.coefficient != 1 else edge.species_name 
+                                for edge in reaction.products_edges()])
+        
+        if not support:
+            support = "∅"  # Empty set symbol for inflow reactions
+        if not products:
+            products = "∅"  # Empty set symbol for outflow reactions
+            
+        print(f"  - {reaction.name()}: {support} => {products}")
+
+
 def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None, 
                          global_species_color=None, global_reaction_color=None,
                          global_input_edge_color=None, global_output_edge_color=None, 
