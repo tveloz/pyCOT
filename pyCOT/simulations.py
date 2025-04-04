@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 from scipy.integrate import odeint
 from matplotlib.widgets import Slider
-from scipy.optimize import linprog 
+from scipy.optimize import linprog     
 
 ###################################################################################
 # Function to calculate the reaction rate 
@@ -664,6 +664,220 @@ def simulate_ode_mmk(RN, x0=None, t_span=None, n_steps=None, k0=None, Vmax_dict=
     
     return time_series, flux_vector      
 
+##############################################################################################
+# Function that simulates the reaction network using the specified kinetics (MAK or MMK)
+def simulations(RN, rate='mak', spec_vector=None, x0=None, n_steps=300, t_span=(0, 100), k0=None, Vmax_dict=None, Km_dict=None):
+    # Check if the rate is valid
+    if isinstance(rate, str):
+        rate = [rate] * len(RN.RnStr)
+    elif len(rate) != len(RN.RnStr):
+        raise ValueError("The rate list must be the same length as the number of reactions.")
+
+    RN_dict = {}
+    for i in range(len(RN.RnStr)):
+        reactants_coeff = []
+        products_coeff = []
+        for j in range(len(RN.SpStr)):
+            coef_r = RN.RnMsupp[i][j]
+            if coef_r > 0:
+                reactants_coeff.append((RN.SpStr[j], coef_r))
+            coef_p = RN.RnMprod[i][j]
+            if coef_p > 0:
+                products_coeff.append((RN.SpStr[j], coef_p))
+        RN_dict[RN.RnStr[i]] = (reactants_coeff, products_coeff)
+
+    species_concentrations = {species: idx for idx, species in enumerate(RN.SpStr)}
+
+    # Define the parameters for the simulation
+    if x0 is None:
+        x0 = generate_random_vector(len(RN.SpStr), seed=3).round(1) * 20
+
+    # =========================
+    # Load parameters from spec_vector
+    # =========================
+    if spec_vector is not None:
+        k = {}
+        Vmax_dict = {}
+        Km_dict = {}
+        for i, kind in enumerate(rate):
+            rxn = RN.RnStr[i]
+            reactants = RN_dict[rxn][0]
+            if kind == 'mak':
+                k[rxn] = spec_vector[i][0]
+            elif kind == 'mmk' and reactants:
+                sustrato = reactants[0][0]
+                if sustrato not in Vmax_dict:
+                    Vmax_dict[sustrato] = spec_vector[i][0]
+                    Km_dict[sustrato] = spec_vector[i][1]
+    else:
+        # =========================
+        # Generate random parameters if no spec_vector was passed
+        # =========================
+        if k0 is None:
+            k0 = generate_random_vector(len(RN.RnStr), seed=3).round(2)
+            k = {RN.RnStr[i]: float(k0[i]) for i in range(len(RN.RnStr))}
+        else:
+            k = {species: float(k0[species]) if species in k0 else 0.5 for species in RN.RnStr}
+
+        if Vmax_dict is None:
+            Vmax = generate_random_vector(len(RN.SpStr), seed=5).round(1) * 300
+            Vmax_dict = {RN.SpStr[i]: float(Vmax[i]) for i in range(len(RN.SpStr))}
+        else:
+            Vmax_dict = {species: float(Vmax_dict[species]) if species in Vmax_dict else 1.0 for species in RN.SpStr}
+
+        if Km_dict is None:
+            Km = generate_random_vector(len(RN.SpStr), seed=3).round(2) * 5000
+            Km_dict = {RN.SpStr[i]: float(Km[i]) for i in range(len(RN.SpStr))}
+        else:
+            Km_dict = {species: float(Km_dict[species]) if species in Km_dict else 0.5 for species in RN.SpStr}
+    # =========================
+
+    # Function to calculate the reaction rates
+    def reaction_rates(concentrations, t):
+        rates = np.zeros(len(RN.RnStr))
+
+        for i, reaction in enumerate(RN.RnStr):
+            reactants = RN_dict[reaction][0]
+            products = RN_dict[reaction][1]
+            kind = rate[i]
+
+            if kind == 'mak':  # Acción de masas
+                rate_value = k[reaction]
+                for reactant, coeff in reactants:
+                    rate_value *= concentrations[species_concentrations[reactant]] ** coeff
+                rates[i] = rate_value
+
+            elif kind == 'mmk':  # Michaelis-Menten
+                # Se escoge el primer reactivo como sustrato para Vmax/Km
+                if len(reactants) == 0:
+                    rates[i] = 0.0
+                    continue
+                substrate = reactants[0][0]
+                substrate_conc = concentrations[species_concentrations[substrate]]
+                rate_value = Vmax_dict[substrate] * substrate_conc / (Km_dict[substrate] + substrate_conc)
+                rates[i] = rate_value
+
+        dxdt = np.zeros_like(concentrations)
+        for i, reaction in enumerate(RN.RnStr):
+            for reactant, coeff in RN_dict[reaction][0]:
+                dxdt[species_concentrations[reactant]] -= coeff * rates[i]
+            for product, coeff in RN_dict[reaction][1]:
+                dxdt[species_concentrations[product]] += coeff * rates[i]
+
+        return dxdt
+
+    # Imprimir las ecuaciones diferenciales
+    print("\nDifferential equations of the system:")
+
+    for species in RN.SpStr:
+        eq_terms = []
+        for i, reaction in enumerate(RN.RnStr):
+            rate_expr = f"v{i+1}"
+            for reactant, coeff in RN_dict[reaction][0]:
+                if reactant == species:
+                    term = f"-{coeff}*{rate_expr}" if coeff > 1 else f"-{rate_expr}"
+                    eq_terms.append(term)
+            for product, coeff in RN_dict[reaction][1]:
+                if product == species:
+                    term = f"+{coeff}*{rate_expr}" if coeff > 1 else f"+{rate_expr}"
+                    eq_terms.append(term)
+        if eq_terms:
+            rhs = " ".join(eq_terms)
+            print(f"d[{species}]/dt = {rhs}")
+
+    # Print the analytical expressions of the velocities
+    print("\nAnalytical expressions of velocities v(x,param):")
+
+    for i, reaction in enumerate(RN.RnStr):
+        vlabel = f"v{i+1}"
+        kind = rate[i].lower()
+        reactants = RN_dict[reaction][0]
+
+        if kind == 'mak': 
+            expr = f"k_{reaction}"
+            for reactant, coeff in reactants:
+                term = f"[{reactant}]^{coeff}" if coeff > 1 else f"[{reactant}]"
+                expr += f" * {term}"
+            print(f"{vlabel} = {expr}  (mak)")
+
+        elif kind == 'mmk':
+            if reactants:
+                sustrato = reactants[0][0] 
+                expr = f"(Vmax_{sustrato} * [{sustrato}]) / (Km_{sustrato} + [{sustrato}])"
+                print(f"{vlabel} = {expr}  (mmk)") 
+            else:
+                print(f"{vlabel} = 0  (mmk without defined substrate)")
+
+    # Create the vector ‘spec’ in order according to rate_list
+    spec_vector = []
+    for i, reaction in enumerate(RN.RnStr):
+        kind = rate[i].lower()
+        if kind == 'mak':
+            spec_vector.append([k[reaction]])
+        elif kind == 'mmk':
+            reactants = RN_dict[reaction][0]
+            if reactants:
+                substrate = reactants[0][0]
+                spec_vector.append([Vmax_dict[substrate], Km_dict[substrate]])
+            else:
+                spec_vector.append([0.0, 0.0])  # Caso de mmk sin sustrato definido
+
+    print("\nVector spec with parameters in order:")
+    print("spec_vector =",spec_vector)
+    for i, params in enumerate(spec_vector):
+        print(f"  v{i+1}: {params}")
+    print("")
+
+    ########################################################
+    time_points = np.linspace(t_span[0], t_span[1], n_steps)
+    result = odeint(reaction_rates, x0, time_points)
+
+    data_concentrations = {"Time": time_points}
+    for i, species in enumerate(RN.SpStr):
+        data_concentrations[species] = result[:, i]
+
+    time_series = pd.DataFrame(data_concentrations)
+    time_series = time_series[["Time"] + sorted(time_series.columns.difference(["Time"]))]
+
+    flux_data = {"Time": time_points}
+    for i, rxn in enumerate(RN.RnStr):
+        flux_data[f"Flux_r{i+1}"] = []
+
+    for t_idx in range(len(time_points)):
+        concentrations = result[t_idx, :]
+        for i, rxn in enumerate(RN.RnStr):
+            kind = rate[i]
+            reactants = RN_dict[rxn][0]
+
+            if kind == 'mak':
+                rate_value = k[rxn]
+                for species, coeff in reactants:
+                    rate_value *= concentrations[species_concentrations[species]] ** coeff
+
+            elif kind == 'mmk':
+                if len(reactants) == 0:
+                    rate_value = 0.0
+                else:
+                    substrate = reactants[0][0]
+                    substrate_conc = concentrations[species_concentrations[substrate]]
+                    rate_value = Vmax_dict[substrate] * substrate_conc / (Km_dict[substrate] + substrate_conc)
+
+            flux_data[f"Flux_r{i+1}"].append(rate_value)
+
+    flux_vector = pd.DataFrame(flux_data)
+
+    return time_series, flux_vector
+
+
+
+
+
+
+
+
+
+
+
 ###########################################################################################
 # Function that computes the time series of a metapopulation reaction-diffusion model
 def simulate_odes_metapop_mak(RN, x0=None, t_span=None, n_steps=None, k=None, exchange_rates=None, D=None, grid_shape=None):
@@ -909,6 +1123,44 @@ def simulate_pde_rd(RN, x0=None, t_span=None, n_steps=None, k=None, exchange_rat
     return result.reshape(n_steps, grid_shape[0], grid_shape[1], len(RN.SpStr))
 
 ###########################################################################################
+# Function for solve the Linear Programming Problem: S.v>=0, v>0
+def minimize_sv(S, epsilon=1,method='highs'):
+    """
+    Minimizes c @ v subject to S @ v >= 0 and v > 0.
+    
+    Parameters:
+    ----------
+    S : numpy.ndarray
+        Stoichiometric matrix of the reaction network (RN).
+    epsilon : float, optional
+        Small positive value to ensure all coordinates of v remain strictly positive (default is 1).
+
+    Returns:
+    -------
+    numpy.ndarray
+        Optimal process vector v with all strictly positive coordinates.
+
+    Raises:
+    ------
+    ValueError
+        If no feasible solution is found.
+    """
+    n_species, n_reactions = S.shape  # Dimensions of S
+    c = np.ones(n_reactions)          # Objective function: minimize the sum of v
+    A_ub = -S                         # Reformulate S @ v >= 0 as -S @ v <= 0
+    b_ub = np.zeros(n_species)        # Inequality constraints
+    bounds = [(epsilon, None)] * n_reactions  # v > 0 (avoiding exact zero values) 
+    
+    # Solve the linear programming problem: minimize c @ v subject to (A_ub @ v <= b_ub)
+    result = linprog(c, A_ub=A_ub, b_ub=b_ub, bounds=bounds, 
+                     method=method) # 'highs' uses the Dual Simplex method (good for many constraints)
+                                     # 'highs-ipm' uses the Interior Point method (faster for large sparse problems)
+                    
+    
+    if result.success:
+        return result.x
+    else:
+        raise ValueError("No feasible solution was found.")
     
 import numpy as np
 from scipy.optimize import linprog
