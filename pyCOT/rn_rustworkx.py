@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 from collections.abc import Iterable
 from itertools import starmap
@@ -469,14 +468,25 @@ class ReactionNetwork(PyDiGraph):
     def sub_reaction_network(self, species: str | Species | Iterable[str] | Iterable[Species]) -> ReactionNetwork:
         """Generate a sub-reaction network from the closure of a given set of species."""
         species = self._parse_species_input(species)
-
-        # Get the closure of the species
         closure = self.generated_closure(species)
         reactions = self.get_reactions_from_species(closure)
         nodes = [sp.index for sp in closure] + [r.node.index for r in reactions]
-        # Create a new ReactionNetwork instance
-        res= ReactionNetwork()
-        
-        res._species_map = closure
-        res._reaction_map= reactions
-        return self.subgraph(nodes)
+        subnet = self.subgraph(nodes)
+        return ReactionNetwork.from_pydigraph_unsafe(subnet)
+
+    @classmethod
+    def from_pydigraph_unsafe(cls, graph: PyDiGraph) -> ReactionNetwork:
+        new_net = cls()
+        old_to_new = {}
+        for old_idx in graph.node_indices():
+            new_idx = new_net.add_node(None)
+            new_net[new_idx] = graph[old_idx]
+            old_to_new[old_idx] = new_idx
+            if hasattr(graph[old_idx], "name"):
+                if isinstance(graph[old_idx], Species):
+                    new_net._species_map[graph[old_idx].name] = new_idx
+                elif isinstance(graph[old_idx], ReactionNode):
+                    new_net._reaction_map[graph[old_idx].name] = new_idx
+        new_edges = [(old_to_new[u], old_to_new[v], None) for (u, v) in graph.edge_list()]
+        new_edge_indices = new_net.add_edges_from(new_edges)
+        return new_net
