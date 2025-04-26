@@ -525,16 +525,27 @@ class ReactionNetwork(PyDiGraph):
     @classmethod
     def from_pydigraph_unsafe(cls, graph: PyDiGraph) -> ReactionNetwork:
         new_net = cls()
-        old_to_new = {}
+        # Add all species using add_species
         for old_idx in graph.node_indices():
-            new_idx = new_net.add_node(None)
-            new_net[new_idx] = graph[old_idx]
-            old_to_new[old_idx] = new_idx
-            if hasattr(graph[old_idx], "name"):
-                if isinstance(graph[old_idx], Species):
-                    new_net._species_map[graph[old_idx].name] = new_idx
-                elif isinstance(graph[old_idx], ReactionNode):
-                    new_net._reaction_map[graph[old_idx].name] = new_idx
-        new_edges = [(old_to_new[u], old_to_new[v], None) for (u, v) in graph.edge_list()]
-        new_edge_indices = new_net.add_edges_from(new_edges)
+            node = graph[old_idx]
+            if isinstance(node, Species):
+                new_net.add_species(node.name, node.quantity)
+        # Collect reaction nodes
+        reaction_nodes = {old_idx: graph[old_idx] for old_idx in graph.node_indices() if isinstance(graph[old_idx], ReactionNode)}
+        # Map reactants and products for each reaction
+        reaction_edges = {old_idx: {'reactants': [], 'products': []} for old_idx in reaction_nodes}
+        for u, v, edge in graph.weighted_edge_list():
+            if v in reaction_edges:
+                reaction_edges[v]['reactants'].append((edge.species_name, edge.coefficient))
+            if u in reaction_edges:
+                reaction_edges[u]['products'].append((edge.species_name, edge.coefficient))
+        # Add reactions using add_reaction
+        for old_idx, node in reaction_nodes.items():
+            react_list = reaction_edges[old_idx]['reactants']
+            prod_list = reaction_edges[old_idx]['products']
+            support_species = [name for name, _ in react_list] or None
+            support_coeffs = [coeff for _, coeff in react_list]
+            products_species = [name for name, _ in prod_list] or None
+            products_coeffs = [coeff for _, coeff in prod_list]
+            new_net.add_reaction(node.name, support_species, products_species, support_coeffs, products_coeffs, node.rate)
         return new_net

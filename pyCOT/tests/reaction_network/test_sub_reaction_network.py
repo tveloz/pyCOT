@@ -1,6 +1,6 @@
 import pytest
 from pyCOT.rn_rustworkx import ReactionNetwork
-from pyCOT.rn_types import Species, ReactionNode
+from pyCOT.rn_types import ReactionEdge, Species, ReactionNode
 
 def test_sub_network_single_species():
     rn = ReactionNetwork()
@@ -26,6 +26,27 @@ def test_sub_network_with_reaction():
     # Verifica que la reacción "r1" se incluya en el subgrafo
     reaction_names = [node.name for node in sub_rn.nodes() if isinstance(node, ReactionNode)]
     assert "r1" in reaction_names
+    # Verifica que los reaction edgses estén presentes
+    reaction_edges = [edge for edge in sub_rn.edges() if isinstance(edge, ReactionEdge)]
+    assert len(reaction_edges) == 2
+    reactant_edges = [
+        edge 
+        for reaction in sub_rn.reactions() 
+        for edge in reaction.support_edges() 
+        if isinstance(edge, ReactionEdge) 
+    ]
+    assert len(reactant_edges) == 1  
+    assert reactant_edges[0].coefficient == 1 # Verifica el coeficiente de la reacción
+    assert reactant_edges[0].species_name == "A" # Verifica el nombre de la especie reactante
+    product_edges = [
+        edge 
+        for reaction in sub_rn.reactions() 
+        for edge in reaction.products_edges() 
+        if isinstance(edge, ReactionEdge) 
+    ]
+    assert len(product_edges) == 1
+    assert product_edges[0].coefficient == 1 # Verifica el coeficiente de la reacción
+    assert product_edges[0].species_name == "B" # Verifica el nombre de la especie producto
 
 def test_sub_network_inflow_reaction():
     rn = ReactionNetwork()
