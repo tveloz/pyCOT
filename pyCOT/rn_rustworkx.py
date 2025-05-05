@@ -3,6 +3,7 @@ from collections.abc import Iterable
 from itertools import starmap
 from numbers import Real
 from re import findall, compile
+from typing import Literal
 
 
 import numpy as np
@@ -289,53 +290,34 @@ class ReactionNetwork(PyDiGraph):
     #### Other representations #############################################################################
     ########################################################################################################  
 
-    def reactants_matrix(self) -> StoichiometryMatrix:
-        """
-        Obtain the stoichiometry matrix of the reaction network.
+    def _build_matrix(self, include_edge: Literal["both", "reactant", "product"]) -> StoichiometryMatrix:
+        """Private helper to build stoichiometry matrices.
 
-        Returns
-        -------
-        StoichiometryMatrix
-            The reactants matrix of stoichiometric coefficients. Each row corresponds to a species and each column corresponds to a reaction.
+        include_edge: "reactant", "product", or "both"
         """
         species = sorted(self.species(), key=lambda s: s.index)
         species_names = [s.name for s in species]
         reactions = sorted(self.reactions(), key=lambda r: r.node.index)
         reactions_names = [r.name() for r in reactions]
-        stoich_matrix = np.zeros((len(species), len(reactions)), dtype=float)
-
-        species_index_map = {s.index: idx for idx, s in enumerate(species)}
-
+        stoich = np.zeros((len(species), len(reactions)), dtype=float)
+        species_index_map = {s.index: i for i, s in enumerate(species)}
         for j, reaction in enumerate(reactions):
             for edge in reaction.edges:
-                if edge.type == "reactant":
-                    stoich_matrix[species_index_map[edge.source_index], j] += edge.coefficient 
-
-        return StoichiometryMatrix(stoich_matrix, species_names, reactions_names)
+                if include_edge == "both" or edge.type == include_edge:
+                    idx = edge.source_index if edge.type == "reactant" else edge.target_index
+                    val = edge.coefficient
+                    if include_edge == "both" and edge.type == "reactant":
+                        val = -val
+                    stoich[species_index_map[idx], j] += val
+        return StoichiometryMatrix(stoich, species_names, reactions_names)
+    
+    def reactants_matrix(self) -> StoichiometryMatrix:
+        """Obtain the stoichiometry matrix of reactants."""
+        return self._build_matrix("reactant")
     
     def products_matrix(self) -> StoichiometryMatrix:
-        """
-        Obtain the stoichiometry matrix of the reaction network.
-
-        Returns
-        -------
-        StoichiometryMatrix
-            The products matrix of stoichiometric coefficients. Each row corresponds to a species and each column corresponds to a reaction.
-        """
-        species = sorted(self.species(), key=lambda s: s.index)
-        species_names = [s.name for s in species]
-        reactions = sorted(self.reactions(), key=lambda r: r.node.index)
-        reactions_names = [r.name() for r in reactions]
-        stoich_matrix = np.zeros((len(species), len(reactions)), dtype=float)
-
-        species_index_map = {s.index: idx for idx, s in enumerate(species)}
-
-        for j, reaction in enumerate(reactions):
-            for edge in reaction.edges:
-                if edge.type == "product":
-                    stoich_matrix[species_index_map[edge.target_index], j] += edge.coefficient
-
-        return StoichiometryMatrix(stoich_matrix, species_names, reactions_names)    
+        """Obtain the stoichiometry matrix of products."""
+        return self._build_matrix("product")    
     
     def stoichiometry_matrix(self) -> StoichiometryMatrix:
         """
@@ -346,22 +328,7 @@ class ReactionNetwork(PyDiGraph):
         StoichiometryMatrix
             The matrix of stoichiometric coefficients. Each row corresponds to a species and each column corresponds to a reaction.
         """
-        species = sorted(self.species(), key=lambda s: s.index)
-        species_names = [s.name for s in species]
-        reactions = sorted(self.reactions(), key=lambda r: r.node.index)
-        reactions_names = [r.name() for r in reactions]
-        stoich_matrix = np.zeros((len(species), len(reactions)), dtype=float)
-
-        species_index_map = {s.index: idx for idx, s in enumerate(species)}
-
-        for j, reaction in enumerate(reactions):
-            for edge in reaction.edges:
-                if edge.type == "reactant":
-                    stoich_matrix[species_index_map[edge.source_index], j] -= edge.coefficient
-                elif edge.type == "product":
-                    stoich_matrix[species_index_map[edge.target_index], j] += edge.coefficient
-
-        return StoichiometryMatrix(stoich_matrix, species_names, reactions_names)        
+        return self._build_matrix("both")        
 
 
 

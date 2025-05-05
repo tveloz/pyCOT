@@ -78,14 +78,21 @@ class Reaction:
     def species_names(self) -> list[str]:
         return [edge.species_name for edge in self.edges]
     
-    # TODO: add *_coefficients getter methods
+    def support_coefficients(self) -> list[Real]:
+        return [edge.coefficient for edge in self.support_edges()]
+
+    def products_coefficients(self) -> list[Real]:
+        return [edge.coefficient for edge in self.products_edges()]
+
+    def coefficients(self) -> list[Real]:
+        return [edge.coefficient for edge in self.edges]
+
     def stoichiometric_coefficients(self) -> list[Real]:
         """Get the stoichiometric coefficients of the reaction ordered by species index."""
-        indices = [edge.source_index if edge.type == "reactant" else edge.target_index for edge in self.edges]
-        coefficients = [edge.coefficient for edge in self.edges]
-        sorted_indices_coefficients = sorted(zip(indices, coefficients), key=lambda x: x[0])
-        sorted_coefficients = [coeff for _, coeff in sorted_indices_coefficients]
-        return sorted_coefficients
+        indices = self.species_indices()
+        coefficients = self.coefficients()
+        sorted_pairs = sorted(zip(indices, coefficients), key=lambda x: x[0])
+        return [coeff for _, coeff in sorted_pairs]
 
 
     def is_inflow(self) -> bool:
