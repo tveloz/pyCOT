@@ -10,6 +10,7 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8')
 import tempfile
 
+from pyCOT.simulations import build_reaction_dict
 ##################################################################
 # # Plot a reaction network in HTML:
 ##################################################################
@@ -39,8 +40,7 @@ def rn_get_string(rn):
             
         print(f"  - {reaction.name()}: {support} => {products}")
 
-
-def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None, 
+def rn_get_visualization(rn, lst_color_spcs=None, lst_color_reacs=None, 
                          global_species_color=None, global_reaction_color=None,
                          global_input_edge_color=None, global_output_edge_color=None, 
                          node_size=20, shape_species_node='dot', shape_reactions_node='box', 
@@ -55,9 +55,9 @@ def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None,
 
     Parameters:
     ----------
-    RN : ReactionNetwork
-        An object representing the reaction network, which includes species (RN.SpStr), 
-        reactions (RN.RnStr), and their stoichiometric relationships(RN.RnMsupp,RN.RnMprod).
+    rn : ReactionNetwork of rn_rustwork.py
+        An object representing the reaction network, which includes species, 
+        reactions, and their stoichiometric relationships.
     
     lst_color_spcs : list of tuples, optional
         A list of tuples specifying colors for specific species. Each tuple should have the 
@@ -109,15 +109,14 @@ def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None,
     -------
     # Load a reaction network object
     file_path = 'Txt/Farm.txt'
-    testRN = load_pyCOT_from_file(file_path)
+    rn = read_txt(file_path)
 
     # Visualize the reaction network, assigning yellow to species 's1'
-    rn_get_visualization(testRN.RN, lst_color_spcs=[('yellow', ['s1'])], filename="reaction_network.html")
+    rn_get_visualization(rn, lst_color_spcs=[('yellow', ['s1'])], filename="reaction_network.html")
     """
- 
     # Initialize the network visualization with specific size, settings, and directionality
     net = Network(height='750px', width='100%', notebook=True, directed=True, cdn_resources='in_line')
-
+ 
     ######################################     
     # Set physics options depending on ‘physics_enabled’.
     options = f"""
@@ -140,36 +139,7 @@ def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None,
     reaction_colors = {reaction: color for color, reaction_list in (lst_color_reacs or []) for reaction in reaction_list}
     
     #Construct RN dictionary from reactionnetwork object 
-    RN_dict = {}  
-    
-    # Lista para almacenar los nombres de las reacciones
-    reaction_names = []  
-
-    # Iterar sobre las reacciones
-    for i in range(len(RN.RnStr)):  # Usamos RnStr directamente, ya que RN aún no está completamente construido
-        reactants_coeff = []
-        products_coeff = []
-
-        # Procesar reactivos
-        for j in range(len(RN.SpStr)):  # Usamos SpStr, ya que SpStr contiene las especies
-            coef_r = RN.RnMsupp[i][j]  # Coeficiente del reactivo en la reacción i para la especie j
-            if coef_r > 0:
-                reactants_coeff.append((RN.SpStr[j], coef_r))
-        
-        # Procesar productos
-        for j in range(len(RN.SpStr)):  # Lo mismo para los productos
-            coef_r = RN.RnMprod[i][j]  # Coeficiente del producto en la reacción i para la especie j
-            if coef_r > 0:
-                products_coeff.append((RN.SpStr[j], coef_r))
-
-        # Crear el nombre de la reacción
-        reaction_name = RN.RnStr[i] #f'R{i+1}'
-
-        # Guardar la reacción en el diccionario
-        RN_dict[reaction_name] = (reactants_coeff, products_coeff)
-
-        # Agregar el nombre de la reacción a la lista de nombres de reacciones
-        reaction_names.append(reaction_name)
+    RN_dict = build_reaction_dict(rn)
 
     ###################################### 
     # Identify all species in the network to check their presence in lst_color_spcs
@@ -195,9 +165,6 @@ def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None,
                     print(f"Warning: The reaction '{reaction}' specified in lst_color_reacs does not belong to the network reactions.")
     
     # Calculate node size based on character length of species name for better visualization 
-    # longest_species = max(RN.SpStr, key=len)
-    # node_size = len(longest_species) * 10   
-    # Add species nodes with color defined in `lst_color_spcs` or global/default color
     for species in species_vector:
         color = species_colors.get(species, default_species_color)
         net.add_node(species, shape=shape_species_node, label=species, color=color, 
@@ -238,6 +205,7 @@ def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None,
             connections.add(edge_id)
 
         for species, coef in outputs:
+            coef = int(coef)  # Ensure coefficient is an integer
             edge_id = (reaction, species)
             default_curve='curvedCCW'
             smooth_type = {'type': default_curve} if curvature else None
@@ -268,7 +236,8 @@ def rn_get_visualization(RN, lst_color_spcs=None, lst_color_reacs=None,
     return filename
 
 ###########################################################################################
-def rn_visualize_html(RN, lst_color_spcs=None, lst_color_reacs=None, 
+# Function to visualize the reaction network and open the HTML file in a browser
+def rn_visualize_html(rn, lst_color_spcs=None, lst_color_reacs=None, 
                  global_species_color=None, global_reaction_color=None,
                  global_input_edge_color=None, global_output_edge_color=None, 
                  node_size=20, shape_species_node='dot', shape_reactions_node='box', 
@@ -279,14 +248,14 @@ def rn_visualize_html(RN, lst_color_spcs=None, lst_color_reacs=None,
     -------
     # Load a reaction network object
     file_path = 'Txt/Farm.txt'
-    testRN = load_pyCOT_from_file(file_path)
+    rn = read_txt(file_path)
 
     # Visualize the reaction network and open the HTML file in a browser
-    rn_visualize_html(testRN.RN, lst_color_spcs=[('yellow', ['s1'])], filename="reaction_network.html")
+    rn_visualize_html(rn, lst_color_spcs=[('yellow', ['s1'])], filename="reaction_network.html")
     """    
     # Call the `rn_get_visualization` function to generate the HTML file
     rn_get_visualization(
-        RN, lst_color_spcs, lst_color_reacs, 
+        rn, lst_color_spcs, lst_color_reacs, 
         global_species_color, global_reaction_color,
         global_input_edge_color, global_output_edge_color, 
         node_size=node_size, shape_species_node=shape_species_node, shape_reactions_node=shape_reactions_node,
@@ -294,112 +263,109 @@ def rn_visualize_html(RN, lst_color_spcs=None, lst_color_reacs=None,
     )
     
     # Convert to an absolute path
-    abs_path = os.path.abspath(filename) 
-    # print("absolute path")
-    # print(abs_path)
+    abs_path = os.path.abspath(filename)  
     # Check if the file was created correctly
     if not os.path.isfile(abs_path):
-        print(f"File not found at {abs_path}")  # Additional message for debugging
-        raise FileNotFoundError(f"The file {abs_path} was not found. Check if `rn_get_visualization` generated the file correctly.")
+        print(f"\nFile not found at {abs_path}")  # Additional message for debugging
+        raise FileNotFoundError(f"\nThe file {abs_path} was not found. Check if `rn_get_visualization` generated the file correctly.")
     
     # Inform the user about the file's location
-    print(f"The reaction network visualization was saved to: {abs_path}")
+    print(f"\nThe reaction network visualization was saved to:\n{abs_path}\n")
     
     # Open the HTML file in the default browser
     webbrowser.open(f"file://{abs_path}")
-
 
 ###########################################################################################
 # # Plot the Hierarchy
 ###########################################################################################
 
-from pyCOT.rn_hierarchy import *
+# from pyCOT.rn_hierarchy import *
 
-def hierarchy_visualize(input_data):
-    """
-    Visualizes the containment hierarchy among sets.
+# def hierarchy_visualize(input_data):
+#     """
+#     Visualizes the containment hierarchy among sets.
     
-    Args:
-        input_data (list): List of lists or sets, where each element represents a set.
+#     Args:
+#         input_data (list): List of lists or sets, where each element represents a set.
         
-    Displays a graph with nodes and containment relationships between sets. Smaller sets 
-    will be at lower levels, and interactive cursors are used to view set elements 
-    when hovering over nodes.
-    """
-    # Build the graph with species sets stored in nodes
-    G = hierarchy_build(input_data)
+#     Displays a graph with nodes and containment relationships between sets. Smaller sets 
+#     will be at lower levels, and interactive cursors are used to view set elements 
+#     when hovering over nodes.
+#     """
+#     # Build the graph with species sets stored in nodes
+#     G = hierarchy_build(input_data)
     
-    # Extract labels for visualization
-    labels = nx.get_node_attributes(G, 'label')
+#     # Extract labels for visualization
+#     labels = nx.get_node_attributes(G, 'label')
     
-    # Automatically assign positions by levels in the graph
-    levels = {}
-    for node in nx.topological_sort(G):  # Topologically sort the nodes
-        depth = 0
-        for parent in G.predecessors(node):  # Find predecessors of the current node
-            depth = max(depth, levels.get(parent, 0) + 1)  # Define the depth of the current node
-        levels[node] = depth
+#     # Automatically assign positions by levels in the graph
+#     levels = {}
+#     for node in nx.topological_sort(G):  # Topologically sort the nodes
+#         depth = 0
+#         for parent in G.predecessors(node):  # Find predecessors of the current node
+#             depth = max(depth, levels.get(parent, 0) + 1)  # Define the depth of the current node
+#         levels[node] = depth
     
-    # Arrange nodes by levels and center them on the X-axis
-    pos = {}  # Dictionary to store node positions
-    nodes_by_level = defaultdict(list)  # Group nodes by containment levels
+#     # Arrange nodes by levels and center them on the X-axis
+#     pos = {}  # Dictionary to store node positions
+#     nodes_by_level = defaultdict(list)  # Group nodes by containment levels
     
-    for node, level in levels.items():
-        nodes_by_level[level].append(node)  # Add nodes to the corresponding level
+#     for node, level in levels.items():
+#         nodes_by_level[level].append(node)  # Add nodes to the corresponding level
     
-    max_nodes_in_level = max(len(nodes) for nodes in nodes_by_level.values()) if nodes_by_level else 1
+#     max_nodes_in_level = max(len(nodes) for nodes in nodes_by_level.values()) if nodes_by_level else 1
     
-    # Do not invert levels on the Y-axis; smaller sets will be at the bottom
-    for level, nodes in nodes_by_level.items():
-        num_nodes = len(nodes)  # Number of nodes at the current level
-        horizontal_spacing = max_nodes_in_level / (num_nodes + 1)  # Horizontal spacing between nodes
-        start_x = -((num_nodes - 1) * horizontal_spacing) / 2  # Initial X-coordinate to center nodes
+#     # Do not invert levels on the Y-axis; smaller sets will be at the bottom
+#     for level, nodes in nodes_by_level.items():
+#         num_nodes = len(nodes)  # Number of nodes at the current level
+#         horizontal_spacing = max_nodes_in_level / (num_nodes + 1)  # Horizontal spacing between nodes
+#         start_x = -((num_nodes - 1) * horizontal_spacing) / 2  # Initial X-coordinate to center nodes
         
-        # Calculate vertical position without inverting the Y-axis
-        for i, node in enumerate(nodes):
-            pos[node] = (start_x + i * horizontal_spacing, level)  # Assign position (X, Y) to each node
+#         # Calculate vertical position without inverting the Y-axis
+#         for i, node in enumerate(nodes):
+#             pos[node] = (start_x + i * horizontal_spacing, level)  # Assign position (X, Y) to each node
     
-    try:
-        import matplotlib.pyplot as plt
-        import mplcursors
+#     try:
+#         import matplotlib.pyplot as plt
+#         import mplcursors
 
-        # Draw the graph with labels and arrows, adjusting visual properties
-        plt.figure(figsize=(10, 8))
-        nx.draw(
-            G, pos, labels=labels, arrows=True, arrowstyle='-|>', arrowsize=20, 
-            node_size=1000, node_color="skyblue", font_size=12, font_weight="bold", 
-            edge_color="gray"
-        )
+#         # Draw the graph with labels and arrows, adjusting visual properties
+#         plt.figure(figsize=(10, 8))
+#         nx.draw(
+#             G, pos, labels=labels, arrows=True, arrowstyle='-|>', arrowsize=20, 
+#             node_size=1000, node_color="skyblue", font_size=12, font_weight="bold", 
+#             edge_color="gray"
+#         )
 
-        # Create cursor labels using the species sets stored in nodes
-        cursor_texts = {}
-        for node in G.nodes():
-            species_set = G.nodes[node]['species_set']
-            cursor_texts[node] = ', '.join(sorted(list(species_set))) if species_set else '∅'
+#         # Create cursor labels using the species sets stored in nodes
+#         cursor_texts = {}
+#         for node in G.nodes():
+#             species_set = G.nodes[node]['species_set']
+#             cursor_texts[node] = ', '.join(sorted(list(species_set))) if species_set else '∅'
         
-        # Configure interactive cursor to display set labels
-        cursor = mplcursors.cursor(plt.gca(), hover=True)
+#         # Configure interactive cursor to display set labels
+#         cursor = mplcursors.cursor(plt.gca(), hover=True)
         
-        @cursor.connect("add")
-        def on_add(sel):
-            """Displays the content of the set when hovering over a node."""
-            node = list(G.nodes())[sel.index]
-            sel.annotation.set_text(cursor_texts.get(node, ''))
-            sel.annotation.set_visible(True)
+#         @cursor.connect("add")
+#         def on_add(sel):
+#             """Displays the content of the set when hovering over a node."""
+#             node = list(G.nodes())[sel.index]
+#             sel.annotation.set_text(cursor_texts.get(node, ''))
+#             sel.annotation.set_visible(True)
 
-        @cursor.connect("remove")
-        def on_remove(sel):
-            """Hides the annotation when the cursor leaves the node."""
-            sel.annotation.set_visible(False)
+#         @cursor.connect("remove")
+#         def on_remove(sel):
+#             """Hides the annotation when the cursor leaves the node."""
+#             sel.annotation.set_visible(False)
         
-        plt.show()  # Display the graph
-    except ImportError:
-        print("Matplotlib or mplcursors not available, skipping visualization")
+#         plt.show()  # Display the graph
+#     except ImportError:
+#         print("Matplotlib or mplcursors not available, skipping visualization")
     
-    # Extract positions and store in a vector
-    node_positions = {node: pos[node] for node in G.nodes()}
+#     # Extract positions and store in a vector
+#     node_positions = {node: pos[node] for node in G.nodes()}
     
-    return G, node_positions  # Return both the graph and the positions
+#     return G, node_positions  # Return both the graph and the positions
 
 # Function to access species sets from nodes
 def get_species_from_node(G, node_name):
@@ -417,8 +383,9 @@ def get_species_from_node(G, node_name):
         return G.nodes[node_name]['species_set']
     else:
         raise ValueError(f"Node {node_name} not found in the graph")
-##################################################################
 
+##################################################################
+# Function to visualize the hierarchy of sets and save it as an HTML file
 def hierarchy_get_visualization_html(
     input_data, 
     node_size=20, 
@@ -518,16 +485,17 @@ def hierarchy_get_visualization_html(
 
     # Add nodes to the graph
     for name, hover_text in zip(Set_names, cursor_labels):
-        color = color_map.get(name, node_color)  # Usa el color específico si está definido, si no usa el predeterminado
+        color = color_map.get(name, node_color)  # Use the specific color if defined, otherwise use the default
         net.add_node(
-            name,  # Identificador del nodo
-            label=name,  # La etiqueta del nodo que se mostrará dentro
-            title=hover_text,  # Texto que aparece al pasar el cursor
-            color=color,  # Color del nodo
-            size=node_size,  # Tamaño del nodo
-            font={"size": node_font_size},  # Tamaño de la fuente de la etiqueta
-            shape=shape_node  # Forma del nodo (círculo, para asegurar que la etiqueta esté dentro)
-        ) 
+            name,  # Node identifier
+            label=name,  # Node label to be displayed inside the node
+            title=hover_text,  # Text shown on hover
+            color=color,  # Node color
+            size=node_size,  # Node size
+            font={"size": node_font_size},  # Font size of the label
+            shape=shape_node  # Node shape (e.g., circle, to ensure the label fits inside)
+        )
+ 
 
     # Add edges based on containment relationships
     for i, child_set in enumerate(Set_of_sets):
@@ -544,8 +512,7 @@ def hierarchy_get_visualization_html(
 
     # Print tuple with labels and subsets
     label_set_pairs = [(label, s) for label, s in zip(Set_names, Set_of_sets)]
-    print("Tuples of Labels and Subsets:")
-    print(label_set_pairs)
+    print(f"\nTuples of Labels and Subsets:\n{label_set_pairs}")
 
     # Save the visualization to an HTML file 
     net.html = net.generate_html() 
@@ -553,12 +520,8 @@ def hierarchy_get_visualization_html(
         f.write(net.html)
     return net, label_set_pairs
 
-
-
-
-
 ##################################################################
-   
+# Function to visualize the hierarchy of sets and open the HTML file in a browser   
 def hierarchy_visualize_html(
     input_data, 
     node_size=20, 
@@ -608,7 +571,7 @@ def hierarchy_visualize_html(
         raise FileNotFoundError(f"The file {abs_path} was not found. Check if `hierarchy_get_visualization_html` generated the file correctly.")
     
     # Inform the user about the file's location
-    print(f"The hierarchy visualization was saved to: {abs_path}")
+    print(f"\nThe hierarchy visualization was saved to:\n{abs_path}\n")
     
     # Open the HTML file in the default browser
     webbrowser.open(f"file://{abs_path}")

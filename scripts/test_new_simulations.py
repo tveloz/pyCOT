@@ -8,6 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from pyCOT.io.functions import read_txt 
 from pyCOT.plot_dynamics import plot_series_ode
 from pyCOT.simulations import *
+
 ###################################################################################
 # # # Load the reaction network from a file
 file_path = 'Txt/autopoietic.txt' 
