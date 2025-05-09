@@ -225,12 +225,12 @@ def is_self_maintaining(RN: ReactionNetwork,X):
     np.array2 delivers production vector      
     """
     #matrix_data = universal_stoichiometric_matrix(RN) # Calculates the universal stoichiometric matrix associated with the reaction network
-    print("reactions to build S")
-    print(RN.get_reactions_from_species(X))
+    # print("reactions to build S")
+    # print(RN.get_reactions_from_species(X))
     sub_RN=RN.sub_reaction_network(X) # Creates a sub-reaction network with the required set of species and reactions
     S=sub_RN.stoichiometry_matrix()
-    print("Stoichiometric Matrix")
-    print(S)
+    # print("Stoichiometric Matrix")
+    # print(S)
     res=minimize_sv(S, epsilon=1,method='highs')
     xv=S @ res[1]
     res.append(xv)
