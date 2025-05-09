@@ -28,7 +28,7 @@ import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
 
 class ERC:
-    def __init__(self, min_generators, label):
+    def __init__(self, min_generators, label, all_generators=None):
         """
         Initialize an ERC object.
         
@@ -36,6 +36,7 @@ class ERC:
         :param species: List of species in the closure.
         """
         self.min_generators = min_generators
+        self.all_generators =all_generators 
         self.label= label
 
     def get_closure(self,RN):
@@ -44,6 +45,7 @@ class ERC:
     def get_reacs(self,RN):
         specs=self.get_closure(RN)
         reacs=RN.get_reactions_from_species(specs)
+        return reacs
 
 class Hierarchy_ERC:
     def __init__(self, RN):
@@ -56,7 +58,7 @@ class Hierarchy_ERC:
         #Calculating the elements to build self.ercs
         ERCx=ERCs(RN)   
         for erc in ERCx:
-            self.ercs.append(ERC(erc[0],erc[3]))
+            self.ercs.append(ERC(erc[0],erc[3],erc[2]))
         #Create containment matrix labelled
         #self.containments=
         
@@ -69,7 +71,19 @@ class Hierarchy_ERC:
             self.graph.add_node(erc.label)
         for start, end in label_direct_containments:
             self.graph.add_edge(start, end)
-    
+    ########### Graph functions #######################
+    def __str__(self):
+        """
+        Return a string representation of the Hierarchy_ERC object.
+
+        :return: String showing the direct containment graph.
+        """
+        graph_str = "Hierarchy_ERC Containment Graph:\n"
+        for edge in self.graph.edges:
+            graph_str += f"{edge}\n"
+        return graph_str
+
+    ########## Getters from inner node conditions#######################
     def get_erc_from_label(self, label):
         """
         Retrieve the ERC object with the given label.
@@ -82,23 +96,22 @@ class Hierarchy_ERC:
                 return erc
         print("get_ERC was called with a wrong label= "+label)
         return None
-    def get_erc_from_reaction(self,RN,hierarchy,r):   
+    def get_erc_from_reaction(self,RN,r):   
         erc_species=closure(RN,RN.get_supp_from_reactions(r))
-        for lst in hierarchy.ercs:
+        for lst in self.ercs:
             if set(lst.get_closure(RN)) == set(erc_species):
                 return lst
         print("get_erc_from_reaction for reaction "+str(r)+" did not find associated ERC")
         return None
          
-    def get_erc_from_generator(self,hierarchy,species):
+    def get_erc_from_generator(self,species):
         erc_species=closure(RN,species)
-        for lst in hierarchy.ercs:      
+        for lst in self.ercs:      
             if set(lst.get_closure) == erc_species:
                 return lst
         print("get_erc_from_reaction for species "+str(species)+" did not find associated ERC")
         return None
-
-   
+    ############# Get ERCs from conditions comparing with other nodes###############
 
     def get_contained(self, erc, itself=False):
         """
@@ -139,25 +152,36 @@ class Hierarchy_ERC:
             reachable_nodes.add(label)
         
         return reachable_nodes
-    def leveled_ERCs(self):
-        ERCs=self.ercs
-        fundamental=[]
-        for erc in self.ercs:
-            if len(get_contained(erc))==0:
-                fundamental.append(erc)
-
+    
+    def get_potential_synergies(self, RN, erc):
+        """
+        Get ERCs that have potential synergies with the given ERC.
         
-
-    def __str__(self):
+        Parameters
+        ----------
+        erc : ERC
+            The ERC to find potential synergies for
+            
+        Returns
+        -------
+        list[ERC]
+            List of ERCs that have potential synergies with the given ERC
         """
-        Return a string representation of the Hierarchy_ERC object.
-
-        :return: String showing the direct containment graph.
-        """
-        graph_str = "Hierarchy_ERC Containment Graph:\n"
-        for edge in self.graph.edges:
-            graph_str += f"{edge}\n"
-        return graph_str
+        # Get the species closure for this ERC
+        closure_species = erc.get_closure(RN)
+        
+        # Get reactions that partially intersect with this closure
+        partial_reactions = RN.get_reactions_partially_intersecting_support(closure_species)
+        
+        # Get the ERCs associated with these reactions
+        synergy_ercs = []
+        for reaction in partial_reactions:
+            erc_from_reaction = self.get_erc_from_reaction(RN, reaction)
+            if erc_from_reaction is not None:
+                synergy_ercs.append(erc_from_reaction)
+                
+        # Remove duplicates while preserving order
+        return list(dict.fromkeys(synergy_ercs))
     
 # Example usage
 # Assume `get_direct_containments` is defined elsewhere and works as described.
@@ -173,11 +197,11 @@ class Hierarchy_ERC:
 
 ########ERC constructor functions###################
 def generators(RN):
-    gen=[]
-    for r in RN.RnStr:
+    gen = []
+    for r in [reaction.name() for reaction in RN.reactions()]:
         gen.append(RN.get_supp_from_reactions(r))
     return gen
-#Compute closure of a set of species
+
 def closure(RN,X):
     temp=X
     CL=list(set(temp).union(set(RN.get_prod_from_species(temp))))
@@ -185,57 +209,58 @@ def closure(RN,X):
         temp=CL
         CL=list(set(temp).union(set(RN.get_prod_from_species(temp))))
     return CL
+
 def closures(RN,ListX):
     L=[]
     for X in ListX:
         L.append(closure(RN,X))
     return L
-###ERCs produces a list of four-tuple:
-    #0th coordinate stores the list of minimal generators for a given ERC (sets of species)
-    #1st coordinate stores the ERC as a set of species
-    #2nd coordinate stores the reactions that generate same closure (equivalence class)
-    #3rd coordinate stores the label
+
+def identify_minimal_generators(existing_erc, new_gen, new_closure):
+    """
+    Identifies if and how a new generator should be added to existing minimal generators
+    Returns: (is_new_closure, updated_min_gens)
+    """
+    for erc in existing_erc:
+        if set(new_closure) == set(erc[1]):
+            # Same closure - check if we need to update minimal generators
+            updated_min_gens = erc[0].copy()
+            new_is_minimal = True
+            
+            # Check against existing minimal generators
+            for i, min_gen in enumerate(erc[0]):
+                if all(item in min_gen for item in new_gen):
+                    new_is_minimal = False
+                    if len(new_gen) < len(min_gen):
+                        updated_min_gens[i] = new_gen
+                
+            if new_is_minimal:
+                updated_min_gens.append(new_gen)
+            return False, updated_min_gens
+            
+    return True, [new_gen]
 
 def ERCs(RN):
-    List_gen=generators(RN).copy()
-    List_closures=closures(RN,List_gen).copy()
-    ERC=[]
-    #print("To check "+str(len(List_gen))+" generators")
+    List_gen = generators(RN)
+    List_closures = closures(RN, List_gen)
+    ERC = []
+    
     for i in range(len(List_gen)):
-        #print("Start Checking "+str(List_gen[i]))
-        novel_min_gen=True
-        ###Check that List_gen[i] needs to be added to min_gen###
-        for j in range(len(ERC)):
-        #Step1: Check List_gen[i] has the same closure than min_gen[j]    
-            #print("Passing by min_gen "+str(j)+" whose closure is "+str(min_gen[j][1]))
-            if set(List_closures[i])==set(ERC[j][1]):
-                 #print("Closure same as generator "+str(j))
-                 #Then ERC associated to List_gen[i] is already in min_gen, no need to append it as a new ERC
-                 novel_min_gen=False
-                 #Now we know we must check either replace current min_gen by a smaller one, add as new to the list or not add List_gen[i]
-                 #new min_gen accounts for a local addition to current list of min_gen
-                 new_min_gen=True
-                 for k in range(len(ERC[j][0])):
-                     #print("Starting comparison with element "+str(k)+ " of minimal generator list "+str(min_gen[j][0]))
-                     #Step 2: Check if List_gen[i] is equal or smaller to some in for min_gen[j][0][k]
-                     if all(item in ERC[j][0][k] for item in List_gen[i]):
-                         #print("Generator is smaller than min_gen stored "+str(k)+" which is "+str(min_gen[j][0][k]))
-                         #If so, we know there is no new_min_gen to add, but it can replace current ones  
-                         new_min_gen=False
-                         #verify containment is strict for replacing min_gen[j][0][k] by List_gen[i]
-                         if len(List_gen[i])<len(ERC[j][0][k]):
-                             ERC[j][0][k]=List_gen[i]
-                        #If the latter condition does not meet, we skip List_gen[i] because is not minimal    
-                 #In case the new_min_gen never changed to false, we know its minimal generator to keep tracK
-                 if new_min_gen:        
-                     #print("The generator "+str(List_gen[i])+" is new so far")
-                     ERC[j][0].append(List_gen[i])
-        #Once all has been checked if novel_min_gen remains True we must add because its a new closure
-        if novel_min_gen:
-            ERC.append([[List_gen[i]],List_closures[i],RN.get_reactions_from_species(List_closures[i])])
-        #add the indexation to ERCs as fourth coordinate
+        is_new_closure, min_gens = identify_minimal_generators(ERC, List_gen[i], List_closures[i])
+        
+        if is_new_closure:
+            ERC.append([min_gens, List_closures[i], List_gen[i]])
+        else:
+            # Update the minimal generators for existing closure
+            for erc in ERC:
+                if set(List_closures[i]) == set(erc[1]):
+                    erc[0] = min_gens
+                    break
+    
+    # Add labels
     for i in range(len(ERC)):
-        ERC[i].append("E"+str(i))
+        ERC[i].append(f"E{i}")
+    
     return ERC
 ############################# GEN Constructor Functions##################################
 ##############################Getting Direct Containments#################################

@@ -35,6 +35,8 @@ import networkx as nx
 
 # Directory containing reaction network files
 input_directory = 'networks/RandomAlife/Ns20'
+input_directory = 'networks/Navarino/'
+
 # Output directory for results
 output_directory = input_directory+'/results'
 
@@ -74,9 +76,9 @@ def analyze_network(file_path):
         input_data = reactive_semi_orgs(testRN)
         
         # Build the hierarchy
-        log_message(f"Building hierarchy graph for {network_name}")
-        G = hierarchy_build(input_data)
-        
+        #log_message(f"Building hierarchy graph for {network_name}")
+        #G = hierarchy_build(input_data)
+        print("Results!")
         # Store basic information
         network_info = {
             'network_name': network_name,
@@ -85,84 +87,84 @@ def analyze_network(file_path):
             'num_reactions': len(testRN.RnStr),
             'num_semi_orgs': len(input_data)
         }
+        print(network_info)
+        # # Analyze lattice properties
+        # log_message(f"Analyzing lattice properties for {network_name}")
         
-        # Analyze lattice properties
-        log_message(f"Analyzing lattice properties for {network_name}")
+        # # Analyze top and bottom elements
+        # top_bottom = identify_top_bottom_elements(G)
+        # network_info['has_top'] = top_bottom['has_top']
+        # network_info['has_bottom'] = top_bottom['has_bottom']
+        # network_info['is_bounded_lattice'] = top_bottom['has_top'] and top_bottom['has_bottom']
         
-        # Analyze top and bottom elements
-        top_bottom = identify_top_bottom_elements(G)
-        network_info['has_top'] = top_bottom['has_top']
-        network_info['has_bottom'] = top_bottom['has_bottom']
-        network_info['is_bounded_lattice'] = top_bottom['has_top'] and top_bottom['has_bottom']
+        # if top_bottom['has_top']:
+        #     network_info['top_element_size'] = len(get_species_from_node(G, top_bottom['top_element']))
+        # if top_bottom['has_bottom']:
+        #     network_info['bottom_element_size'] = len(get_species_from_node(G, top_bottom['bottom_element']))
         
-        if top_bottom['has_top']:
-            network_info['top_element_size'] = len(get_species_from_node(G, top_bottom['top_element']))
-        if top_bottom['has_bottom']:
-            network_info['bottom_element_size'] = len(get_species_from_node(G, top_bottom['bottom_element']))
+        # # Analyze completeness
+        # completeness_result = test_completeness(testRN, G)
+        # network_info['is_complete'] = completeness_result['is_complete']
+        # network_info['completeness_ratio'] = completeness_result['completeness_ratio']
+        # network_info['join_ratio'] = completeness_result['stats']['join_ratio']
+        # network_info['meet_ratio'] = completeness_result['stats']['meet_ratio']
         
-        # Analyze completeness
-        completeness_result = test_completeness(testRN, G)
-        network_info['is_complete'] = completeness_result['is_complete']
-        network_info['completeness_ratio'] = completeness_result['completeness_ratio']
-        network_info['join_ratio'] = completeness_result['stats']['join_ratio']
-        network_info['meet_ratio'] = completeness_result['stats']['meet_ratio']
-        
-        # If it's complete, analyze modularity and distributivity
-        if network_info['is_complete']:
-            # Analyze modularity
-            modularity_result = safe_test_modularity(testRN, G)
-            network_info['is_modular'] = modularity_result['is_modular']
-            network_info['modularity_ratio'] = modularity_result['modularity_ratio']
+        # # If it's complete, analyze modularity and distributivity
+        # if network_info['is_complete']:
+        #     # Analyze modularity
+        #     modularity_result = safe_test_modularity(testRN, G)
+        #     network_info['is_modular'] = modularity_result['is_modular']
+        #     network_info['modularity_ratio'] = modularity_result['modularity_ratio']
             
-            # Analyze distributivity
-            distributivity_result = safe_test_distributivity(testRN, G)
-            network_info['is_distributive'] = distributivity_result['is_distributive']
-            network_info['distributivity_ratio'] = distributivity_result['distributivity_ratio']
-            network_info['dist1_ratio'] = distributivity_result['stats']['dist1_ratio']
-            network_info['dist2_ratio'] = distributivity_result['stats']['dist2_ratio']
-        else:
-            network_info['is_modular'] = False
-            network_info['modularity_ratio'] = 0
-            network_info['is_distributive'] = False
-            network_info['distributivity_ratio'] = 0
-            network_info['dist1_ratio'] = 0
-            network_info['dist2_ratio'] = 0
+        #     # Analyze distributivity
+        #     distributivity_result = safe_test_distributivity(testRN, G)
+        #     network_info['is_distributive'] = distributivity_result['is_distributive']
+        #     network_info['distributivity_ratio'] = distributivity_result['distributivity_ratio']
+        #     network_info['dist1_ratio'] = distributivity_result['stats']['dist1_ratio']
+        #     network_info['dist2_ratio'] = distributivity_result['stats']['dist2_ratio']
+        # else:
+        #     network_info['is_modular'] = False
+        #     network_info['modularity_ratio'] = 0
+        #     network_info['is_distributive'] = False
+        #     network_info['distributivity_ratio'] = 0
+        #     network_info['dist1_ratio'] = 0
+        #     network_info['dist2_ratio'] = 0
         
-        # If it's a bounded lattice, analyze negation properties
-        if network_info['is_bounded_lattice']:
-            log_message(f"Analyzing negation properties for {network_name}")
-            negation_map, score_info = generate_best_negation_map(testRN, G)
+        # # If it's a bounded lattice, analyze negation properties
+        # if network_info['is_bounded_lattice']:
+        #     log_message(f"Analyzing negation properties for {network_name}")
+        #     negation_map, score_info = generate_best_negation_map(testRN, G)
             
-            network_info['negation_overall_score'] = score_info.get('overall_score', 0)
-            network_info['negation_complement_score'] = score_info.get('complement_score', 0)
-            network_info['negation_involution_score'] = score_info.get('involution_score', 0)
-            network_info['negation_demorgan_score'] = score_info.get('demorgan_score', 0)
-        else:
-            network_info['negation_overall_score'] = 0
-            network_info['negation_complement_score'] = 0
-            network_info['negation_involution_score'] = 0
-            network_info['negation_demorgan_score'] = 0
+        #     network_info['negation_overall_score'] = score_info.get('overall_score', 0)
+        #     network_info['negation_complement_score'] = score_info.get('complement_score', 0)
+        #     network_info['negation_involution_score'] = score_info.get('involution_score', 0)
+        #     network_info['negation_demorgan_score'] = score_info.get('demorgan_score', 0)
+        # else:
+        #     network_info['negation_overall_score'] = 0
+        #     network_info['negation_complement_score'] = 0
+        #     network_info['negation_involution_score'] = 0
+        #     network_info['negation_demorgan_score'] = 0
         
-        # Graph structure properties
-        network_info['graph_nodes'] = G.number_of_nodes()
-        network_info['graph_edges'] = G.number_of_edges()
-        network_info['graph_density'] = nx.density(G)
+        # # Graph structure properties
+        # network_info['graph_nodes'] = G.number_of_nodes()
+        # network_info['graph_edges'] = G.number_of_edges()
+        # network_info['graph_density'] = nx.density(G)
         
-        # Lattice metrics
-        network_info['lattice_height'] = max([len(nx.shortest_path(G, source=node, target=top_bottom['top_element'])) - 1 
-                                           for node in G.nodes() if nx.has_path(G, node, top_bottom['top_element'])]) if top_bottom['has_top'] else 0
+        # # Lattice metrics
+        # network_info['lattice_height'] = max([len(nx.shortest_path(G, source=node, target=top_bottom['top_element'])) - 1 
+        #                                    for node in G.nodes() if nx.has_path(G, node, top_bottom['top_element'])]) if top_bottom['has_top'] else 0
         
-        # Log a summary of the analysis
-        log_message(f"\nAnalysis Summary for {network_name}:")
-        log_message(f"  Species: {network_info['num_species']}, Reactions: {network_info['num_reactions']}")
-        log_message(f"  Semi-organizations: {network_info['num_semi_orgs']}")
-        log_message(f"  Bounded Lattice: {network_info['is_bounded_lattice']}")
-        log_message(f"  Complete: {network_info['is_complete']} (Ratio: {network_info['completeness_ratio']:.2f})")
-        log_message(f"  Modular: {network_info['is_modular']} (Ratio: {network_info['modularity_ratio']:.2f})")
-        log_message(f"  Distributive: {network_info['is_distributive']} (Ratio: {network_info['distributivity_ratio']:.2f})")
-        if network_info['is_bounded_lattice']:
-            log_message(f"  Negation Score: {network_info['negation_overall_score']:.2f}")
-            log_message(f"  De Morgan Score: {network_info['negation_demorgan_score']:.2f}")
+        # # Log a summary of the analysis
+        # log_message(f"\nAnalysis Summary for {network_name}:")
+        # log_message(f"  Species: {network_info['num_species']}, Reactions: {network_info['num_reactions']}")
+        # log_message(f"  Semi-organizations: {network_info['num_semi_orgs']}")
+        # log_message(f"  Bounded Lattice: {network_info['is_bounded_lattice']}")
+        # log_message(f"  Complete: {network_info['is_complete']} (Ratio: {network_info['completeness_ratio']:.2f})")
+        # log_message(f"  Modular: {network_info['is_modular']} (Ratio: {network_info['modularity_ratio']:.2f})")
+        # log_message(f"  Distributive: {network_info['is_distributive']} (Ratio: {network_info['distributivity_ratio']:.2f})")
+        # if network_info['is_bounded_lattice']:
+        #     log_message(f"  Negation Score: {network_info['negation_overall_score']:.2f}")
+        #     log_message(f"  De Morgan Score: {network_info['negation_demorgan_score']:.2f}")
         
         return network_info
         

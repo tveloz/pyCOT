@@ -201,6 +201,27 @@ class ReactionNetwork:
               #      print(str(self.RnStr[i])+" intersection found")
                 reactions_list.append(self.RnStr[i])
         return(reactions_list)
+    def get_reactions_partially_intersecting_support(self, SpStr):
+        """
+        Returns reactions that have the given species in their support, but not exclusively.
+        The given species must be a proper subset of the reaction support.
+        
+        Parameters:
+            SpStr: str or set of str, the species to search for
+        
+        Returns:
+            list of Reaction objects where SpStr is in the support but doesn't constitute all species
+        """
+        if isinstance(SpStr, str):
+            SpStr = {SpStr}
+        
+        matching_reactions = []
+        for reaction in self.reactions:
+            reaction_support = reaction.get_reaction_support()
+            if len(set(SpStr).intersection(reaction_support)) > 0 and not reaction_support.issubset(SpStr):
+                matching_reactions.append(reaction)
+        
+        return matching_reactions
     
      # ######################################################################################################
     # ######################################################################################################
