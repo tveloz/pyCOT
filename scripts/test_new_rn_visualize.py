@@ -32,7 +32,8 @@ file_path = 'Txt/autopoietic.txt'
 # file_path = 'Txt/2019fig2.txt'
 # file_path = 'Txt/non_connected_example.txt' 
 # file_path = 'Txt/PassiveUncomforableIndignated_problemsolution.txt' 
-# file_path = 'Txt/Farm.txt' 
+file_path = 'Txt/Farm.txt' 
+file_path = 'networks/testing/Lake Chad Basin System_0.txt' 
 
 # # Constructs a pyCOT ReactionNetwork object
 rn = read_txt(file_path) # DIEGO: Solucionar errores en la lectura del archivo (JOE)
@@ -56,12 +57,12 @@ from pyCOT.closure_structure import reactive_semi_orgs   # Utiliza file_manipula
 from pyCOT.file_manipulation import load_pyCOT_from_file # Utiliza reaction_network.py
 
 # Creates an object called testRN, which represents the RN with file_manipulation.
-testRN = load_pyCOT_from_file(file_path)
-semi_org = reactive_semi_orgs(testRN) 
-print("-"*70)  
-# for i, semi_org_new in enumerate(semi_org):
-#     print(f"S{i+1} =", semi_org_new) # Print the semi-organisations
-# print("-"*70)
+# testRN = load_pyCOT_from_file(file_path)
+# semi_org = reactive_semi_orgs(testRN) 
+# print("-"*70)  
+# # for i, semi_org_new in enumerate(semi_org):
+# #     print(f"S{i+1} =", semi_org_new) # Print the semi-organisations
+# # print("-"*70)
 
-# hierarchy_get_visualization_html(semi_org,filename="hierarchy_org_autopoietic.html")
-hierarchy_visualize_html(semi_org,filename="hierarchy_org_autopoietic.html")
+# # hierarchy_get_visualization_html(semi_org,filename="hierarchy_org_autopoietic.html")
+# hierarchy_visualize_html(semi_org,filename="hierarchy_org_autopoietic.html")

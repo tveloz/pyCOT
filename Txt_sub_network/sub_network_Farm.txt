@@ -1,0 +1,8 @@
+R1:	=>water;
+R2:	grass+water+infr+cows=>dung+infr+cows+milk;
+R3:	dung=>worms+fertilizer;
+R6:	grass+water+fertilizer=>2grass;
+R11:	farmer+milk=>farmer+money;
+R15:	worms=>;
+R16:	infr=>;
+R17:	farmer+money+infr=>farmer+2infr;

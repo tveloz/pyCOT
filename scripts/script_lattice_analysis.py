@@ -29,7 +29,7 @@ from pyCOT.abstractions import *
 from pyCOT.plot_dynamics import *         
 from pyCOT.rn_types import StoichiometryMatrix
 from pyCOT.abstractions import abstraction_ordinary 
-from pyCOT.closure_structure import *     
+from pyCOT.closure_structure_b import *     
 from pyCOT.rn_hierarchy import *
 import networkx as nx
 

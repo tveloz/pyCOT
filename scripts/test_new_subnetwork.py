@@ -3,7 +3,7 @@
 ###############################################################
 # Import necessary libraries and modules
 import os # Import the os module to interact with the operating system
-os.system('clear') # limpiar la pantalla del terminal en macOS 
+#os.system('clear') # limpiar la pantalla del terminal en macOS 
 
 import sys # Import the sys module to manipulate the Python runtime environment
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # Add the root directory to the PYTHONPATH
@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # A
 # Import the necessary modules from pyCOT  
 from pyCOT.io.functions import read_txt  
 from pyCOT.file_manipulation import load_pyCOT_from_file
-from pyCOT.closure_structure import reactive_semi_orgs
+from pyCOT.closure_structure_b import reactive_semi_orgs
 from pyCOT.rn_visualize import *                         # Imports all functions, classes and variables defined in the rn_visualize module
  
 from pyCOT.io.functions import find_organisations
@@ -24,7 +24,7 @@ file_path = 'Txt/autopoietic.txt'
 # file_path = 'Txt/2019fig2.txt'
 # file_path = 'Txt/non_connected_example.txt' 
 # file_path = 'Txt/PassiveUncomforableIndignated_problemsolution.txt' 
-# file_path = 'Txt/Farm.txt' 
+file_path = 'Txt/Farm.txt' 
 
 # # Constructs a pyCOT ReactionNetwork object
 rn = read_txt(file_path) # DIEGO: Solucionar errores en la lectura del archivo (JOE)
@@ -64,9 +64,9 @@ print("\nState vector:")
 for i, vec in enumerate(vector_x):
     print(f"x_{i} =", vec) # Print the vector x of each organisation
 
-##################################################################
-# Test of x_v=S.v
-##################################################################
+# ##################################################################
+# # Test of x_v=S.v
+# ##################################################################
 print("\n")
 print("-"*70,"\nTEST: x_v = S.v ≥ 0")
 print("-"*70) 
@@ -87,54 +87,14 @@ print(f"Vector x of organisation_{n}:\n", vector_x[n]) # Vector x of the organis
 print("x_v = S.v =", S_org_n@vector_process[n]) # Multiplication of the stoichiometric matrix by the vector process
 print("-"*70)
 
-##################################################################
-# Example 1: Generate a text file of a subnetwork with 
-# a list of species and reactions predefined for file_path = 'Txt/autopoietic.txt'
-##################################################################
-species_subnetwork = ['s1', 's2'] 
-reactions_subnetwork = ['R2', 'R3', 'R4', 'R5']  
-
-file_name = "sub_network_autopoietic.txt"
-generate_subnetwork_txt(species_subnetwork, reactions_subnetwork, rn, 
-                        file_name=file_name) 
-
-# Load the new reaction sub_network 
-file_path2 = f"Txt_sub_network/{file_name}" 
-
-rn2 = read_txt(file_path2)  
-
-print("\n")
-print("-"*70,"\nExample of a subnetwork:")
-print("-"*70)
-species2 = rn2.stoichiometry_matrix().species
-print("Sub-network Species =",species2)   # Lista de especies
-
-reactions2 = rn2.stoichiometry_matrix().reactions
-print("Sub-network Reactions =",reactions2) # Lista de reacciones
-
-S_subnetwork = rn2.stoichiometry_matrix()
-print("Sub-network Stoichiometry Matrix:\n",S_subnetwork) # Imprime la representación de la matriz de estequiometría
-print("\n")
-
-print("-"*70)
-print("Visualizing the reaction network and the subnetwork")
-print("-"*70)
-# Visualize the hierarchy of the reaction network
-hierarchy_visualize_html(organisations,filename="hierarchy_org_autopoietic.html")
-
-# Visualize the reaction network
-rn_visualize_html(rn,filename="rn1_autopoietic.html")
-
-# Visualize the subnetwork
-rn_visualize_html(rn2,filename="rn2_autopoietic.html")
-
 # ##################################################################
-# # Example 2: Generate text file with Sub-network of the Organisation for file_path = 'Txt/Farm.txt' 
+# # Example 1: Generate a text file of a subnetwork with 
+# # a list of species and reactions predefined for file_path = 'Txt/autopoietic.txt'
 # ##################################################################
-# species_subnetwork = organisation
-# reactions_subnetwork = reactions_subnetwork
+# species_subnetwork = ['s1', 's2'] 
+# reactions_subnetwork = ['R2', 'R3', 'R4', 'R5']  
 
-# file_name = "sub_network_Farm.txt"
+# file_name = "sub_network_autopoietic.txt"
 # generate_subnetwork_txt(species_subnetwork, reactions_subnetwork, rn, 
 #                         file_name=file_name) 
 
@@ -160,10 +120,50 @@ rn_visualize_html(rn2,filename="rn2_autopoietic.html")
 # print("Visualizing the reaction network and the subnetwork")
 # print("-"*70)
 # # Visualize the hierarchy of the reaction network
-# hierarchy_visualize_html(organisations,filename="hierarchy_org_farm.html")
+# hierarchy_visualize_html(organisations,filename="hierarchy_org_autopoietic.html")
 
 # # Visualize the reaction network
-# rn_visualize_html(rn,filename="rn1_farm.html")
+# rn_visualize_html(rn,filename="rn1_autopoietic.html")
 
 # # Visualize the subnetwork
-# rn_visualize_html(rn2,filename="rn2_farm.html")
+# rn_visualize_html(rn2,filename="rn2_autopoietic.html")
+
+# ##################################################################
+# # Example 2: Generate text file with Sub-network of the Organisation for file_path = 'Txt/Farm.txt' 
+# ##################################################################
+species_subnetwork = organisation
+reactions_subnetwork = reactions_subnetwork
+
+file_name = "sub_network_Farm.txt"
+generate_subnetwork_txt(species_subnetwork, reactions_subnetwork, rn, 
+                        file_name=file_name) 
+
+# Load the new reaction sub_network 
+file_path2 = f"Txt_sub_network/{file_name}" 
+
+rn2 = read_txt(file_path2)  
+
+print("\n")
+print("-"*70,"\nExample of a subnetwork:")
+print("-"*70)
+species2 = rn2.stoichiometry_matrix().species
+print("Sub-network Species =",species2)   # Lista de especies
+
+reactions2 = rn2.stoichiometry_matrix().reactions
+print("Sub-network Reactions =",reactions2) # Lista de reacciones
+
+S_subnetwork = rn2.stoichiometry_matrix()
+print("Sub-network Stoichiometry Matrix:\n",S_subnetwork) # Imprime la representación de la matriz de estequiometría
+print("\n")
+
+print("-"*70)
+print("Visualizing the reaction network and the subnetwork")
+print("-"*70)
+# Visualize the hierarchy of the reaction network
+hierarchy_visualize_html(organisations,filename="hierarchy_org_farm.html")
+
+# Visualize the reaction network
+rn_visualize_html(rn,filename="rn1_farm.html")
+
+# Visualize the subnetwork
+rn_visualize_html(rn2,filename="rn2_farm.html")

@@ -9,126 +9,149 @@ Created on Wed Dec 27 15:28:44 2023
 import sys
 import os
 
-# Añadir el directorio raíz al PYTHONPATH
+# Add root directory to PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from pyCOT.reaction_network import ReactionNetwork
-from pyCOT.ERC_Hierarchy import *
-from  pyCOT.reactive_features import *
-from  pyCOT.ERC_synergy import *
+from pyCOT.rn_rustworkx import ReactionNetwork
+from pyCOT.ERC_Hierarchy import (
+    ERC, species_list_to_names, generators
+)
+from pyCOT.io.functions import read_txt
 import networkx as nx
-from pyCOT.file_manipulation import *
 import matplotlib.pyplot as plt
-import time
 from collections import defaultdict
 from collections import Counter # para el gráfico de cantidad de básicos vs repeticiones
 
-# Create an instance of the HelloWorld class
-# SpStr= ['a', 'b', 'c', 'd']  # Default: ['a', 'b', 'c', 'd']
-# SpBt=bt([True,True,True,True])  # Default: [a, b, c, d]
-# RnStr= ['r1', 'r2']  # Updated: ['r1', 'r2']
-# RnBt= bt([True, True])  # Default: [r1, r2]
-# RnVecS = np.array([[1, 0, 0, 0], [0, 1, 0, 0]])  # Updated for reactions
-# RnVecP= np.array([[0, 2, 0, 0], [0, 1, 1, 0]])  # Updated for reactions
-
-# testRN=pyCOT(SpStr,SpBt,RnStr,RnBt,RnVecS,RnVecP)
-# print("specs")
-# print(testRN.SpStr)
-# print("specsBt")
-# print(testRN.SpBt)
-# print("reacsBt")
-# print(testRN.RnBt)
-# print("Reac")
-# print(testRN.RnStr)
-# print("SuppVec")
-# print(testRN.RnVecS)
-# print("ProdVec")
-# print(testRN.RnVecP)
-#Example usage:
-#file_path = '../../networks/testing/in_out.txt'
-# file_path = '../networks/testing/RedPDoSR01.txt'
-# file_path = '../networks/testing/RN_AEP_03.txt'
-# file_path = '../networks/testing/RN_AEP_04.txt'
-# file_path = '../networks/testing/navarino.txt'
-#file_path = 'networks/testing/ERCs_test.txt'
-# file_path = '../networks/testing/RedPDoSR01.txt'
-#file_path = '../networks/biomodels_all/BIOMD0000000011/BIOMD0000000011.xml'
-#file_path = 'networks/biomodels_interesting/BIOMD0000000237_manyOrgs.txt'  #ERROR: ZeroDivisionError: division by zero
-
-
-#file_path = 'networks/biomodels_interesting/BIOMD0000000652_manyOrgs.txt'
-
-#file_path = '../networks/testing/ERCs_test.txt'
-#file_path = '../../networks/testing/Synergy_test.txt'
-# file_path = '../networks/testing/Farm.txt'
-#file_path = '../networks/testing/RedPDoSR01.txt'
-#file_path = 'networks/testing/MSORN_test1.txt'
 file_path = 'networks/testing/autopoietic.txt'
-#file_path = 'networks/Navarino/RN_IN_02_Py.COT.txt'
+file_path = 'networks/Navarino/RN_IN_05.txt'
 #file_path = 'networks/testing/Farm.txt'
 #file_path = 'networks/testing/autopoietic_ext.txt'
-file_path = 'networks/testing/Synergy_test.txt'
-
+#file_path = 'networks/testing/Synergy_test.txt'
 #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_20_id_396.txt'
+#file_path = 'networks/RandomAlife/RN_Ns_25_Norg_17_id_174.txt'
 #file_path = 'networks/biomodels_interesting/central_ecoli.txt'
 
 
 # Assuming load_pyCOT_from_file and reac_analysis are defined elsewhere in your code
 
-RN = load_pyCOT_from_file(file_path)
-hierarchy = Hierarchy_ERC(RN)
-# Create a GEN object
-# gen = GEN(RN)
+RN = read_txt(file_path)
+
+print("Reactions in the network:")
+print("------------------------")
 
 
-for erc in hierarchy.ercs:
-    print(erc.label)
-    print(erc.min_generators)
-    print(erc.get_closure(RN)) 
-   
-    print("##############")
+reactions = [reaction.name() for reaction in RN.reactions()]
+print(reactions)
 
+print("Species in the network:")
+print("------------------------")
+species = [specie.name for specie in RN.species()]
+print(species)
 
-print(hierarchy)
+gen = generators(RN)
+print("Generators in the network:")
+for g in gen:
+    print(species_list_to_names(g))
+ercs = ERC.ERCs(RN)  # Use ERC.ERCs instead of ERCs
+print("ERCs in the network:")
+for e in ercs:
+    print(f"\nERC {e.label}:")
+    print(f"Minimal generators: {species_list_to_names(e.min_generators)}")
+    print(f"Closure: {species_list_to_names(e.get_closure(RN))}")
+    print(f"All generators: {species_list_to_names(e.all_generators)}")
+    print("------------------------")
+ 
 
-# for erc in hierarchy.ercs:
-#     print(erc.label+ " is above "+str(hierarchy.get_contained(erc)))
-#     print(erc.label+ " is below "+str(hierarchy.get_contain(erc)))
-#erc1=hierarchy.ercs[1]
-#erc2=hierarchy.ercs[2]
+# Create ERCs
+ercs = ercs  # No need to recreate ERCs, they're already proper objects
 
-all_syn=[]
-for erc1 in hierarchy.ercs:
-    for erc2 in hierarchy.ercs:
-        #print("checking if there is a synergy between "+erc1.label+" and "+erc2.label)
-        syn=Synergy(erc1,erc2,hierarchy,RN)
-        #print(str(syn))
-        if syn!=None:
-            for s in syn:
-                add=True
-                #print(s.reactants[0].label+"+"+s.reactants[1].label+"->"+s.product.label)
-                #print("testing that "+str(s.rlabel)+" is not "+str([erc1.label, erc2.label])+" and "+s.plabel+" is "+syn.label)
-                for x in all_syn:
-                    if set(s.rlabel) == set(x.rlabel) and s.plabel == x.plabel:  
-                        add=False
-                        break
-                if add:
-                    all_syn.append(s)
+# Test partially intersecting reactions for first ERC
+# Test partially intersecting reactions for all ERCs
+for test_erc in ercs:
+    print("\nTesting partially intersecting reactions for ERC:", test_erc.label)
+    print("Closure:", species_list_to_names(test_erc.get_closure(RN)), "min_generators:", species_list_to_names(test_erc.min_generators))
+    print("------------------------")
 
-all_syn=non_redundant_synergies(all_syn,hierarchy)
+    partial_reactions = RN.get_reactions_partially_intersecting_support(test_erc.get_closure(RN))
+    if partial_reactions:
+        print("\nPartially intersecting reactions:")
+        for reaction in partial_reactions:
+            support_species = species_list_to_names(RN.get_supp_from_reactions(reaction))
+            intersection = set(support_species) & set(species_list_to_names(test_erc.get_closure(RN)))
+            print(f"\n{reaction.name()}:")
+            print(f"  Full support: {support_species}")
+            print(f"  Intersection with closure: {list(intersection)}")
+    else:
+        print("No partially intersecting reactions found.")
+    print("------------------------")
 
-for s in all_syn:
-    print(s.reactants[0].label+"+"+s.reactants[1].label+"->"+s.product.label)
+# Get original and modified graphs
+original_graph = ERC.build_hierarchy_graph(ercs, RN)
+modified_graph = ERC.get_modified_hierarchy(test_erc, ercs, RN)
 
-# Get the level of a specific ERC
-# for i, erc in enumerate(gen.ERCs):
-#     level = gen.get_erc_level(i)  # Replace 0 with the desired ERC index
-#     print(f"Level of ERC= E"+str(erc.species)+" : " +str(level))
+print("\nOriginal hierarchy edges:")
+print(original_graph.edges())
+print("\nModified hierarchy edges:")
+print(modified_graph.edges())
+print("\nRemoved nodes:")
+removed = set(original_graph.nodes()) - set(modified_graph.nodes())
+print(removed)
 
-# target = 3
-# level = gen.get_erc_level(target)  # Replace 0 with the desired ERC index
-# print(f"Level of target ERC= E"+str(erc.species)+" : " +str(level))
+# Create hierarchy graph first
+hierarchy_graph = ERC.build_hierarchy_graph(ercs, RN)
 
-# result = get_higher_ercs(gen, target)
-# print(f"ERCs that transitively point to node {target}: {result}")
+# Test get_all_synergies between pairs of ERCs
+print("\nSynergy Analysis Report:")
+print("=======================")
+
+# Statistics collectors
+total_pairs = 0  # Total possible base-target pairs
+total_synergetic_pairs = 0  # Pairs that have at least one synergy
+synergies_per_base = defaultdict(int)  # Count of synergetic ERCs found for each base
+synergies_per_target = defaultdict(int)  # Count of synergetic ERCs found for each target
+coverage_ratios = []
+total_generators_covered = 0
+
+for base_erc in ercs:
+    for target_erc in ercs:
+        if base_erc != target_erc:
+            total_pairs += 1
+            synergy_details = ERC.get_all_synergies(base_erc, target_erc, hierarchy_graph, RN)
+            if synergy_details:
+                total_synergetic_pairs += 1
+                # Count each synergetic ERC found
+                synergies_per_base[base_erc.label] += 1
+                synergies_per_target[target_erc.label] += 1
+                
+                # Collect coverage information
+                total_target_generators = len(target_erc.min_generators)
+                unique_covered_gens = set()
+                for _, (covered_gens, _) in synergy_details.items():
+                    # Convert generators to hashable tuples of species names
+                    gen_tuples = {tuple(species_list_to_names(gen)) for gen in covered_gens}
+                    unique_covered_gens.update(gen_tuples)
+                coverage_ratio = len(unique_covered_gens) / total_target_generators
+                coverage_ratios.append(coverage_ratio)
+                total_generators_covered += len(unique_covered_gens)
+
+# Calculate statistics
+possible_targets = len(ercs) - 1  # Each ERC can target all others
+avg_synergies_per_base = sum(synergies_per_base.values()) / len(ercs)
+max_synergies_base = max(synergies_per_base.items(), key=lambda x: x[1]) if synergies_per_base else ('None', 0)
+synergy_probability = total_synergetic_pairs / total_pairs if total_pairs > 0 else 0
+avg_coverage = sum(coverage_ratios) / len(coverage_ratios) if coverage_ratios else 0
+
+# Print report
+print(f"\nOverall Statistics:")
+print(f"- Total possible ERC pairs: {total_pairs}")
+print(f"- Pairs with synergies: {total_synergetic_pairs}")
+print(f"- Probability of finding synergy: {synergy_probability:.2%}")
+print(f"- Average synergetic pairs per base ERC: {avg_synergies_per_base:.2f} out of {possible_targets} possible")
+print(f"- Most synergetic base ERC: {max_synergies_base[0]} with {max_synergies_base[1]} synergetic pairs")
+print(f"- Average generator coverage when synergy exists: {avg_coverage:.2%}")
+# print("\nDetailed Base ERC Analysis:")
+# print("-------------------------")
+# for erc_label, count in sorted(synergies_per_base.items(), key=lambda x: x[1], reverse=True):
+#     percentage = count / possible_targets
+#     print(f"ERC {erc_label}: {count} synergetic pairs ({percentage:.2%} of possible targets)")
 

@@ -17,7 +17,7 @@ from pyCOT.file_manipulation import *
 import matplotlib.pyplot as plt
 
 from pyCOT.reaction_network import *
-from pyCOT.closure_structure import *
+from pyCOT.closure_structure_b import *
 from networkx.drawing.nx_agraph import graphviz_layout
 
 # Create an instance of the HelloWorld class

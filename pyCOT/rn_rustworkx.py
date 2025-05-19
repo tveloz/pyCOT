@@ -339,7 +339,7 @@ class ReactionNetwork(PyDiGraph):
 
     def get_reactions_from_species(self, species: str | Species | Iterable[str] | Iterable[Species]) -> list[Reaction]:
         """
-        Obtain the reactions activated by a given species set.
+        Obtain the reactions potentially activated by a given species set.
 
         Parameters
         ----------
@@ -352,6 +352,7 @@ class ReactionNetwork(PyDiGraph):
             Reactions potentially activated by the species set (including inflow reactions).
         """
         species = self._parse_species_input(species)
+        
         species_indices = [sp.index for sp in species]
         candidates_indices = set(
             reaction_index 
@@ -382,80 +383,74 @@ class ReactionNetwork(PyDiGraph):
         return unique_reactions
 
     
-    def get_reactions_partially_intersecting_support(self, species: str | Species | Iterable[str] | Iterable[Species]) -> list[Reaction]:
-         """
-        Obtain the reactions partially but not totally activated by a given species set.
+    def get_supp_from_reactions(self, reaction: str | Reaction | Iterable[str] | Iterable[Reaction]) -> list[Species]:
+        """
+        Obtain the species in the support of a given set of reactions.
 
         Parameters
         ----------
-        species : str | Species | Iterable[str] | Iterable[Species]
-            The species set.
-
-        Returns
-        -------
-        list[Reaction]
-            Reactions partially but not totally activated by the species set (excluding inflow and reactions that can be fully triggered).
-        """
-         species = self._parse_species_input(species)
-         species_indices = [sp.index for sp in species]
-         candidates_indices = set(
-             reaction_index 
-             for species_index in species_indices
-             for reaction_index in self.successor_indices(species_index))
-         candidates = [self.get_reaction_by_index(reaction_index) for reaction_index in candidates_indices]
-
-         def is_support_partially_present(reaction: Reaction) -> bool:
-             return any(reactant_index in species_indices for reactant_index in reaction.support_indices()) and not all(reactant_index in species_indices for reactant_index in reaction.support_indices())
-        
-        # Get reactions with support/reactants partially present in the given species
-         activated_reactions = list(filter(is_support_partially_present, candidates))
-        
-        # Remove inflow reactions (reactions with no reactants/support)
-         activated_reactions = [reaction for reaction in activated_reactions if reaction.support_indices()]
-        
-         return activated_reactions
-    def get_supp_from_reactions(self, reactions: str | Reaction | Iterable[str] | Iterable[Reaction]) -> list[Species]:
-        """
-        Get the list of species produced by a given set of species.
-
-        Parameters
-        ----------
-        species : str | Species | Iterable[str] | Iterable[Species]
-            The species set.
+        reaction : str | Reaction | Iterable[str] | Iterable[Reaction]
+            The reaction set.
 
         Returns
         -------
         list[Species]
-            A list of species produced by the given set of species.
-
-        Raises
-        ------
-        ValueError
-            If the 'species' parameter is empty or None.
         """
-       
-        if not reactions:
-            raise ValueError("The 'reactions' parameter cannot be empty or None.")
-        if not reactions:
-            return []  # Return an empty list if reactions is empty or None
-        try:
-            reactions = self._parse_reactions_input(reactions)
-        except Exception as e:
-            raise ValueError(f"Invalid reactions input: {e}")
-        return [self.get_species_by_index(edge.source_index) for reaction in reactions for edge in reaction.support_edges()]    
-  
-    def get_prod_from_species(self, species):
-        """Get all species produced by reactions that use any of the given species."""
-        products = []
-        for sp in species:
-            for target_idx in self.successor_indices(sp.index):
-                try:
-                    product = self.get_species_by_index(target_idx)
-                    if product not in products:  # avoid duplicates
-                        products.append(product)
-                except ValueError:
-                    continue  # Skip if the node is not a species
-        return products
+        reactions = self._parse_reactions_input(reaction)
+        reactants_indices = {
+            reactant_index
+            for reaction in reactions
+            for reactant_index in reaction.support_indices()
+        }
+        return [self[reactant_index] for reactant_index in reactants_indices]
+
+
+    def get_prod_from_reactions(self, reaction: str | Reaction | Iterable[str] | Iterable[Reaction]) -> list[Species]:
+        """
+        Obtain the species in the product sets of a given set of reactions.
+
+        Parameters
+        ----------
+        reaction : str | Reaction | Iterable[str] | Iterable[Reaction]
+            The reaction set.
+
+        Returns
+        -------
+        list[Species]
+        """
+        reactions = self._parse_reactions_input(reaction)
+        products_indices = {
+            product_index
+            for reaction in reactions
+            for product_index in reaction.products_indices()
+        }
+        return [self[product_index] for product_index in products_indices]
+
+
+    def get_species_from_reactions(self, reaction: str | Reaction | Iterable[str] | Iterable[Reaction]) -> list[Species]:
+        """Obtain the species in the support and product sets of a given set of reactions."""
+        reactions = self._parse_reactions_input(reaction)
+
+        species_indices = {
+            reactant_index
+            for reaction in reactions
+            for reactant_index in reaction.species_indices()
+        }
+
+        return [self[species_index] for species_index in species_indices]    
+
+    def get_prod_from_species(self, species: str | Species | Iterable[str] | Iterable[Species]) -> list[Species]:
+        """Obtain the species produced by a given set of reactants."""
+        potencially_active_reactions = self.get_reactions_from_species(species)
+
+        products_indices = {
+            product_index
+            for reaction in potencially_active_reactions
+            for product_index in reaction.products_indices()
+        }
+
+        return [self[product_index] for product_index in products_indices]
+    
 
     # def get_reactions_consuming_species(self):
     #     ...
@@ -521,3 +516,53 @@ class ReactionNetwork(PyDiGraph):
             products_coeffs = [coeff for _, coeff in prod_list]
             new_net.add_reaction(node.name, support_species, products_species, support_coeffs, products_coeffs, node.rate)
         return new_net
+
+    def get_reactions_partially_intersecting_support(self, species: str | Species | Iterable[str] | Iterable[Species]) -> list[Reaction]:
+        """
+        Obtain reactions whose support has mutual partial overlap with given species set.
+        
+        Logic:
+        1. Convert input to list of Species objects
+        2. For each reaction in network:
+           a. Get its support species
+           b. Check if support overlaps with input species
+           c. Check that neither support is fully contained in the other
+           d. If all conditions met, include reaction
+        
+        Parameters
+        ----------
+        species : str | Species | Iterable[str] | Iterable[Species]
+            The species set to check for mutual partial overlap
+            
+        Returns
+        -------
+        list[Reaction]
+            Reactions whose support has mutual partial overlap with given species set
+        """
+        # Parse input species
+        species = self._parse_species_input(species)
+        species_indices = {sp.index for sp in species}
+        
+        # Get candidate reactions (any reaction that uses at least one species)
+        candidates = set()
+        for sp in species:
+            for reaction_idx in self.successor_indices(sp.index):
+                candidates.add(reaction_idx)
+        
+        # Filter reactions with mutual partial overlap
+        partial_reactions = []
+        for reaction_idx in candidates:
+            reaction = self.get_reaction_by_index(reaction_idx)
+            support_indices = {edge.source_index for edge in reaction.support_edges()}
+            
+            # Check for mutual partial overlap:
+            # 1. Non-empty intersection
+            has_overlap = bool(support_indices & species_indices)
+            # 2. Neither set contains the other
+            neither_contains = (not support_indices.issubset(species_indices) and 
+                             not species_indices.issubset(support_indices))
+            
+            if has_overlap and neither_contains:
+                partial_reactions.append(reaction)
+        
+        return partial_reactions
