@@ -12,19 +12,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # A
 from pyCOT.io.functions import read_txt  
 from pyCOT.io.functions import generate_subnetwork_txt
 from pyCOT.file_manipulation import load_pyCOT_from_file
-<<<<<<< HEAD
-from pyCOT.closure_structure_b import reactive_semi_orgs
+from pyCOT.closure_structure import reactive_semi_orgs
 from pyCOT.rn_visualize import *                         # Imports all functions, classes and variables defined in the rn_visualize module
  
 from pyCOT.io.functions import find_organisations
 from pyCOT.io.functions import generate_subnetwork_txt
-=======
-from pyCOT.closure_structure import reactive_semi_orgs
-from pyCOT.closure_structure import find_organisations
-from pyCOT.rn_visualize import *                         
-from pyCOT.simulations import simulation
-from pyCOT.plot_dynamics import plot_series_ode
->>>>>>> abfe8eeb859921e23d6f38489786c1856857c8b6
 
 ###################################################################################
 ## 1. Load the reaction network from a file
@@ -83,14 +75,9 @@ print("\nProduction vector:")
 for i, vec in enumerate(vector_x):
     print(f"x_{i} =", vec) # Print the vector production of each organisation
 
-<<<<<<< HEAD
 # ##################################################################
 # # Test of x_v=S.v
 # ##################################################################
-=======
-###################################################################################
-# 5. Test: x_v=S.v
->>>>>>> abfe8eeb859921e23d6f38489786c1856857c8b6
 print("\n")
 print("-"*70,"\nTEST: x_v = S.v ≥ 0")
 print("-"*70) 
@@ -152,15 +139,9 @@ print("-"*70)
 # # Visualize the subnetwork
 # rn_visualize_html(rn2,filename="rn2_autopoietic.html")
 
-<<<<<<< HEAD
 # ##################################################################
 # # Example 2: Generate text file with Sub-network of the Organisation for file_path = 'Txt/Farm.txt' 
 # ##################################################################
-=======
-##################################################################
-# Example 2: Generate text file with Sub-network of the Organisation for file_path = 'Txt/Farm.txt' 
-##################################################################
->>>>>>> abfe8eeb859921e23d6f38489786c1856857c8b6
 species_subnetwork = organisation
 reactions_subnetwork = reactions_subnetwork
 
@@ -196,20 +177,4 @@ hierarchy_visualize_html(organisations,filename="hierarchy_org_farm.html")
 rn_visualize_html(rn,filename="rn1_farm.html")
 
 # Visualize the subnetwork
-<<<<<<< HEAD
 rn_visualize_html(rn2,filename="rn2_farm.html")
-=======
-rn_visualize_html(rn2,filename="rn2_farm.html")
-
-##################################################################
-# Example 3: Simulation of the subnetwork
-##################################################################
-# # Plot the time series of the ODE of the subnetwork
-# time_series, flux_vector = simulation(rn2, rate="mak") 
-# print("Time series of ODE of the subnetwork:")
-# print(time_series)
-# plot_series_ode(time_series)
-# print("Flux series of ODE of the subnetwork:")
-# print(flux_vector)
-# plot_series_ode(flux_vector)
->>>>>>> abfe8eeb859921e23d6f38489786c1856857c8b6
