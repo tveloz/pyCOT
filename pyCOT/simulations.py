@@ -175,7 +175,7 @@ def parse_parameters(rn, rn_dict, rate, spec_vector):
         parameters[reaction] = spec_vector[i]
     return parameters
 
-# Function to compute the reaction rates
+# Function to compute the reaction rates 
 def compute_reaction_rates(rn, rn_dict, rate, parameters, rate_laws):
     species = rn.stoichiometry_matrix().species
     reactions = rn.stoichiometry_matrix().reactions
