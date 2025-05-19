@@ -19,6 +19,8 @@ def main():
 
     # Define reactions
     rn.add_reaction("R1", ["H2", "O2"], ["H2O"], [2, 1], [2])
+    rn.add_reaction("R2", ["H2O", "O2"], ["H2O"], [1, 1], [2])
+    rn.add_reaction("R3", ["O2", "H2O"], ["H2"], [1, 1], [2])
 
     # Generate stoichiometry matrix
     stoich_matrix = rn.stoichiometry_matrix()
@@ -27,13 +29,13 @@ def main():
     print("Stoichiometry matrix:")
     print(stoich_matrix)
 
-    vector = np.array([2,])
+    # vector = np.array([2,])
 
-    # Multiply the stoichiometry matrix by a vector
-    result = stoich_matrix @ vector
+    # # Multiply the stoichiometry matrix by a vector
+    # result = stoich_matrix @ vector
 
-    print("Print the result for H2: ")
-    print(result["H2"])
+    # print("Print the result for H2: ")
+    # print(result["H2"])
 
 if __name__ == "__main__":
     main()
