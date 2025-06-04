@@ -8,7 +8,7 @@ from collections import defaultdict
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 import tempfile
-from pyCOT.closure_structure_b import *
+from pyCOT.closure_structure import *
 import networkx as nx
 from collections import defaultdict
 

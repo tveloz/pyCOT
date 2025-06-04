@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 
 from pyCOT.reaction_network import *
-from pyCOT.closure_structure_b import *
+from pyCOT.closure_structure import *
 from pyCOT.file_manipulation import *
 # main.py (or another script)
 
