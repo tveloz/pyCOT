@@ -4,7 +4,7 @@
 # 1. LIBRARY LOADING AND CONFIGURATION: 
 # ======================================== Depurador de Python: Archivo actual (pyCOT)
 # Import necessary libraries
-import os
+import os 
 import sys 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # Add the root directory to the PYTHONPATH
 
