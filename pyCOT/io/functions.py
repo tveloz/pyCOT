@@ -79,87 +79,32 @@ def read_txt(file: str) -> ReactionNetwork:
     return rn
 
 #############################################################
-def remove_duplicates(semi_org):
-    """
-    Remove duplicate sublists from a list of lists.
-
-    Args:
-        semi_org (list of list): A list of subsets (lists) that may contain duplicates.
-
-    Returns:
-        list of list: The input list with duplicate subsets removed, preserving original order.
-    """
-    unique_subsets = []
-    seen_sets = []  # List to store already seen sets
-
-    for sublist in semi_org:
-        current_set = frozenset(sublist)  # Use frozenset to compare contents
-        if current_set not in seen_sets:
-            seen_sets.append(current_set)
-            unique_subsets.append(sublist)  # Keep the original list
- 
-    semi_organisations = []
-    for i, semi_org_new in enumerate(unique_subsets):
-        semi_organisations.append(semi_org_new)
-
-    return semi_organisations
+# Function for printing the reaction network
+def print_reaction_network(rn):
+    reactions = rn.reactions()
+    for i, reaction in enumerate(reactions):
+        name = reaction.name()
+        reactants = []
+        products = []
+        for edge in reaction.edges:
+            species = edge.species_name
+            coef = edge.coefficient
+            entry = f"{coef if coef != 1 else ''}{species}"
+            if edge.type == "reactant":
+                reactants.append(entry)
+            elif edge.type == "product":
+                products.append(entry)
+        reactant_str = " + ".join(reactants)
+        product_str = " + ".join(products)
+        ending = ";" if i < len(reactions) - 1 else ""
+        print(f"{name}: {reactant_str} => {product_str}{ending}")
 
 #############################################################
-# Function to find organisations in a reaction network
-# based on the semi-organisations and check if they are self-maintaining
-# and return the organisations, vector_process and vector_x
-def find_organisations(rn, semi_orgs):
-    """
-    Find self-maintaining organisations from a list of candidate subsets.
-
-    Args:
-        rn: A reaction network object or structure required by `is_self_maintaining`.
-        semi_orgs (list of list): A list of candidate semi-organisations.
-
-    Returns:
-        tuple:
-            organisations (list of list): The self-maintaining organisations.
-            vector_process (list of list): The corresponding process vectors.
-            vector_x (list of list): The corresponding state vectors.
-    """
-    semi_orgs = remove_duplicates(semi_orgs)  # Remove duplicates
-    semi_orgs.sort(key=lambda x: len(x))  # Sort by size
-    print("Semi-organisations without duplicates and sorted by size:")
-    for i, semi_org_new in enumerate(semi_orgs):
-        print(f"S{i+1}:", semi_org_new)
-    print("-" * 70)
-
-    print("find_organisations starting")
-    organisations = []
-    vector_process = []
-    vector_x = []
-    for i, semi_organisation in enumerate(semi_orgs):
-        if len(semi_organisation) == 0:
-            print("Semi-organisation = []\n")
-            print("     Empty semi-organisation.")
-            continue
-
-        print(f"\nSemi-organisation_{i+1} = {semi_organisation}")
-        print(f"Semi-organisation_{i+1} size =", len(semi_organisation))
-        res = is_self_maintaining(rn, X=semi_organisation)
-        if res[0] == True:
-            print("     Is self-maintaining:", res[0])
-            organisations.append(semi_organisation)
-            vector_process.append([x.tolist() for x in res[1]])
-            vector_x.append([x.tolist() for x in res[2]])
-        else:
-            print("     Is self-maintaining: False")
-
-    return organisations, vector_process, vector_x
-
-#############################################################
-# Function to generate a .txt file with the subnetwork
-# corresponding to a set of species and reactions
-# and save it in a specified folder
+# Function to generate a .txt file with the subnetwork 
 def generate_subnetwork_txt(species, reactions, rn, folder_name="Txt_sub_network", file_name="sub_network.txt"):
     """
-    Generates a .txt file with the species, reactions, and stoichiometric matrix corresponding to a subnetwork,
-    saved inside a specified folder.
+    Generates a .txt file with the species, reactions, rn,
+    saved the file inside a specified folder.
     
     Args:
         species (list): list of species names (e.g., ['s1', 's2', 's6'])
