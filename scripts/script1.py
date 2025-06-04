@@ -128,5 +128,5 @@ for r in reactions:
 # ======================================== 
 # Visualize the reaction network in HTML format
 print("-"*100)
-# rn_visualize_html(rn, filename="reaction_network.html")
-rn_get_visualization(rn, filename="network.png")
+rn_visualize_html(rn, filename="reaction_network.html")
+#rn_get_visualization(rn, filename="network.png")

@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import pyCOT modules
 from pyCOT.io.functions import read_txt 
 from pyCOT.plot_dynamics import plot_series_ode
-from pyCOT.simulations import simulation, simulate_discrete_random
+from pyCOT.simulations import *
 
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
@@ -34,20 +34,20 @@ rn = read_txt(file_path)  # Create ReactionNetwork object from file
 ###################################################################################
 # Example 1: ODE simulation using only 'mak' kinetics
 ###################################################################################
-x0 = [0, 1, 0]  # Initial concentrations
-rate_list = 'mak'  # Kinetics for all reactions
-spec_vector = [[0.7], [0.5], [1.0], [1.0], [1.0]]  # Parameters for each reaction
+# x0 = [0, 1, 0]  # Initial concentrations
+# rate_list = 'mak'  # Kinetics for all reactions
+# spec_vector = [[0.7], [0.5], [1.0], [1.0], [1.0]]  # Parameters for each reaction
 
-# Run simulation
-time_series, flux_vector = simulation(
-    rn, rate=rate_list, spec_vector=spec_vector, 
-    x0=x0, t_span=(0, 20), n_steps=500
-)
+# # Run simulation
+# time_series, flux_vector = simulation(
+#     rn, rate=rate_list, spec_vector=spec_vector, 
+#     x0=x0, t_span=(0, 20), n_steps=500
+# )
 
-print("ODE Time Series:")
-print(time_series)
+# print("ODE Time Series:")
+# print(time_series)
 
-plot_series_ode(time_series)
+# plot_series_ode(time_series)
 
 ###################################################################################
 # Example 2: ODE simulation using a mix of 'mak' and 'mmk' kinetics
@@ -108,13 +108,13 @@ plot_series_ode(time_series)
 ###################################################################################
 # Example 5: Discrete stochastic simulation
 ###################################################################################
-# x0 = [5, 7, 10]  # Initial concentrations
-# ts, vs = simulate_discrete_random(rn, S=rn.stoichiometry_matrix(), x=x0, n_iter=11)
+x0 = [5, 7, 10]  # Initial concentrations
+ts, vs = simulate_discrete_random(rn, S=rn.stoichiometry_matrix(), x=x0, n_iter=11)
 
-# print("\nTime Series (Discrete Random Simulation):")
-# print(ts)
-# plot_series_ode(ts)
+print("\nTime Series (Discrete Random Simulation):")
+print(ts)
+plot_series_ode(ts)
 
-# print("\nFlux Vector (Discrete Random Simulation):")
-# print(vs)
-# plot_series_ode(vs)
+print("\nFlux Vector (Discrete Random Simulation):")
+print(vs)
+plot_series_ode(vs)
