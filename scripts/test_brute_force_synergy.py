@@ -46,7 +46,7 @@ class SynergyTestAnalyzer:
         
         # Build ERCs and hierarchy
         print("Building ERC hierarchy...")
-        self.ercs = ERC.ERCs(self.rn)
+        self.ercs = ERC.ERCs(self.rn)  # Changed to calculate_ercs
         self.hierarchy_graph = ERC.build_hierarchy_graph(self.ercs, self.rn)
         
         # Initialize calculator
@@ -71,7 +71,7 @@ class SynergyTestAnalyzer:
         print("="*80)
         
         # Get hierarchy levels
-        levels = ERC.get_node_levels(self.hierarchy_graph)
+        levels = ERC.get_node_levels(self.hierarchy_graph)  # Changed from get_node_levels
         
         print(f"Hierarchy levels:")
         level_groups = defaultdict(list)
@@ -113,14 +113,15 @@ class SynergyTestAnalyzer:
                     if combination not in all_combinations:
                         all_combinations.append(combination)
         
+        # Sort combinations for consistent output   
         print(f"Testing {len(all_combinations)} unique ERC combinations...")
         
         test_results = []
         synergies_found = []
         
         for i, (base1, base2, target) in enumerate(all_combinations):
-            print(f"\n--- Test {i+1}/{len(all_combinations)} ---")
-            print(f"Testing: {base1.label} + {base2.label} → {target.label}")
+            #print(f"\n--- Test {i+1}/{len(all_combinations)} ---")
+            #print(f"Testing: {base1.label} + {base2.label} → {target.label}")
             
             # Get closures for analysis
             base1_closure = set(species_list_to_names(base1.get_closure(self.rn)))
@@ -128,16 +129,17 @@ class SynergyTestAnalyzer:
             target_closure = set(species_list_to_names(target.get_closure(self.rn)))
             combined_closure = self.calculator.compute_combined_closure(base1, base2)
             
-            print(f"  Base1 ({base1.label}) closure: {sorted(base1_closure)}")
-            print(f"  Base2 ({base2.label}) closure: {sorted(base2_closure)}")
-            print(f"  Target ({target.label}) closure: {sorted(target_closure)}")
-            print(f"  Combined closure: {sorted(combined_closure)}")
+            # print(f"  Base1 ({base1.label}) closure: {sorted(base1_closure)}")
+            # print(f"  Base2 ({base2.label}) closure: {sorted(base2_closure)}")
+            # print(f"  Target ({target.label}) closure: {sorted(target_closure)}")
+            # print(f"  Combined closure: {sorted(combined_closure)}")
             
             # Test synergy
             is_synergy, details = self.calculator.validates_synergy(base1, base2, target, verbose=False)
             
             if is_synergy:
                 print(f"  ✓ SYNERGY DETECTED!")
+                print(f"  {i}. {base1.label} + {base2.label} → {target.label}")
                 print(f"    Coverage ratio: {details['coverage_ratio']:.1%}")
                 print(f"    Synergy ratio: {details['synergy_ratio']:.1%}")
                 print(f"    Synergistic generators: {len(details['synergistic_generators'])}")
@@ -150,7 +152,7 @@ class SynergyTestAnalyzer:
                 }
                 synergies_found.append(synergy_dict)
             else:
-                print(f"  ✗ No synergy")
+                #print(f"  ✗ No synergy")
                 
                 # Analyze why no synergy
                 reasons = []
@@ -160,7 +162,8 @@ class SynergyTestAnalyzer:
                     reasons.append("base1 alone contains target closure")
                 if base2_closure.issuperset(target_closure):
                     reasons.append("base2 alone contains target closure")
-                    
+                
+                       
                 # Check for synergistic generators
                 has_synergistic = False
                 for gen in target.min_generators:
@@ -176,7 +179,7 @@ class SynergyTestAnalyzer:
                 if not has_synergistic:
                     reasons.append("no generators require true synergy")
                 
-                print(f"    Reasons: {', '.join(reasons)}")
+                #print(f"    Reasons: {', '.join(reasons)}")
             
             test_result = {
                 'base1': base1,
@@ -205,49 +208,49 @@ class SynergyTestAnalyzer:
         
         return synergies_found
     
-    def test_minimality_analysis(self, synergies: List[Dict], verbose: bool = True):
-        """Perform detailed minimality analysis for each synergy."""
+    def test_fundamentality_analysis(self, synergies: List[Dict], verbose: bool = True):
+        """Perform detailed fundamentality analysis for each synergy."""
         print(f"\n" + "="*80)
-        print("MINIMALITY ANALYSIS")
+        print("FUNDAMENTALITY ANALYSIS")
         print("="*80)
         
         if not synergies:
-            print("No synergies to analyze for minimality.")
+            print("No synergies to analyze for fundamentality.")
             return []
-        
-        minimal_synergies = []
-        minimality_details = []
+
+        fundamental_synergies = []
+        fundamentality_details = []
         
         for i, synergy in enumerate(synergies):
-            print(f"\n--- Minimality Test {i+1}/{len(synergies)} ---")
+            print(f"\n--- Fundamentality Test {i+1}/{len(synergies)} ---")
             base1 = synergy['base1']
             base2 = synergy['base2']
             target = synergy['target']
             
             print(f"Analyzing: {base1.label} + {base2.label} → {target.label}")
             
-            # Test all three minimality criteria
+            # Test all three fundamentality criteria
             criterion1, base1_violations = self.calculator.check_minimal_base1_criterion(synergy, verbose=True)
             criterion2, base2_violations = self.calculator.check_minimal_base2_criterion(synergy, verbose=True)
             criterion3, target_violations = self.calculator.check_maximal_target_criterion(synergy, verbose=True)
             
-            is_minimal = criterion1 and criterion2 and criterion3
+            is_fundamental = criterion1 and criterion2 and criterion3
             
-            minimality_info = {
+            fundamentality_info = {
                 'base1_minimal': criterion1,
                 'base2_minimal': criterion2,
                 'target_maximal': criterion3,
-                'is_minimal': is_minimal,
+                'is_fundamental': is_fundamental,
                 'base1_violations': base1_violations,
                 'base2_violations': base2_violations,
                 'target_violations': target_violations
             }
-            
-            # Add minimality info to synergy
-            synergy_with_minimality = synergy.copy()
-            synergy_with_minimality['minimality'] = minimality_info
-            
-            print(f"\n  MINIMALITY SUMMARY:")
+
+            # Add fundamentality info to synergy
+            synergy_with_fundamentality = synergy.copy()
+            synergy_with_fundamentality['fundamentality'] = fundamentality_info
+
+            print(f"\n  FUNDAMENTALITY SUMMARY:")
             print(f"    Base1 ({base1.label}) minimal: {'✓' if criterion1 else '✗'}")
             if base1_violations:
                 print(f"      Violations: {base1_violations}")
@@ -257,35 +260,35 @@ class SynergyTestAnalyzer:
             print(f"    Target ({target.label}) maximal: {'✓' if criterion3 else '✗'}")
             if target_violations:
                 print(f"      Violations: {target_violations}")
-            print(f"    OVERALL: {'✓ MINIMAL' if is_minimal else '✗ NOT MINIMAL'}")
-            
-            minimality_details.append(synergy_with_minimality)
-            
-            if is_minimal:
-                minimal_synergies.append(synergy_with_minimality)
-        
-        self.test_results['minimality_analysis'] = minimality_details
-        self.test_results['minimal_synergies'] = minimal_synergies
-        
+            print(f"    OVERALL: {'✓ FUNDAMENTAL' if is_fundamental else '✗ NOT FUNDAMENTAL'}")
+
+            fundamentality_details.append(synergy_with_fundamentality)
+
+            if is_fundamental:
+                fundamental_synergies.append(synergy_with_fundamentality)
+
+        self.test_results['fundamentality_analysis'] = fundamentality_details
+        self.test_results['fundamental_synergies'] = fundamental_synergies
+
         print(f"\n" + "-"*50)
-        print(f"MINIMALITY ANALYSIS SUMMARY")
+        print(f"FUNDAMENTALITY ANALYSIS SUMMARY")
         print(f"-"*50)
         print(f"Total synergies analyzed: {len(synergies)}")
-        print(f"Minimal synergies: {len(minimal_synergies)}")
-        print(f"Minimality rate: {len(minimal_synergies)/len(synergies)*100:.1f}%")
-        
+        print(f"Fundamental synergies: {len(fundamental_synergies)}")
+        print(f"Fundamentality rate: {len(fundamental_synergies)/len(synergies)*100:.1f}%")
+
         # Summary of why synergies were filtered
-        base1_failures = sum(1 for s in minimality_details if not s['minimality']['base1_minimal'])
-        base2_failures = sum(1 for s in minimality_details if not s['minimality']['base2_minimal'])
-        target_failures = sum(1 for s in minimality_details if not s['minimality']['target_maximal'])
-        
+        base1_failures = sum(1 for s in fundamentality_details if not s['fundamentality']['base1_minimal'])
+        base2_failures = sum(1 for s in fundamentality_details if not s['fundamentality']['base2_minimal'])
+        target_failures = sum(1 for s in fundamentality_details if not s['fundamentality']['target_maximal'])
+
         print(f"\nFailure reasons:")
         print(f"  Base1 not minimal: {base1_failures}")
         print(f"  Base2 not minimal: {base2_failures}")
         print(f"  Target not maximal: {target_failures}")
-        
-        return minimal_synergies
-    
+
+        return fundamental_synergies
+
     def compare_algorithms(self):
         """Compare manual analysis with calculator results."""
         print(f"\n" + "="*80)
@@ -294,21 +297,21 @@ class SynergyTestAnalyzer:
         
         # Run calculator
         print("Running brute force calculator...")
-        all_synergies_calc, minimal_synergies_calc = self.calculator.brute_force(minimal=True, verbose=False)
+        all_synergies_calc, fundamental_synergies_calc = self.calculator.brute_force(fundamental=True, verbose=False)
         
         # Compare with manual analysis
         manual_synergies = self.test_results.get('synergies_found', [])
-        manual_minimal = self.test_results.get('minimal_synergies', [])
-        
+        manual_fundamental = self.test_results.get('fundamental_synergies', [])
+
         print(f"\nComparison Results:")
         print(f"  Manual analysis - All synergies: {len(manual_synergies)}")
         print(f"  Calculator - All synergies: {len(all_synergies_calc)}")
         print(f"  Match: {'✓' if len(manual_synergies) == len(all_synergies_calc) else '✗'}")
-        
-        print(f"  Manual analysis - Minimal synergies: {len(manual_minimal)}")
-        print(f"  Calculator - Minimal synergies: {len(minimal_synergies_calc)}")
-        print(f"  Match: {'✓' if len(manual_minimal) == len(minimal_synergies_calc) else '✗'}")
-        
+
+        print(f"  Manual analysis - Fundamental synergies: {len(manual_fundamental)}")
+        print(f"  Calculator - Fundamental synergies: {len(fundamental_synergies_calc)}")
+        print(f"  Match: {'✓' if len(manual_fundamental) == len(fundamental_synergies_calc) else '✗'}")
+
         # Detailed comparison
         if len(manual_synergies) != len(all_synergies_calc):
             print(f"\n  DISCREPANCY DETECTED in all synergies!")
@@ -322,22 +325,22 @@ class SynergyTestAnalyzer:
                 print(f"    Only in manual: {only_manual}")
             if only_calc:
                 print(f"    Only in calculator: {only_calc}")
-        
-        if len(manual_minimal) != len(minimal_synergies_calc):
-            print(f"\n  DISCREPANCY DETECTED in minimal synergies!")
-            manual_min_set = {(s['base1'].label, s['base2'].label, s['target'].label) for s in manual_minimal}
-            calc_min_set = {(s['base1'].label, s['base2'].label, s['target'].label) for s in minimal_synergies_calc}
-            
-            only_manual_min = manual_min_set - calc_min_set
-            only_calc_min = calc_min_set - manual_min_set
-            
-            if only_manual_min:
-                print(f"    Only in manual minimal: {only_manual_min}")
-            if only_calc_min:
-                print(f"    Only in calculator minimal: {only_calc_min}")
-        
-        return all_synergies_calc, minimal_synergies_calc
-    
+
+        if len(manual_fundamental) != len(fundamental_synergies_calc):
+            print(f"\n  DISCREPANCY DETECTED in fundamental synergies!")
+            manual_fundamental_set = {(s['base1'].label, s['base2'].label, s['target'].label) for s in manual_fundamental}
+            calc_fundamental_set = {(s['base1'].label, s['base2'].label, s['target'].label) for s in fundamental_synergies_calc}
+
+            only_manual_fundamental = manual_fundamental_set - calc_fundamental_set
+            only_calc_fundamental = calc_fundamental_set - manual_fundamental_set
+
+            if only_manual_fundamental:
+                print(f"    Only in manual fundamental: {only_manual_fundamental}")
+            if only_calc_fundamental:
+                print(f"    Only in calculator fundamental: {only_calc_fundamental}")
+
+        return all_synergies_calc, fundamental_synergies_calc
+
     def create_comprehensive_visualization(self, figsize=(16, 12)):
         """Create comprehensive visualization of results."""
         if not self.test_results:
@@ -354,11 +357,11 @@ class SynergyTestAnalyzer:
         # 2. Synergy statistics
         ax2 = axes[0, 1]
         self._plot_synergy_statistics(ax2)
-        
-        # 3. Minimality analysis
+
+        # 3. Fundamentality analysis
         ax3 = axes[1, 0]
-        self._plot_minimality_analysis(ax3)
-        
+        self._plot_fundamentality_analysis(ax3)
+
         # 4. Detailed breakdown
         ax4 = axes[1, 1]
         self._plot_detailed_breakdown(ax4)
@@ -413,10 +416,10 @@ class SynergyTestAnalyzer:
         
         total_combinations = len(self.test_results.get('individual_tests', []))
         synergies_found = len(self.test_results.get('synergies_found', []))
-        minimal_synergies = len(self.test_results.get('minimal_synergies', []))
+        fundamental_synergies = len(self.test_results.get('fundamental_synergies', []))
         
-        categories = ['Total\nCombinations', 'Synergies\nFound', 'Minimal\nSynergies']
-        values = [total_combinations, synergies_found, minimal_synergies]
+        categories = ['Total\nCombinations', 'Synergies\nFound', 'Fundamental\nSynergies']
+        values = [total_combinations, synergies_found, fundamental_synergies]
         colors = ['lightgray', 'lightcoral', 'lightgreen']
         
         bars = ax.bar(categories, values, color=colors)
@@ -428,25 +431,25 @@ class SynergyTestAnalyzer:
             height = bar.get_height()
             ax.text(bar.get_x() + bar.get_width()/2., height + 0.1,
                    f'{value}', ha='center', va='bottom')
-    
-    def _plot_minimality_analysis(self, ax):
-        """Plot minimality failure analysis."""
-        if 'minimality_analysis' not in self.test_results:
-            ax.text(0.5, 0.5, 'No minimality data', ha='center', va='center', transform=ax.transAxes)
-            ax.set_title('Minimality Analysis')
+
+    def _plot_fundamentality_analysis(self, ax):
+        """Plot fundamentality failure analysis."""
+        if 'fundamentality_analysis' not in self.test_results:
+            ax.text(0.5, 0.5, 'No fundamentality data', ha='center', va='center', transform=ax.transAxes)
+            ax.set_title('Fundamentality Analysis')
             return
         
-        minimality_data = self.test_results['minimality_analysis']
-        
-        base1_failures = sum(1 for s in minimality_data if not s['minimality']['base1_minimal'])
-        base2_failures = sum(1 for s in minimality_data if not s['minimality']['base2_minimal'])
-        target_failures = sum(1 for s in minimality_data if not s['minimality']['target_maximal'])
-        
+        fundamentality_data = self.test_results['fundamentality_analysis']
+
+        base1_failures = sum(1 for s in fundamentality_data if not s['fundamentality']['base1_minimal'])
+        base2_failures = sum(1 for s in fundamentality_data if not s['fundamentality']['base2_minimal'])
+        target_failures = sum(1 for s in fundamentality_data if not s['fundamentality']['target_maximal'])
+
         categories = ['Base1\nNot Minimal', 'Base2\nNot Minimal', 'Target\nNot Maximal']
         values = [base1_failures, base2_failures, target_failures]
         
         bars = ax.bar(categories, values, color='orange', alpha=0.7)
-        ax.set_title('Minimality Failure Reasons')
+        ax.set_title('Fundamentality Failure Reasons')
         ax.set_ylabel('Number of Failures')
         
         # Add value labels
@@ -464,16 +467,16 @@ class SynergyTestAnalyzer:
             return
         
         total_synergies = len(self.test_results.get('synergies_found', []))
-        minimal_synergies = len(self.test_results.get('minimal_synergies', []))
-        filtered_synergies = total_synergies - minimal_synergies
-        
+        fundamental_synergies = len(self.test_results.get('fundamental_synergies', []))
+        filtered_synergies = total_synergies - fundamental_synergies
+
         if total_synergies == 0:
             ax.text(0.5, 0.5, 'No synergies found', ha='center', va='center', transform=ax.transAxes)
             ax.set_title('Synergy Breakdown')
             return
-        
-        labels = ['Minimal', 'Filtered']
-        sizes = [minimal_synergies, filtered_synergies]
+
+        labels = ['Fundamental', 'Filtered']
+        sizes = [fundamental_synergies, filtered_synergies]
         colors = ['lightgreen', 'lightcoral']
         
         # Only plot if we have data
@@ -498,13 +501,13 @@ class SynergyTestAnalyzer:
         
         # Test individual synergies
         synergies_found = self.test_individual_synergies(verbose=True)
-        
-        # Test minimality
-        minimal_synergies = self.test_minimality_analysis(synergies_found, verbose=True)
-        
+
+        # Test fundamentality
+        fundamental_synergies = self.test_fundamentality_analysis(synergies_found, verbose=True)
+
         # Compare with calculator
-        calc_all, calc_minimal = self.compare_algorithms()
-        
+        calc_all, calc_fundamental = self.compare_algorithms()
+
         # Create visualization
         fig = self.create_comprehensive_visualization()
         
@@ -516,21 +519,21 @@ class SynergyTestAnalyzer:
         print(f"Final Results:")
         print(f"  Total ERC combinations tested: {len(self.test_results.get('individual_tests', []))}")
         print(f"  Synergies found: {len(synergies_found)}")
-        print(f"  Minimal synergies: {len(minimal_synergies)}")
-        print(f"  Calculator matches manual analysis: {'✓' if len(calc_all) == len(synergies_found) and len(calc_minimal) == len(minimal_synergies) else '✗'}")
-        
-        if minimal_synergies:
-            print(f"\nFinal Minimal Synergies:")
-            for i, synergy in enumerate(minimal_synergies, 1):
+        print(f"  Fundamental synergies: {len(fundamental_synergies)}")
+        print(f"  Calculator matches manual analysis: {'✓' if len(calc_all) == len(synergies_found) and len(calc_fundamental) == len(fundamental_synergies) else '✗'}")
+
+        if fundamental_synergies:
+            print(f"\nFinal Fundamental Synergies:")
+            for i, synergy in enumerate(fundamental_synergies, 1):
                 print(f"  {i}. {synergy['base1'].label} + {synergy['base2'].label} → {synergy['target'].label}")
         else:
-            print(f"\nNo minimal synergies found.")
-        
+            print(f"\nNo fundamental synergies found.")
+
         return {
             'manual_synergies': synergies_found,
-            'manual_minimal': minimal_synergies,
+            'manual_fundamental': fundamental_synergies,
             'calculator_synergies': calc_all,
-            'calculator_minimal': calc_minimal,
+            'calculator_fundamental': calc_fundamental,
             'test_results': self.test_results,
             'visualization': fig
         }
@@ -557,8 +560,9 @@ def test_with_specific_network(file_path: str):
 if __name__ == "__main__":
     # Test with your reaction network
     # Replace with the path to your test file
-    test_file = "networks/RandomAlife/RN_Ns_25_Norg_14_id_206.txt"  # This should match the file in your documents
-    
+    test_file = "networks/testing/ERCs_test2.txt"  # This should match the file in your documents
+    test_file = "networks/RandomAlife/RN_Ns_20_Norg_8_id_163.txt"
+
     try:
         analyzer, results = test_with_specific_network(test_file)
         

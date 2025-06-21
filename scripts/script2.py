@@ -18,7 +18,7 @@ from pyCOT.simulations import *
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ========================================
-file_path = 'Txt/autopoietic.txt'  
+file_path = 'pyCOT/networks/testing/autopoietic.txt'  
 # Alternative examples:
 # file_path = 'Txt/2019fig1.txt'
 # file_path = 'Txt/2019fig2.txt'

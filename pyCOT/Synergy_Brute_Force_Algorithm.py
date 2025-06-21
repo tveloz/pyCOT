@@ -1,22 +1,12 @@
 #!/usr/bin/env python3
-"""
-Brute Force Synergy Algorithm Module
-
-This module introduces various algorithms for computing synergies.
-It finds pairs of base1 ERCs that together can fully cover target generators, 
-with eventually proper minimality enforcement.
-
-@author: ERC Synergy Framework
-"""
-
 ##########################Brute Force Synergy Calculator##########################
 """
-Unified Brute Force Synergy Calculator
+Brute Force Synergy Calculator
 
 This module provides a unified interface for finding synergies in ERC hierarchies
-using brute force approach with optional minimal filtering.
+using brute force approach with optional fundamental synergies filtering.
 
-@author: Integrated Synergy Algorithm
+@author: Brute Force Synergy Algorithm
 """
 
 import numpy as np
@@ -41,16 +31,16 @@ class BruteForceSynergyCalculator:
         
         # Results storage
         self.all_synergies = []
-        self.minimal_synergies = []
+        self.fundamental_synergies = []
         self.checked_pairs = set()
         
         # Statistics
         self.stats = {
             'total_checks': 0,
             'synergies_found': 0,
-            'minimal_synergies_found': 0,
+            'fundamental_synergies_found': 0,
             'symmetric_avoided': 0,
-            'minimality_analysis': {}
+            'fundamentality_analysis': {}
         }
         
     def get_erc_by_label(self, label: str) -> ERC:
@@ -65,29 +55,16 @@ class BruteForceSynergyCalculator:
         Properly compute the closure of combined generators from two ERCs.
         This is the key fix for correct synergy detection.
         """
-        # Get all minimal generators from both ERCs
-        combined_generators = []
-        
-        # Add generators from base1
-        for gen in base1.min_generators:
-            combined_generators.extend(gen)
-        
-        # Add generators from base2
-        for gen in base2.min_generators:
-            combined_generators.extend(gen)
-        
-        # Remove duplicates while preserving order
-        unique_generators = []
-        seen = set()
-        for species in combined_generators:
-            if species not in seen:
-                unique_generators.append(species)
-                seen.add(species)
-        
+               
         # Compute proper closure from combined generators
-        combined_closure_species = closure(self.rn, unique_generators)
-        combined_closure_names = set(species_list_to_names(combined_closure_species))
+        closure_base1 = base1.get_closure(self.rn)
+        #print(f"Closure for {base1.label}: {sorted(species_list_to_names(closure_base1))}")
+        closure_base2 = base2.get_closure(self.rn)
+        #print(f"Closure for {base2.label}: {sorted(species_list_to_names(closure_base2))}")
+        combined_closure_species = closure(self.rn, list(set(closure_base1) | set(closure_base2)))
         
+        combined_closure_names = set(species_list_to_names(combined_closure_species))
+        #print(f"Combined closure for {base1.label} + {base2.label}: {sorted(combined_closure_names)}")
         return combined_closure_names
     
     def validates_synergy(self, base1: ERC, base2: ERC, target: ERC, verbose: bool = False) -> Tuple[bool, Dict]:
@@ -129,6 +106,8 @@ class BruteForceSynergyCalculator:
         synergistic_generators = []
         
         for gen in target.min_generators:
+            if verbose:
+                print(f"      Checking generator: {species_list_to_names(gen)}")
             gen_species = set(species_list_to_names(gen))
             
             if gen_species.issubset(combined):
@@ -356,32 +335,32 @@ class BruteForceSynergyCalculator:
         
         return is_maximal, violating_predecessors
     
-    def filter_minimal_synergies(self, verbose: bool = False) -> List[Dict]:
+    def filter_fundamental_synergies(self, verbose: bool = False) -> List[Dict]:
         """
-        Filter synergies to keep only minimal ones based on three criteria.
-        
+        Filter synergies to keep only fundamental ones based on three criteria.
+
         Args:
             verbose: If True, print detailed information during filtering
             
         Returns:
-            List of minimal synergy dictionaries
+            List of fundamental synergy dictionaries
         """
         if verbose:
             print("="*70)
-            print("FILTERING MINIMAL SYNERGIES")
+            print("FILTERING FUNDAMENTAL SYNERGIES")
             print("="*70)
-        
+
         if not self.all_synergies:
             if verbose:
                 print("No synergies to filter.")
             return []
-        
-        self.minimal_synergies = []
-        minimality_analysis = {}
-        
+
+        self.fundamental_synergies = []
+        fundamentality_analysis = {}
+
         if verbose:
-            print(f"Checking {len(self.all_synergies)} synergies for minimality...")
-        
+            print(f"Checking {len(self.all_synergies)} synergies for fundamentality...")
+
         for i, synergy in enumerate(self.all_synergies):
             base1_label = synergy['base1'].label
             base2_label = synergy['base2'].label
@@ -394,14 +373,14 @@ class BruteForceSynergyCalculator:
             criterion1, base1_violations = self.check_minimal_base1_criterion(synergy, verbose)
             criterion2, base2_violations = self.check_minimal_base2_criterion(synergy, verbose)
             criterion3, target_violations = self.check_maximal_target_criterion(synergy, verbose)
-            
-            # Add minimality info to synergy
+
+            # Add fundamentality info to synergy
             synergy_with_criteria = synergy.copy()
-            synergy_with_criteria['minimality'] = {
+            synergy_with_criteria['fundamentality'] = {
                 'base1_minimal': criterion1,
                 'base2_minimal': criterion2,
                 'target_maximal': criterion3,
-                'is_minimal': criterion1 and criterion2 and criterion3,
+                'is_fundamental': criterion1 and criterion2 and criterion3,
                 'base1_violations': base1_violations,
                 'base2_violations': base2_violations,
                 'target_violations': target_violations
@@ -409,13 +388,13 @@ class BruteForceSynergyCalculator:
             
             # Store analysis for statistics
             analysis_key = f"{base1_label}+{base2_label}->{target_label}"
-            minimality_analysis[analysis_key] = synergy_with_criteria['minimality']
-            
+            fundamentality_analysis[analysis_key] = synergy_with_criteria['fundamentality']
+
             if criterion1 and criterion2 and criterion3:
-                self.minimal_synergies.append(synergy_with_criteria)
-                self.stats['minimal_synergies_found'] += 1
+                self.fundamental_synergies.append(synergy_with_criteria)
+                self.stats['fundamental_synergies_found'] += 1
                 if verbose:
-                    print("  ✓ MINIMAL SYNERGY")
+                    print("  ✓ FUNDAMENTAL SYNERGY")
             else:
                 if verbose:
                     reasons = []
@@ -425,54 +404,54 @@ class BruteForceSynergyCalculator:
                         reasons.append(f"base2 not minimal (violations: {base2_violations})")
                     if not criterion3:
                         reasons.append(f"target not maximal (violations: {target_violations})")
-                    print(f"  ✗ Not minimal: {', '.join(reasons)}")
-        
-        self.stats['minimality_analysis'] = minimality_analysis
-        
+                    print(f"  ✗ Not fundamental: {', '.join(reasons)}")
+
+        self.stats['fundamentality_analysis'] = fundamentality_analysis
+
         if verbose:
             print(f"\n" + "="*70)
-            print("MINIMAL SYNERGY FILTERING COMPLETE")
+            print("FUNDAMENTAL SYNERGY FILTERING COMPLETE")
             print("="*70)
-            print(f"Minimal synergies: {len(self.minimal_synergies)}")
-            print(f"Filtered out: {len(self.all_synergies) - len(self.minimal_synergies)}")
+            print(f"Fundamental synergies: {len(self.fundamental_synergies)}")
+            print(f"Filtered out: {len(self.all_synergies) - len(self.fundamental_synergies)}")
             print(f"Total analyzed: {len(self.all_synergies)}")
-        
-        return self.minimal_synergies
-    
-    def brute_force(self, minimal: bool = False, verbose: bool = False) -> Union[List[Dict], Tuple[List[Dict], List[Dict]]]:
+
+        return self.fundamental_synergies
+
+    def brute_force(self, fundamental: bool = False, verbose: bool = False) -> Union[List[Dict], Tuple[List[Dict], List[Dict]]]:
         """
         Main interface function for brute force synergy finding.
         
         Args:
-            minimal: If True, also compute minimal synergies
+            fundamental: If True, also compute fundamental synergies
             verbose: If True, print detailed information during computation
             
         Returns:
-            If minimal=False: List of all synergies
-            If minimal=True: Tuple of (all_synergies, minimal_synergies)
+            If fundamental=False: List of all synergies
+            If fundamental=True: Tuple of (all_synergies, fundamental_synergies)
         """
         # Find all synergies
         all_synergies = self.find_all_synergies(verbose=verbose)
-        
-        if not minimal:
+
+        if not fundamental:
             return all_synergies
-        
-        # Also find minimal synergies
-        minimal_synergies = self.filter_minimal_synergies(verbose=verbose)
-        
-        return all_synergies, minimal_synergies
-    
-    def print_synergy_summary(self, include_minimal: bool = True):
+
+        # Also find fundamental synergies
+        fundamental_synergies = self.filter_fundamental_synergies(verbose=verbose)
+
+        return all_synergies, fundamental_synergies
+
+    def print_synergy_summary(self, include_fundamental: bool = True):
         """Print a comprehensive summary of found synergies."""
         print(f"\n" + "="*70)
         print("SYNERGY ANALYSIS SUMMARY")
         print("="*70)
         
         print(f"Total synergies found: {len(self.all_synergies)}")
-        if include_minimal and self.minimal_synergies:
-            print(f"Minimal synergies: {len(self.minimal_synergies)}")
-            print(f"Minimality rate: {len(self.minimal_synergies)/len(self.all_synergies)*100:.1f}%" if self.all_synergies else "N/A")
-        
+        if include_fundamental and self.fundamental_synergies:
+            print(f"Fundamental synergies: {len(self.fundamental_synergies)}")
+            print(f"Fundamentality rate: {len(self.fundamental_synergies)/len(self.all_synergies)*100:.1f}%" if self.all_synergies else "N/A")
+
         print(f"\nComputational Statistics:")
         print(f"  Total combinations checked: {self.stats['total_checks']}")
         print(f"  Symmetric combinations avoided: {self.stats['symmetric_avoided']}")
@@ -488,15 +467,15 @@ class BruteForceSynergyCalculator:
                 
                 print(f"  {i}. {base1.label} + {base2.label} → {target.label}")
                 print(f"     Coverage: {details['coverage_ratio']:.1%}, Synergy: {details['synergy_ratio']:.1%}")
-                
-                if 'minimality' in synergy:
-                    minimality = synergy['minimality']
-                    status = "MINIMAL" if minimality['is_minimal'] else "NOT MINIMAL"
+
+                if 'fundamentality' in synergy:
+                    fundamentality = synergy['fundamentality']
+                    status = "FUNDAMENTAL" if fundamentality['is_fundamental'] else "NOT FUNDAMENTAL"
                     print(f"     Status: {status}")
-        
-        if include_minimal and self.minimal_synergies:
-            print(f"\nMinimal Synergies Only:")
-            for i, synergy in enumerate(self.minimal_synergies, 1):
+
+        if include_fundamental and self.fundamental_synergies:
+            print(f"\nFundamental Synergies Only:")
+            for i, synergy in enumerate(self.fundamental_synergies, 1):
                 base1 = synergy['base1']
                 base2 = synergy['base2']
                 target = synergy['target']
@@ -505,7 +484,7 @@ class BruteForceSynergyCalculator:
 
 # Utility function for easy import
 def brute_force_synergies(reaction_network, ercs=None, hierarchy_graph=None, 
-                         minimal=False, verbose=False):
+                         fundamental=False, verbose=False):
     """
     Convenience function for finding synergies using brute force approach.
     
@@ -513,12 +492,12 @@ def brute_force_synergies(reaction_network, ercs=None, hierarchy_graph=None,
         reaction_network: The reaction network object
         ercs: List of ERCs (computed automatically if None)
         hierarchy_graph: ERC hierarchy graph (computed automatically if None)
-        minimal: If True, also compute minimal synergies
+        fundamental: If True, also compute fundamental synergies
         verbose: If True, print detailed information
         
     Returns:
-        If minimal=False: List of all synergies
-        If minimal=True: Tuple of (all_synergies, minimal_synergies)
+        If fundamental=False: List of all synergies
+        If fundamental=True: Tuple of (all_synergies, fundamental_synergies)
     """
     calculator = BruteForceSynergyCalculator(reaction_network, ercs, hierarchy_graph)
-    return calculator.brute_force(minimal=minimal, verbose=verbose)
+    return calculator.brute_force(fundamental=fundamental, verbose=verbose)
