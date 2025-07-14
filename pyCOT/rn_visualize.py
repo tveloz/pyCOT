@@ -1,45 +1,24 @@
-from pyvis.network import Network 
-
-import networkx as nx
-import matplotlib.pyplot as plt
-import mplcursors
-import webbrowser  # Allows opening URLs or local files in the system's default browser
-import os  # For handling paths and checking file existence
+from collections import Counter
 from collections import defaultdict
+from graphviz import Digraph
+from IPython.display import Image
+# from PIL import Image
+from pyvis.network import Network
+import networkx as nx
+import rustworkx as rx
+import matplotlib.pyplot as plt
+import mplcursors 
+import os
+import webbrowser
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 import tempfile
 
 from pyCOT.simulations import build_reaction_dict
+
 ##################################################################
 # # Plot a reaction network in HTML:
 ##################################################################
-def rn_get_string(rn):
-    # Print basic information about the loaded network
-    print(f"Loaded reaction network with:")
-    print(f"  - {len(rn.species())} species")
-    print(f"  - {len(rn.reactions())} reactions")
-
-    # Print the species
-    print("\nSpecies:")
-    for species in rn.species():
-        print(f"  - {species.name}")
-
-    # Print the reactions
-    print("\nReactions:")
-    for reaction in rn.reactions():
-        support = " + ".join([f"{edge.coefficient}*{edge.species_name}" if edge.coefficient != 1 else edge.species_name 
-                                for edge in reaction.support_edges()])
-        products = " + ".join([f"{edge.coefficient}*{edge.species_name}" if edge.coefficient != 1 else edge.species_name 
-                                for edge in reaction.products_edges()])
-        
-        if not support:
-            support = "∅"  # Empty set symbol for inflow reactions
-        if not products:
-            products = "∅"  # Empty set symbol for outflow reactions
-            
-        print(f"  - {reaction.name()}: {support} => {products}")
-
 def rn_get_visualization(rn, lst_color_spcs=None, lst_color_reacs=None, 
                          global_species_color=None, global_reaction_color=None,
                          global_input_edge_color=None, global_output_edge_color=None, 
@@ -182,19 +161,25 @@ def rn_get_visualization(rn, lst_color_spcs=None, lst_color_reacs=None,
     connections = set() # Set of connections to track opposite edges and avoid redundant edges
     for reaction, (inputs, outputs) in RN_dict.items():
         for species, coef in inputs:
+            # coef = int(coef)  # Ensure coefficient is an integer
+            if coef.is_integer():
+                coef = int(coef)
+            else:
+                coef = float(coef)
+                        
             edge_id = (species, reaction)
             default_curve='curvedCCW'
             smooth_type = {'type': default_curve} if curvature else None
             # Check for opposite edges and set edge direction and label accordingly
             if (reaction, species) in connections:
-                if coef > 1:
+                if coef != 1:
                     net.add_edge(species, reaction, arrows='to', label=str(coef), color=input_edge_color, 
                                  font_color=input_edge_color, smooth=smooth_type)
                 else:
                     net.add_edge(species, reaction, arrows='to', color=input_edge_color, 
                                  font_color=input_edge_color, smooth=smooth_type)
             else:
-                if coef > 1:
+                if coef != 1:
                     net.add_edge(species, reaction, arrows='to', label=str(coef), color=input_edge_color, 
                                  font_color=input_edge_color)
                 else:
@@ -205,20 +190,25 @@ def rn_get_visualization(rn, lst_color_spcs=None, lst_color_reacs=None,
             connections.add(edge_id)
 
         for species, coef in outputs:
-            coef = int(coef)  # Ensure coefficient is an integer
+            # coef = int(coef)  # Ensure coefficient is an integer
+            if coef.is_integer():
+                coef = int(coef)
+            else:
+                coef = float(coef)
+
             edge_id = (reaction, species)
             default_curve='curvedCCW'
             smooth_type = {'type': default_curve} if curvature else None
             # Check for opposite edges and set edge direction and label accordingly
             if (species, reaction) in connections:
-                if coef > 1:
+                if coef != 1:
                     net.add_edge(reaction, species, arrows='to', label=str(coef), color=output_edge_color, 
                                  font_color=output_edge_color, smooth=smooth_type)
                 else:
                     net.add_edge(reaction, species, arrows='to', color=output_edge_color, 
                                  font_color=output_edge_color, smooth=smooth_type)
             else:
-                if coef > 1:
+                if coef != 1:
                     net.add_edge(reaction, species, arrows='to', label=str(coef), color=output_edge_color, 
                                  font_color=output_edge_color)
                 else:
@@ -270,7 +260,7 @@ def rn_visualize_html(rn, lst_color_spcs=None, lst_color_reacs=None,
         raise FileNotFoundError(f"\nThe file {abs_path} was not found. Check if `rn_get_visualization` generated the file correctly.")
     
     # Inform the user about the file's location
-    print(f"\nThe reaction network visualization was saved to:\n{abs_path}\n")
+    print(f"\nThe visualization in HTML format of the reaction network was saved in:\n{abs_path}\n")
     
     # Open the HTML file in the default browser
     webbrowser.open(f"file://{abs_path}")
@@ -572,6 +562,415 @@ def hierarchy_visualize_html(
     
     # Inform the user about the file's location
     print(f"\nThe hierarchy visualization was saved to:\n{abs_path}\n")
+    
+    # Open the HTML file in the default browser
+    webbrowser.open(f"file://{abs_path}")
+
+def rn_get_string(rn):
+    # Print basic information about the loaded network
+    print(f"Loaded reaction network with:")
+    print(f"  - {len(rn.species())} species")
+    print(f"  - {len(rn.reactions())} reactions")
+
+    # Print the species
+    print("\nSpecies:")
+    for species in rn.species():
+        print(f"  - {species.name}")
+
+    # Print the reactions
+    print("\nReactions:")
+    for reaction in rn.reactions():
+        support = " + ".join([f"{edge.coefficient}*{edge.species_name}" if edge.coefficient != 1 else edge.species_name 
+                                for edge in reaction.support_edges()])
+        products = " + ".join([f"{edge.coefficient}*{edge.species_name}" if edge.coefficient != 1 else edge.species_name 
+                                for edge in reaction.products_edges()])
+        
+        if not support:
+            support = "∅"  # Empty set symbol for inflow reactions
+        if not products:
+            products = "∅"  # Empty set symbol for outflow reactions
+            
+        print(f"  - {reaction.name()}: {support} => {products}")
+
+##################################################################
+# # Plot a bipartite metabolic network graph from a ReactionNetwork object
+##################################################################
+# Function to create a bipartite graph from a ReactionNetwork object
+def create_bipartite_graph_from_rn(rn):
+    graph = rx.PyDiGraph()
+    metabolite_nodes = {}
+    reaction_nodes = {} 
+
+    for specie in rn.species():
+        idx = graph.add_node(('specie', specie.name))
+        metabolite_nodes[specie.name] = idx
+
+    for reaction in rn.reactions():
+        idx = graph.add_node(('reaction', reaction.name()))
+        reaction_nodes[reaction.name()] = idx 
+
+    # Agregar aristas según edges de cada reacción
+    for reaction in rn.reactions():
+        rxn_name = reaction.name()
+        rxn_node = reaction_nodes[rxn_name]
+
+        for edge in reaction.edges:
+            met_name = edge.species_name
+            coeff = edge.coefficient
+            if edge.type == 'reactant':
+                graph.add_edge(metabolite_nodes[met_name], rxn_node, coeff)
+            elif edge.type == 'product':
+                graph.add_edge(rxn_node, metabolite_nodes[met_name], coeff)
+
+    return graph, metabolite_nodes, reaction_nodes
+
+# Function to plot the bipartite graph using Graphviz library
+def plot_graph_with_graphviz(
+    graph,
+    lst_color_spcs=None,
+    lst_color_reacs=None,
+    global_species_color='cyan',
+    global_reaction_color='lightgray',
+    global_input_edge_color='red',
+    global_output_edge_color='green',
+    node_size=20,
+    shape_species_node='circle',
+    shape_reactions_node='box',
+    filename="metabolic_network"
+):
+    dot = Digraph(comment="Bipartite Metabolic Network")
+
+    # Crear diccionarios para color específico por nombre
+    species_colors = {species: color for color, species_list in (lst_color_spcs or []) for species in species_list}
+    reaction_colors = {reaction: color for color, reaction_list in (lst_color_reacs or []) for reaction in reaction_list}
+
+    for idx, (tipo, nombre) in enumerate(graph.nodes()):
+        if tipo == 'specie':
+            color = species_colors.get(nombre, global_species_color)
+            shape = shape_species_node
+        else:
+            color = reaction_colors.get(nombre, global_reaction_color)
+            shape = shape_reactions_node
+
+        dot.node(
+            str(idx),
+            nombre,
+            shape=shape,
+            style='filled',
+            fillcolor=color,
+            width=str(node_size / 72),  # Aproximación para escalar (Graphviz usa pulgadas)
+            fontsize='10'
+        )
+
+    for src, dst in graph.edge_list():
+        data = graph.get_edge_data(src, dst)
+        label = str(data)
+
+        # Determinar tipo de arista
+        src_tipo = graph.nodes()[src][0]
+        color = global_input_edge_color if src_tipo == 'specie' else global_output_edge_color
+
+        # No mostrar etiqueta si peso = 1
+        if label == '1':
+            dot.edge(str(src), str(dst), color=color)
+        else:
+            dot.edge(str(src), str(dst), label=label, color=color)
+
+    dot.render(filename, format='png', cleanup=True)
+    full_path = os.path.abspath(f"{filename}.png")
+    print(f"Reaction network saved as: {full_path}")
+
+    return Image(filename + '.png')
+
+# def plot_graph_with_graphviz(graph, filename="metabolic_network"):
+#     dot = Digraph(comment="Bipartite Metabolic Network")
+
+#     for idx, (tipo, nombre) in enumerate(graph.nodes()):
+#         if tipo == 'specie':
+#             dot.node(str(idx), nombre, shape='circle', style='filled', fillcolor='cyan')
+#         else:
+#             dot.node(str(idx), nombre, shape='box', style='filled', fillcolor='lightgray')
+
+#     for src, dst in graph.edge_list():
+#         data = graph.get_edge_data(src, dst)
+#         color = 'red' if graph.nodes()[src][0] == 'specie' else 'green'
+#         # dot.edge(str(src), str(dst), label=str(data), color=color)
+#         label = str(data)
+#         if label == '1':
+#             dot.edge(str(src), str(dst), color=color)
+#         else:
+#             dot.edge(str(src), str(dst), label=label, color=color)
+
+
+#     dot.render(filename, format='png', cleanup=True)
+#     full_path = os.path.abspath(f"{filename}.png")
+#     print(f"Reaction network saved as: {full_path}")
+
+#     return Image(filename + '.png')
+
+# Function to get the visualization of the bipartite metabolic network graph as an interactive HTML file using the pyvis library
+def get_visualize_metabolic_network(graph, lst_color_spcs=None, lst_color_reacs=None, 
+                         global_species_color=None, global_reaction_color=None,
+                         global_input_edge_color=None, global_output_edge_color=None, 
+                         node_size=20, shape_species_node='dot', shape_reactions_node='box', 
+                         curvature=None, physics_enabled=False, filename="metabolic_network.html"):
+    """
+    Visualizes a metabolic network graph as an interactive HTML file.
+
+    This function uses a given graph to generate a visualization in which 
+    species and reactions are represented as nodes, and interactions are represented as edges. 
+    The resulting visualization is saved to an HTML file that can be opened in a browser.
+
+    Parameters:
+    ----------
+    graph : rustworkx.PyDiGraph
+        A directed graph representing the metabolic network, where nodes contain 
+        (tipo, nombre) tuples indicating node type and name.
+    
+    lst_color_spcs : list of tuples, optional
+        A list of tuples specifying colors for specific species. Each tuple should have the 
+        format (color, species_list), where species_list is a list of species names 
+        to be assigned the given color. Example: [('cyan', ['A', 'B'])].
+    
+    lst_color_reacs : list of tuples, optional
+        A list of tuples specifying colors for specific reactions. Each tuple should have 
+        the format (color, reaction_list), where reaction_list is a list of reaction 
+        names to be assigned the given color. Example: [('gray', ['R1', 'R2'])].
+    
+    global_species_color : str, optional
+        Default color for all species nodes if no specific color is assigned in lst_color_spcs.
+        Default is 'cyan'.
+    
+    global_reaction_color : str, optional
+        Default color for all reaction nodes if no specific color is assigned in lst_color_reacs.
+        Default is 'lightgray'.
+    
+    global_input_edge_color : str, optional
+        Color for edges representing inputs (species consumed in reactions). Default is 'red'.
+    
+    global_output_edge_color : str, optional
+        Color for edges representing outputs (species produced in reactions). Default is 'green'.
+    
+    node_size : int, optional
+        The size of the nodes in the visualization. Default is 20.
+    
+    shape_species_node : str, optional
+        Shape of the nodes representing species. Common options include 'dot', 'circle', 'box', 'ellipse', etc. Default is 'dot'.
+    
+    shape_reactions_node : str, optional
+        Shape of the nodes representing reactions. Common options include 'box', 'dot', 'ellipse', etc. Default is 'box'.
+    
+    curvature : str or None, optional
+        Determines whether edges are curved or straight. If 'curvedCCW' (curved counter-clockwise), 
+        edges will be curved. Default is None (straight edges).
+    
+    physics_enabled : bool, optional
+        If True, enables physics-based positioning for the nodes in the visualization. Default is False.
+    
+    filename : str, optional
+        Name of the output HTML file where the visualization will be saved. Default is "metabolic_network.html".
+
+    Returns:
+    -------
+    str
+        The filename of the saved HTML file.
+    """
+    # Initialize the network visualization
+    net = Network(height='100%', width='100%', notebook=True, directed=True, cdn_resources='in_line')
+    # net = Network(height='750px', width='100%', notebook=True, directed=True, cdn_resources='in_line')
+    # net = Network(height="100%", width="100%", directed=True)
+    
+    # Configure physics
+    if physics_enabled:
+        net.barnes_hut()
+    else:
+        net.toggle_physics(False)
+    
+    # Default colors
+    default_species_color = global_species_color or 'cyan'
+    default_reaction_color = global_reaction_color or 'lightgray'
+    input_edge_color = global_input_edge_color or 'red'
+    output_edge_color = global_output_edge_color or 'green'
+    
+    # Map specific colors to certain species or reactions
+    species_colors = {species: color for color, species_list in (lst_color_spcs or []) for species in species_list}
+    reaction_colors = {reaction: color for color, reaction_list in (lst_color_reacs or []) for reaction in reaction_list}
+    
+    # Convert rustworkx graph to networkx for easier manipulation
+    g_nx = nx.DiGraph()
+    node_mapping = {}  # Map rustworkx indices to node names
+    species_set = set()
+    reaction_set = set()
+    
+    for idx, (tipo, nombre) in enumerate(graph.nodes()):
+        g_nx.add_node(idx, tipo=tipo, nombre=nombre)
+        node_mapping[idx] = nombre
+        if tipo == 'specie':
+            species_set.add(nombre)
+        else:
+            reaction_set.add(nombre)
+
+    # Validate species in lst_color_spcs
+    if lst_color_spcs:
+        for color, species_list in lst_color_spcs:
+            for species in species_list:
+                if species not in species_set:
+                    print(f"Warning: The species '{species}' specified in lst_color_spcs does not belong to the species of the network.")
+
+    # Validate reactions in lst_color_reacs
+    if lst_color_reacs:
+        for color, reaction_list in lst_color_reacs:
+            for reaction in reaction_list:
+                if reaction not in reaction_set:
+                    print(f"Warning: The reaction '{reaction}' specified in lst_color_reacs does not belong to the network reactions.")
+
+    # Count edge occurrences
+    edge_counts = Counter((src, dst) for src, dst in graph.edge_list())
+    
+    for src, dst in graph.edge_list():
+        g_nx.add_edge(src, dst, weight=graph.get_edge_data(src, dst))
+
+    # Get positions using Graphviz layout if physics is disabled
+    if not physics_enabled:
+        try:
+            pos = nx.nx_pydot.graphviz_layout(g_nx, prog="dot")
+        except:
+            # Fallback to spring layout if graphviz is not available
+            pos = nx.spring_layout(g_nx)
+    else:
+        pos = {}
+
+    # Add nodes to the visualization
+    for idx in g_nx.nodes():
+        tipo = g_nx.nodes[idx]['tipo']
+        nombre = g_nx.nodes[idx]['nombre']
+        
+        # Determine node color
+        if tipo == 'specie':
+            color = species_colors.get(nombre, default_species_color)
+            shape = shape_species_node
+        else:
+            color = reaction_colors.get(nombre, default_reaction_color)
+            shape = shape_reactions_node
+        
+        # Add node with or without fixed position
+        if not physics_enabled and idx in pos:
+            x, y = pos[idx]
+            net.add_node(n_id=idx, label=nombre, shape=shape, color=color, 
+                        size=node_size, x=x, y=-y, physics=False,
+                        font={'size': 14, 'color': 'black'})
+        else:
+            net.add_node(n_id=idx, label=nombre, shape=shape, color=color, 
+                        size=node_size, font={'size': 14, 'color': 'black'})
+
+    # Add edges with proper styling
+    edge_usage = Counter()
+    
+    connections = set()
+    
+    for src, dst in g_nx.edges():
+        weight = g_nx.edges[src, dst]['weight']
+        count = edge_counts[(src, dst)]
+        edge_usage[(src, dst)] += 1
+        
+        # Determine edge color based on node types
+        src_tipo = g_nx.nodes[src]['tipo']
+        dst_tipo = g_nx.nodes[dst]['tipo']
+        
+        # Species -> Reaction (input/consumption)
+        if src_tipo == 'specie' and dst_tipo == 'reaction':
+            edge_color = input_edge_color
+        # Reaction -> Species (output/production)
+        elif src_tipo == 'reaction' and dst_tipo == 'specie':
+            edge_color = output_edge_color
+        else:
+            edge_color = 'gray'  # Default for other cases
+        
+        # Configure edge smoothing based on curvature and edge usage
+        smooth_config = {}
+
+        if curvature:
+            if count != 1 or (dst, src) in connections:
+                # Caso con conexión opuesta y múltiples aristas
+                curve_type = "cubicBezier" if edge_usage[(src, dst)] % 2 == 0 else "curvedCCW"
+                smooth_config = {
+                    "smooth": {
+                        "type": curve_type,
+                        "roundness": 0.3
+                    }
+                }
+            else:
+                # Caso único o sin conexión opuesta
+                smooth_config = {
+                    "smooth": {
+                        "type": "cubicBezier",
+                        "forceDirection": "vertical",
+                        "roundness": 0.4
+                    }
+                }
+        elif count != 1 or (dst, src) in g_nx.edges():
+            # Caso sin `curvature`, pero con múltiples aristas o arista opuesta
+            curve_type = "curvedCW" if edge_usage[(src, dst)] % 2 == 0 else "curvedCCW"
+            smooth_config = {
+                "smooth": {
+                    "type": curve_type,
+                    "forceDirection": "vertical",
+                    "roundness": 0.4
+                }
+            }
+        
+        # Add edge with weight label if greater than 1
+        if weight != 1: 
+            net.add_edge(src, dst, label=str(weight), 
+                        arrows='to', 
+                        color=edge_color, font_color=edge_color, **smooth_config)
+        else: 
+            net.add_edge(src, dst, arrows='to', 
+                        color=edge_color, font_color=edge_color, **smooth_config)
+
+        connections.add((src, dst)) 
+    
+    # Ensure filename has .html extension
+    if not filename.endswith('.html'):
+        filename += '.html'
+    
+    # Save the visualization
+    net.write_html(filename)
+    
+    return filename
+
+# Function to visualize the metabolic network graph as an interactive HTML file using the pyvis library
+def visualize_metabolic_network(graph, lst_color_spcs=None, lst_color_reacs=None, 
+                         global_species_color=None, global_reaction_color=None,
+                         global_input_edge_color=None, global_output_edge_color=None, 
+                         node_size=20, shape_species_node='dot', shape_reactions_node='box', 
+                         curvature=None, physics_enabled=False, filename="metabolic_network.html"):
+    """
+    Example:
+    -------
+    # Visualize an interactive graph object 
+    graph = create_bipartite_graph_from_rn()
+    get_plot_graph_interactive(graph, lst_color_spcs=[('blue', ['node1'])], filename="interactive_graph.html")
+    """    
+    # Call a function to generate the interactive graph HTML file
+    get_visualize_metabolic_network(
+        graph, lst_color_spcs, lst_color_reacs, 
+        global_species_color, global_reaction_color,
+        global_input_edge_color, global_output_edge_color, 
+        node_size=node_size, shape_species_node=shape_species_node, shape_reactions_node=shape_reactions_node,
+        curvature=curvature, physics_enabled=physics_enabled, filename=filename
+    )
+    
+    # Convert the filename to an absolute path
+    abs_path = os.path.abspath(filename)  
+    
+    # Check if the file was created successfully
+    if not os.path.isfile(abs_path):
+        print(f"\nFile not found at {abs_path}")  # Debugging message
+        raise FileNotFoundError(f"\nThe file {abs_path} was not found. Check if `get_visualize_metabolic_network` created the file correctly.")
+    
+    # Inform the user about the file's location
+    print(f"\nThe visualization of the bipartite graph of the metabolic network was saved in HTML format:\n{abs_path}\n")
     
     # Open the HTML file in the default browser
     webbrowser.open(f"file://{abs_path}")
