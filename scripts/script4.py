@@ -40,7 +40,7 @@ print(rxn_nodes)
 rn_visualize_html(rn,curvature='curvedCCW')
 
 # Create bipartite graph visualization using Graphviz (png)
-plot_graph_with_graphviz(graph,lst_color_spcs=[("red",["f1", "f2", "f3"]),("green",["y1", "y2", "y3"])],shape_reactions_node='rectangle')
+plot_graph_with_graphviz(graph) 
 
 # Create the metabolic network visualization using Pyvis (html)
-visualize_metabolic_network(graph, shape_species_node='circle', curvature='curvedCCW') 
+visualize_metabolic_network(graph, shape_species_node='circle', curvature='curvedCCW')
