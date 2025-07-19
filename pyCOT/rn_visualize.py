@@ -12,6 +12,8 @@ import os
 import webbrowser
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
+# import codecs  # Agregado para manejar codificación UTF-8
+    
 import tempfile
 
 from pyCOT.simulations import build_reaction_dict
@@ -40,44 +42,44 @@ def rn_get_visualization(rn, lst_color_spcs=None, lst_color_reacs=None,
     
     lst_color_spcs : list of tuples, optional
         A list of tuples specifying colors for specific species. Each tuple should have the 
-        format (`color`, `species_list`), where `species_list` is a list of species names 
-        to be assigned the given `color`. Example: `[('cyan', ['A', 'B'])]`.
+        format (color, species_list), where species_list is a list of species names 
+        to be assigned the given color. Example: [('cyan', ['A', 'B'])].
     
     lst_color_reacs : list of tuples, optional
         A list of tuples specifying colors for specific reactions. Each tuple should have 
-        the format (`color`, `reaction_list`), where `reaction_list` is a list of reaction 
-        names to be assigned the given `color`. Example: `[('gray', ['R1', 'R2'])]`.
+        the format (color, reaction_list), where reaction_list is a list of reaction 
+        names to be assigned the given color. Example: [('gray', ['R1', 'R2'])].
     
     global_species_color : str, optional
-        Default color (`'cyan'`) for all species nodes if no specific color is assigned in `lst_color_spcs`.
+        Default color ('cyan') for all species nodes if no specific color is assigned in lst_color_spcs.
     
     global_reaction_color : str, optional
-        Default color (`'lightgray'`) for all reaction nodes if no specific color is assigned in `lst_color_reacs`.
+        Default color ('lightgray') for all reaction nodes if no specific color is assigned in lst_color_reacs.
     
     global_input_edge_color : str, optional
-        Color for edges representing inputs (species consumed in reactions). Default is `'red'`.
+        Color for edges representing inputs (species consumed in reactions). Default is 'red'.
     
     global_output_edge_color : str, optional
-        Color for edges representing outputs (species produced in reactions). Default is `'green'`.
+        Color for edges representing outputs (species produced in reactions). Default is 'green'.
     
     node_size : int, optional
-        The size of the nodes in the visualization. Default is `20`.
+        The size of the nodes in the visualization. Default is 20.
     
     shape_species_node : str, optional
-        Shape of the nodes representing species. Common options include `'dot'`, `'circle'`, `'box'`, `'ellipse'`, etc. Default is `'dot'`.
+        Shape of the nodes representing species. Common options include 'dot', 'circle', 'box', 'ellipse', etc. Default is 'dot'.
     
     shape_reactions_node : str, optional
-        Shape of the nodes representing reactions. Common options include `'box'`, `'dot'`,  `'ellipse'`, etc. Default is `'box'`.
+        Shape of the nodes representing reactions. Common options include 'box', 'dot',  'ellipse', etc. Default is 'box'.
     
     curvature : str or None, optional
-        Determines whether edges are curved or straight. If `'curvedCCW'` (curved counter-clockwise), 
-        edges will be curved. Default is `None` (straight edges).
+        Determines whether edges are curved or straight. If 'curvedCCW' (curved counter-clockwise), 
+        edges will be curved. Default is None (straight edges).
     
     physics_enabled : bool, optional
-        If `True`, enables physics-based positioning for the nodes in the visualization. Default is `False`.
+        If True, enables physics-based positioning for the nodes in the visualization. Default is False.
     
     filename : str, optional
-        Name of the output HTML file where the visualization will be saved. Default is `"reaction_network.html"`.
+        Name of the output HTML file where the visualization will be saved. Default is "reaction_network.html".
 
     Returns:
     -------
@@ -151,7 +153,7 @@ def rn_get_visualization(rn, lst_color_spcs=None, lst_color_reacs=None,
  
     ######################################
 
-    # Add reaction nodes with color defined in `lst_color_reacs` or global/default color
+    # Add reaction nodes with color defined in lst_color_reacs or global/default color
     for reaction in reaction_vector:
         color = reaction_colors.get(reaction, default_reaction_color)
         net.add_node(reaction, shape=shape_reactions_node, label=reaction, color=color, size=10, font={'size': 14, 'color': 'black'})
@@ -243,7 +245,7 @@ def rn_visualize_html(rn, lst_color_spcs=None, lst_color_reacs=None,
     # Visualize the reaction network and open the HTML file in a browser
     rn_visualize_html(rn, lst_color_spcs=[('yellow', ['s1'])], filename="reaction_network.html")
     """    
-    # Call the `rn_get_visualization` function to generate the HTML file
+    # Call the rn_get_visualization function to generate the HTML file
     rn_get_visualization(
         rn, lst_color_spcs, lst_color_reacs, 
         global_species_color, global_reaction_color,
@@ -257,7 +259,7 @@ def rn_visualize_html(rn, lst_color_spcs=None, lst_color_reacs=None,
     # Check if the file was created correctly
     if not os.path.isfile(abs_path):
         print(f"\nFile not found at {abs_path}")  # Additional message for debugging
-        raise FileNotFoundError(f"\nThe file {abs_path} was not found. Check if `rn_get_visualization` generated the file correctly.")
+        raise FileNotFoundError(f"\nThe file {abs_path} was not found. Check if rn_get_visualization generated the file correctly.")
     
     # Inform the user about the file's location
     print(f"\nThe visualization in HTML format of the reaction network was saved in:\n{abs_path}\n")
@@ -395,7 +397,7 @@ def hierarchy_get_visualization_html(
         node_size (int): Size of the nodes in the visualization.
         node_color (str): Default color of the nodes in the visualization.
         edge_color (str): Color of the edges in the visualization.
-        shape_node (str): Specifies the shape of the nodes in the visualization, options include `'dot'`, `'square'`, `'triangle'`, `'star'`, `'diamond'` (default is `'dot'`).
+        shape_node (str): Specifies the shape of the nodes in the visualization, options include 'dot', 'square', 'triangle', 'star', 'diamond' (default is 'dot').
         lst_color_subsets (list): List of tuples with color and subsets to highlight specific nodes. Example: lst_color_subsets = [("red", [{"A", "B"}, {"A", "C"}])]
         node_font_size (int): Font size of the node labels.
         edge_width (int): Width of the edges. 
@@ -531,7 +533,7 @@ def hierarchy_visualize_html(
         node_size (int): Size of the nodes in the visualization.
         node_color (str): Default color of the nodes in the visualization.
         edge_color (str): Color of the edges in the visualization.
-        shape_node (str): Specifies the shape of the nodes in the visualization, options include `'dot'`, `'square'`, `'triangle'`, `'star'`, `'diamond'` (default is `'dot'`).
+        shape_node (str): Specifies the shape of the nodes in the visualization, options include 'dot', 'square', 'triangle', 'star', 'diamond' (default is 'dot').
         lst_color_subsets (list): List of tuples with color and subsets to highlight specific nodes. Example: lst_color_subsets = [("red", [{"A", "B"}, {"A", "C"}])]
         node_font_size (int): Font size of the node labels.
         edge_width (int): Width of the edges. 
@@ -539,7 +541,7 @@ def hierarchy_visualize_html(
     
     Generates the visualization and opens it in the default web browser.
     """
-    # Call the `hierarchy_get_visualization_html` function to generate the HTML file with the additional parameters
+    # Call the hierarchy_get_visualization_html function to generate the HTML file with the additional parameters
     hierarchy_get_visualization_html(
         input_data,  
         node_size=node_size, 
@@ -558,7 +560,7 @@ def hierarchy_visualize_html(
     # Check if the file was created correctly
     if not os.path.isfile(abs_path):
         print(f"File not found at {abs_path}")  # Additional message for debugging
-        raise FileNotFoundError(f"The file {abs_path} was not found. Check if `hierarchy_get_visualization_html` generated the file correctly.")
+        raise FileNotFoundError(f"The file {abs_path} was not found. Check if hierarchy_get_visualization_html generated the file correctly.")
     
     # Inform the user about the file's location
     print(f"\nThe hierarchy visualization was saved to:\n{abs_path}\n")
@@ -776,7 +778,9 @@ def get_visualize_metabolic_network(graph, lst_color_spcs=None, lst_color_reacs=
         The filename of the saved HTML file.
     """
     # Initialize the network visualization
-    net = Network(height='100%', width='100%', notebook=True, directed=True, cdn_resources='in_line')
+    
+    net = Network(height='750px', width='100%', notebook=True, directed=True, cdn_resources='in_line')
+    # net = Network(height='100%', width='100%', notebook=True, directed=True, cdn_resources='in_line')
     # net = Network(height='750px', width='100%', notebook=True, directed=True, cdn_resources='in_line')
     # net = Network(height="100%", width="100%", directed=True)
     
@@ -909,7 +913,7 @@ def get_visualize_metabolic_network(graph, lst_color_spcs=None, lst_color_reacs=
                     }
                 }
         elif count != 1 or (dst, src) in g_nx.edges():
-            # Caso sin `curvature`, pero con múltiples aristas o arista opuesta
+            # Caso sin curvature, pero con múltiples aristas o arista opuesta
             curve_type = "curvedCW" if edge_usage[(src, dst)] % 2 == 0 else "curvedCCW"
             smooth_config = {
                 "smooth": {
@@ -929,15 +933,49 @@ def get_visualize_metabolic_network(graph, lst_color_spcs=None, lst_color_reacs=
                         color=edge_color, font_color=edge_color, **smooth_config)
 
         connections.add((src, dst)) 
+
+    ######################################            
+    # Save the visualization to an HTML file 
+    net.html = net.generate_html()
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(net.html)
+    return filename 
+
+    # # Ensure filename has .html extension
+    # if not filename.endswith('.html'):
+    #     filename += '.html'
     
-    # Ensure filename has .html extension
-    if not filename.endswith('.html'):
-        filename += '.html'
+    # # SOLUCIÓN AL PROBLEMA DE CODIFICACIÓN: Reemplazar net.write_html(filename) con:
+    # try:
+    #     # Generar contenido HTML
+    #     html_content = net.generate_html()
+        
+    #     # Escribir con codificación UTF-8
+    #     with codecs.open(filename, 'w', encoding='utf-8') as f:
+    #         f.write(html_content)
+        
+    #     print(f"Visualización guardada exitosamente en: {filename}")
+        
+    # except Exception as e:
+    #     print(f"Error al guardar el archivo: {e}")
+    #     # Respaldo: intentar con el método original
+    #     try:
+    #         net.write_html(filename)
+    #         print(f"Guardado con método alternativo en: {filename}")
+    #     except:
+    #         print("No se pudo guardar el archivo HTML")
+    #         raise
     
-    # Save the visualization
-    net.write_html(filename)
+    # return filename   
+ 
+    # # Ensure filename has .html extension
+    # if not filename.endswith('.html'):
+    #     filename += '.html'
     
-    return filename
+    # # Save the visualization
+    # net.write_html(filename)
+    
+    # return filename
 
 # Function to visualize the metabolic network graph as an interactive HTML file using the pyvis library
 def visualize_metabolic_network(graph, lst_color_spcs=None, lst_color_reacs=None, 
@@ -967,7 +1005,7 @@ def visualize_metabolic_network(graph, lst_color_spcs=None, lst_color_reacs=None
     # Check if the file was created successfully
     if not os.path.isfile(abs_path):
         print(f"\nFile not found at {abs_path}")  # Debugging message
-        raise FileNotFoundError(f"\nThe file {abs_path} was not found. Check if `get_visualize_metabolic_network` created the file correctly.")
+        raise FileNotFoundError(f"\nThe file {abs_path} was not found. Check if get_visualize_metabolic_network created the file correctly.")
     
     # Inform the user about the file's location
     print(f"\nThe visualization of the bipartite graph of the metabolic network was saved in HTML format:\n{abs_path}\n")
