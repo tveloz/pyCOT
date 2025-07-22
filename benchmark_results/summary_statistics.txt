@@ -1,8 +1,0 @@
-SYNERGY ALGORITHM BENCHMARKING SUMMARY
-==================================================
-
-Total networks analyzed: 249
-Network size range: 4-40 ERCs
-Average speedup: 17.16x (±7.58)
-Maximum speedup: 50.92x
-Average check reduction: 88.0%

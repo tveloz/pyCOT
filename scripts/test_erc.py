@@ -11,11 +11,13 @@ import numpy as np
 # Load network and compute ERCs
 file_path= 'networks/testing/ERCs_test2.txt'
 file_path= 'networks/Navarino/RN_IN_05.txt'
-file_path= 'networks/biomodels_interesting/bigg_iAF692.txt'  # Adjust path as needed
+#file_path= 'networks/biomodels_interesting/bigg_iAF692.txt'  # Adjust path as needed
 print("Loading network and computing ERCs...")
 RN = read_txt(file_path)
 ercs = ERC.ERCs(RN)
 hierarchy = ERC.build_hierarchy_graph(ercs, RN)
+hierarchy2= ERC.build_hierarchy_graph2(ercs, RN)
+hierarchy3= ERC.build_hierarchy_graph(ercs, RN)
 
 print(f"\nNetwork statistics:")
 print(f"- Reactions: {len(RN.reactions())}")
@@ -33,6 +35,7 @@ for erc in ercs:
 #plt.savefig(f"hierarchy.png")
 
 print("ERC Hierarchy")
-plt.figure(figsize=(10, 8))
 ERC.plot_hierarchy(ercs, RN, hierarchy, title="Original ERC Hierarchy")
-#plt.show()
+ERC.plot_hierarchy(ercs, RN, hierarchy2, title="Original ERC Hierarchy")
+ERC.plot_hierarchy(ercs, RN, hierarchy3, title="Original ERC Hierarchy")
+
