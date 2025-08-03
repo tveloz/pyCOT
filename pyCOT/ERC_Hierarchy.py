@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Dec 29 18:55:14 2023
-
+ERC_Hierarchy - Optimized with Closure Caching
 @author: tveloz
 """
-#sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 import pandas as pd
 import re
@@ -76,14 +75,98 @@ class ERC:
         self.label = label
         self.min_generators = min_generators
         self.all_generators = all_generators
+        # Cache for closure and related computations
+
+        self._closure = None
+        self._closure_names = None
+        self._reactions = None
+        self._required_species = None
+        self._produced_species = None
+        self._RN_reference = None  # Keep track of which RN this was computed for
 
     def get_closure(self, RN):
-        return closure(RN, self.min_generators[0])
+        """Get closure with caching"""
+        if self._closure is None or self._RN_reference != id(RN):
+            self._closure = closure(RN, self.min_generators[0])
+            self._closure_names = set(species_list_to_names(self._closure))
+            self._RN_reference = id(RN)
+            # Clear other caches since they depend on RN
+            self._reactions = None
+            self._required_species = None
+            self._produced_species = None
+        return self._closure
+    
+    def get_closure_names(self, RN):
+        """Get closure as set of species names with caching"""
+        if self._closure_names is None or self._RN_reference != id(RN):
+            self.get_closure(RN)  # This will populate _closure_names
+        return self._closure_names
     
     def get_reacs(self, RN):
-        specs = self.get_closure(RN)
-        reacs = RN.get_reactions_from_species(specs)
-        return reacs
+        """Get reactions with caching"""
+        if self._reactions is None or self._RN_reference != id(RN):
+            specs = self.get_closure(RN)
+            self._reactions = RN.get_reactions_from_species(specs)
+        return self._reactions
+
+    def get_erc_from_reaction(self, RN, hierarchy, reaction):
+        """Get ERC from a reaction (assumes reaction is a reaction object or name)"""
+        if hasattr(reaction, 'name'):
+            reaction_name = reaction.name()
+        else:
+            reaction_name = str(reaction)
+        
+        # Find the ERC that contains this reaction
+        for erc in hierarchy.ercs:
+            erc_reactions = erc.get_reacs(RN)
+            erc_reaction_names = [r.name() if hasattr(r, 'name') else str(r) for r in erc_reactions]
+            if reaction_name in erc_reaction_names:
+                return erc
+        
+        return None
+    def get_required_species(self, RN):
+        """Get required species (consumed but not produced) with caching"""
+        if self._required_species is None or self._RN_reference != id(RN):
+            reactions = self.get_reacs(RN)
+            
+            consumed = set()
+            produced = set()
+            
+            for reaction in reactions:
+                # Get all edges and filter by type
+                for edge in reaction.edges:
+                    if edge.type == "reactant":
+                        consumed.add(edge.species_name)
+                    elif edge.type == "product":
+                        produced.add(edge.species_name)
+            
+            self._required_species = consumed - produced
+        return self._required_species
+
+    def get_produced_species(self, RN):
+        """Get produced species with caching"""
+        if self._produced_species is None or self._RN_reference != id(RN):
+            reactions = self.get_reacs(RN)
+            
+            produced = set()
+            
+            for reaction in reactions:
+                # Get all edges and filter for products
+                for edge in reaction.edges:
+                    if edge.type == "product":
+                        produced.add(edge.species_name)
+            
+            self._produced_species = produced
+        return self._produced_species
+    
+    def clear_cache(self):
+        """Clear all cached computations (useful if RN changes)"""
+        self._closure = None
+        self._closure_names = None
+        self._reactions = None
+        self._required_species = None
+        self._produced_species = None
+        self._RN_reference = None
     
     @staticmethod
     def find_minimal_generators(generators):
@@ -102,6 +185,9 @@ class ERC:
     
     @staticmethod
     def ERCs(RN):
+        """Create ERCs with closure pre-computation for efficiency"""
+        print("Computing ERCs with closure caching...")
+        
         # 1. Compute all closures once (O(n))
         generators_list = generators(RN)
         closure_cache = {id(gen): closure(RN, gen) for gen in generators_list}
@@ -120,111 +206,19 @@ class ERC:
             erc = ERC(min_generators=min_gens,
                     label=f"E{counter}",
                     all_generators=gens_group)
+            
+            # Pre-compute and cache closure for efficiency
+            erc._closure = closure_cache[id(min_gens[0])]
+            erc._closure_names = set(species_list_to_names(erc._closure))
+            erc._RN_reference = id(RN)
+            
             ERC_list.append(erc)
         
+        print(f"Created {len(ERC_list)} ERCs with pre-computed closures")
         return ERC_list
     
-    @staticmethod
-    def build_hierarchy_graph(ercs, RN):
-        """Build the minimal containment graph between ERCs"""
-        #print("Building hierarchy graph...")
-        graph = nx.DiGraph()
-        for erc in ercs:
-            graph.add_node(erc.label, erc=erc)
-            
-        # Get all containment relations
-        containments = []
-        for erc1 in ercs:
-            closure1 = set(species_list_to_names(erc1.get_closure(RN)))
-            for erc2 in ercs:
-                if erc1 != erc2:
-                    closure2 = set(species_list_to_names(erc2.get_closure(RN)))
-                    if closure2.issubset(closure1) and closure1 != closure2:
-                        containments.append((erc1.label, erc2.label))
-        
-        # Keep only direct containments
-        for start, end in containments:
-            is_direct = True
-            for erc in ercs:
-                mid = erc.label
-                if (start, mid) in containments and (mid, end) in containments:
-                    is_direct = False
-                    break
-            if is_direct:
-                graph.add_edge(start, end)
-                
-        return graph
-    @staticmethod
-    def build_hierarchy_graph2(ercs, RN):
-        """Build the minimal containment graph between ERCs - optimized version"""
-        graph = nx.DiGraph()
-        
-        # Add all nodes
-        for erc in ercs:
-            graph.add_node(erc.label, erc=erc)
-        
-        if len(ercs) <= 1:
-            return graph
-        
-        # 1. Compute all closures once and cache as sets
-        print(f"Computing closures for {len(ercs)} ERCs...")
-        closure_cache = {}
-        for erc in ercs:
-            closure_cache[erc.label] = set(species_list_to_names(erc.get_closure(RN)))
-        
-        # 2. Build all containment relations efficiently
-        print("Finding containment relations...")
-        containments = []
-        erc_labels = [erc.label for erc in ercs]
-        
-        for i, erc1 in enumerate(ercs):
-            closure1 = closure_cache[erc1.label]
-            for j, erc2 in enumerate(ercs):
-                if i != j:
-                    closure2 = closure_cache[erc2.label]
-                    if closure2.issubset(closure1) and closure1 != closure2:
-                        containments.append((erc1.label, erc2.label))
-        
-        print(f"Found {len(containments)} containment relations")
-        
-        # 3. Use NetworkX transitive reduction for optimal direct containment detection
-        try:
-            # Build temporary graph with all containments
-            temp_graph = nx.DiGraph()
-            temp_graph.add_nodes_from(erc_labels)
-            temp_graph.add_edges_from(containments)
-            
-            # Get transitive reduction (removes indirect edges)
-            direct_graph = nx.transitive_reduction(temp_graph)
-            
-            # Add direct edges to final graph
-            for edge in direct_graph.edges():
-                graph.add_edge(edge[0], edge[1])
-                
-            print(f"Reduced to {len(direct_graph.edges())} direct containments")
-            
-        except AttributeError:
-            # Fallback: manual direct containment detection (optimized)
-            print("Using fallback method for direct containment detection...")
-            containment_set = set(containments)
-            
-            for start, end in containments:
-                is_direct = True
-                # Check if there's any intermediate ERC
-                for mid_label in erc_labels:
-                    if mid_label != start and mid_label != end:
-                        if (start, mid_label) in containment_set and (mid_label, end) in containment_set:
-                            is_direct = False
-                            break
-                if is_direct:
-                    graph.add_edge(start, end)
-                    
-            print(f"Reduced to {len(graph.edges())} direct containments")
-        
-        return graph
-
     @staticmethod  
-    def build_hierarchy_graph3(ercs, RN):
+    def build_hierarchy_graph(ercs, RN):
         """Build the minimal containment graph between ERCs - ultra-optimized version"""
         graph = nx.DiGraph()
         
@@ -235,22 +229,19 @@ class ERC:
         if len(ercs) <= 1:
             return graph
         
-        # 1. Compute all closures once and cache as sets
-        closure_cache = {}
-        for erc in ercs:
-            closure_cache[erc.label] = set(species_list_to_names(erc.get_closure(RN)))
+        print(f"Building hierarchy graph for {len(ercs)} ERCs...")
         
-        # 2. Sort ERCs by closure size for more efficient processing
-        ercs_by_size = sorted(ercs, key=lambda erc: len(closure_cache[erc.label]), reverse=True)
+        # 1. Sort ERCs by closure size for more efficient processing (using cached closures)
+        ercs_by_size = sorted(ercs, key=lambda erc: len(erc.get_closure_names(RN)), reverse=True)
         
-        # 3. Build containment relations with early termination
+        # 2. Build containment relations with early termination
         containments = []
         for i, erc1 in enumerate(ercs_by_size):
-            closure1 = closure_cache[erc1.label]
+            closure1 = erc1.get_closure_names(RN)
             # Only check ERCs with smaller or equal closure sizes
             for j in range(i+1, len(ercs_by_size)):
                 erc2 = ercs_by_size[j]
-                closure2 = closure_cache[erc2.label]
+                closure2 = erc2.get_closure_names(RN)
                 
                 # Since we sorted by size, if closure2 is not a subset, 
                 # no subsequent ERCs will be either
@@ -260,7 +251,9 @@ class ERC:
                 if closure2.issubset(closure1) and closure1 != closure2:
                     containments.append((erc1.label, erc2.label))
         
-        # 4. Use NetworkX transitive reduction for optimal performance
+        print(f"Found {len(containments)} containment relations")
+        
+        # 3. Use NetworkX transitive reduction for optimal performance
         if containments:
             try:
                 # Build temporary graph with all containments
@@ -274,8 +267,11 @@ class ERC:
                 # Add direct edges to final graph
                 graph.add_edges_from(direct_graph.edges())
                 
+                print(f"Reduced to {len(direct_graph.edges())} direct containments")
+                
             except (AttributeError, ImportError):
                 # Fallback: optimized manual detection
+                print("Using fallback method...")
                 containment_set = set(containments)
                 erc_labels = [erc.label for erc in ercs]
                 
@@ -289,6 +285,8 @@ class ERC:
                             break
                     if is_direct:
                         graph.add_edge(start, end)
+                        
+                print(f"Reduced to {len(graph.edges())} direct containments")
         
         return graph
 
@@ -307,11 +305,13 @@ class ERC:
         return levels
 
     @staticmethod
-    def plot_hierarchy(ercs, RN, graph=None, figsize=(10,10), title="RC Hierarchy"):
+    def plot_hierarchy(RN, ercs=None , graph=None, figsize=(10,10), title="ERC Hierarchy"):
         """Plot the ERC hierarchy"""
+        
+        if ercs is None:
+            ercs=ERC.ERCs(RN)
         if graph is None:
-            graph = ERC.build_hierarchy_graph(ercs, RN)
-            
+            graph = ERC.build_hierarchy_graph(ercs, RN)            
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(111)
         
@@ -334,7 +334,7 @@ class ERC:
         # Draw graph components
         nodes = nx.draw_networkx_nodes(graph, pos,
                                      node_color='lightblue',
-                                     node_size=2000)
+                                     node_size=1000)
         nx.draw_networkx_edges(graph, pos,
                              edge_color='gray',
                              arrows=True,
@@ -377,14 +377,78 @@ class ERC:
         plt.show()
         return graph
 
+
+class ERC_Hierarchy:
+    """Helper class to manage ERC hierarchies and containment relationships"""
     
+    def __init__(self, RN):
+        self.RN = RN
+        self.ercs = ERC.ERCs(RN)
+        self.graph = None
+        self._containment_cache = {}
+        self._contained_cache = {}
+        
+    def build_hierarchy_graph(self):
+        """Build hierarchy graph using ultra-optimized method"""
+        self.graph = ERC.build_hierarchy_graph(self.ercs, self.RN)
+        self._build_containment_caches()
+        return self.graph
+    
+    def _build_containment_caches(self):
+        """Build caches for containment relationships"""
+        if self.graph is None:
+            return
+            
+        self._containment_cache = {}
+        self._contained_cache = {}
+        
+        for erc in self.ercs:
+            # Get all ERCs that this ERC contains (descendants)
+            descendants = set()
+            if erc.label in self.graph:
+                descendants = set(nx.descendants(self.graph, erc.label))
+            self._containment_cache[erc] = [e for e in self.ercs if e.label in descendants]
+            
+            # Get all ERCs that contain this ERC (ancestors)
+            ancestors = set()
+            if erc.label in self.graph:
+                ancestors = set(nx.ancestors(self.graph, erc.label))
+            self._contained_cache[erc] = [e for e in self.ercs if e.label in ancestors]
+    
+    def get_contain(self, erc):
+        """Get all ERCs contained by the given ERC (cached)"""
+        if erc not in self._containment_cache:
+            self._build_containment_caches()
+        return self._containment_cache.get(erc, [])
+    
+    def get_contained(self, erc):
+        """Get all ERCs that contain the given ERC (cached)"""
+        if erc not in self._contained_cache:
+            self._build_containment_caches()
+        return self._contained_cache.get(erc, [])
+    
+    def get_erc_from_reaction(self, RN, hierarchy, reaction):
+        """Get ERC from a reaction (assumes reaction is a reaction object or name)"""
+        if hasattr(reaction, 'name'):
+            reaction_name = reaction.name()
+        else:
+            reaction_name = str(reaction)
+        
+        # Find the ERC that contains this reaction
+        for erc in self.ercs:
+            erc_reactions = erc.get_reacs(RN)
+            erc_reaction_names = [r.name() if hasattr(r, 'name') else str(r) for r in erc_reactions]
+            if reaction_name in erc_reaction_names:
+                return erc
+        
+        return None
+
+
 __all__ = [
     'ERC',
+    'ERC_Hierarchy',
     'generators',
     'species_list_to_names',
     'closure',
     'closures'
 ]
-
-
-

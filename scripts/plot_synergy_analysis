@@ -1,0 +1,570 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Interactive ERC Synergy and Complementarity Analysis Plotter
+
+Loads CSV data from the complete analysis script and creates individual plots
+that can be viewed one by one and optionally saved.
+
+Usage:
+    1. Set the csv_file_path to your CSV file
+    2. Run the script
+    3. Choose plots from the interactive menu
+    4. View plots individually and save if desired
+
+Author: Based on analysis by Tomas Veloz et al.
+"""
+
+import os
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from pathlib import Path
+
+# Set style for better-looking plots
+plt.style.use('seaborn-v0_8' if 'seaborn-v0_8' in plt.style.available else 'default')
+sns.set_palette("husl")
+
+class ERCPlotter:
+    def __init__(self, csv_file_path):
+        """Initialize the plotter with CSV data."""
+        self.csv_file_path = csv_file_path
+        self.df = None
+        self.output_dir = "individual_plots"
+        self.load_data()
+        
+    def load_data(self):
+        """Load and validate the CSV data."""
+        try:
+            self.df = pd.read_csv(self.csv_file_path)
+            print(f"✅ Loaded data: {len(self.df)} networks")
+            print(f"📊 Columns available: {list(self.df.columns)}")
+            
+            # Apply filters - CUSTOMIZE THESE AS NEEDED
+            self.df = self.apply_filters(self.df)
+            print(f"📊 After filtering: {len(self.df)} networks")
+           
+
+            # Create output directory
+            os.makedirs(self.output_dir, exist_ok=True)
+            
+        except Exception as e:
+            print(f"❌ Error loading CSV: {e}")
+            return None
+    
+    def apply_filters(self, df):
+        """Apply custom filters to the data - CUSTOMIZE THIS METHOD"""
+        original_count = len(df)
+        
+        # Example filters - uncomment and modify as needed:
+        
+        # Filter by network size (number of ERCs)
+        df = df[df['n_ercs'] >= 4]  # Only networks with 5+ ERCs
+        # df = df[df['n_ercs'] <= 50]  # Only networks with ≤50 ERCs
+        
+        # Filter by productivity
+        # df = df[df['productivity_rate'] > 0.1]  # Only productive networks
+        
+        # Filter by species count
+        # df = df[df['n_species'] >= 10]  # Only networks with 10+ species
+        
+        # Filter by synergy count
+        # df = df[df['fundamental_synergies'] > 0]  # Only networks with synergies
+        
+        # Filter by specific network files (if you want to exclude some)
+        # df = df[~df['network_file'].str.contains('BIOMD0000000003')]  # Exclude specific files
+        
+        # Filter by analysis time (if you want to exclude very slow ones)
+        # df = df[df['total_time'] < 30]  # Only networks that analyzed in <30 seconds
+        
+        # Multiple condition filter example:
+        # df = df[(df['n_ercs'] >= 5) & (df['productivity_rate'] > 0.05)]
+        
+        if len(df) != original_count:
+            print(f"🔍 Filters applied: {original_count} → {len(df)} networks")
+        
+        return df
+    
+    def plot_synergy_scaling(self, save=False):
+        """Plot 1: Synergy Types vs Network Size (3 curves)"""
+        fig, ax = plt.subplots(figsize=(12, 8))
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        # Sort by number of ERCs for smoother curves
+        df_sorted = self.df.sort_values('n_ercs')
+        #correlation_cols = ['basic_synergies', 'maximal_synergies', 'fundamental_synergies']
+        #print(correlation_cols)
+        # Plot three synergy curves
+#        ax.plot(df_sorted['n_ercs'], df_sorted['basic_synergies'], 'o', 
+#              label='Basic Synergies', alpha=0.8, color='lightcoral', linewidth=2, markersize=6)
+        ax1.plot(df_sorted['n_ercs'], df_sorted['basic_synergies'], 's-', label= 'Basic synergies', alpha=0.8, color='gold', linewidth=1, markersize=6)
+        ax1.plot(df_sorted['n_ercs'], df_sorted['n_ercs']*(df_sorted['n_ercs']-1)
+                 , 's-', label= 'Theoretical Maximum',alpha=0.8,  color='lightgreen', linewidth=1, markersize=6)
+        ax2.plot(df_sorted['n_ercs'], df_sorted['maximal_synergies']/df_sorted['basic_synergies'], 's-', 
+               label='Maximal Synergies', alpha=0.8, color='gold', linewidth=1, markersize=6)
+        ax2.plot(df_sorted['n_ercs'], df_sorted['fundamental_synergies']/df_sorted['basic_synergies'], '^-', 
+               label='Fundamental Synergies', alpha=0.8, color='lightgreen', linewidth=1, markersize=6)
+        
+        ax1.set_xlabel('Number of ERCs', fontsize=12)
+        ax1.set_ylabel('Basic Synergies (Log scale)', fontsize=12)
+        ax1.set_title('Basic Synergies vs Number of ERCs', fontsize=14, fontweight='bold')      
+        ax1.legend(fontsize=11)
+        ax1.grid(True, alpha=0.3)
+        ax2.set_xlabel('Number of ERCs', fontsize=12)
+        ax2.set_ylabel('Maximal and Fundamental Relative to Basic Synergies', fontsize=12)
+        ax2.set_title('Proportion of synergies vs number of ERC', fontsize=14, fontweight='bold')      
+        ax2.legend(fontsize=11)
+        ax2.grid(True, alpha=0.3)
+        
+
+        # Use log scale if there's a wide range
+        # if df_sorted['n_ercs'].max() / df_sorted['n_ercs'].min() > 10:
+        #ax.set_xscale('log')
+        ax1.set_yscale('log')
+        
+        plt.tight_layout()
+        
+        if save:
+            filename = os.path.join(self.output_dir, "synergy_scaling.png")
+            plt.savefig(filename, dpi=300, bbox_inches='tight')
+            print(f"💾 Saved: {filename}")
+        
+        plt.show()
+    
+    def plot_complementarity_scaling(self, save=False):
+        """Plot 2: Complementarity Types vs Network Size (3 curves)"""
+        fig, ax = plt.subplots(figsize=(12, 8))
+        
+        df_sorted = self.df.sort_values('n_ercs')
+        
+        # Plot three complementarity curves
+        ax.plot(df_sorted['n_ercs'], df_sorted['type1_complementarity'], 'o-', 
+               label='Type 1 (Requirement Reduction)', alpha=0.8, color='skyblue', linewidth=1, markersize=6)
+        ax.plot(df_sorted['n_ercs'], df_sorted['type2_complementarity'], 's-', 
+               label='Type 2 (Requirement Change)', alpha=0.8, color='orange', linewidth=1, markersize=6)
+        ax.plot(df_sorted['n_ercs'], df_sorted['type3_complementarity'], '^-', 
+               label='Type 3 (Product Expansion)', alpha=0.8, color='lightpink', linewidth=1, markersize=6)
+        ax.plot(df_sorted['n_ercs'], df_sorted['n_ercs']*(df_sorted['n_ercs']-1), '^-', 
+               label='Theoretical Maximum', alpha=0.8, color='lightgreen', linewidth=2, markersize=6)
+
+
+        ax.set_xlabel('Number of ERCs', fontsize=12)
+        ax.set_ylabel('Number of Complementarities', fontsize=12)
+        ax.set_title('Complementarity Types vs Network Size', fontsize=14, fontweight='bold')
+        ax.legend(fontsize=11)
+        ax.grid(True, alpha=0.3)
+        
+        #Use log scale if appropriate
+        # if df_sorted['n_ercs'].max() / df_sorted['n_ercs'].min() > 10:
+        #     ax.set_xscale('log')
+        if df_sorted['type2_complementarity'].max() > 100:
+            ax.set_yscale('log')
+        
+        plt.tight_layout()
+        
+        if save:
+            filename = os.path.join(self.output_dir, "complementarity_scaling.png")
+            plt.savefig(filename, dpi=300, bbox_inches='tight')
+            print(f"💾 Saved: {filename}")
+        
+        plt.show()
+    
+    def plot_productivity_analysis(self, save=False):
+        """Plot 3: 3D Productivity Analysis (ERCs vs Synergies vs Complementarities)"""
+        fig = plt.figure(figsize=(12, 9))
+        ax = fig.add_subplot(111, projection='3d')
+        
+        # Create 3D scatter plot
+        scatter = ax.scatter(self.df['n_ercs'], 
+                           self.df['fundamental_synergies'], 
+                           self.df['total_complementarity'],
+                           c=self.df['productivity_rate'], 
+                           cmap='plasma', 
+                           alpha=0.7, 
+                           s=60)
+        
+        ax.set_xlabel('Number of ERCs', fontsize=12)
+        ax.set_ylabel('Fundamental Synergies', fontsize=12)
+        ax.set_zlabel('Total Complementarities', fontsize=12)
+        ax.set_title('3D Generative Capacity Analysis\n(Color = Productivity Rate)', fontsize=14, fontweight='bold')
+        
+        # Add colorbar
+        cbar = plt.colorbar(scatter, ax=ax, shrink=0.8)
+        cbar.set_label('Productivity Rate', fontsize=11)
+        
+        if save:
+            filename = os.path.join(self.output_dir, "3d_productivity_analysis.png")
+            plt.savefig(filename, dpi=300, bbox_inches='tight')
+            print(f"💾 Saved: {filename}")
+        
+        plt.show()
+    
+    def plot_efficiency_scatter(self, save=False):
+        """Plot 4: Synergy Efficiency vs Complementarity Density"""
+        fig, ax = plt.subplots(figsize=(12, 8))
+        
+        scatter = ax.scatter(self.df['synergy_efficiency'], 
+                           self.df['complementarity_density'], 
+                           alpha=0.7, 
+                           c=self.df['n_ercs'], 
+                           cmap='viridis', 
+                           s=80, 
+                           edgecolors='black', 
+                           linewidth=0.5)
+        
+        ax.set_xlabel('Synergy Efficiency (Fundamental/Basic)', fontsize=12)
+        ax.set_ylabel('Complementarity Density', fontsize=12)
+        ax.set_title('Synergy Efficiency vs Complementarity Density', fontsize=14, fontweight='bold')
+        ax.grid(True, alpha=0.3)
+        
+        # Add colorbar
+        cbar = plt.colorbar(scatter, ax=ax)
+        cbar.set_label('Number of ERCs', fontsize=11)
+        
+        # Add trend line if there's correlation
+        if len(self.df) > 2:
+            z = np.polyfit(self.df['synergy_efficiency'], self.df['complementarity_density'], 1)
+            p = np.poly1d(z)
+            ax.plot(self.df['synergy_efficiency'], p(self.df['synergy_efficiency']), "--", 
+                   color='red', alpha=0.8, linewidth=2, label=f'Trend line')
+            ax.legend()
+        
+        plt.tight_layout()
+        
+        if save:
+            filename = os.path.join(self.output_dir, "efficiency_scatter.png")
+            plt.savefig(filename, dpi=300, bbox_inches='tight')
+            print(f"💾 Saved: {filename}")
+        
+        plt.show()
+    
+    def plot_correlation_heatmap(self, save=False):
+        """Plot 5: Correlation Matrix of Key Metrics"""
+        fig, ax = plt.subplots(figsize=(12, 10))
+        
+        # Select key numerical columns for correlation
+        correlation_cols = [
+            'n_ercs', 'n_species', 'n_reactions',
+            'fundamental_synergies', 'maximal_synergies', 'basic_synergies',
+            'complementarity_type1', 'complementarity_type2', 'complementarity_type3'          
+        ]
+        
+        # Filter columns that exist in the dataframe
+        available_cols = [col for col in correlation_cols if col in self.df.columns]
+        
+        if len(available_cols) > 1:
+            corr_matrix = self.df[available_cols].corr()
+            
+            # Create heatmap
+            sns.heatmap(corr_matrix, annot=True, cmap='RdBu_r', center=0, 
+                       square=True, ax=ax, cbar_kws={'label': 'Correlation Coefficient'})
+            
+            ax.set_title('Correlation Matrix: Key ERC Metrics', fontsize=14, fontweight='bold')
+            
+            # Rotate labels for better readability
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+            ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
+        
+        plt.tight_layout()
+        
+        if save:
+            filename = os.path.join(self.output_dir, "correlation_heatmap.png")
+            plt.savefig(filename, dpi=300, bbox_inches='tight')
+            print(f"💾 Saved: {filename}")
+        
+        plt.show()
+    
+    def plot_productivity_distribution(self, save=False):
+        """Plot 6: Network Productivity Distribution"""
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        
+        # Pie chart of productivity categories
+        self.df['efficiency_category'] = pd.cut(
+            self.df['productivity_rate'], 
+            bins=[0, 0.1, 0.3, 0.5, 1.0], 
+            labels=['Low (0-0.1)', 'Medium (0.1-0.3)', 'High (0.3-0.5)', 'Very High (0.5-1.0)'],
+            include_lowest=True
+        )
+        
+        efficiency_counts = self.df['efficiency_category'].value_counts()
+        colors = ['red', 'orange', 'lightgreen', 'darkgreen']
+        
+        wedges, texts, autotexts = ax1.pie(
+            efficiency_counts.values, 
+            labels=efficiency_counts.index, 
+            autopct='%1.1f%%', 
+            colors=colors[:len(efficiency_counts)],
+            startangle=90,
+            textprops={'fontsize': 10}
+        )
+        ax1.set_title('Network Productivity Distribution', fontsize=12, fontweight='bold')
+        
+        # Histogram of productivity rates
+        ax2.hist(self.df['productivity_rate'], bins=20, alpha=0.7, color='skyblue', edgecolor='black')
+        ax2.axvline(self.df['productivity_rate'].mean(), color='red', linestyle='--', 
+                   linewidth=2, label=f'Mean: {self.df["productivity_rate"].mean():.3f}')
+        ax2.axvline(self.df['productivity_rate'].median(), color='orange', linestyle='--', 
+                   linewidth=2, label=f'Median: {self.df["productivity_rate"].median():.3f}')
+        
+        ax2.set_xlabel('Productivity Rate', fontsize=12)
+        ax2.set_ylabel('Number of Networks', fontsize=12)
+        ax2.set_title('Productivity Rate Distribution', fontsize=12, fontweight='bold')
+        ax2.legend()
+        ax2.grid(True, alpha=0.3)
+        
+        plt.tight_layout()
+        
+        if save:
+            filename = os.path.join(self.output_dir, "productivity_distribution.png")
+            plt.savefig(filename, dpi=300, bbox_inches='tight')
+            print(f"💾 Saved: {filename}")
+        
+        plt.show()
+    
+    def plot_time_complexity(self, save=False):
+        """Plot 7: Computational Time Analysis"""
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        
+        # Filter out networks with valid time data
+        valid_data = self.df[self.df['total_time'].notna() & (self.df['total_time'] > 0)]
+        
+        if len(valid_data) > 0:
+            # Time vs network size
+            scatter = ax1.scatter(valid_data['n_ercs'], 
+                                valid_data['total_time'], 
+                                c=valid_data['productivity_rate'], 
+                                cmap='viridis', 
+                                alpha=0.7, 
+                                s=60, 
+                                edgecolors='black', 
+                                linewidth=0.5)
+            
+            ax1.set_xlabel('Number of ERCs', fontsize=12)
+            ax1.set_ylabel('Computation Time (s)', fontsize=12)
+            ax1.set_title('Computational Complexity vs Network Size', fontsize=12, fontweight='bold')
+            ax1.set_xscale('log')
+            ax1.set_yscale('log')
+            ax1.grid(True, alpha=0.3)
+            
+            cbar = plt.colorbar(scatter, ax=ax1)
+            cbar.set_label('Productivity Rate', fontsize=10)
+            
+            # Time per ERC analysis
+            valid_data['time_per_erc'] = valid_data['total_time'] / valid_data['n_ercs']
+            ax2.scatter(valid_data['n_ercs'], 
+                       valid_data['time_per_erc'], 
+                       alpha=0.7, 
+                       color='orange', 
+                       s=60, 
+                       edgecolors='black', 
+                       linewidth=0.5)
+            
+            ax2.set_xlabel('Number of ERCs', fontsize=12)
+            ax2.set_ylabel('Time per ERC (s)', fontsize=12)
+            ax2.set_title('Computational Efficiency', fontsize=12, fontweight='bold')
+            ax2.set_xscale('log')
+            ax2.set_yscale('log')
+            ax2.grid(True, alpha=0.3)
+        else:
+            ax1.text(0.5, 0.5, 'No valid time data available', 
+                    ha='center', va='center', transform=ax1.transAxes, fontsize=14)
+            ax2.text(0.5, 0.5, 'No valid time data available', 
+                    ha='center', va='center', transform=ax2.transAxes, fontsize=14)
+        
+        plt.tight_layout()
+        
+        if save:
+            filename = os.path.join(self.output_dir, "time_complexity.png")
+            plt.savefig(filename, dpi=300, bbox_inches='tight')
+            print(f"💾 Saved: {filename}")
+        
+        plt.show()
+    
+    def plot_summary_statistics(self, save=False):
+        """Plot 8: Summary Statistics Dashboard"""
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
+        
+        # Network size distribution
+        ax1.hist(self.df['n_ercs'], bins=15, alpha=0.7, color='skyblue', edgecolor='black')
+        ax1.set_xlabel('Number of ERCs')
+        ax1.set_ylabel('Frequency')
+        ax1.set_title('Network Size Distribution')
+        ax1.grid(True, alpha=0.3)
+        
+        # Synergy vs Complementarity scatter
+        ax2.scatter(self.df['fundamental_synergies'], self.df['total_complementarity'], 
+                   alpha=0.7, s=60, color='purple', edgecolors='black', linewidth=0.5)
+        ax2.set_xlabel('Fundamental Synergies')
+        ax2.set_ylabel('Total Complementarities')
+        ax2.set_title('Synergies vs Complementarities')
+        ax2.grid(True, alpha=0.3)
+        
+        # Box plot of key metrics
+        metrics_data = [
+            self.df['productivity_rate'],
+            self.df['synergy_efficiency'], 
+            self.df['interaction_efficiency']
+        ]
+        labels = ['Productivity\nRate', 'Synergy\nEfficiency', 'Interaction\nEfficiency']
+        
+        ax3.boxplot(metrics_data, labels=labels)
+        ax3.set_ylabel('Efficiency Values')
+        ax3.set_title('Efficiency Metrics Distribution')
+        ax3.grid(True, alpha=0.3)
+        
+        # Summary statistics table
+        ax4.axis('tight')
+        ax4.axis('off')
+        
+        summary_stats = {
+            'Metric': ['Networks Analyzed', 'Avg ERCs', 'Avg Species', 'Avg Reactions',
+                      'Avg Synergies', 'Avg Complementarities', 'Avg Productivity', 'Avg Efficiency'],
+            'Value': [
+                len(self.df),
+                f"{self.df['n_ercs'].mean():.1f}",
+                f"{self.df['n_species'].mean():.1f}",
+                f"{self.df['n_reactions'].mean():.1f}",
+                f"{self.df['fundamental_synergies'].mean():.1f}",
+                f"{self.df['total_complementarity'].mean():.1f}",
+                f"{self.df['productivity_rate'].mean():.3f}",
+                f"{self.df['synergy_efficiency'].mean():.3f}"
+            ]
+        }
+        
+        table = ax4.table(cellText=list(zip(summary_stats['Metric'], summary_stats['Value'])),
+                         colLabels=['Metric', 'Value'],
+                         cellLoc='center',
+                         loc='center')
+        table.auto_set_font_size(False)
+        table.set_fontsize(10)
+        table.scale(1.2, 1.5)
+        ax4.set_title('Summary Statistics', fontsize=12, fontweight='bold', pad=20)
+        
+        plt.tight_layout()
+        
+        if save:
+            filename = os.path.join(self.output_dir, "summary_statistics.png")
+            plt.savefig(filename, dpi=300, bbox_inches='tight')
+            print(f"💾 Saved: {filename}")
+        
+        plt.show()
+    
+    def interactive_menu(self):
+        """Interactive menu for selecting plots."""
+        plots = {
+            '1': ('Synergy Scaling (3 curves)', self.plot_synergy_scaling),
+            '2': ('Complementarity Scaling (3 curves)', self.plot_complementarity_scaling),
+            '3': ('3D Productivity Analysis', self.plot_productivity_analysis),
+            '4': ('Efficiency Scatter Plot', self.plot_efficiency_scatter),
+            '5': ('Correlation Heatmap', self.plot_correlation_heatmap),
+            '6': ('Productivity Distribution', self.plot_productivity_distribution),
+            '7': ('Time Complexity Analysis', self.plot_time_complexity),
+            '8': ('Summary Statistics Dashboard', self.plot_summary_statistics)
+        }
+        
+        while True:
+            print("\n" + "="*60)
+            print("🎨 ERC ANALYSIS INTERACTIVE PLOTTER")
+            print("="*60)
+            print(f"📊 Data loaded: {len(self.df)} networks")
+            print(f"📁 Output directory: {self.output_dir}")
+            print("\nAvailable plots:")
+            
+            for key, (description, _) in plots.items():
+                print(f"  {key}. {description}")
+            
+            print("\nOptions:")
+            print("  a. Generate all plots")
+            print("  s. Show data summary")
+            print("  q. Quit")
+            
+            choice = input("\nEnter your choice: ").strip().lower()
+            
+            if choice == 'q':
+                print("👋 Goodbye!")
+                break
+            elif choice == 'a':
+                print("\n🎨 Generating all plots...")
+                save_all = input("Save all plots? (y/n): ").strip().lower() == 'y'
+                for key, (description, plot_func) in plots.items():
+                    print(f"\n📊 Creating: {description}")
+                    try:
+                        plot_func(save=save_all)
+                    except Exception as e:
+                        print(f"❌ Error creating plot {key}: {e}")
+                print("✅ All plots completed!")
+            elif choice == 's':
+                self.show_data_summary()
+            elif choice in plots:
+                description, plot_func = plots[choice]
+                print(f"\n📊 Creating: {description}")
+                try:
+                    plot_func()
+                    save_choice = input("\n💾 Save this plot? (y/n): ").strip().lower()
+                    if save_choice == 'y':
+                        plot_func(save=True)
+                        print("✅ Plot saved!")
+                except Exception as e:
+                    print(f"❌ Error creating plot: {e}")
+            else:
+                print("❌ Invalid choice. Please try again.")
+    
+    def show_data_summary(self):
+        """Show a summary of the loaded data."""
+        print("\n" + "="*60)
+        print("📊 DATA SUMMARY")
+        print("="*60)
+        print(f"Networks analyzed: {len(self.df)}")
+        print(f"CSV file: {self.csv_file_path}")
+        
+        print(f"\nNetwork Size Statistics:")
+        print(f"  ERCs range: {self.df['n_ercs'].min()}-{self.df['n_ercs'].max()}")
+        print(f"  Species range: {self.df['n_species'].min()}-{self.df['n_species'].max()}")
+        print(f"  Reactions range: {self.df['n_reactions'].min()}-{self.df['n_reactions'].max()}")
+        
+        print(f"\nSynergy Statistics:")
+        print(f"  Total basic synergies: {self.df['basic_synergies'].sum()}")
+        print(f"  Total maximal synergies: {self.df['maximal_synergies'].sum()}")
+        print(f"  Total fundamental synergies: {self.df['fundamental_synergies'].sum()}")
+        
+        print(f"\nComplementarity Statistics:")
+        print(f"  Type 1: {self.df['type1_complementarity'].sum()}")
+        print(f"  Type 2: {self.df['type2_complementarity'].sum()}")
+        print(f"  Type 3: {self.df['type3_complementarity'].sum()}")
+        print(f"  Total: {self.df['total_complementarity'].sum()}")
+        
+        print(f"\nEfficiency Metrics:")
+        print(f"  Avg productivity rate: {self.df['productivity_rate'].mean():.3f}")
+        print(f"  Avg synergy efficiency: {self.df['synergy_efficiency'].mean():.3f}")
+        print(f"  Avg interaction efficiency: {self.df['interaction_efficiency'].mean():.3f}")
+
+
+def main():
+    """Main function to run the interactive plotter."""
+    
+    # ===== CONFIGURATION - MODIFY THIS PATH =====
+    csv_file_path = "C:/Users/tvelo/Dropbox/Public/AcademicWork/Europe/CLEA/Postdocs/TempletonPostdoc/sftw/pyCOT/complete_synergy_results/complete_synergy_analysis.csv"  # Update this path
+    # ============================================
+    
+    print("🎨 ERC Analysis Interactive Plotter")
+    print("="*50)
+    
+    # Check if file exists
+    if not os.path.exists(csv_file_path):
+        print(f"❌ CSV file not found: {csv_file_path}")
+        print("Please update the csv_file_path variable in the script.")
+        return
+    
+    # Create plotter instance
+    try:
+        plotter = ERCPlotter(csv_file_path)
+        if plotter.df is not None:
+            # Start interactive menu
+            plotter.interactive_menu()
+        else:
+            print("❌ Failed to load data. Please check your CSV file.")
+    except Exception as e:
+        print(f"❌ Error initializing plotter: {e}")
+
+if __name__ == "__main__":
+    main()

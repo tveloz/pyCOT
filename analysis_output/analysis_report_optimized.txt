@@ -1,0 +1,75 @@
+================================================================================
+PERSISTENT MODULES ANALYSIS REPORT (OPTIMIZED)
+================================================================================
+
+CLOSURE-BASED OPTIMIZATION SUMMARY
+----------------------------------------
+Total generators explored: 24,523
+Unique closures found: 1,589
+Redundant generators eliminated: 22,934
+Overall reduction: 93.5%
+Efficiency factor: 15.4x
+
+SUMMARY STATISTICS
+----------------------------------------
+Total Elementary Semi-Organizations: 33
+  - P-ERCs: 9
+  - Multi-ERC SOs: 24
+Total Unique Generators (after deduplication): 1589
+Total Generation Pathways: 0
+
+GENERATOR ANALYSIS
+----------------------------------------
+Average Generators per SO: N/A
+Average Synergies per Pathway: N/A
+Average Size Ratio (Generator/SO): N/A
+
+SIZE DISTRIBUTION
+----------------------------------------
+Size 1: 9 generators
+Size 2: 46 generators
+Size 3: 293 generators
+Size 4: 567 generators
+Size 5: 459 generators
+Size 6: 180 generators
+Size 7: 33 generators
+Size 8: 2 generators
+
+CONSTRUCTION PATTERNS (Top 10)
+----------------------------------------
+C2C2C2: 321 generators
+C2C2C2C2: 255 generators
+C2C2: 184 generators
+C2C2C2C2C2: 104 generators
+C2SC2: 57 generators
+C3C2C2: 40 generators
+C2: 35 generators
+C2SC2C2: 33 generators
+C2S: 31 generators
+C2C1C2: 28 generators
+(S=Synergy, C1=Complementarity Type 1, C2=Type 2, C3=Type 3)
+
+MOST FREQUENT ERCs
+----------------------------------------
+No ERC frequency data available
+
+SYNERGY VS COMPLEMENTARITY USAGE
+----------------------------------------
+Synergy Only: 6 (18.2%)
+Complementarity Only: 17 (51.5%)
+Mixed: 1 (3.0%)
+Neither: 9 (27.3%)
+
+P-ERC ANALYSIS
+----------------------------------------
+Number of P-ERCs: 9
+P-ERC Labels: E0, E4, E9, E10, E11, E12, E13, E15, E16
+
+MULTI-ERC SO ANALYSIS
+----------------------------------------
+Number of Multi-ERC SOs: 24
+ERC Count Distribution:
+  2 ERCs: 10 SOs
+  3 ERCs: 9 SOs
+  4 ERCs: 4 SOs
+  5 ERCs: 1 SOs

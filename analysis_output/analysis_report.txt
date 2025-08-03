@@ -1,0 +1,74 @@
+================================================================================
+PERSISTENT MODULES ANALYSIS REPORT
+================================================================================
+
+ERC_SORN OPTIMIZATION ANALYSIS
+----------------------------------------
+Total ERCs: 15
+Total possible ERC pairs: 105
+Synergistic pairs: 28
+Complementary pairs: 89
+Total synergies found: 80
+Total complementarities found: 103
+Estimated calculations saved: ~11,434,920
+
+SUMMARY STATISTICS
+----------------------------------------
+Total Elementary Semi-Organizations: 2
+  - P-ERCs: 2
+  - Multi-ERC SOs: 0
+Total Irreducible Generators: 19734
+Total Generation Pathways: 2
+
+GENERATOR ANALYSIS
+----------------------------------------
+Average Generators per SO: 1.00
+Average Synergies per Pathway: 0.00
+Average Size Ratio (Generator/SO): 0.13
+
+SIZE DISTRIBUTION
+----------------------------------------
+Size 1: 2 generators
+Size 2: 6 generators
+Size 3: 142 generators
+Size 4: 553 generators
+Size 5: 1884 generators
+Size 6: 4084 generators
+Size 7: 6195 generators
+Size 8: 6868 generators
+
+CONSTRUCTION PATTERNS (Top 10)
+----------------------------------------
+C1SSSC2C1: 445 generators
+C1SSSSC2C1: 430 generators
+C1SSSC1: 370 generators
+C1SSSSC1: 365 generators
+C1SSSC1C1: 350 generators
+C1SSSSC1C1: 350 generators
+SSSSC1: 325 generators
+C1SSSC1C2: 325 generators
+C1SSSC1C2C1: 320 generators
+C1SSSSC1C2: 305 generators
+(S=Synergy, C1=Complementarity Type 1, C2=Type 2, C3=Type 3)
+
+MOST FREQUENT ERCs
+----------------------------------------
+E0: appears in 1 elementary SOs
+E3: appears in 1 elementary SOs
+
+SYNERGY VS COMPLEMENTARITY USAGE
+----------------------------------------
+Synergy Only: 0 (0.0%)
+Complementarity Only: 0 (0.0%)
+Mixed (Both): 0 (0.0%)
+Neither: 2 (100.0%)
+
+P-ERC ANALYSIS
+----------------------------------------
+Number of P-ERCs: 2
+P-ERC Labels: E0, E3
+
+MULTI-ERC SO ANALYSIS
+----------------------------------------
+Number of Multi-ERC SOs: 0
+ERC Count Distribution:
