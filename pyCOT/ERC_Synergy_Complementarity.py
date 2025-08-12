@@ -2,156 +2,166 @@
 # -*- coding: utf-8 -*-
 """
 Core Synergy and Complementarity Classes and Functions
-
-Pure mathematical definitions and detection functions for ERC synergies and 
-complementarities based on the theoretical framework by Tomas Veloz et al.
-
-This module contains ONLY core synergy and complementarity functions and classes.
-NO analysis, statistics, plotting, or interaction pattern functions.
-
-Classes:
-    ERC_Synergy: Represents a synergy between ERCs
-    ERC_Complementarity: Represents a complementarity between ERCs
-    ERC_SORN: Pre-computed second-order reaction network for efficient lookup
-
-
-
-Functions:
-    get_basic_synergies: Detect basic synergies between ERCs
-    get_maximal_synergies: Detect maximal synergies between ERCs  
-    get_fundamental_synergies: Detect fundamental synergies between ERCs
-    get_complementarity: Detect complementarity relationships between ERCs
-    is_complementary_type1/2/3: Check specific complementarity types
-    can_interact: Check if two ERCs can have productive interactions
-    build_erc_sorn: Factory function to create ERC_SORN
-    get_all_productive_pairs: Get all ERC pairs with productive relationships
-
-Author: Based on theoretical work by Tomas Veloz et al.
 """
 
 from itertools import combinations
-from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, closure
-from collections import defaultdict  # (if not already imported)
+import networkx as nx
+from collections import defaultdict
+from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, closure, species_list_to_names
 
 # ============================================================================
 # CORE CLASSES
 # ============================================================================
 
 class ERC_Synergy:
-    """
-    Represents a synergy between ERCs.
-    
-    A synergy occurs when combining ERCs activates novel reactions that 
-    cannot be activated by the individual ERCs alone.
-    """
-    
+    """Base synergy class"""
     def __init__(self, reactants, product, synergy_type="regular"):
-        """
-        Initialize a Synergy object.
-        
-        Parameters
-        ----------
-        reactants : list of ERC
-            List of ERC objects representing the reactants
-        product : ERC
-            ERC object representing the product
-        synergy_type : str
-            Type of synergy ("regular", "maximal", "fundamental")
-        """
-        if not isinstance(reactants, list) or not all(isinstance(r, ERC) for r in reactants):
-            raise ValueError("Reactants must be a list of ERC objects.")
-        if not isinstance(product, ERC):
-            raise ValueError("Product must be an ERC object.")
-        
         self.reactants = reactants
         self.product = product
+        self.synergy_type = synergy_type
         self.rlabel = [r.label for r in reactants]
         self.plabel = product.label
-        self.synergy_type = synergy_type
 
-    def __repr__(self):
-        """String representation of the Synergy object."""
-        reactant_labels = "+".join(self.rlabel)
-        return f"{self.synergy_type.capitalize()}Synergy({reactant_labels}→{self.plabel})"
+    def __str__(self):
+        return f"{'+'.join(self.rlabel)} → {self.plabel} ({self.synergy_type})"
+
+    def __eq__(self, other):
+        if not isinstance(other, ERC_Synergy):
+            return False
+        return (set(self.rlabel) == set(other.rlabel) and 
+                self.plabel == other.plabel and 
+                self.synergy_type == other.synergy_type)
+
+    def __hash__(self):
+        return hash((tuple(sorted(self.rlabel)), self.plabel, self.synergy_type))
 
 class ERC_Complementarity:
-    """
-    Represents a complementarity between ERCs.
-    
-    Complementarity occurs when combining ERCs improves productive capacity
-    through requirement reduction, requirement change, or product expansion.
-    """
-    
-    def __init__(self, erc1, erc2, comp_type, reduction_info=None):
-        """
-        Initialize a Complementarity object.
-        
-        Parameters
-        ----------
-        erc1, erc2 : ERC
-            ERC objects that are complementary
-        comp_type : int
-            Type of complementarity (1, 2, or 3)
-        reduction_info : dict, optional
-            Dictionary with details about the reduction/change
-        """
+    """Base complementarity class"""
+    def __init__(self, erc1, erc2, comp_type, info=None):
         self.erc1 = erc1
         self.erc2 = erc2
         self.comp_type = comp_type
-        self.reduction_info = reduction_info or {}
+        self.info = info or {}
         
-    def __repr__(self):
-        """String representation of the Complementarity object."""
-        return f"Complementarity_Type{self.comp_type}({self.erc1.label}⇔{self.erc2.label})"
+    def __str__(self):
+        return f"{self.erc1.label} ⊕ {self.erc2.label} (Type {self.comp_type})"
+
+class ERC_SORN:
+    """Base SORN class"""
+    
+    def __init__(self, hierarchy, RN):
+        self.hierarchy = hierarchy
+        self.RN = RN
+        self.synergy_lookup = {}
+        self.complementarity_lookup = {}
+        
+    def get_synergies(self, erc1_label, erc2_label):
+        """Get synergies between two ERCs."""
+        key = tuple(sorted([erc1_label, erc2_label]))
+        return self.synergy_lookup.get(key, [])
+        
+    def get_statistics(self):
+        """Get basic statistics about the SORN."""
+        return {
+            'total_synergies': sum(len(syns) for syns in self.synergy_lookup.values()),
+            'pairs_with_synergies': len(self.synergy_lookup),
+            'total_pairs': len(self.hierarchy.ercs) * (len(self.hierarchy.ercs) - 1) // 2
+        }
+
+# ============================================================================
+# ENHANCED CLASSES
+# ============================================================================
+
+class ERC_SORN_Enhanced(ERC_SORN):
+    """Enhanced SORN implementation"""
+    
+    def __init__(self, hierarchy, RN):
+        super().__init__(hierarchy, RN)
+        self.generator_cache = {}
+        self.closure_cache = {}
+        
+    def build(self, verbose=False):
+        """Build the enhanced SORN using efficient algorithm."""
+        self.synergy_lookup = {}
+        synergies = get_fundamental_synergies_efficient(
+            self.hierarchy.ercs, self.hierarchy, self.RN, verbose)
+            
+        # Organize synergies by ERC pair
+        for syn in synergies:
+            key = tuple(sorted(syn.rlabel))
+            if key not in self.synergy_lookup:
+                self.synergy_lookup[key] = []
+            self.synergy_lookup[key].append(syn)
+        
+        return self
 
 # ============================================================================
 # HELPER FUNCTIONS
 # ============================================================================
 
 def can_interact(erc1, erc2, hierarchy):
-    """
-    Check if two ERCs can have synergy or complementarity.
-    
-    Returns False if one contains the other (efficiency optimization).
-    
-    Parameters
-    ----------
-    erc1, erc2 : ERC
-        ERCs to check for interaction potential
-    hierarchy : ERC_Hierarchy
-        Hierarchy containing the ERCs
-        
-    Returns
-    -------
-    bool
-        True if ERCs can interact, False if one contains the other
-    """
+    """Check if ERCs can interact"""
     # Check if one ERC contains the other using cached containment relationships
     if erc1 in hierarchy.get_contain(erc2) or erc2 in hierarchy.get_contain(erc1):
         return False
     return True
 
+def has_partial_overlap_with_generators(base_erc, target_erc, RN):
+    """
+    OPTIMIZED: Check if base can contribute to covering target's generators.
+    
+    This is the necessary condition for a base to participate in synergies
+    with the target. A base can contribute if it has partial overlap with
+    at least one generator (intersection but not full coverage).
+    """
+    base_closure = base_erc.get_closure_names(RN)
+    
+    # Check each minimal generator of the target
+    for generator in target_erc.min_generators:
+        gen_species = set(species_list_to_names(generator))
+        
+        # Check for partial overlap with this generator
+        intersection = base_closure & gen_species
+        
+        # Partial overlap means: has intersection but doesn't fully cover
+        if intersection and not gen_species.issubset(base_closure):
+            return True
+    
+    return False
+def has_generator_coverage(base1_erc, base2_erc, target_erc, RN):
+    """
+    OPTIMIZED: Check if combined bases cover at least one complete generator.
+    
+    This is the NECESSARY AND SUFFICIENT condition for fundamental synergy.
+    The combined closures must cover at least one generator completely,
+    but neither base alone can cover that generator.
+    """
+    base1_closure = base1_erc.get_closure_names(RN)
+    base2_closure = base2_erc.get_closure_names(RN)
+    combined_closure = base1_closure | base2_closure
+    
+    # Check if combined bases cover at least one generator completely
+    for generator in target_erc.min_generators:
+        gen_species = set(species_list_to_names(generator))
+        
+        # Check if combined closure covers this generator
+        if gen_species.issubset(combined_closure):
+            # Ensure it's actually a synergy (neither base alone covers it)
+            if (not gen_species.issubset(base1_closure) and 
+                not gen_species.issubset(base2_closure)):
+                return True
+    
+    return False
 # ============================================================================
-# SYNERGY DETECTION FUNCTIONS
+# SYNERGY DETECTION
 # ============================================================================
 
 def get_basic_synergies(erc1, erc2, hierarchy, RN):
     """
-    Get all basic synergies between two ERCs using cached closures.
+    CORRECTED: Get all basic synergies - one for each distinct target ERC.
     
-    Parameters
-    ----------
-    erc1, erc2 : ERC
-        ERCs to check for synergies
-    hierarchy : ERC_Hierarchy
-        Hierarchy containing the ERCs
-    RN : ReactionNetwork
-        The reaction network
-        
-    Returns
-    -------
-    list of ERC_Synergy
-        List of basic synergies found
+    Key fix: Don't filter by containment at the basic level. Generate separate
+    synergy objects for each target ERC that can be produced by the base pair.
     """
     if not can_interact(erc1, erc2, hierarchy):
         return []
@@ -200,47 +210,30 @@ def get_basic_synergies(erc1, erc2, hierarchy, RN):
     
     if len(joint_closure_names) > len(union_reac_names):   
         novel_reac_names = joint_closure_names - union_reac_names
+        
+        # CORRECTED: Track all target ERCs separately
+        target_ercs_found = set()  # Track which targets we've found
+        
         for r in joint_closure_reacs:
             r_name = r.name() if hasattr(r, 'name') else str(r)
             if r_name in novel_reac_names:
                 syn_erc = hierarchy.get_erc_from_reaction(RN, hierarchy, r)
                 if syn_erc is None:
                     continue
-                    
-                # Check for redundancy
-                add = True
-                for s in synergies:
-                    if syn_erc in hierarchy.get_contained(s.product):
-                        add = False
-                        break
-                    if set(s.rlabel) == set([erc1.label, erc2.label]) and s.plabel == syn_erc.label:  
-                        add = False
-                        break
-                if add:
+                
+                # CORRECTED: Only check for exact duplicates, not containment
+                if syn_erc.label not in target_ercs_found:
+                    target_ercs_found.add(syn_erc.label)
                     synergies.append(ERC_Synergy([erc1, erc2], syn_erc, "regular"))
     
     return synergies
 
 def get_maximal_synergies(erc1, erc2, hierarchy, RN):
     """
-    Get maximal synergies between two ERCs.
+    CORRECTED: Get maximal synergies with proper per-target maximality checking.
     
-    A synergy E1+E2→E3 is maximal if there's no other synergy E1+E2→E3' 
-    such that E3'→E3 (E3' contains E3).
-    
-    Parameters
-    ----------
-    erc1, erc2 : ERC
-        ERCs to check for maximal synergies
-    hierarchy : ERC_Hierarchy
-        Hierarchy containing the ERCs
-    RN : ReactionNetwork
-        The reaction network
-        
-    Returns
-    -------
-    list of ERC_Synergy
-        List of maximal synergies found
+    A synergy ERC1 + ERC2 → Target is maximal if there's no other synergy
+    ERC1 + ERC2 → LargerTarget where LargerTarget contains Target.
     """
     basic_synergies = get_basic_synergies(erc1, erc2, hierarchy, RN)
     if not basic_synergies:
@@ -266,24 +259,12 @@ def get_maximal_synergies(erc1, erc2, hierarchy, RN):
 
 def get_fundamental_synergies(erc1, erc2, hierarchy, RN):
     """
-    Get fundamental synergies between two ERCs.
+    CORRECTED: Get fundamental synergies with proper per-target fundamentality checking.
     
-    A maximal synergy E1+E2→E3 is fundamental if there's no synergy E1'+E2→E3 
-    or E1+E2'→E3 with Ei→Ei' for i=1,2.
+    A maximal synergy ERC1 + ERC2 → Target is fundamental if there's no synergy 
+    MoreFundamental1 + MoreFundamental2 → Target where the reactants are more fundamental.
     
-    Parameters
-    ----------
-    erc1, erc2 : ERC
-        ERCs to check for fundamental synergies
-    hierarchy : ERC_Hierarchy
-        Hierarchy containing the ERCs
-    RN : ReactionNetwork
-        The reaction network
-        
-    Returns
-    -------
-    list of ERC_Synergy
-        List of fundamental synergies found
+    CRITICAL: Fundamentality is checked SEPARATELY for each target!
     """
     maximal_synergies = get_maximal_synergies(erc1, erc2, hierarchy, RN)
     if not maximal_synergies:
@@ -293,8 +274,10 @@ def get_fundamental_synergies(erc1, erc2, hierarchy, RN):
     
     for syn in maximal_synergies:
         is_fundamental = True
+        target_label = syn.plabel
         
-        # Check all other ERC pairs to see if there's a more fundamental synergy
+        # CORRECTED: Check fundamentality specifically for THIS target
+        # Look for any other pair that can produce the SAME target with more fundamental bases
         for other_erc1 in hierarchy.ercs:
             for other_erc2 in hierarchy.ercs:
                 if other_erc1 == other_erc2:
@@ -304,16 +287,29 @@ def get_fundamental_synergies(erc1, erc2, hierarchy, RN):
                 if set([other_erc1.label, other_erc2.label]) == set([erc1.label, erc2.label]):
                     continue
                 
+                # Get maximal synergies for this other pair
                 other_maximal = get_maximal_synergies(other_erc1, other_erc2, hierarchy, RN)
                 
                 for other_syn in other_maximal:
-                    # Check if other synergy produces the same result with more fundamental reactants
-                    if other_syn.plabel == syn.plabel:
+                    # CRITICAL: Only compare synergies that produce the SAME target
+                    if other_syn.plabel == target_label:
                         # Check if other reactants are more fundamental using cached containment
-                        if ((other_erc1 in hierarchy.get_contained(erc1) and other_erc2.label == erc2.label) or
-                            (other_erc1.label == erc1.label and other_erc2 in hierarchy.get_contained(erc2)) or
-                            (other_erc1 in hierarchy.get_contained(erc2) and other_erc2.label == erc1.label) or
-                            (other_erc1.label == erc2.label and other_erc2 in hierarchy.get_contained(erc1))):
+                        more_fundamental = False
+                        
+                        # Case 1: other_erc1 is more fundamental than erc1, other_erc2 same as erc2
+                        if (other_erc1 in hierarchy.get_contained(erc1) and other_erc2.label == erc2.label):
+                            more_fundamental = True
+                        # Case 2: other_erc1 same as erc1, other_erc2 is more fundamental than erc2
+                        elif (other_erc1.label == erc1.label and other_erc2 in hierarchy.get_contained(erc2)):
+                            more_fundamental = True
+                        # Case 3: other_erc1 is more fundamental than erc2, other_erc2 same as erc1 (commutativity)
+                        elif (other_erc1 in hierarchy.get_contained(erc2) and other_erc2.label == erc1.label):
+                            more_fundamental = True
+                        # Case 4: other_erc1 same as erc2, other_erc2 is more fundamental than erc1 (commutativity)
+                        elif (other_erc1.label == erc2.label and other_erc2 in hierarchy.get_contained(erc1)):
+                            more_fundamental = True
+                        
+                        if more_fundamental:
                             is_fundamental = False
                             break
                 
@@ -326,7 +322,677 @@ def get_fundamental_synergies(erc1, erc2, hierarchy, RN):
             fundamental_synergies.append(ERC_Synergy(syn.reactants, syn.product, "fundamental"))
     
     return fundamental_synergies
+# ============================================================================
+# EFFICIENT ALGORITHM
+# ============================================================================
 
+def build_base_target_relationships_efficient(ercs, hierarchy, RN, verbose=False):
+    """
+    CORRECTED HIERARCHICAL: Build base-target relationships with proper level-based ordering.
+    
+    Key improvements:
+    1. Process targets by hierarchy level (top-down: highest level first)
+    2. For each target level, explore bases bottom-up (lowest level first) 
+    3. Apply fundamentality optimization: if base1->base2 and both have same overlap with target, keep only base2
+    4. Proper transitive pruning respecting hierarchy levels
+    """
+    if verbose:
+        print("Building base-target relationships with CORRECTED hierarchical optimization...")
+    
+    base_target_map = defaultdict(list)
+    partial_overlap_checks = 0
+    valid_pairs = 0
+    fundamentality_pruned = 0
+    
+    # Get hierarchy levels - critical for proper ordering
+    if hierarchy.graph:
+        levels = ERC.get_node_levels(hierarchy.graph)
+        max_level = max(levels.values()) if levels else 0
+        
+        # Group ERCs by level for systematic processing
+        ercs_by_level = defaultdict(list)
+        for erc in ercs:
+            level = levels.get(erc.label, 0)
+            ercs_by_level[level].append(erc)
+    else:
+        levels = {erc.label: 0 for erc in ercs}
+        max_level = 0
+        ercs_by_level = {0: ercs}
+    
+    if verbose:
+        print(f"  Hierarchy levels: 0 to {max_level}")
+        for level in range(max_level + 1):
+            level_ercs = ercs_by_level.get(level, [])
+            print(f"    Level {level}: {len(level_ercs)} ERCs = {[erc.label for erc in level_ercs]}")
+    
+    # Track fundamentality relationships for optimization
+    fundamentality_cache = {}  # (base1, base2, target) -> keep_base2_only
+    
+    # CORRECTED ALGORITHM: Process targets TOP-DOWN (highest level first)
+    for target_level in range(max_level, -1, -1):
+        targets_at_level = ercs_by_level.get(target_level, [])
+        
+        if not targets_at_level:
+            continue
+            
+        if verbose:
+            print(f"\n  🎯 Processing TARGET LEVEL {target_level}: {[t.label for t in targets_at_level]}")
+        
+        for target in targets_at_level:
+            if verbose:
+                print(f"\n    Target: {target.label} (level {target_level})")
+            
+            # Get ancestors (ERCs that contain target) for efficiency
+            ancestors = set()
+            if hierarchy.graph and target.label in hierarchy.graph:
+                ancestors = set(nx.ancestors(hierarchy.graph, target.label))
+            
+            # Track valid bases and their overlaps for fundamentality optimization
+            target_bases_with_overlap = []
+            
+            # CORRECTED: Explore bases BOTTOM-UP (lowest level first, most fundamental)
+            for base_level in range(max_level + 1):
+                bases_at_level = ercs_by_level.get(base_level, [])
+                
+                if verbose and bases_at_level:
+                    print(f"      Checking bases at level {base_level}: {[b.label for b in bases_at_level]}")
+                
+                for base in bases_at_level:
+                    # Skip if base is the target itself
+                    if base.label == target.label:
+                        continue
+                    
+                    # Skip if base contains target (impossible synergy)
+                    if base.label in ancestors:
+                        continue
+                    
+                    # Check partial overlap with target's minimal generators
+                    partial_overlap_checks += 1
+                    if has_partial_overlap_with_generators(base, target, RN):
+                        
+                        # Store base with its overlap info for fundamentality check
+                        base_overlap_info = {
+                            'base': base,
+                            'level': base_level,
+                            'overlap_signature': get_overlap_signature(base, target, RN)
+                        }
+                        target_bases_with_overlap.append(base_overlap_info)
+                        
+                    else:
+                        if verbose:
+                            print(f"        ✗ {base.label}: no partial overlap")
+            
+            # FUNDAMENTALITY OPTIMIZATION: Remove non-fundamental bases
+            if verbose and len(target_bases_with_overlap) > 1:
+                print(f"      Applying fundamentality optimization to {len(target_bases_with_overlap)} potential bases...")
+            
+            fundamental_bases = apply_fundamentality_optimization(
+                target_bases_with_overlap, hierarchy, verbose)
+                
+            fundamentality_pruned += len(target_bases_with_overlap) - len(fundamental_bases)
+            
+            # Add fundamental bases to result
+            for base_info in fundamental_bases:
+                base_target_map[target.label].append(base_info['base'].label)
+                valid_pairs += 1
+                
+                if verbose:
+                    print(f"        ✓ {base_info['base'].label} (level {base_info['level']}): fundamental base")
+    
+    if verbose:
+        total_possible = len(ercs) * (len(ercs) - 1)
+        print(f"\n  📊 CORRECTED ALGORITHM STATISTICS:")
+        print(f"    Partial overlap checks: {partial_overlap_checks}")
+        print(f"    Valid base-target pairs: {valid_pairs}")
+        print(f"    Fundamentality pruned: {fundamentality_pruned}")
+        print(f"    Reduction: {(1 - valid_pairs/total_possible)*100:.1f}%")
+        
+        # Show level distribution
+        level_stats = defaultdict(int)
+        for target_label, bases in base_target_map.items():
+            target_level = levels.get(target_label, 0)
+            level_stats[target_level] += len(bases)
+        
+        print(f"    Base-target pairs by target level:")
+        for level in sorted(level_stats.keys(), reverse=True):
+            print(f"      Level {level}: {level_stats[level]} pairs")
+    
+    return base_target_map
+
+
+def get_overlap_signature(base, target, RN):
+    """
+    Get a signature representing the overlap pattern between base and target.
+    
+    This is used for the fundamentality optimization: if two bases have the 
+    same overlap signature with a target, we can keep only the more fundamental one.
+    """
+    base_closure = base.get_closure_names(RN)
+    
+    overlap_patterns = []
+    
+    for i, generator in enumerate(target.min_generators):
+        gen_species = set(species_list_to_names(generator))
+        intersection = base_closure & gen_species
+        
+        # Create a signature for this generator overlap
+        if intersection:
+            # Sort for consistency
+            overlap_pattern = tuple(sorted(intersection))
+            coverage_ratio = len(intersection) / len(gen_species)
+            overlap_patterns.append((i, overlap_pattern, coverage_ratio))
+    
+    # Return a tuple that represents the overlap signature
+    return tuple(sorted(overlap_patterns))
+
+
+def apply_fundamentality_optimization(bases_with_overlap, hierarchy, verbose=False):
+    """
+    Apply fundamentality optimization: if base1->base2 and both have the same 
+    overlap with target, keep only base2 (more fundamental).
+    
+    Returns the list of fundamental bases (after pruning non-fundamental ones).
+    """
+    if len(bases_with_overlap) <= 1:
+        return bases_with_overlap
+    
+    # Group bases by overlap signature
+    overlap_groups = defaultdict(list)
+    for base_info in bases_with_overlap:
+        signature = base_info['overlap_signature']
+        overlap_groups[signature].append(base_info)
+    
+    fundamental_bases = []
+    
+    for signature, bases_group in overlap_groups.items():
+        if len(bases_group) == 1:
+            # Only one base with this signature - keep it
+            fundamental_bases.extend(bases_group)
+        else:
+            # Multiple bases with same overlap - keep only most fundamental ones
+            if verbose:
+                base_labels = [b['base'].label for b in bases_group]
+                print(f"          Same overlap signature: {base_labels}")
+            
+            # Find most fundamental bases (those not contained by others in the group)
+            most_fundamental = []
+            
+            for base_info in bases_group:
+                base_erc = base_info['base']
+                is_fundamental = True
+                
+                # Check if this base is contained by any other base in the group
+                for other_info in bases_group:
+                    if other_info == base_info:
+                        continue
+                    
+                    other_erc = other_info['base']
+                    
+                    # Check containment using hierarchy
+                    if hierarchy.graph and hierarchy.graph.has_edge(other_erc.label, base_erc.label):
+                        # other_erc contains base_erc, so base_erc is more fundamental
+                        continue
+                    elif hierarchy.graph and hierarchy.graph.has_edge(base_erc.label, other_erc.label):
+                        # base_erc contains other_erc, so base_erc is less fundamental
+                        is_fundamental = False
+                        break
+                    else:
+                        # No direct containment - compare by level (lower level = more fundamental)
+                        if other_info['level'] < base_info['level']:
+                            is_fundamental = False
+                            break
+                
+                if is_fundamental:
+                    most_fundamental.append(base_info)
+            
+            if verbose and len(most_fundamental) < len(bases_group):
+                pruned_labels = [b['base'].label for b in bases_group if b not in most_fundamental]
+                kept_labels = [b['base'].label for b in most_fundamental]
+                print(f"          Pruned non-fundamental: {pruned_labels}")
+                print(f"          Kept fundamental: {kept_labels}")
+            
+            fundamental_bases.extend(most_fundamental)
+    
+    return fundamental_bases
+
+def generate_target_pairs_efficient(base_target_map, hierarchy, verbose=False):
+    """
+    OPTIMIZED: Generate target pairs with enhanced pruning.
+    """
+    if verbose:
+        print("Generating target-centric base pairs with optimization...")
+    
+    target_pairs = defaultdict(list)
+    total_pairs = 0
+    hierarchy_pruned = 0
+    
+    for target, potential_bases in base_target_map.items():
+        if len(potential_bases) < 2:
+            continue  # Need at least 2 bases for a synergy
+        
+        # OPTIMIZATION: Order bases by hierarchy level for systematic exploration
+        if hierarchy.graph:
+            levels = ERC.get_node_levels(hierarchy.graph)
+            potential_bases = sorted(potential_bases, key=lambda b: levels.get(b, 0))
+        
+        # Generate pairs ONLY from bases that can contribute to THIS target
+        pairs_for_target = 0
+        for i, base1 in enumerate(potential_bases):
+            for base2 in potential_bases[i+1:]:
+                # Check that bases don't contain each other using hierarchy
+                if hierarchy.graph:
+                    if (hierarchy.graph.has_edge(base1, base2) or 
+                        hierarchy.graph.has_edge(base2, base1)):
+                        hierarchy_pruned += 1
+                        continue
+                
+                # Store in canonical order
+                pair = (base1, base2) if base1 < base2 else (base2, base1)
+                target_pairs[target].append(pair)
+                pairs_for_target += 1
+                total_pairs += 1
+        
+        if verbose and pairs_for_target > 0:
+            print(f"  Target {target}: {pairs_for_target} pairs from {len(potential_bases)} bases")
+    
+    if verbose:
+        print(f"  Total base pairs generated: {total_pairs}")
+        print(f"  Pairs pruned by hierarchy: {hierarchy_pruned}")
+        avg_pairs = total_pairs / len(target_pairs) if target_pairs else 0
+        print(f"  Average pairs per target: {avg_pairs:.1f}")
+    
+    return target_pairs
+
+def apply_synergy_constraints(base1_label, base2_label, target_label, 
+                            target_pairs, constraints, base_target_map, hierarchy):
+    """
+    OPTIMIZED: Apply constraints with enhanced fundamentality pruning.
+    """
+    total_pruned = 0
+    
+    if not hierarchy.graph:
+        return total_pruned
+    
+    # Get hierarchy levels for systematic pruning
+    levels = ERC.get_node_levels(hierarchy.graph)
+    
+    # Get ancestors of bases (for non-minimality pruning)
+    ancestors_base1 = set()
+    ancestors_base2 = set()
+    if base1_label in hierarchy.graph:
+        ancestors_base1 = set(nx.ancestors(hierarchy.graph, base1_label))
+    if base2_label in hierarchy.graph:
+        ancestors_base2 = set(nx.ancestors(hierarchy.graph, base2_label))
+    
+    # 1. ENHANCED within-target pruning
+    for pair in list(target_pairs[target_label]):
+        if pair in constraints[target_label]:
+            continue
+            
+        b1, b2 = pair
+        should_prune = False
+        
+        # More systematic non-minimality checking
+        b1_level = levels.get(b1, 0)
+        b2_level = levels.get(b2, 0)
+        base1_level = levels.get(base1_label, 0)
+        base2_level = levels.get(base2_label, 0)
+        
+        # Prune if we found a more fundamental combination
+        if ((b1 in ancestors_base1 and b2 == base2_label) or
+            (b1 == base1_label and b2 in ancestors_base2) or
+            (b1 in ancestors_base1 and b2 in ancestors_base2) or
+            (b2 in ancestors_base1 and b1 == base2_label) or
+            (b2 == base1_label and b1 in ancestors_base2) or
+            (b2 in ancestors_base1 and b1 in ancestors_base2)):
+            should_prune = True
+            
+        if should_prune:
+            constraints[target_label].add(pair)
+            total_pruned += 1
+    
+    # 2. ENHANCED cross-target pruning with level awareness
+    descendants = set()
+    if target_label in hierarchy.graph:
+        descendants = set(nx.descendants(hierarchy.graph, target_label))
+    
+    # Sort descendants by level for systematic processing
+    if descendants:
+        desc_by_level = sorted(descendants, key=lambda d: levels.get(d, 0), reverse=True)
+        
+        for desc_target in desc_by_level:
+            if desc_target not in target_pairs:
+                continue
+            
+            # Add the found pair as constraint for descendant targets
+            pair = (base1_label, base2_label) if base1_label < base2_label else (base2_label, base1_label)
+            if pair not in constraints[desc_target]:
+                constraints[desc_target].add(pair)
+                total_pruned += 1
+            
+            # Aggressively prune non-minimal versions in descendant targets
+            for test_pair in list(target_pairs[desc_target]):
+                if test_pair in constraints[desc_target]:
+                    continue
+                    
+                b1, b2 = test_pair
+                should_prune = False
+                
+                # Enhanced fundamentality check using levels
+                if (((b1 == base1_label or b1 in ancestors_base1) and
+                     (b2 == base2_label or b2 in ancestors_base2)) or
+                    ((b1 == base2_label or b1 in ancestors_base2) and
+                     (b2 == base1_label or b2 in ancestors_base1))):
+                    should_prune = True
+                    
+                if should_prune:
+                    constraints[desc_target].add(test_pair)
+                    total_pruned += 1
+    
+    return total_pruned
+
+def explore_targets_with_proper_hierarchy(target_pairs, base_target_map, ercs, hierarchy, RN, verbose=True):
+    """
+    CORRECTED: Proper hierarchical exploration respecting level-based ordering.
+    
+    Key fixes:
+    1. Base pairs explored systematically by hierarchy levels (bottom-up)
+    2. Targets explored by hierarchy levels (top-down) 
+    3. No arbitrary sorting that breaks hierarchy logic
+    """
+    if verbose:
+        print("Exploring with PROPER hierarchical ordering...")
+    
+    # Create label to ERC mapping
+    erc_by_label = {erc.label: erc for erc in ercs}
+    
+    # Get hierarchy levels
+    if hierarchy.graph:
+        levels = ERC.get_node_levels(hierarchy.graph)
+        max_level = max(levels.values()) if levels else 0
+    else:
+        levels = {erc.label: 0 for erc in ercs}
+        max_level = 0
+    
+    constraints = defaultdict(set)
+    discovered_synergies = []
+    
+    # Statistics
+    stats = {
+        'pairs_checked': 0,
+        'pairs_skipped_constraint': 0,
+        'pairs_skipped_generator': 0,
+        'synergies_found': 0,
+        'level_combinations_checked': 0
+    }
+    
+    if verbose:
+        print(f"  Hierarchy depth: {max_level} levels")
+        print(f"  Target pairs available for: {list(target_pairs.keys())}")
+    
+    # CORRECTED: Systematic exploration by hierarchy levels
+    # Targets: TOP-DOWN (highest level first - most maximal)
+    for target_level in range(max_level, -1, -1):
+        
+        # Get targets at this level
+        targets_at_level = [label for label in target_pairs.keys() 
+                           if levels.get(label, 0) == target_level]
+        
+        if not targets_at_level:
+            continue
+            
+        if verbose:
+            print(f"\n  🎯 TARGET LEVEL {target_level}: {targets_at_level}")
+        
+        for target_label in targets_at_level:
+            pairs = target_pairs[target_label]
+            if not pairs:
+                continue
+            
+            if verbose:
+                print(f"\n    Target {target_label} (level {target_level})")
+                print(f"      Initial pairs: {len(pairs)}")
+            
+            # Filter out constrained pairs
+            valid_pairs = [p for p in pairs if p not in constraints[target_label]]
+            stats['pairs_skipped_constraint'] += len(pairs) - len(valid_pairs)
+            
+            if verbose:
+                print(f"      Valid pairs after constraints: {len(valid_pairs)}")
+            
+            # CORRECTED: Systematic base pair exploration by levels
+            # Group pairs by their combined hierarchy levels
+            pair_levels = {}
+            for pair in valid_pairs:
+                base1_level = levels.get(pair[0], 0)
+                base2_level = levels.get(pair[1], 0)
+                combined_level = base1_level + base2_level  # Lower is more fundamental
+                
+                if combined_level not in pair_levels:
+                    pair_levels[combined_level] = []
+                pair_levels[combined_level].append(pair)
+            
+            # Process pairs from most fundamental to least fundamental
+            for combined_level in sorted(pair_levels.keys()):
+                level_pairs = pair_levels[combined_level]
+                
+                if verbose:
+                    print(f"        Processing {len(level_pairs)} pairs at combined level {combined_level}")
+                
+                stats['level_combinations_checked'] += 1
+                
+                # Check each pair at this level
+                for base1_label, base2_label in level_pairs:
+                    stats['pairs_checked'] += 1
+                    
+                    base1 = erc_by_label[base1_label]
+                    base2 = erc_by_label[base2_label]
+                    target_erc = erc_by_label[target_label]
+                    
+                    # Generator coverage check (fast pre-filter)
+                    if not has_generator_coverage(base1, base2, target_erc, RN):
+                        stats['pairs_skipped_generator'] += 1
+                        continue
+                    
+                    # Verify actual synergy using original algorithm
+                    synergies = get_fundamental_synergies(base1, base2, hierarchy, RN)
+                    
+                    # Check if any synergy produces this specific target
+                    target_synergy_found = False
+                    for synergy in synergies:
+                        if synergy.plabel == target_label:
+                            discovered_synergies.append(synergy)
+                            stats['synergies_found'] += 1
+                            target_synergy_found = True
+                            
+                            if verbose:
+                                base1_level = levels.get(base1_label, 0)
+                                base2_level = levels.get(base2_label, 0)
+                                print(f"        ✓ SYNERGY: {base1_label}(L{base1_level}) + {base2_label}(L{base2_level}) → {target_label}(L{target_level})")
+                            
+                            # Apply constraints with proper hierarchy awareness
+                            pruned = apply_hierarchical_constraints(
+                                base1_label, base2_label, target_label,
+                                target_pairs, constraints, base_target_map, hierarchy, levels)
+                            
+                            if verbose and pruned > 0:
+                                print(f"          Pruned {pruned} non-fundamental combinations")
+                            
+                            break  # Found the synergy for this target
+                    
+                    # If we found a fundamental synergy at this level, 
+                    # we can skip higher-level (less fundamental) combinations for this target
+                    if target_synergy_found:
+                        # Skip remaining pairs at higher levels for this target
+                        remaining_levels = [lv for lv in pair_levels.keys() if lv > combined_level]
+                        if remaining_levels and verbose:
+                            remaining_pairs = sum(len(pair_levels[lv]) for lv in remaining_levels)
+                            print(f"          Skipping {remaining_pairs} less fundamental pairs")
+                        break
+    
+    if verbose:
+        print(f"\n📊 Hierarchical Exploration Statistics:")
+        print(f"  Level combinations checked: {stats['level_combinations_checked']}")
+        print(f"  Pairs checked: {stats['pairs_checked']}")
+        print(f"  Pairs skipped by constraints: {stats['pairs_skipped_constraint']}")
+        print(f"  Pairs skipped by generator check: {stats['pairs_skipped_generator']}")
+        print(f"  Synergies found: {stats['synergies_found']}")
+        
+        total_possible = sum(len(pairs) for pairs in target_pairs.values())
+        if total_possible > 0:
+            efficiency = (1 - stats['pairs_checked']/total_possible) * 100
+            print(f"  Efficiency: {efficiency:.1f}% reduction in checks")
+    
+    return discovered_synergies
+
+def apply_hierarchical_constraints(base1_label, base2_label, target_label, 
+                                 target_pairs, constraints, base_target_map, hierarchy, levels):
+    """
+    CORRECTED: Apply constraints with proper hierarchy level awareness.
+    """
+    total_pruned = 0
+    
+    if not hierarchy.graph:
+        return total_pruned
+    
+    # Get hierarchy information
+    base1_level = levels.get(base1_label, 0)
+    base2_level = levels.get(base2_label, 0)
+    target_level = levels.get(target_label, 0)
+    
+    # Get ancestors for containment-based pruning
+    ancestors_base1 = set()
+    ancestors_base2 = set()
+    if base1_label in hierarchy.graph:
+        ancestors_base1 = set(nx.ancestors(hierarchy.graph, base1_label))
+    if base2_label in hierarchy.graph:
+        ancestors_base2 = set(nx.ancestors(hierarchy.graph, base2_label))
+    
+    # 1. Within-target pruning: remove non-fundamental base combinations
+    for pair in list(target_pairs[target_label]):
+        if pair in constraints[target_label]:
+            continue
+            
+        b1, b2 = pair
+        b1_level = levels.get(b1, 0)
+        b2_level = levels.get(b2, 0)
+        
+        should_prune = False
+        
+        # Prune if this pair uses less fundamental bases than the found synergy
+        if ((b1 in ancestors_base1 or b1_level > base1_level) and 
+            (b2 == base2_label or b2_level >= base2_level)):
+            should_prune = True
+        elif ((b2 in ancestors_base1 or b2_level > base1_level) and 
+              (b1 == base2_label or b1_level >= base2_level)):
+            should_prune = True
+        elif ((b1 == base1_label or b1_level >= base1_level) and 
+              (b2 in ancestors_base2 or b2_level > base2_level)):
+            should_prune = True
+        elif ((b2 == base1_label or b2_level >= base1_level) and 
+              (b1 in ancestors_base2 or b1_level > base2_level)):
+            should_prune = True
+            
+        if should_prune:
+            constraints[target_label].add(pair)
+            total_pruned += 1
+    
+    # 2. Cross-target pruning: for targets contained in current target
+    descendants = set()
+    if target_label in hierarchy.graph:
+        descendants = set(nx.descendants(hierarchy.graph, target_label))
+    
+    for desc_target in descendants:
+        if desc_target not in target_pairs:
+            continue
+        
+        desc_level = levels.get(desc_target, 0)
+        
+        # Only prune if the descendant is at a lower level (less maximal)
+        if desc_level < target_level:
+            pair = (base1_label, base2_label) if base1_label < base2_label else (base2_label, base1_label)
+            if pair not in constraints[desc_target]:
+                constraints[desc_target].add(pair)
+                total_pruned += 1
+            
+            # Also prune non-fundamental versions in descendant targets
+            for test_pair in list(target_pairs[desc_target]):
+                if test_pair in constraints[desc_target]:
+                    continue
+                    
+                tb1, tb2 = test_pair
+                tb1_level = levels.get(tb1, 0)
+                tb2_level = levels.get(tb2, 0)
+                
+                # Prune if this uses less fundamental bases
+                if (((tb1 == base1_label or tb1_level >= base1_level) and
+                     (tb2 == base2_label or tb2_level >= base2_level)) or
+                    ((tb1 == base2_label or tb1_level >= base2_level) and
+                     (tb2 == base1_label or tb2_level >= base1_level))):
+                    constraints[desc_target].add(test_pair)
+                    total_pruned += 1
+    
+    return total_pruned
+def get_fundamental_synergies_efficient(ercs, hierarchy, RN, verbose=True):
+    """
+    CORRECTED: Efficient algorithm with proper hierarchical exploration.
+    """
+    if verbose:
+        print("="*70)
+        print("CORRECTED HIERARCHICAL SYNERGY FINDER")
+        print("="*70)
+        print(f"Network: {len(ercs)} ERCs, {len(RN.species())} species")
+        if hierarchy.graph:
+            print(f"Hierarchy: {hierarchy.graph.number_of_edges()} containment relations")
+    
+    import time
+    start_time = time.time()
+    
+    # Step 1: Build base-target relationships (keep existing logic)
+    base_target_map = build_base_target_relationships_efficient(ercs, hierarchy, RN, verbose)
+    
+    # Step 2: Generate target-centric structure (keep existing logic)
+    target_pairs = generate_target_pairs_efficient(base_target_map, hierarchy, verbose)
+    
+    # Step 3: CORRECTED hierarchical exploration
+    fundamental_synergies = explore_targets_with_proper_hierarchy(
+        target_pairs, base_target_map, ercs, hierarchy, RN, verbose)
+    
+    end_time = time.time()
+    
+    if verbose:
+        print(f"\n" + "="*70)
+        print("CORRECTED ALGORITHM RESULTS")
+        print("="*70)
+        print(f"Fundamental synergies found: {len(fundamental_synergies)}")
+        print(f"Time elapsed: {end_time - start_time:.3f} seconds")
+        
+        if fundamental_synergies:
+            print(f"\nFundamental Synergies:")
+            for i, synergy in enumerate(fundamental_synergies, 1):
+                print(f"  {i}. {synergy.rlabel[0]} + {synergy.rlabel[1]} → {synergy.plabel}")
+    
+    return fundamental_synergies
+
+# Convenience function
+def efficient_fundamental_synergies(hierarchy, RN, verbose=True):
+    """Convenience function for the corrected hierarchical algorithm."""
+    return get_fundamental_synergies_efficient(hierarchy.ercs, hierarchy, RN, verbose)
+def build_erc_sorn_enhanced(hierarchy, RN, verbose=False):
+    """Build enhanced SORN using efficient algorithm"""
+    sorn = ERC_SORN_Enhanced(hierarchy, RN)
+    sorn.synergy_lookup = {}
+    synergies = get_fundamental_synergies_efficient(
+        hierarchy.ercs, hierarchy, RN, verbose)
+        
+    # Organize synergies by ERC pair
+    for syn in synergies:
+        key = tuple(sorted(syn.rlabel))
+        if key not in sorn.synergy_lookup:
+            sorn.synergy_lookup[key] = []
+        sorn.synergy_lookup[key].append(syn)
+    
+    return sorn
 # ============================================================================
 # COMPLEMENTARITY DETECTION FUNCTIONS
 # ============================================================================

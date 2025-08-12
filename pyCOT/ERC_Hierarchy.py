@@ -43,7 +43,11 @@ def get_sorted_species_names(species_set, RN):
 
 def generators(RN):
     """Get list of generators from reactions' support"""
-    gen = []
+    #Check if closure of empty set is non-empty
+    if closure(RN, [])!=[]:
+        gen=[closure(RN, [])]
+    else:
+        gen = []
     for reaction in RN.reactions():
         #print(f"Processing reaction: {reaction.name()}"+ " number of generatirs: "+str(len(gen)))
         support = RN.get_supp_from_reactions(reaction)

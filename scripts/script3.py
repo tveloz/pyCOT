@@ -21,7 +21,7 @@ from pyCOT.file_manipulation import load_pyCOT_from_file # Requires: from pyCOT.
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ========================================
 file_path = 'networks/testing/Farm.txt'  # Input file
-file_path = 'networks/testing/Farm_milk_and_dung.txt'  # Input file
+#file_path = 'networks/testing/Farm_milk_and_dung.txt'  # Input file
 #file_path = 'Txt/Farm.txt'
 rn = read_txt(file_path)    # Load using ReactionNetwork class
 test_rn = load_pyCOT_from_file(file_path)  # Load using pyCOT object utilities

@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Optimized Analysis Script for Persistent Modules
+Enhanced Analysis Script for Organizations and Persistent Modules
 
-This script tests the optimized Persistent_Modules library and generates comprehensive
-statistics and visualizations for elementary semi-organizations and their
-irreducible generators, with special focus on the computational gains from
-closure-based deduplication.
+This script tests both the optimized Persistent_Modules library and the new
+organization detection functionality, generating comprehensive statistics and 
+visualizations for elementary semi-organizations, organizations, and their
+irreducible generators.
 
 Usage:
-    python analyze_persistent_modules_optimized.py
+    python analyze_organizations_enhanced.py
 
 Author: Based on theoretical work by Tomas Veloz et al.
-Enhanced with closure-based optimization
+Enhanced with closure-based optimization and organization detection
 """
 
 import numpy as np
@@ -38,8 +38,21 @@ from pyCOT.Persistent_Modules import (
     compute_elementary_sos
 )
 
+# Import the new organization detection functions
+try:
+    from pyCOT.Persistent_Modules import (
+        compute_elementary_organizations,
+        check_elementary_sos_are_organizations,
+        analyze_organization_patterns,
+        is_self_maintaining
+    )
+    ORGANIZATION_FUNCTIONS_AVAILABLE = True
+except ImportError:
+    print("Warning: Organization detection functions not available. Please ensure organization_extensions.py is in the path.")
+    ORGANIZATION_FUNCTIONS_AVAILABLE = False
+
 # ============================================================================
-# ENHANCED ANALYSIS FUNCTIONS FOR OPTIMIZATION METRICS
+# ENHANCED ANALYSIS FUNCTIONS FOR OPTIMIZATION AND ORGANIZATIONS
 # ============================================================================
 
 def analyze_reduction_gains(build_stats):
@@ -86,6 +99,263 @@ def analyze_reduction_gains(build_stats):
         }
     
     return reduction_analysis
+
+def analyze_organization_conversion(elementary_sos, organizations, flux_data=None):
+    """
+    Analyze the conversion from elementary SOs to organizations.
+    
+    Parameters
+    ----------
+    elementary_sos : list of ElementarySO
+        All elementary semi-organizations
+    organizations : list of ElementarySO
+        Organizations (self-maintaining elementary SOs)
+    flux_data : tuple, optional
+        (flux_vectors, production_vectors) from organization computation
+        
+    Returns
+    -------
+    dict
+        Conversion analysis results
+    """
+    conversion_analysis = {
+        'total_elementary_sos': len(elementary_sos),
+        'total_organizations': len(organizations),
+        'conversion_rate': len(organizations) / len(elementary_sos) if elementary_sos else 0,
+        'p_erc_analysis': {
+            'so_count': 0,
+            'org_count': 0,
+            'conversion_rate': 0
+        },
+        'multi_erc_analysis': {
+            'so_count': 0,
+            'org_count': 0,
+            'conversion_rate': 0
+        },
+        'size_distribution_comparison': {
+            'sos': Counter(),
+            'orgs': Counter()
+        },
+        'failed_sos': [],  # SOs that are not organizations
+        'organization_characteristics': {
+            'avg_size': 0,
+            'size_range': (0, 0),
+            'most_common_ercs': [],
+            'flux_statistics': {}
+        }
+    }
+    
+    # Analyze P-ERC vs Multi-ERC conversion
+    p_erc_sos = [so for so in elementary_sos if so.is_p_erc]
+    p_erc_orgs = [org for org in organizations if org.is_p_erc]
+    multi_erc_sos = [so for so in elementary_sos if not so.is_p_erc]
+    multi_erc_orgs = [org for org in organizations if not org.is_p_erc]
+    
+    conversion_analysis['p_erc_analysis'] = {
+        'so_count': len(p_erc_sos),
+        'org_count': len(p_erc_orgs),
+        'conversion_rate': len(p_erc_orgs) / len(p_erc_sos) if p_erc_sos else 0
+    }
+    
+    conversion_analysis['multi_erc_analysis'] = {
+        'so_count': len(multi_erc_sos),
+        'org_count': len(multi_erc_orgs),
+        'conversion_rate': len(multi_erc_orgs) / len(multi_erc_sos) if multi_erc_sos else 0
+    }
+    
+    # Size distribution comparison
+    for so in elementary_sos:
+        size = len(so.closure_species)
+        conversion_analysis['size_distribution_comparison']['sos'][size] += 1
+    
+    for org in organizations:
+        size = len(org.closure_species)
+        conversion_analysis['size_distribution_comparison']['orgs'][size] += 1
+    
+    # Identify failed SOs (those that are not organizations)
+    org_ids = {id(org) for org in organizations}
+    conversion_analysis['failed_sos'] = [so for so in elementary_sos if id(so) not in org_ids]
+    
+    # Organization characteristics
+    if organizations:
+        org_sizes = [len(org.closure_species) for org in organizations]
+        conversion_analysis['organization_characteristics'] = {
+            'avg_size': np.mean(org_sizes),
+            'size_range': (min(org_sizes), max(org_sizes)),
+            'most_common_ercs': Counter([erc.label for org in organizations for erc in org.constituent_ercs]).most_common(5),
+            'flux_statistics': {}
+        }
+        
+        # Analyze flux data if available
+        if flux_data and len(flux_data) >= 2:
+            flux_vectors, production_vectors = flux_data
+            if flux_vectors:
+                flux_norms = [np.linalg.norm(fv) if fv is not None else 0 for fv in flux_vectors]
+                conversion_analysis['organization_characteristics']['flux_statistics'] = {
+                    'avg_flux_norm': np.mean(flux_norms),
+                    'flux_range': (min(flux_norms), max(flux_norms)),
+                    'active_reactions_avg': np.mean([np.sum(fv > 1e-6) if fv is not None else 0 for fv in flux_vectors])
+                }
+    
+    return conversion_analysis
+
+def create_organization_visualizations(elementary_sos, organizations, conversion_analysis, output_dir="analysis_output"):
+    """
+    Create visualizations specifically for organization analysis.
+    
+    Parameters
+    ----------
+    elementary_sos : list of ElementarySO
+        All elementary semi-organizations
+    organizations : list of ElementarySO
+        Organizations (self-maintaining elementary SOs)
+    conversion_analysis : dict
+        Results from analyze_organization_conversion
+    output_dir : str
+        Directory to save visualizations
+    """
+    Path(output_dir).mkdir(exist_ok=True)
+    
+    fig, axes = plt.subplots(2, 3, figsize=(18, 12))
+    
+    # 1. Overall conversion pie chart
+    ax1 = axes[0, 0]
+    orgs = conversion_analysis['total_organizations']
+    failed = conversion_analysis['total_elementary_sos'] - orgs
+    
+    if orgs > 0 or failed > 0:
+        ax1.pie([orgs, failed], 
+                labels=['Organizations', 'Failed SOs'],
+                autopct='%1.1f%%',
+                colors=['#2ecc71', '#e74c3c'],
+                startangle=90)
+        conversion_rate = conversion_analysis['conversion_rate'] * 100
+        ax1.set_title(f'SO → Organization Conversion\n{conversion_rate:.1f}% success rate')
+    else:
+        ax1.text(0.5, 0.5, 'No data available', ha='center', va='center')
+        ax1.set_title('SO → Organization Conversion')
+    
+    # 2. P-ERC vs Multi-ERC conversion rates
+    ax2 = axes[0, 1]
+    p_erc_rate = conversion_analysis['p_erc_analysis']['conversion_rate'] * 100
+    multi_erc_rate = conversion_analysis['multi_erc_analysis']['conversion_rate'] * 100
+    
+    categories = ['P-ERCs', 'Multi-ERC SOs']
+    rates = [p_erc_rate, multi_erc_rate]
+    colors = ['#9b59b6', '#3498db']
+    
+    bars = ax2.bar(categories, rates, color=colors)
+    ax2.set_ylabel('Conversion Rate (%)')
+    ax2.set_title('Conversion Rate by SO Type')
+    ax2.set_ylim(0, 100)
+    
+    # Add value labels
+    for bar, rate in zip(bars, rates):
+        ax2.text(bar.get_x() + bar.get_width()/2., bar.get_height() + 1,
+                f'{rate:.1f}%', ha='center', va='bottom')
+    
+    # 3. Size distribution comparison
+    ax3 = axes[0, 2]
+    size_dist_sos = conversion_analysis['size_distribution_comparison']['sos']
+    size_dist_orgs = conversion_analysis['size_distribution_comparison']['orgs']
+    
+    if size_dist_sos or size_dist_orgs:
+        all_sizes = sorted(set(size_dist_sos.keys()) | set(size_dist_orgs.keys()))
+        so_counts = [size_dist_sos.get(size, 0) for size in all_sizes]
+        org_counts = [size_dist_orgs.get(size, 0) for size in all_sizes]
+        
+        x = np.arange(len(all_sizes))
+        width = 0.35
+        
+        bars1 = ax3.bar(x - width/2, so_counts, width, label='SOs', alpha=0.7, color='#e74c3c')
+        bars2 = ax3.bar(x + width/2, org_counts, width, label='Organizations', alpha=0.7, color='#2ecc71')
+        
+        ax3.set_xlabel('Closure Size (# Species)')
+        ax3.set_ylabel('Count')
+        ax3.set_title('Size Distribution: SOs vs Organizations')
+        ax3.set_xticks(x)
+        ax3.set_xticklabels([f'{s}' for s in all_sizes])
+        ax3.legend()
+    else:
+        ax3.text(0.5, 0.5, 'No size data available', ha='center', va='center')
+        ax3.set_title('Size Distribution: SOs vs Organizations')
+    
+    # 4. Conversion rate by size
+    ax4 = axes[1, 0]
+    if size_dist_sos and size_dist_orgs:
+        sizes = sorted(set(size_dist_sos.keys()) | set(size_dist_orgs.keys()))
+        conversion_rates_by_size = []
+        
+        for size in sizes:
+            so_count = size_dist_sos.get(size, 0)
+            org_count = size_dist_orgs.get(size, 0)
+            rate = (org_count / so_count * 100) if so_count > 0 else 0
+            conversion_rates_by_size.append(rate)
+        
+        bars = ax4.bar([f'{s}' for s in sizes], conversion_rates_by_size, color='#f39c12')
+        ax4.set_ylabel('Conversion Rate (%)')
+        ax4.set_title('Conversion Rate by Closure Size')
+        ax4.set_ylim(0, 100)
+        
+        # Add value labels
+        for bar, rate in zip(bars, conversion_rates_by_size):
+            if rate > 0:
+                ax4.text(bar.get_x() + bar.get_width()/2., bar.get_height() + 1,
+                        f'{rate:.0f}%', ha='center', va='bottom')
+    else:
+        ax4.text(0.5, 0.5, 'No size data available', ha='center', va='center')
+        ax4.set_title('Conversion Rate by Closure Size')
+    
+    # 5. Organization characteristics
+    ax5 = axes[1, 1]
+    org_chars = conversion_analysis['organization_characteristics']
+    
+    if organizations:
+        # Show flux statistics if available
+        flux_stats = org_chars.get('flux_statistics', {})
+        if flux_stats:
+            metrics = ['Avg Flux Norm', 'Avg Active Reactions']
+            values = [
+                flux_stats.get('avg_flux_norm', 0),
+                flux_stats.get('active_reactions_avg', 0)
+            ]
+            
+            ax5.bar(metrics, values, color=['#1abc9c', '#e67e22'])
+            ax5.set_title('Organization Flux Characteristics')
+            ax5.set_ylabel('Average Value')
+            
+            for i, (metric, value) in enumerate(zip(metrics, values)):
+                ax5.text(i, value + max(values) * 0.01, f'{value:.2f}', 
+                        ha='center', va='bottom')
+        else:
+            ax5.text(0.5, 0.5, f'Organizations found: {len(organizations)}\nAvg size: {org_chars["avg_size"]:.1f} species',
+                    ha='center', va='center', transform=ax5.transAxes)
+            ax5.set_title('Organization Summary')
+    else:
+        ax5.text(0.5, 0.5, 'No organizations found', ha='center', va='center')
+        ax5.set_title('Organization Summary')
+    
+    # 6. Most common ERCs in organizations
+    ax6 = axes[1, 2]
+    most_common_ercs = org_chars.get('most_common_ercs', [])
+    
+    if most_common_ercs:
+        labels, counts = zip(*most_common_ercs)
+        ax6.barh(range(len(labels)), counts, color='#34495e')
+        ax6.set_yticks(range(len(labels)))
+        ax6.set_yticklabels(labels)
+        ax6.set_xlabel('Frequency')
+        ax6.set_title('Most Common ERCs in Organizations')
+    else:
+        ax6.text(0.5, 0.5, 'No ERC data available', ha='center', va='center')
+        ax6.set_title('Most Common ERCs in Organizations')
+    
+    plt.suptitle('Organization Analysis', fontsize=16, fontweight='bold')
+    plt.tight_layout()
+    plt.savefig(f'{output_dir}/organization_analysis.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    print(f"Organization visualizations saved to {output_dir}/")
 
 def create_optimization_visualizations(build_stats, reduction_analysis, output_dir="analysis_output"):
     """
@@ -452,9 +722,9 @@ def create_standard_visualizations(elementary_sos, generators, statistics, outpu
     print(f"Standard visualizations saved to {output_dir}/")
 
 def generate_enhanced_report(elementary_sos, generators, statistics, profile_data, structure_data, 
-                           build_stats, reduction_analysis, 
+                           build_stats, reduction_analysis, organizations=None, conversion_analysis=None,
                            erc_sorn=None, output_dir="analysis_output"):
-    """Generate an enhanced analysis report with optimization metrics."""
+    """Generate an enhanced analysis report with optimization and organization metrics."""
     Path(output_dir).mkdir(exist_ok=True)
     
     # Initialize default values for all potentially missing statistics
@@ -474,13 +744,20 @@ def generate_enhanced_report(elementary_sos, generators, statistics, profile_dat
         'overall_reduction_percent': 0.0,
         'efficiency_factor': 1.0
     }
+    organizations = organizations or []
+    conversion_analysis = conversion_analysis or {
+        'total_organizations': 0,
+        'conversion_rate': 0.0,
+        'p_erc_analysis': {'conversion_rate': 0.0},
+        'multi_erc_analysis': {'conversion_rate': 0.0}
+    }
 
     # Get summary with defaults
     summary = statistics.get('summary', {})
     
     report = []
     report.append("=" * 80)
-    report.append("PERSISTENT MODULES ANALYSIS REPORT (OPTIMIZED)")
+    report.append("ENHANCED PERSISTENT MODULES & ORGANIZATIONS ANALYSIS REPORT")
     report.append("=" * 80)
     report.append("")
     
@@ -500,9 +777,31 @@ def generate_enhanced_report(elementary_sos, generators, statistics, profile_dat
     report.append(f"Total Elementary Semi-Organizations: {structure_data.get('total_elementary_sos', 0)}")
     report.append(f"  - P-ERCs: {structure_data.get('p_erc_analysis', {}).get('count', 0)}")
     report.append(f"  - Multi-ERC SOs: {structure_data.get('multi_erc_analysis', {}).get('count', 0)}")
+    report.append(f"Total Organizations: {len(organizations)}")
+    report.append(f"  - P-ERC Organizations: {sum(1 for org in organizations if org.is_p_erc)}")
+    report.append(f"  - Multi-ERC Organizations: {sum(1 for org in organizations if not org.is_p_erc)}")
+    report.append(f"SO → Organization Conversion Rate: {conversion_analysis.get('conversion_rate', 0.0)*100:.1f}%")
     report.append(f"Total Unique Generators (after deduplication): {len(generators)}")
     report.append(f"Total Generation Pathways: {summary.get('total_pathways', 0)}")
     report.append("")
+    
+    # Organization Analysis
+    if ORGANIZATION_FUNCTIONS_AVAILABLE:
+        report.append("ORGANIZATION ANALYSIS")
+        report.append("-" * 40)
+        report.append(f"Organizations found: {len(organizations)}")
+        report.append(f"Overall conversion rate: {conversion_analysis.get('conversion_rate', 0.0)*100:.1f}%")
+        report.append(f"P-ERC conversion rate: {conversion_analysis.get('p_erc_analysis', {}).get('conversion_rate', 0.0)*100:.1f}%")
+        report.append(f"Multi-ERC conversion rate: {conversion_analysis.get('multi_erc_analysis', {}).get('conversion_rate', 0.0)*100:.1f}%")
+        
+        if organizations:
+            org_sizes = [len(org.closure_species) for org in organizations]
+            report.append(f"Average organization size: {np.mean(org_sizes):.1f} species")
+            report.append(f"Organization size range: {min(org_sizes)} - {max(org_sizes)} species")
+        
+        failed_count = structure_data.get('total_elementary_sos', 0) - len(organizations)
+        report.append(f"Failed SOs (not self-maintaining): {failed_count}")
+        report.append("")
     
     # Generator Analysis
     report.append("GENERATOR ANALYSIS")
@@ -584,8 +883,8 @@ def generate_enhanced_report(elementary_sos, generators, statistics, profile_dat
         report.append(f"  {erc_count} ERCs: {so_count} SOs")
     report.append("")
     
-    # Save report and data
-    with open(f'{output_dir}/analysis_report_optimized.txt', 'w') as f:
+    # Save report and data - Changed to use UTF-8 encoding
+    with open(f'{output_dir}/analysis_report_enhanced.txt', 'w', encoding='utf-8') as f:
         f.write('\n'.join(report))
     
     # Prepare detailed data with safe defaults
@@ -595,6 +894,11 @@ def generate_enhanced_report(elementary_sos, generators, statistics, profile_dat
         'structure_data': structure_data,
         'build_stats': build_stats,
         'reduction_analysis': reduction_analysis,
+        'organization_data': {
+            'total_organizations': len(organizations),
+            'organizations': [{'closure_size': len(org.closure_species), 'is_p_erc': org.is_p_erc} for org in organizations],
+            'conversion_analysis': conversion_analysis
+        },
         'optimization_gains': {
             'total_reduction_percent': reduction_analysis.get('overall_reduction_percent', 0.0),
             'efficiency_factor': reduction_analysis.get('efficiency_factor', 1.0),
@@ -604,30 +908,22 @@ def generate_enhanced_report(elementary_sos, generators, statistics, profile_dat
         'pathway_details': profile_data.get('pathway_details', [])
     }
     
-    # Add ERC_SORN data if available
-    if erc_sorn is not None:
-        try:
-            detailed_data['erc_sorn_stats'] = erc_sorn.get_statistics()
-            detailed_data['erc_sorn_analysis'] = erc_sorn.analyze_relationship_patterns()
-        except AttributeError:
-            detailed_data['erc_sorn_stats'] = {}
-            detailed_data['erc_sorn_analysis'] = {}
+    # Save JSON with UTF-8 encoding
+    with open(f'{output_dir}/detailed_data_enhanced.json', 'w', encoding='utf-8') as f:
+        json.dump(detailed_data, f, indent=2, default=str, ensure_ascii=False)
     
-    with open(f'{output_dir}/detailed_data_optimized.json', 'w') as f:
-        json.dump(detailed_data, f, indent=2, default=str)
-    
-    print(f"Enhanced report saved to {output_dir}/analysis_report_optimized.txt")
-    print(f"Detailed data saved to {output_dir}/detailed_data_optimized.json")
+    print(f"Enhanced report saved to {output_dir}/analysis_report_enhanced.txt")
+    print(f"Detailed data saved to {output_dir}/detailed_data_enhanced.json")
 
 # ============================================================================
-# MAIN ANALYSIS SCRIPT (ENHANCED)
+# MAIN ANALYSIS SCRIPT (ENHANCED WITH ORGANIZATIONS)
 # ============================================================================
 
-def analyze_reaction_network_optimized(rn_file=None, RN=None, max_generator_size=8, 
-                                     compare_algorithms_flag=False, output_dir="analysis_output"):
-    """Main function to analyze a reaction network with optimized algorithm."""
+def analyze_reaction_network_enhanced(rn_file=None, RN=None, max_generator_size=8, 
+                                    compare_algorithms_flag=False, output_dir="analysis_output"):
+    """Main function to analyze a reaction network with organizations and optimized algorithm."""
     print("=" * 80)
-    print("PERSISTENT MODULES ANALYSIS (OPTIMIZED)")
+    print("ENHANCED PERSISTENT MODULES & ORGANIZATIONS ANALYSIS")
     print("=" * 80)
     
     # Initialize default statistics structure
@@ -700,6 +996,35 @@ def analyze_reaction_network_optimized(rn_file=None, RN=None, max_generator_size
     print(f"Reduction achieved: {reduction_analysis['overall_reduction_percent']:.1f}%")
     print(f"Efficiency factor: {reduction_analysis['efficiency_factor']:.1f}x")
     
+    # ENHANCED: Compute organizations
+    organizations = []
+    conversion_analysis = {}
+    flux_data = None
+    
+    if ORGANIZATION_FUNCTIONS_AVAILABLE:
+        print("\nComputing organizations...")
+        org_start_time = time.time()
+        
+        organizations, elementary_sos_unused, org_statistics, flux_data = compute_elementary_organizations(
+            RN, max_generator_size=max_generator_size, verbose=True
+        )
+        
+        org_computation_time = time.time() - org_start_time
+        
+        print(f"Organization computation completed in {org_computation_time:.2f} seconds")
+        print(f"Found {len(organizations)} organizations from {len(elementary_sos)} elementary SOs")
+        
+        # Analyze conversion from SOs to organizations
+        print("\nAnalyzing SO → Organization conversion...")
+        conversion_analysis = analyze_organization_conversion(elementary_sos, organizations, flux_data)
+        
+        print(f"Conversion rate: {conversion_analysis['conversion_rate']*100:.1f}%")
+        print(f"P-ERC conversion rate: {conversion_analysis['p_erc_analysis']['conversion_rate']*100:.1f}%")
+        print(f"Multi-ERC conversion rate: {conversion_analysis['multi_erc_analysis']['conversion_rate']*100:.1f}%")
+    else:
+        print("\nWarning: Organization detection functions not available")
+        print("Skipping organization computation...")
+    
     # Profile generators
     print("\nProfiling generators...")
     profile_data = profile_irreducible_generators(generators)
@@ -713,12 +1038,15 @@ def analyze_reaction_network_optimized(rn_file=None, RN=None, max_generator_size
     create_standard_visualizations(elementary_sos, generators, statistics, output_dir)
     create_optimization_visualizations(build_stats, reduction_analysis, output_dir)
     
+    if ORGANIZATION_FUNCTIONS_AVAILABLE and organizations:
+        create_organization_visualizations(elementary_sos, organizations, conversion_analysis, output_dir)
+    
     # Generate enhanced report
     print("Generating enhanced report...")
     generate_enhanced_report(
         elementary_sos, generators, statistics, 
         profile_data, structure_data, build_stats, 
-        reduction_analysis,  
+        reduction_analysis, organizations, conversion_analysis,
         erc_sorn, output_dir
     )
     
@@ -727,6 +1055,9 @@ def analyze_reaction_network_optimized(rn_file=None, RN=None, max_generator_size
     print("ANALYSIS COMPLETE")
     print("=" * 80)
     print(f"Elementary SOs: {len(elementary_sos)}")
+    if ORGANIZATION_FUNCTIONS_AVAILABLE:
+        print(f"Organizations: {len(organizations)}")
+        print(f"Conversion Rate: {conversion_analysis.get('conversion_rate', 0)*100:.1f}%")
     print(f"Unique Generators: {len(generators)}")
     print(f"Redundant Eliminated: {reduction_analysis.get('redundant_pruned', 0)}")
     print(f"Overall Reduction: {reduction_analysis.get('overall_reduction_percent', 0.0):.1f}%")
@@ -737,10 +1068,11 @@ def analyze_reaction_network_optimized(rn_file=None, RN=None, max_generator_size
     for pattern, count in pattern_counts.most_common(3):
         print(f"  {pattern}: {count} generators")
     
-    print(f"\nComputation time: {computation_time:.2f} seconds")
+    total_computation_time = computation_time + (org_computation_time if ORGANIZATION_FUNCTIONS_AVAILABLE else 0)
+    print(f"\nTotal computation time: {total_computation_time:.2f} seconds")
     print(f"Results saved to: {output_dir}/")
     
-    return elementary_sos, generators, statistics, profile_data, structure_data, reduction_analysis, erc_sorn
+    return elementary_sos, generators, statistics, profile_data, structure_data, reduction_analysis, organizations, conversion_analysis, erc_sorn
 
 # ============================================================================
 # EXAMPLE USAGE AND TESTING
@@ -759,7 +1091,7 @@ def create_test_reaction_network():
     
     RN = ReactionNetwork()
     
-    # Add some test reactions that will show redundancy
+    # Add some test reactions that will show redundancy and organizations
     test_reactions = [
         # Basic metabolism with multiple paths
         "r1: f1 + s1 => 2*s1 + y1",
@@ -768,19 +1100,20 @@ def create_test_reaction_network():
         "r4: y1 + s4 => 2*s4 + f1",
         "r5: y1 + y2 => f1",
         "r6: y2 + y3 => f1",
-        "r7: => f1",  # Inflow (P-ERC)
-        "r8: => f2",  # Inflow (P-ERC)
-        "r9: => f3",  # Inflow (P-ERC)
+        "r7: => f1",  # Inflow (P-ERC, should be organization)
+        "r8: => f2",  # Inflow (P-ERC, should be organization)
+        "r9: => f3",  # Inflow (P-ERC, should be organization)
         # Additional reactions creating redundant paths
         "r10: s1 + s2 => p1",
         "r11: s2 + s3 => p2",
         "r12: p1 + p2 => f1",
         "r13: s1 + s3 => p3",
         "r14: p3 + y1 => f1",
-        # Example of a non-P-ERC that might be part of a larger SO
-        "r15: a + b => c", # ERC for r15 might not be P-ERC
+        # Example of a potentially self-maintaining cycle
+        "r15: a + b => c",
         "r16: c + d => a",
-        "r17: => d" # P-ERC
+        "r17: => d",  # P-ERC (should be organization)
+        "r18: => b"   # P-ERC (should be organization)
     ]
     
     for reaction in test_reactions:
@@ -791,11 +1124,11 @@ def create_test_reaction_network():
 if __name__ == "__main__":
     import argparse
     
-    parser = argparse.ArgumentParser(description='Analyze persistent modules with optimized algorithm')
+    parser = argparse.ArgumentParser(description='Analyze persistent modules and organizations with enhanced features')
     parser.add_argument('--network', type=str, help='Path to reaction network file')
     parser.add_argument('--max-size', type=int, default=8, help='Maximum generator size')
     parser.add_argument('--compare', action='store_true', help='Compare original vs optimized algorithms')
-    parser.add_argument('--output', type=str, default='analysis_output', help='Output directory')
+    parser.add_argument('--output', type=str, default='analysis_output_enhanced', help='Output directory')
     parser.add_argument('--test', action='store_true', help='Run with test network')
     
     args = parser.parse_args()
@@ -804,7 +1137,7 @@ if __name__ == "__main__":
         # Run with test network
         print("Creating test reaction network...")
         test_RN = create_test_reaction_network()
-        results = analyze_reaction_network_optimized(
+        results = analyze_reaction_network_enhanced(
             RN=test_RN, 
             max_generator_size=args.max_size,
             compare_algorithms_flag=args.compare,
@@ -812,7 +1145,7 @@ if __name__ == "__main__":
         )
     elif args.network:
         # Run with provided network file
-        results = analyze_reaction_network_optimized(
+        results = analyze_reaction_network_enhanced(
             rn_file=args.network,
             max_generator_size=args.max_size,
             compare_algorithms_flag=args.compare,
@@ -821,18 +1154,26 @@ if __name__ == "__main__":
     else:
         # Default: run with example networks
         print("Running with example network...")
-        file_path = 'networks/Navarino/RN_IN_05.txt'
+        #file_path = 'networks/Navarino/RN_IN_05.txt'
         file_path = 'networks/testing/Farm.txt'
-        file_path = 'networks/biomodels_interesting/central_ecoli.txt'
-        file_path = 'networks/biomodels_interesting/BIOMD0000000652_manyOrgs.txt'
+        #file_path = 'networks/biomodels_interesting/central_ecoli.txt'
+        #file_path = 'networks/biomodels_interesting/BIOMD0000000652_manyOrgs.txt'
 
-        results = analyze_reaction_network_optimized(
+        results = analyze_reaction_network_enhanced(
             rn_file=file_path,
             max_generator_size=args.max_size,
             compare_algorithms_flag=True,  # Always compare for demo
             output_dir=args.output
         )
     
-    print("\nAnalysis complete!")
+    print("\nEnhanced analysis complete!")
     print(f"Check '{args.output}/' directory for detailed results.")
-
+    
+    if ORGANIZATION_FUNCTIONS_AVAILABLE:
+        print("\nOrganization analysis included:")
+        print("- SO → Organization conversion analysis")
+        print("- Self-maintenance verification using linear programming")
+        print("- Flux vector analysis for organizations")
+    else:
+        print("\nNote: Organization analysis not available.")
+        print("To enable, ensure organization_extensions.py is in the Python path.")
