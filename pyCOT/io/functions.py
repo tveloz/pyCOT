@@ -1,6 +1,6 @@
 from pyCOT.rn_rustworkx import ReactionNetwork
 from pyCOT.io._utils import separate_string, remove_comments
-from pyCOT.closure_structure import is_self_maintaining
+from pyCOT.Persistent_Modules import is_self_maintaining
 
 # Import libraries 
 import os
