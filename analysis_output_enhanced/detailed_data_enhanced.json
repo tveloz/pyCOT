@@ -1,0 +1,2857 @@
+{
+  "statistics": {
+    "build_stats": {
+      "total_generators_explored": 858,
+      "unique_closures_found": 66,
+      "redundant_generators_pruned": 792,
+      "generators_by_size": {
+        "1": 20,
+        "2": 69,
+        "3": 336,
+        "4": 273,
+        "5": 77
+      },
+      "closures_by_size": {
+        "1": 6,
+        "2": 10,
+        "3": 23,
+        "4": 7,
+        "5": 0
+      },
+      "reduction_by_size": {
+        "1": {
+          "explored": 20,
+          "unique": 6,
+          "redundant": 14,
+          "reduction_ratio": 0.7
+        },
+        "2": {
+          "explored": 69,
+          "unique": 10,
+          "redundant": 59,
+          "reduction_ratio": 0.855072463768116
+        },
+        "3": {
+          "explored": 336,
+          "unique": 23,
+          "redundant": 313,
+          "reduction_ratio": 0.9315476190476191
+        },
+        "4": {
+          "explored": 273,
+          "unique": 7,
+          "redundant": 266,
+          "reduction_ratio": 0.9743589743589743
+        },
+        "5": {
+          "explored": 77,
+          "unique": 0,
+          "redundant": 77,
+          "reduction_ratio": 1.0
+        }
+      },
+      "p_ercs": 3,
+      "fundamental_synergies": 17
+    },
+    "analysis_stats": {
+      "total_elementary_sos": 15,
+      "p_erc_count": 3,
+      "multi_erc_count": 12,
+      "generator_counts": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "synergy_usage": [
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1
+      ],
+      "complementarity_usage": {
+        "type1": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "type2": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "type3": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "size_ratios": [
+        1.0,
+        0.125,
+        0.14285714285714285,
+        0.25,
+        0.25,
+        0.3,
+        0.25,
+        0.3333333333333333,
+        0.2,
+        0.2,
+        0.25,
+        0.2222222222222222,
+        0.21428571428571427,
+        0.3,
+        0.2727272727272727
+      ],
+      "erc_distribution": {
+        "E0": 1,
+        "E1": 8,
+        "E4": 7,
+        "E8": 4,
+        "E9": 1,
+        "E10": 2,
+        "E3": 2,
+        "E6": 1,
+        "E5": 2,
+        "E7": 2
+      },
+      "pathway_diversity": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "summary": {
+        "avg_generators_per_so": 1.0,
+        "avg_synergies_per_path": 0.5333333333333333,
+        "avg_size_ratio": 0.2873617123617124,
+        "most_common_ercs": [
+          [
+            "E1",
+            8
+          ],
+          [
+            "E4",
+            7
+          ],
+          [
+            "E8",
+            4
+          ],
+          [
+            "E10",
+            2
+          ],
+          [
+            "E3",
+            2
+          ]
+        ],
+        "total_pathways": 15
+      }
+    },
+    "algorithm": "optimized",
+    "summary": {
+      "total_ercs": 16,
+      "generators_explored": 858,
+      "unique_closures": 66,
+      "redundancy_eliminated": 792,
+      "elementary_sos": 15,
+      "reduction_percentage": 92.3076923076923,
+      "avg_generators_per_so": NaN,
+      "avg_synergies_per_path": NaN,
+      "avg_size_ratio": NaN,
+      "total_pathways": 0,
+      "most_common_ercs": [],
+      "p_erc_count": 0,
+      "multi_erc_count": 0
+    },
+    "synergy_usage": [],
+    "complementarity_usage": {
+      "type1": [],
+      "type2": [],
+      "type3": []
+    },
+    "generator_counts": [],
+    "size_ratios": [],
+    "pathway_diversity": [],
+    "erc_distribution": {}
+  },
+  "profile_data": {
+    "total_generators": 66,
+    "size_distribution": {
+      "1": 3,
+      "3": 27,
+      "2": 6,
+      "4": 23,
+      "5": 7
+    },
+    "synergy_distribution": {
+      "0": 12,
+      "1": 45,
+      "2": 9
+    },
+    "complementarity_distribution": {
+      "type1": {
+        "0": 44,
+        "1": 20,
+        "2": 2
+      },
+      "type2": {
+        "0": 40,
+        "1": 26
+      },
+      "type3": {
+        "0": 66
+      }
+    },
+    "construction_patterns": [
+      "",
+      "",
+      "",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "C1",
+      "C1",
+      "C2",
+      "C1",
+      "C1",
+      "C2",
+      "C1S",
+      "C1S",
+      "C1S",
+      "C1S",
+      "C1C1",
+      "C1S",
+      "C1C2",
+      "C1C2",
+      "C2S",
+      "C2S",
+      "SS",
+      "SC1",
+      "SS",
+      "SC1",
+      "SC2",
+      "SC2",
+      "SS",
+      "SS",
+      "SC2",
+      "SC1",
+      "SC2",
+      "SC2",
+      "SC1",
+      "SC2",
+      "SC2",
+      "SC2",
+      "SC2",
+      "SC2",
+      "SC2",
+      "SC2",
+      "C1SC1",
+      "C1SC2",
+      "C1SC2",
+      "SSC1",
+      "SSC2",
+      "SSC2",
+      "SSC2",
+      "SSC2",
+      "SC1C2",
+      "SC1C2"
+    ],
+    "ssm_generators": 0,
+    "pathway_details": [
+      {
+        "generator_id": 0,
+        "size": 1,
+        "synergies": 0,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "",
+        "erc_labels": [
+          "E0"
+        ]
+      },
+      {
+        "generator_id": 1,
+        "size": 1,
+        "synergies": 0,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "",
+        "erc_labels": [
+          "E1"
+        ]
+      },
+      {
+        "generator_id": 2,
+        "size": 1,
+        "synergies": 0,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "",
+        "erc_labels": [
+          "E4"
+        ]
+      },
+      {
+        "generator_id": 3,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E1",
+          "E4",
+          "E4"
+        ]
+      },
+      {
+        "generator_id": 4,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E1",
+          "E8",
+          "E8"
+        ]
+      },
+      {
+        "generator_id": 5,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E1",
+          "E9",
+          "E9"
+        ]
+      },
+      {
+        "generator_id": 6,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E1",
+          "E10",
+          "E10"
+        ]
+      },
+      {
+        "generator_id": 7,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E1",
+          "E11",
+          "E11"
+        ]
+      },
+      {
+        "generator_id": 8,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E3",
+          "E6",
+          "E6"
+        ]
+      },
+      {
+        "generator_id": 9,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E3",
+          "E7",
+          "E7"
+        ]
+      },
+      {
+        "generator_id": 10,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E3",
+          "E8",
+          "E8"
+        ]
+      },
+      {
+        "generator_id": 11,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E3",
+          "E9",
+          "E9"
+        ]
+      },
+      {
+        "generator_id": 12,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E4",
+          "E8",
+          "E8"
+        ]
+      },
+      {
+        "generator_id": 13,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E4",
+          "E9",
+          "E9"
+        ]
+      },
+      {
+        "generator_id": 14,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E7",
+          "E8",
+          "E8"
+        ]
+      },
+      {
+        "generator_id": 15,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E7",
+          "E9",
+          "E9"
+        ]
+      },
+      {
+        "generator_id": 16,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E10",
+          "E3",
+          "E3"
+        ]
+      },
+      {
+        "generator_id": 17,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E10",
+          "E7",
+          "E7"
+        ]
+      },
+      {
+        "generator_id": 18,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E11",
+          "E3",
+          "E3"
+        ]
+      },
+      {
+        "generator_id": 19,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "S",
+        "erc_labels": [
+          "E12",
+          "E7",
+          "E7"
+        ]
+      },
+      {
+        "generator_id": 20,
+        "size": 2,
+        "synergies": 0,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "C1",
+        "erc_labels": [
+          "E1",
+          "E3"
+        ]
+      },
+      {
+        "generator_id": 21,
+        "size": 2,
+        "synergies": 0,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "C1",
+        "erc_labels": [
+          "E1",
+          "E6"
+        ]
+      },
+      {
+        "generator_id": 22,
+        "size": 2,
+        "synergies": 0,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "C2",
+        "erc_labels": [
+          "E1",
+          "E7"
+        ]
+      },
+      {
+        "generator_id": 23,
+        "size": 2,
+        "synergies": 0,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "C1",
+        "erc_labels": [
+          "E4",
+          "E5"
+        ]
+      },
+      {
+        "generator_id": 24,
+        "size": 2,
+        "synergies": 0,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "C1",
+        "erc_labels": [
+          "E4",
+          "E7"
+        ]
+      },
+      {
+        "generator_id": 25,
+        "size": 2,
+        "synergies": 0,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "C2",
+        "erc_labels": [
+          "E4",
+          "E13"
+        ]
+      },
+      {
+        "generator_id": 26,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "C1S",
+        "erc_labels": [
+          "E1",
+          "E3",
+          "E10"
+        ]
+      },
+      {
+        "generator_id": 27,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "C1S",
+        "erc_labels": [
+          "E1",
+          "E3",
+          "E11"
+        ]
+      },
+      {
+        "generator_id": 28,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "C1S",
+        "erc_labels": [
+          "E4",
+          "E5",
+          "E8"
+        ]
+      },
+      {
+        "generator_id": 29,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "C1S",
+        "erc_labels": [
+          "E4",
+          "E5",
+          "E9"
+        ]
+      },
+      {
+        "generator_id": 30,
+        "size": 3,
+        "synergies": 0,
+        "complementarities": {
+          "type1": 2,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "C1C1",
+        "erc_labels": [
+          "E4",
+          "E5",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 31,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "C1S",
+        "erc_labels": [
+          "E4",
+          "E7",
+          "E8"
+        ]
+      },
+      {
+        "generator_id": 32,
+        "size": 3,
+        "synergies": 0,
+        "complementarities": {
+          "type1": 1,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "C1C2",
+        "erc_labels": [
+          "E4",
+          "E7",
+          "E13"
+        ]
+      },
+      {
+        "generator_id": 33,
+        "size": 3,
+        "synergies": 0,
+        "complementarities": {
+          "type1": 1,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "C1C2",
+        "erc_labels": [
+          "E4",
+          "E7",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 34,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "C2S",
+        "erc_labels": [
+          "E4",
+          "E13",
+          "E8"
+        ]
+      },
+      {
+        "generator_id": 35,
+        "size": 3,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "C2S",
+        "erc_labels": [
+          "E4",
+          "E13",
+          "E9"
+        ]
+      },
+      {
+        "generator_id": 36,
+        "size": 4,
+        "synergies": 2,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "SS",
+        "erc_labels": [
+          "E3",
+          "E6",
+          "E6",
+          "E9"
+        ]
+      },
+      {
+        "generator_id": 37,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "SC1",
+        "erc_labels": [
+          "E3",
+          "E8",
+          "E8",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 38,
+        "size": 4,
+        "synergies": 2,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "SS",
+        "erc_labels": [
+          "E3",
+          "E9",
+          "E9",
+          "E11"
+        ]
+      },
+      {
+        "generator_id": 39,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "SC1",
+        "erc_labels": [
+          "E3",
+          "E9",
+          "E9",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 40,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC2",
+        "erc_labels": [
+          "E4",
+          "E8",
+          "E8",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 41,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC2",
+        "erc_labels": [
+          "E4",
+          "E9",
+          "E9",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 42,
+        "size": 4,
+        "synergies": 2,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "SS",
+        "erc_labels": [
+          "E7",
+          "E8",
+          "E8",
+          "E10"
+        ]
+      },
+      {
+        "generator_id": 43,
+        "size": 4,
+        "synergies": 2,
+        "complementarities": {
+          "type1": 0,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "SS",
+        "erc_labels": [
+          "E7",
+          "E8",
+          "E8",
+          "E12"
+        ]
+      },
+      {
+        "generator_id": 44,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC2",
+        "erc_labels": [
+          "E7",
+          "E8",
+          "E8",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 45,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "SC1",
+        "erc_labels": [
+          "E7",
+          "E8",
+          "E8",
+          "E6"
+        ]
+      },
+      {
+        "generator_id": 46,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC2",
+        "erc_labels": [
+          "E7",
+          "E8",
+          "E8",
+          "E13"
+        ]
+      },
+      {
+        "generator_id": 47,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC2",
+        "erc_labels": [
+          "E7",
+          "E9",
+          "E9",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 48,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "SC1",
+        "erc_labels": [
+          "E7",
+          "E9",
+          "E9",
+          "E6"
+        ]
+      },
+      {
+        "generator_id": 49,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC2",
+        "erc_labels": [
+          "E7",
+          "E9",
+          "E9",
+          "E13"
+        ]
+      },
+      {
+        "generator_id": 50,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC2",
+        "erc_labels": [
+          "E10",
+          "E3",
+          "E3",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 51,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC2",
+        "erc_labels": [
+          "E10",
+          "E7",
+          "E7",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 52,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC2",
+        "erc_labels": [
+          "E10",
+          "E7",
+          "E7",
+          "E13"
+        ]
+      },
+      {
+        "generator_id": 53,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC2",
+        "erc_labels": [
+          "E11",
+          "E3",
+          "E3",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 54,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC2",
+        "erc_labels": [
+          "E12",
+          "E7",
+          "E7",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 55,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC2",
+        "erc_labels": [
+          "E12",
+          "E7",
+          "E7",
+          "E13"
+        ]
+      },
+      {
+        "generator_id": 56,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 2,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "C1SC1",
+        "erc_labels": [
+          "E4",
+          "E5",
+          "E9",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 57,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 1,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "C1SC2",
+        "erc_labels": [
+          "E4",
+          "E7",
+          "E8",
+          "E13"
+        ]
+      },
+      {
+        "generator_id": 58,
+        "size": 4,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 1,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "C1SC2",
+        "erc_labels": [
+          "E4",
+          "E7",
+          "E8",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 59,
+        "size": 5,
+        "synergies": 2,
+        "complementarities": {
+          "type1": 1,
+          "type2": 0,
+          "type3": 0
+        },
+        "pattern": "SSC1",
+        "erc_labels": [
+          "E3",
+          "E9",
+          "E9",
+          "E11",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 60,
+        "size": 5,
+        "synergies": 2,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SSC2",
+        "erc_labels": [
+          "E7",
+          "E8",
+          "E8",
+          "E10",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 61,
+        "size": 5,
+        "synergies": 2,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SSC2",
+        "erc_labels": [
+          "E7",
+          "E8",
+          "E8",
+          "E10",
+          "E13"
+        ]
+      },
+      {
+        "generator_id": 62,
+        "size": 5,
+        "synergies": 2,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SSC2",
+        "erc_labels": [
+          "E7",
+          "E8",
+          "E8",
+          "E12",
+          "E2"
+        ]
+      },
+      {
+        "generator_id": 63,
+        "size": 5,
+        "synergies": 2,
+        "complementarities": {
+          "type1": 0,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SSC2",
+        "erc_labels": [
+          "E7",
+          "E8",
+          "E8",
+          "E12",
+          "E13"
+        ]
+      },
+      {
+        "generator_id": 64,
+        "size": 5,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 1,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC1C2",
+        "erc_labels": [
+          "E7",
+          "E8",
+          "E8",
+          "E6",
+          "E13"
+        ]
+      },
+      {
+        "generator_id": 65,
+        "size": 5,
+        "synergies": 1,
+        "complementarities": {
+          "type1": 1,
+          "type2": 1,
+          "type3": 0
+        },
+        "pattern": "SC1C2",
+        "erc_labels": [
+          "E7",
+          "E9",
+          "E9",
+          "E6",
+          "E13"
+        ]
+      }
+    ]
+  },
+  "structure_data": {
+    "total_elementary_sos": 15,
+    "p_erc_analysis": {
+      "count": 3,
+      "labels": [
+        "E0",
+        "E1",
+        "E4"
+      ]
+    },
+    "multi_erc_analysis": {
+      "count": 12,
+      "size_distribution": {
+        "2": 9,
+        "3": 3
+      }
+    },
+    "erc_frequency": {
+      "E0": 1,
+      "E1": 8,
+      "E4": 7,
+      "E8": 4,
+      "E9": 1,
+      "E10": 2,
+      "E3": 2,
+      "E6": 1,
+      "E5": 2,
+      "E7": 2
+    },
+    "generator_diversity": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "size_vs_generators": [
+      {
+        "closure_size": 1,
+        "erc_count": 1,
+        "pathway_count": 1,
+        "is_p_erc": true
+      },
+      {
+        "closure_size": 8,
+        "erc_count": 1,
+        "pathway_count": 1,
+        "is_p_erc": true
+      },
+      {
+        "closure_size": 7,
+        "erc_count": 1,
+        "pathway_count": 1,
+        "is_p_erc": true
+      },
+      {
+        "closure_size": 12,
+        "erc_count": 2,
+        "pathway_count": 1,
+        "is_p_erc": false
+      },
+      {
+        "closure_size": 12,
+        "erc_count": 2,
+        "pathway_count": 1,
+        "is_p_erc": false
+      },
+      {
+        "closure_size": 10,
+        "erc_count": 2,
+        "pathway_count": 1,
+        "is_p_erc": false
+      },
+      {
+        "closure_size": 12,
+        "erc_count": 2,
+        "pathway_count": 1,
+        "is_p_erc": false
+      },
+      {
+        "closure_size": 9,
+        "erc_count": 2,
+        "pathway_count": 1,
+        "is_p_erc": false
+      },
+      {
+        "closure_size": 10,
+        "erc_count": 2,
+        "pathway_count": 1,
+        "is_p_erc": false
+      },
+      {
+        "closure_size": 10,
+        "erc_count": 2,
+        "pathway_count": 1,
+        "is_p_erc": false
+      },
+      {
+        "closure_size": 8,
+        "erc_count": 2,
+        "pathway_count": 1,
+        "is_p_erc": false
+      },
+      {
+        "closure_size": 9,
+        "erc_count": 2,
+        "pathway_count": 1,
+        "is_p_erc": false
+      },
+      {
+        "closure_size": 14,
+        "erc_count": 3,
+        "pathway_count": 1,
+        "is_p_erc": false
+      },
+      {
+        "closure_size": 10,
+        "erc_count": 3,
+        "pathway_count": 1,
+        "is_p_erc": false
+      },
+      {
+        "closure_size": 11,
+        "erc_count": 3,
+        "pathway_count": 1,
+        "is_p_erc": false
+      }
+    ],
+    "synergy_vs_complementarity": {
+      "synergy_only": 5,
+      "complementarity_only": 4,
+      "mixed": 3,
+      "neither": 3
+    }
+  },
+  "build_stats": {
+    "total_generators_explored": 858,
+    "unique_closures_found": 66,
+    "redundant_generators_pruned": 792,
+    "generators_by_size": {
+      "1": 20,
+      "2": 69,
+      "3": 336,
+      "4": 273,
+      "5": 77
+    },
+    "closures_by_size": {
+      "1": 6,
+      "2": 10,
+      "3": 23,
+      "4": 7,
+      "5": 0
+    },
+    "reduction_by_size": {
+      "1": {
+        "explored": 20,
+        "unique": 6,
+        "redundant": 14,
+        "reduction_ratio": 0.7
+      },
+      "2": {
+        "explored": 69,
+        "unique": 10,
+        "redundant": 59,
+        "reduction_ratio": 0.855072463768116
+      },
+      "3": {
+        "explored": 336,
+        "unique": 23,
+        "redundant": 313,
+        "reduction_ratio": 0.9315476190476191
+      },
+      "4": {
+        "explored": 273,
+        "unique": 7,
+        "redundant": 266,
+        "reduction_ratio": 0.9743589743589743
+      },
+      "5": {
+        "explored": 77,
+        "unique": 0,
+        "redundant": 77,
+        "reduction_ratio": 1.0
+      }
+    },
+    "p_ercs": 3,
+    "fundamental_synergies": 17
+  },
+  "reduction_analysis": {
+    "total_explored": 858,
+    "unique_closures": 66,
+    "redundant_pruned": 792,
+    "overall_reduction_percent": 92.3076923076923,
+    "reduction_by_size": {
+      "1": {
+        "explored": 20,
+        "unique": 6,
+        "redundant": 14,
+        "reduction_percent": 70.0
+      },
+      "2": {
+        "explored": 69,
+        "unique": 10,
+        "redundant": 59,
+        "reduction_percent": 85.5072463768116
+      },
+      "3": {
+        "explored": 336,
+        "unique": 23,
+        "redundant": 313,
+        "reduction_percent": 93.15476190476191
+      },
+      "4": {
+        "explored": 273,
+        "unique": 7,
+        "redundant": 266,
+        "reduction_percent": 97.43589743589743
+      },
+      "5": {
+        "explored": 77,
+        "unique": 0,
+        "redundant": 77,
+        "reduction_percent": 100.0
+      }
+    },
+    "efficiency_factor": 13.0,
+    "p_ercs": 3,
+    "fundamental_synergies": 17
+  },
+  "organization_data": {
+    "total_organizations": 3,
+    "organizations": [
+      {
+        "closure_size": 1,
+        "is_p_erc": true
+      },
+      {
+        "closure_size": 12,
+        "is_p_erc": false
+      },
+      {
+        "closure_size": 10,
+        "is_p_erc": false
+      }
+    ],
+    "conversion_analysis": {
+      "total_elementary_sos": 15,
+      "total_organizations": 3,
+      "conversion_rate": 0.2,
+      "p_erc_analysis": {
+        "so_count": 3,
+        "org_count": 1,
+        "conversion_rate": 0.3333333333333333
+      },
+      "multi_erc_analysis": {
+        "so_count": 12,
+        "org_count": 2,
+        "conversion_rate": 0.16666666666666666
+      },
+      "size_distribution_comparison": {
+        "sos": {
+          "1": 1,
+          "8": 2,
+          "7": 1,
+          "12": 3,
+          "10": 4,
+          "9": 2,
+          "14": 1,
+          "11": 1
+        },
+        "orgs": {
+          "1": 1,
+          "12": 1,
+          "10": 1
+        }
+      },
+      "failed_sos": [
+        "ElementarySO(species=1, ERCs=1, P-ERC=True)",
+        "ElementarySO(species=8, ERCs=1, P-ERC=True)",
+        "ElementarySO(species=7, ERCs=1, P-ERC=True)",
+        "ElementarySO(species=12, ERCs=2, P-ERC=False)",
+        "ElementarySO(species=12, ERCs=2, P-ERC=False)",
+        "ElementarySO(species=10, ERCs=2, P-ERC=False)",
+        "ElementarySO(species=12, ERCs=2, P-ERC=False)",
+        "ElementarySO(species=9, ERCs=2, P-ERC=False)",
+        "ElementarySO(species=10, ERCs=2, P-ERC=False)",
+        "ElementarySO(species=10, ERCs=2, P-ERC=False)",
+        "ElementarySO(species=8, ERCs=2, P-ERC=False)",
+        "ElementarySO(species=9, ERCs=2, P-ERC=False)",
+        "ElementarySO(species=14, ERCs=3, P-ERC=False)",
+        "ElementarySO(species=10, ERCs=3, P-ERC=False)",
+        "ElementarySO(species=11, ERCs=3, P-ERC=False)"
+      ],
+      "organization_characteristics": {
+        "avg_size": 7.666666666666667,
+        "size_range": [
+          1,
+          12
+        ],
+        "most_common_ercs": [
+          [
+            "E1",
+            2
+          ],
+          [
+            "E0",
+            1
+          ],
+          [
+            "E8",
+            1
+          ],
+          [
+            "E9",
+            1
+          ]
+        ],
+        "flux_statistics": {
+          "avg_flux_norm": 6.303714769893941e-06,
+          "flux_range": [
+            1e-06,
+            1.4594519519326424e-05
+          ],
+          "active_reactions_avg": 2.0
+        }
+      }
+    }
+  },
+  "optimization_gains": {
+    "total_reduction_percent": 92.3076923076923,
+    "efficiency_factor": 13.0,
+    "unique_closures": 66,
+    "redundant_eliminated": 792
+  },
+  "pathway_details": [
+    {
+      "generator_id": 0,
+      "size": 1,
+      "synergies": 0,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "",
+      "erc_labels": [
+        "E0"
+      ]
+    },
+    {
+      "generator_id": 1,
+      "size": 1,
+      "synergies": 0,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "",
+      "erc_labels": [
+        "E1"
+      ]
+    },
+    {
+      "generator_id": 2,
+      "size": 1,
+      "synergies": 0,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "",
+      "erc_labels": [
+        "E4"
+      ]
+    },
+    {
+      "generator_id": 3,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E1",
+        "E4",
+        "E4"
+      ]
+    },
+    {
+      "generator_id": 4,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E1",
+        "E8",
+        "E8"
+      ]
+    },
+    {
+      "generator_id": 5,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E1",
+        "E9",
+        "E9"
+      ]
+    },
+    {
+      "generator_id": 6,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E1",
+        "E10",
+        "E10"
+      ]
+    },
+    {
+      "generator_id": 7,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E1",
+        "E11",
+        "E11"
+      ]
+    },
+    {
+      "generator_id": 8,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E3",
+        "E6",
+        "E6"
+      ]
+    },
+    {
+      "generator_id": 9,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E3",
+        "E7",
+        "E7"
+      ]
+    },
+    {
+      "generator_id": 10,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E3",
+        "E8",
+        "E8"
+      ]
+    },
+    {
+      "generator_id": 11,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E3",
+        "E9",
+        "E9"
+      ]
+    },
+    {
+      "generator_id": 12,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E4",
+        "E8",
+        "E8"
+      ]
+    },
+    {
+      "generator_id": 13,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E4",
+        "E9",
+        "E9"
+      ]
+    },
+    {
+      "generator_id": 14,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E7",
+        "E8",
+        "E8"
+      ]
+    },
+    {
+      "generator_id": 15,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E7",
+        "E9",
+        "E9"
+      ]
+    },
+    {
+      "generator_id": 16,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E10",
+        "E3",
+        "E3"
+      ]
+    },
+    {
+      "generator_id": 17,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E10",
+        "E7",
+        "E7"
+      ]
+    },
+    {
+      "generator_id": 18,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E11",
+        "E3",
+        "E3"
+      ]
+    },
+    {
+      "generator_id": 19,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "S",
+      "erc_labels": [
+        "E12",
+        "E7",
+        "E7"
+      ]
+    },
+    {
+      "generator_id": 20,
+      "size": 2,
+      "synergies": 0,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "C1",
+      "erc_labels": [
+        "E1",
+        "E3"
+      ]
+    },
+    {
+      "generator_id": 21,
+      "size": 2,
+      "synergies": 0,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "C1",
+      "erc_labels": [
+        "E1",
+        "E6"
+      ]
+    },
+    {
+      "generator_id": 22,
+      "size": 2,
+      "synergies": 0,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "C2",
+      "erc_labels": [
+        "E1",
+        "E7"
+      ]
+    },
+    {
+      "generator_id": 23,
+      "size": 2,
+      "synergies": 0,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "C1",
+      "erc_labels": [
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "generator_id": 24,
+      "size": 2,
+      "synergies": 0,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "C1",
+      "erc_labels": [
+        "E4",
+        "E7"
+      ]
+    },
+    {
+      "generator_id": 25,
+      "size": 2,
+      "synergies": 0,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "C2",
+      "erc_labels": [
+        "E4",
+        "E13"
+      ]
+    },
+    {
+      "generator_id": 26,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "C1S",
+      "erc_labels": [
+        "E1",
+        "E3",
+        "E10"
+      ]
+    },
+    {
+      "generator_id": 27,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "C1S",
+      "erc_labels": [
+        "E1",
+        "E3",
+        "E11"
+      ]
+    },
+    {
+      "generator_id": 28,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "C1S",
+      "erc_labels": [
+        "E4",
+        "E5",
+        "E8"
+      ]
+    },
+    {
+      "generator_id": 29,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "C1S",
+      "erc_labels": [
+        "E4",
+        "E5",
+        "E9"
+      ]
+    },
+    {
+      "generator_id": 30,
+      "size": 3,
+      "synergies": 0,
+      "complementarities": {
+        "type1": 2,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "C1C1",
+      "erc_labels": [
+        "E4",
+        "E5",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 31,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "C1S",
+      "erc_labels": [
+        "E4",
+        "E7",
+        "E8"
+      ]
+    },
+    {
+      "generator_id": 32,
+      "size": 3,
+      "synergies": 0,
+      "complementarities": {
+        "type1": 1,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "C1C2",
+      "erc_labels": [
+        "E4",
+        "E7",
+        "E13"
+      ]
+    },
+    {
+      "generator_id": 33,
+      "size": 3,
+      "synergies": 0,
+      "complementarities": {
+        "type1": 1,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "C1C2",
+      "erc_labels": [
+        "E4",
+        "E7",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 34,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "C2S",
+      "erc_labels": [
+        "E4",
+        "E13",
+        "E8"
+      ]
+    },
+    {
+      "generator_id": 35,
+      "size": 3,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "C2S",
+      "erc_labels": [
+        "E4",
+        "E13",
+        "E9"
+      ]
+    },
+    {
+      "generator_id": 36,
+      "size": 4,
+      "synergies": 2,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "SS",
+      "erc_labels": [
+        "E3",
+        "E6",
+        "E6",
+        "E9"
+      ]
+    },
+    {
+      "generator_id": 37,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "SC1",
+      "erc_labels": [
+        "E3",
+        "E8",
+        "E8",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 38,
+      "size": 4,
+      "synergies": 2,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "SS",
+      "erc_labels": [
+        "E3",
+        "E9",
+        "E9",
+        "E11"
+      ]
+    },
+    {
+      "generator_id": 39,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "SC1",
+      "erc_labels": [
+        "E3",
+        "E9",
+        "E9",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 40,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC2",
+      "erc_labels": [
+        "E4",
+        "E8",
+        "E8",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 41,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC2",
+      "erc_labels": [
+        "E4",
+        "E9",
+        "E9",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 42,
+      "size": 4,
+      "synergies": 2,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "SS",
+      "erc_labels": [
+        "E7",
+        "E8",
+        "E8",
+        "E10"
+      ]
+    },
+    {
+      "generator_id": 43,
+      "size": 4,
+      "synergies": 2,
+      "complementarities": {
+        "type1": 0,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "SS",
+      "erc_labels": [
+        "E7",
+        "E8",
+        "E8",
+        "E12"
+      ]
+    },
+    {
+      "generator_id": 44,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC2",
+      "erc_labels": [
+        "E7",
+        "E8",
+        "E8",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 45,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "SC1",
+      "erc_labels": [
+        "E7",
+        "E8",
+        "E8",
+        "E6"
+      ]
+    },
+    {
+      "generator_id": 46,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC2",
+      "erc_labels": [
+        "E7",
+        "E8",
+        "E8",
+        "E13"
+      ]
+    },
+    {
+      "generator_id": 47,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC2",
+      "erc_labels": [
+        "E7",
+        "E9",
+        "E9",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 48,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "SC1",
+      "erc_labels": [
+        "E7",
+        "E9",
+        "E9",
+        "E6"
+      ]
+    },
+    {
+      "generator_id": 49,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC2",
+      "erc_labels": [
+        "E7",
+        "E9",
+        "E9",
+        "E13"
+      ]
+    },
+    {
+      "generator_id": 50,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC2",
+      "erc_labels": [
+        "E10",
+        "E3",
+        "E3",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 51,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC2",
+      "erc_labels": [
+        "E10",
+        "E7",
+        "E7",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 52,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC2",
+      "erc_labels": [
+        "E10",
+        "E7",
+        "E7",
+        "E13"
+      ]
+    },
+    {
+      "generator_id": 53,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC2",
+      "erc_labels": [
+        "E11",
+        "E3",
+        "E3",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 54,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC2",
+      "erc_labels": [
+        "E12",
+        "E7",
+        "E7",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 55,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC2",
+      "erc_labels": [
+        "E12",
+        "E7",
+        "E7",
+        "E13"
+      ]
+    },
+    {
+      "generator_id": 56,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 2,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "C1SC1",
+      "erc_labels": [
+        "E4",
+        "E5",
+        "E9",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 57,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 1,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "C1SC2",
+      "erc_labels": [
+        "E4",
+        "E7",
+        "E8",
+        "E13"
+      ]
+    },
+    {
+      "generator_id": 58,
+      "size": 4,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 1,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "C1SC2",
+      "erc_labels": [
+        "E4",
+        "E7",
+        "E8",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 59,
+      "size": 5,
+      "synergies": 2,
+      "complementarities": {
+        "type1": 1,
+        "type2": 0,
+        "type3": 0
+      },
+      "pattern": "SSC1",
+      "erc_labels": [
+        "E3",
+        "E9",
+        "E9",
+        "E11",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 60,
+      "size": 5,
+      "synergies": 2,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SSC2",
+      "erc_labels": [
+        "E7",
+        "E8",
+        "E8",
+        "E10",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 61,
+      "size": 5,
+      "synergies": 2,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SSC2",
+      "erc_labels": [
+        "E7",
+        "E8",
+        "E8",
+        "E10",
+        "E13"
+      ]
+    },
+    {
+      "generator_id": 62,
+      "size": 5,
+      "synergies": 2,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SSC2",
+      "erc_labels": [
+        "E7",
+        "E8",
+        "E8",
+        "E12",
+        "E2"
+      ]
+    },
+    {
+      "generator_id": 63,
+      "size": 5,
+      "synergies": 2,
+      "complementarities": {
+        "type1": 0,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SSC2",
+      "erc_labels": [
+        "E7",
+        "E8",
+        "E8",
+        "E12",
+        "E13"
+      ]
+    },
+    {
+      "generator_id": 64,
+      "size": 5,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 1,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC1C2",
+      "erc_labels": [
+        "E7",
+        "E8",
+        "E8",
+        "E6",
+        "E13"
+      ]
+    },
+    {
+      "generator_id": 65,
+      "size": 5,
+      "synergies": 1,
+      "complementarities": {
+        "type1": 1,
+        "type2": 1,
+        "type3": 0
+      },
+      "pattern": "SC1C2",
+      "erc_labels": [
+        "E7",
+        "E9",
+        "E9",
+        "E6",
+        "E13"
+      ]
+    }
+  ]
+}

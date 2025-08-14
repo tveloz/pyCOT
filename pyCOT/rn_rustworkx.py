@@ -4,7 +4,8 @@ from itertools import starmap
 from numbers import Real
 from re import findall, compile
 from typing import Literal
-
+"""RN_Rustworkx
+Reaction Network module for pyCOT."""
 
 import numpy as np
 from rustworkx import PyDiGraph, InvalidNode

@@ -1,0 +1,84 @@
+================================================================================
+ENHANCED PERSISTENT MODULES & ORGANIZATIONS ANALYSIS REPORT
+================================================================================
+
+CLOSURE-BASED OPTIMIZATION SUMMARY
+----------------------------------------
+Total generators explored: 858
+Unique closures found: 66
+Redundant generators eliminated: 792
+Overall reduction: 92.3%
+Efficiency factor: 13.0x
+
+SUMMARY STATISTICS
+----------------------------------------
+Total Elementary Semi-Organizations: 15
+  - P-ERCs: 3
+  - Multi-ERC SOs: 12
+Total Organizations: 3
+  - P-ERC Organizations: 1
+  - Multi-ERC Organizations: 2
+SO → Organization Conversion Rate: 20.0%
+Total Unique Generators (after deduplication): 66
+Total Generation Pathways: 0
+
+ORGANIZATION ANALYSIS
+----------------------------------------
+Organizations found: 3
+Overall conversion rate: 20.0%
+P-ERC conversion rate: 33.3%
+Multi-ERC conversion rate: 16.7%
+Average organization size: 7.7 species
+Organization size range: 1 - 12 species
+Failed SOs (not self-maintaining): 12
+
+GENERATOR ANALYSIS
+----------------------------------------
+Average Generators per SO: N/A
+Average Synergies per Pathway: N/A
+Average Size Ratio (Generator/SO): N/A
+
+SIZE DISTRIBUTION
+----------------------------------------
+Size 1: 3 generators
+Size 2: 6 generators
+Size 3: 27 generators
+Size 4: 23 generators
+Size 5: 7 generators
+
+CONSTRUCTION PATTERNS (Top 10)
+----------------------------------------
+S: 17 generators
+SC2: 12 generators
+C1S: 5 generators
+C1: 4 generators
+SS: 4 generators
+SC1: 4 generators
+SSC2: 4 generators
+: 3 generators
+C2: 2 generators
+C1C2: 2 generators
+(S=Synergy, C1=Complementarity Type 1, C2=Type 2, C3=Type 3)
+
+MOST FREQUENT ERCs
+----------------------------------------
+No ERC frequency data available
+
+SYNERGY VS COMPLEMENTARITY USAGE
+----------------------------------------
+Synergy Only: 5 (33.3%)
+Complementarity Only: 4 (26.7%)
+Mixed: 3 (20.0%)
+Neither: 3 (20.0%)
+
+P-ERC ANALYSIS
+----------------------------------------
+Number of P-ERCs: 3
+P-ERC Labels: E0, E1, E4
+
+MULTI-ERC SO ANALYSIS
+----------------------------------------
+Number of Multi-ERC SOs: 12
+ERC Count Distribution:
+  2 ERCs: 9 SOs
+  3 ERCs: 3 SOs

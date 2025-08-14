@@ -1,0 +1,8 @@
+R3:	dung=>fertilizer+worms;
+R4:	chickens+grass+infr+worms=>chickens+eggs+fertilizer+infr;
+R5:	chickens+grain+infr=>chickens+eggs+fertilizer+infr;
+R6:	fertilizer+grass+water=>2grass;
+R7:	eggs+grass+infr+worms=>chickens+fertilizer+infr;
+R15:	worms=>;
+R16:	infr=>;
+R1:	=>water;

@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Dec 29 18:55:14 2023
-
+ERC_Hierarchy - Optimized with Closure Caching
 @author: tveloz
 """
-#sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 import pandas as pd
 import re
@@ -44,8 +43,13 @@ def get_sorted_species_names(species_set, RN):
 
 def generators(RN):
     """Get list of generators from reactions' support"""
-    gen = []
+    #Check if closure of empty set is non-empty
+    if closure(RN, [])!=[]:
+        gen=[closure(RN, [])]
+    else:
+        gen = []
     for reaction in RN.reactions():
+        #print(f"Processing reaction: {reaction.name()}"+ " number of generatirs: "+str(len(gen)))
         support = RN.get_supp_from_reactions(reaction)
         if support:  # Only add non-empty supports
             gen.append(support)
@@ -55,9 +59,14 @@ def closure(RN, X):
     """Get closure of species set X"""
     temp = X
     CL = list(set(temp).union(set(RN.get_prod_from_species(temp))))
-    while RN.get_reactions_from_species(CL) != RN.get_reactions_from_species(temp):
+    reacstemp=[reaction.name() for reaction in RN.get_reactions_from_species(temp)]
+    reacsCL=[reaction.name() for reaction in RN.get_reactions_from_species(CL)]
+    while set(reacstemp) != set(reacsCL):
+        #print("is "+str(reacsCL) + " == "+ str(reacstemp))
         temp = CL
         CL = list(set(temp).union(set(RN.get_prod_from_species(temp))))
+        reacstemp=[reaction.name() for reaction in RN.get_reactions_from_species(temp)]
+        reacsCL=[reaction.name() for reaction in RN.get_reactions_from_species(CL)]
     return sorted(CL, key=lambda sp: sp.name)
 
 def closures(RN, ListX):
@@ -70,43 +79,219 @@ class ERC:
         self.label = label
         self.min_generators = min_generators
         self.all_generators = all_generators
+        # Cache for closure and related computations
+
+        self._closure = None
+        self._closure_names = None
+        self._reactions = None
+        self._required_species = None
+        self._produced_species = None
+        self._RN_reference = None  # Keep track of which RN this was computed for
 
     def get_closure(self, RN):
-        return closure(RN, self.min_generators[0])
+        """Get closure with caching"""
+        if self._closure is None or self._RN_reference != id(RN):
+            self._closure = closure(RN, self.min_generators[0])
+            self._closure_names = set(species_list_to_names(self._closure))
+            self._RN_reference = id(RN)
+            # Clear other caches since they depend on RN
+            self._reactions = None
+            self._required_species = None
+            self._produced_species = None
+        return self._closure
+    
+    def get_closure_names(self, RN):
+        """Get closure as set of species names with caching"""
+        if self._closure_names is None or self._RN_reference != id(RN):
+            self.get_closure(RN)  # This will populate _closure_names
+        return self._closure_names
     
     def get_reacs(self, RN):
-        specs = self.get_closure(RN)
-        reacs = RN.get_reactions_from_species(specs)
-        return reacs
+        """Get reactions with caching"""
+        if self._reactions is None or self._RN_reference != id(RN):
+            specs = self.get_closure(RN)
+            self._reactions = RN.get_reactions_from_species(specs)
+        return self._reactions
 
+    def get_erc_from_reaction(self, RN, hierarchy, reaction):
+        """Get ERC from a reaction (assumes reaction is a reaction object or name)"""
+        if hasattr(reaction, 'name'):
+            reaction_name = reaction.name()
+        else:
+            reaction_name = str(reaction)
+        
+        # Find the ERC that contains this reaction
+        for erc in hierarchy.ercs:
+            erc_reactions = erc.get_reacs(RN)
+            erc_reaction_names = [r.name() if hasattr(r, 'name') else str(r) for r in erc_reactions]
+            if reaction_name in erc_reaction_names:
+                return erc
+        
+        return None
+    def get_required_species(self, RN):
+        """Get required species (consumed but not produced) with caching"""
+        if self._required_species is None or self._RN_reference != id(RN):
+            reactions = self.get_reacs(RN)
+            
+            consumed = set()
+            produced = set()
+            
+            for reaction in reactions:
+                # Get all edges and filter by type
+                for edge in reaction.edges:
+                    if edge.type == "reactant":
+                        consumed.add(edge.species_name)
+                    elif edge.type == "product":
+                        produced.add(edge.species_name)
+            
+            self._required_species = consumed - produced
+        return self._required_species
+
+    def get_produced_species(self, RN):
+        """Get produced species with caching"""
+        if self._produced_species is None or self._RN_reference != id(RN):
+            reactions = self.get_reacs(RN)
+            
+            produced = set()
+            
+            for reaction in reactions:
+                # Get all edges and filter for products
+                for edge in reaction.edges:
+                    if edge.type == "product":
+                        produced.add(edge.species_name)
+            
+            self._produced_species = produced
+        return self._produced_species
+    
+    def clear_cache(self):
+        """Clear all cached computations (useful if RN changes)"""
+        self._closure = None
+        self._closure_names = None
+        self._reactions = None
+        self._required_species = None
+        self._produced_species = None
+        self._RN_reference = None
+    
     @staticmethod
+    def find_minimal_generators(generators):
+        minimal = []
+        gen_sets = [(gen, set(sp.name for sp in gen)) for gen in generators]
+
+        for i, (gen1, set1) in enumerate(gen_sets):
+            is_minimal = True
+            for j, (gen2, set2) in enumerate(gen_sets):
+                if i != j and set2.issubset(set1) and set2 != set1:
+                    is_minimal = False
+                    break
+            if is_minimal:
+                minimal.append(gen1)
+        return minimal
+    
+    @staticmethod
+    def ERCs(RN):
+        """Create ERCs with closure pre-computation for efficiency"""
+        print("Computing ERCs with closure caching...")
+        
+        # 1. Compute all closures once (O(n))
+        generators_list = generators(RN)
+        closure_cache = {id(gen): closure(RN, gen) for gen in generators_list}
+        
+        # 2. Group by closure signature (O(n))
+        closure_groups = defaultdict(list)
+        for gen in generators_list:
+            sig = tuple(sorted(sp.name for sp in closure_cache[id(gen)]))
+            closure_groups[sig].append(gen)
+        
+        # 3. Find minimal generators for each group (O(Σk²))
+        ERC_list = []
+        for counter, (closure_sig, gens_group) in enumerate(closure_groups.items()):
+            min_gens = ERC.find_minimal_generators(gens_group)
+            
+            erc = ERC(min_generators=min_gens,
+                    label=f"E{counter}",
+                    all_generators=gens_group)
+            
+            # Pre-compute and cache closure for efficiency
+            erc._closure = closure_cache[id(min_gens[0])]
+            erc._closure_names = set(species_list_to_names(erc._closure))
+            erc._RN_reference = id(RN)
+            
+            ERC_list.append(erc)
+        
+        print(f"Created {len(ERC_list)} ERCs with pre-computed closures")
+        return ERC_list
+    
+    @staticmethod  
     def build_hierarchy_graph(ercs, RN):
-        """Build the minimal containment graph between ERCs"""
+        """Build the minimal containment graph between ERCs - ultra-optimized version"""
         graph = nx.DiGraph()
+        
+        # Add all nodes
         for erc in ercs:
             graph.add_node(erc.label, erc=erc)
-            
-        # Get all containment relations
-        containments = []
-        for erc1 in ercs:
-            closure1 = set(species_list_to_names(erc1.get_closure(RN)))
-            for erc2 in ercs:
-                if erc1 != erc2:
-                    closure2 = set(species_list_to_names(erc2.get_closure(RN)))
-                    if closure2.issubset(closure1) and closure1 != closure2:
-                        containments.append((erc1.label, erc2.label))
         
-        # Keep only direct containments
-        for start, end in containments:
-            is_direct = True
-            for erc in ercs:
-                mid = erc.label
-                if (start, mid) in containments and (mid, end) in containments:
-                    is_direct = False
-                    break
-            if is_direct:
-                graph.add_edge(start, end)
+        if len(ercs) <= 1:
+            return graph
+        
+        print(f"Building hierarchy graph for {len(ercs)} ERCs...")
+        
+        # 1. Sort ERCs by closure size for more efficient processing (using cached closures)
+        ercs_by_size = sorted(ercs, key=lambda erc: len(erc.get_closure_names(RN)), reverse=True)
+        
+        # 2. Build containment relations with early termination
+        containments = []
+        for i, erc1 in enumerate(ercs_by_size):
+            closure1 = erc1.get_closure_names(RN)
+            # Only check ERCs with smaller or equal closure sizes
+            for j in range(i+1, len(ercs_by_size)):
+                erc2 = ercs_by_size[j]
+                closure2 = erc2.get_closure_names(RN)
                 
+                # Since we sorted by size, if closure2 is not a subset, 
+                # no subsequent ERCs will be either
+                if len(closure2) > len(closure1):
+                    break
+                    
+                if closure2.issubset(closure1) and closure1 != closure2:
+                    containments.append((erc1.label, erc2.label))
+        
+        print(f"Found {len(containments)} containment relations")
+        
+        # 3. Use NetworkX transitive reduction for optimal performance
+        if containments:
+            try:
+                # Build temporary graph with all containments
+                temp_graph = nx.DiGraph()
+                temp_graph.add_nodes_from([erc.label for erc in ercs])
+                temp_graph.add_edges_from(containments)
+                
+                # Get transitive reduction
+                direct_graph = nx.transitive_reduction(temp_graph)
+                
+                # Add direct edges to final graph
+                graph.add_edges_from(direct_graph.edges())
+                
+                print(f"Reduced to {len(direct_graph.edges())} direct containments")
+                
+            except (AttributeError, ImportError):
+                # Fallback: optimized manual detection
+                print("Using fallback method...")
+                containment_set = set(containments)
+                erc_labels = [erc.label for erc in ercs]
+                
+                for start, end in containments:
+                    is_direct = True
+                    for mid_label in erc_labels:
+                        if (mid_label != start and mid_label != end and 
+                            (start, mid_label) in containment_set and 
+                            (mid_label, end) in containment_set):
+                            is_direct = False
+                            break
+                    if is_direct:
+                        graph.add_edge(start, end)
+                        
+                print(f"Reduced to {len(graph.edges())} direct containments")
+        
         return graph
 
     @staticmethod
@@ -124,11 +309,13 @@ class ERC:
         return levels
 
     @staticmethod
-    def plot_hierarchy(ercs, RN, graph=None, figsize=(10,10)):
+    def plot_hierarchy(RN, ercs=None , graph=None, figsize=(10,10), title="ERC Hierarchy"):
         """Plot the ERC hierarchy"""
+        
+        if ercs is None:
+            ercs=ERC.ERCs(RN)
         if graph is None:
-            graph = ERC.build_hierarchy_graph(ercs, RN)
-            
+            graph = ERC.build_hierarchy_graph(ercs, RN)            
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(111)
         
@@ -151,7 +338,7 @@ class ERC:
         # Draw graph components
         nodes = nx.draw_networkx_nodes(graph, pos,
                                      node_color='lightblue',
-                                     node_size=2000)
+                                     node_size=1000)
         nx.draw_networkx_edges(graph, pos,
                              edge_color='gray',
                              arrows=True,
@@ -189,578 +376,83 @@ class ERC:
 
         fig.canvas.mpl_connect("motion_notify_event", hover)
         
-        plt.title("ERC Hierarchy")
+        plt.title(title)
         plt.axis('off')
         plt.show()
         return graph
 
-    @staticmethod
-    def get_all_synergies(base_erc, target_erc, erc_hierarchy, RN):
-        """
-        Find synergetic ERCs and their coverage details with base_erc.
-        
-        Returns
-        -------
-        dict
-            Dictionary mapping synergetic ERCs to tuples of:
-            - list of covered generators
-            - coverage ratio (covered/total generators)
-        """
-        base_closure = set(species_list_to_names(base_erc.get_closure(RN)))
-        synergy_details = {}
-        total_generators = len(target_erc.min_generators)
-        
-        other_labels = [node for node in erc_hierarchy.nodes() 
-                       if node not in [base_erc.label, target_erc.label]]
-        
-        # For each potential synergetic ERC
-        for other_label in other_labels:
-            other_erc = erc_hierarchy.nodes[other_label]['erc']
-            other_closure = set(species_list_to_names(other_erc.get_closure(RN)))
-            covered_gens = []
-            
-            for gen in target_erc.min_generators:
-                gen_species = set(species_list_to_names(gen))
-                combined_closure = base_closure.union(other_closure)
-                
-                # Check for true synergy with this generator
-                if (gen_species.issubset(combined_closure) and
-                    not gen_species.issubset(base_closure) and
-                    not gen_species.issubset(other_closure) and
-                    len(gen_species & base_closure - other_closure) > 0 and
-                    len(gen_species & other_closure - base_closure) > 0):
-                    covered_gens.append(gen)
-            
-            # If we found any synergies with this ERC, record the details
-            if covered_gens:
-                coverage_ratio = len(covered_gens) / total_generators
-                synergy_details[other_erc] = (covered_gens, coverage_ratio)
-                
-        return synergy_details
-    @staticmethod
-    def find_minimal_synergies(base_erc, target_erc, erc_hierarchy, RN, visited_branch_pairs=None):
-        """
-        Find minimal synergetic ERCs by exploring hierarchy from top to bottom.
-        Tracks visited branch pairs to avoid redundant exploration.
-        
-        Parameters
-        ----------
-        base_erc : ERC
-            The base ERC to find synergies with
-        target_erc : ERC
-            The target ERC whose generators we want to cover
-        erc_hierarchy : nx.DiGraph
-            The hierarchy graph of ERCs
-        RN : ReactionNetwork
-            The reaction network
-        visited_branch_pairs : set, optional
-            Set of already explored branch pairs (base_branch, syn_branch, target)
-            
-        Returns
-        -------
-        dict
-            Dictionary mapping minimal synergetic ERCs to tuples of:
-            - list of uniquely covered generators
-            - coverage ratio
-        """
-        if visited_branch_pairs is None:
-            visited_branch_pairs = set()
 
-        def get_branch_nodes(node):
-            """Get all nodes in a branch (ancestors and descendants)"""
-            ancestors = nx.ancestors(erc_hierarchy, node)
-            descendants = nx.descendants(erc_hierarchy, node)
-            return {node}.union(ancestors).union(descendants)
-
-        def has_synergy(erc1, erc2, target_gens):
-            """Check if two ERCs have synergy for covering target generators"""
-            erc1_closure = set(species_list_to_names(erc1.get_closure(RN)))
-            erc2_closure = set(species_list_to_names(erc2.get_closure(RN)))
-            combined_closure = erc1_closure.union(erc2_closure)
-            covered = []
-            
-            for gen in target_gens:
-                gen_species = set(species_list_to_names(gen))
-                if (gen_species.issubset(combined_closure) and
-                    not gen_species.issubset(erc1_closure) and
-                    not gen_species.issubset(erc2_closure) and
-                    len(gen_species & erc1_closure - erc2_closure) > 0 and
-                    len(gen_species & erc2_closure - erc1_closure) > 0):
-                    covered.append(gen)
-            
-            return covered
-
-        def explore_branch(current_erc, remaining_gens, minimal_synergies):
-            """Recursively explore hierarchy branch for minimal synergies"""
-            # Get current branch nodes
-            current_branch = get_branch_nodes(current_erc.label)
-            base_branch = get_branch_nodes(base_erc.label)
-            
-            # Check if this branch pair has been explored for this target
-            branch_pair = frozenset([frozenset(base_branch), frozenset(current_branch)])
-            branch_target_key = (branch_pair, target_erc.label)
-            
-            if branch_target_key in visited_branch_pairs:
-                return
-            
-            visited_branch_pairs.add(branch_target_key)
-            
-            covered_gens = has_synergy(base_erc, current_erc, remaining_gens)
-            
-            if not covered_gens:
-                return  # No synergy in this branch
-                
-            # Get successor nodes (contained ERCs)
-            successors = list(erc_hierarchy.successors(current_erc.label))
-            if not successors:
-                # If leaf node with synergy, add to minimal synergies
-                coverage_ratio = len(covered_gens) / len(target_erc.min_generators)
-                minimal_synergies[current_erc] = (covered_gens, coverage_ratio)
-                return
-                
-            # Try successors for better (more specific) synergies
-            found_better = False
-            for succ_label in successors:
-                succ_erc = erc_hierarchy.nodes[succ_label]['erc']
-                succ_covered = has_synergy(base_erc, succ_erc, covered_gens)
-                if succ_covered:
-                    found_better = True
-                    explore_branch(succ_erc, succ_covered, minimal_synergies)
-            
-            # If no successor had synergy, current is minimal
-            if not found_better:
-                coverage_ratio = len(covered_gens) / len(target_erc.min_generators)
-                minimal_synergies[current_erc] = (covered_gens, coverage_ratio)
-
-        # Get top-level ERCs that aren't in containment with base or target
-        top_ercs = [erc_hierarchy.nodes[node]['erc'] for node in erc_hierarchy.nodes()
-                   if erc_hierarchy.in_degree(node) == 0 and
-                   node not in [base_erc.label, target_erc.label]]
-        
-        minimal_synergies = {}
-        # Explore each top-level ERC
-        for top_erc in top_ercs:
-            explore_branch(top_erc, target_erc.min_generators, minimal_synergies)
-            
-        return minimal_synergies
+class ERC_Hierarchy:
+    """Helper class to manage ERC hierarchies and containment relationships"""
     
-    @staticmethod
-    def find_hierarchical_minimal_synergies(erc_hierarchy, RN):
-        """Find minimal synergies by exploring hierarchy chains from bottom to top."""
+    def __init__(self, RN):
+        self.RN = RN
+        self.ercs = ERC.ERCs(RN)
+        self.graph = None
+        self._containment_cache = {}
+        self._contained_cache = {}
         
-        def get_ancestor_chains(node):
-            """Get all possible chains from node to roots"""
-            chains = []
-            if erc_hierarchy.in_degree(node) == 0:  # Node is a root
-                return [[node]]
+    def build_hierarchy_graph(self):
+        """Build hierarchy graph using ultra-optimized method"""
+        self.graph = ERC.build_hierarchy_graph(self.ercs, self.RN)
+        self._build_containment_caches()
+        return self.graph
+    
+    def _build_containment_caches(self):
+        """Build caches for containment relationships"""
+        if self.graph is None:
+            return
             
-            for parent in erc_hierarchy.predecessors(node):
-                parent_chains = get_ancestor_chains(parent)
-                for chain in parent_chains:
-                    chains.append(chain + [node])
+        self._containment_cache = {}
+        self._contained_cache = {}
+        
+        for erc in self.ercs:
+            # Get all ERCs that this ERC contains (descendants)
+            descendants = set()
+            if erc.label in self.graph:
+                descendants = set(nx.descendants(self.graph, erc.label))
+            self._containment_cache[erc] = [e for e in self.ercs if e.label in descendants]
             
-            return chains
-        
-        def has_synergy(erc1, erc2, target_gens):
-            """Check if two ERCs have synergy for target generators"""
-            erc1_closure = set(species_list_to_names(erc1.get_closure(RN)))
-            erc2_closure = set(species_list_to_names(erc2.get_closure(RN)))
-            combined_closure = erc1_closure.union(erc2_closure)
-            covered = []
-            
-            for gen in target_gens:
-                gen_species = set(species_list_to_names(gen))
-                if (gen_species.issubset(combined_closure) and
-                    not gen_species.issubset(erc1_closure) and
-                    not gen_species.issubset(erc2_closure)):
-                    covered.append(gen)
-            
-            return covered
-
-        def explore_synergy_chain(base_erc, syn_erc, target_erc, visited_combinations):
-            """Check if synergy exists and is minimal"""
-            combo = frozenset([base_erc.label, syn_erc.label, target_erc.label])
-            if combo in visited_combinations:
-                return None
-            
-            visited_combinations.add(combo)
-            covered_gens = has_synergy(base_erc, syn_erc, target_erc.min_generators)
-            
-            if covered_gens:
-                return (syn_erc, covered_gens, len(covered_gens)/len(target_erc.min_generators))
-            return None
-
-        minimal_synergies = {}
-        visited_combinations = set()
-        
-        # Get bottom ERCs (no outgoing edges)
-        bottom_ercs = [erc_hierarchy.nodes[n]['erc'] for n in erc_hierarchy.nodes()
-                      if erc_hierarchy.out_degree(n) == 0]
-        
-        # Get top ERCs (no incoming edges)
-        top_ercs = [erc_hierarchy.nodes[n]['erc'] for n in erc_hierarchy.nodes()
-                    if erc_hierarchy.in_degree(n) == 0]
-        
-        # Process each bottom ERC as potential base
-        for base_erc in bottom_ercs:
-            # Get all possible chains from this bottom ERC to roots
-            base_chains = get_ancestor_chains(base_erc.label)
-            base_chain_nodes = {node for chain in base_chains for node in chain}
-            
-            # For each top ERC not in any of base's chains
-            for top_erc in top_ercs:
-                if top_erc.label not in base_chain_nodes:
-                    # Get all possible chains from this top ERC
-                    top_chains = get_ancestor_chains(top_erc.label)
-                    
-                    # Try synergies with ERCs from each chain
-                    for chain in top_chains:
-                        chain_ercs = [erc_hierarchy.nodes[n]['erc'] for n in chain]
-                        
-                        for syn_erc in chain_ercs:
-                            if syn_erc.label in {base_erc.label, top_erc.label}:
-                                continue
-                            
-                            # Try synergy with chain ERCs from top to bottom
-                            for target_erc in reversed(chain_ercs):
-                                synergy = explore_synergy_chain(base_erc, syn_erc, target_erc, visited_combinations)
-                                if synergy:
-                                    key = (base_erc, target_erc)
-                                    if key not in minimal_synergies:
-                                        minimal_synergies[key] = []
-                                    minimal_synergies[key].append(synergy)
-                                    break  # Found minimal synergy in this chain
-        
-        return minimal_synergies
-
-
-    @staticmethod
-    def get_modified_hierarchy(base_erc, ercs, RN):
-        """Remove ERCs that contain or are contained by base_erc's closure"""
-        graph = ERC.build_hierarchy_graph(ercs, RN)
-        base_closure = set(species_list_to_names(base_erc.get_closure(RN)))
-        
-        nodes_to_remove = []
-        for erc in ercs:
-            if erc == base_erc:
-                continue
-            erc_closure = set(species_list_to_names(erc.get_closure(RN)))
-            if erc_closure.issubset(base_closure) or base_closure.issubset(erc_closure):
-                nodes_to_remove.append(erc.label)
-                
-        for node in nodes_to_remove:
-            graph.remove_node(node)
-            
-        return graph
-
-    @staticmethod
-    def get_top_level_ercs(graph, ercs):
-        """Get ERCs that have no incoming edges (not contained by any other)"""
-        top_labels = [node for node in graph.nodes() if graph.in_degree(node) == 0]
-        return [erc for erc in ercs if erc.label in top_labels]
-
-    @staticmethod
-    def ERCs(RN):
-        """Generate ERCs from reaction network"""
-        List_gen = generators(RN)
-        remaining_gens = List_gen.copy()
-        used_closures = set()
-        ERC_list = []
-        counter = 0
-        
-        while remaining_gens:
-            gen_species = remaining_gens[0]
-            closure_species = tuple(sorted([sp.name for sp in closure(RN, gen_species)]))
-            
-            if closure_species not in used_closures:
-                all_gens = []
-                i = 0
-                while i < len(remaining_gens):
-                    gen = remaining_gens[i]
-                    gen_closure = tuple(sorted([sp.name for sp in closure(RN, gen)]))
-                    if gen_closure == closure_species:
-                        all_gens.append(gen)
-                        remaining_gens.pop(i)
-                    else:
-                        i += 1
-                
-                min_gens = []
-                for gen1 in all_gens:
-                    is_minimal = True
-                    gen1_set = set(sp.name for sp in gen1)
-                    for gen2 in all_gens:
-                        if gen1 != gen2:
-                            gen2_set = set(sp.name for sp in gen2)
-                            if gen2_set.issubset(gen1_set):
-                                is_minimal = False
-                                break
-                    if is_minimal:
-                        min_gens.append(gen1)
-                
-                erc = ERC(min_generators=min_gens,
-                         label=f"E{counter}",
-                         all_generators=all_gens)
-                ERC_list.append(erc)
-                used_closures.add(closure_species)
-                counter += 1
-            else:
-                remaining_gens.pop(0)
-        
-        return ERC_list
-
-    @staticmethod
-    def plot_hierarchy_synergies(ercs, RN, hierarchy_graph=None, synergies=None, figsize=(12, 8), title=None):
-        """Plot ERC hierarchy with synergies as colored edges with hover information."""
-        if hierarchy_graph is None:
-            hierarchy_graph = ERC.build_hierarchy_graph(ercs, RN)
-            
-        fig, ax = plt.subplots(figsize=figsize)
-        G = nx.DiGraph()
-        
-        # Add nodes with species information
-        for erc in ercs:
-            species_info = f"Species: {species_list_to_names(erc.get_closure(RN))}"
-            G.add_node(erc.label, node_type="erc", species=species_info)
-        
-        # Add hierarchy edges (black)
-        for u, v in hierarchy_graph.edges():
-            G.add_edge(u, v, color='black', edge_type='hierarchy')
-        
-        # Use standardized get_node_levels
-        levels = ERC.get_node_levels(G)
-        
-        # Position nodes by level
-        pos = {}
-        level_nodes = defaultdict(list)
-        
-        for node, level in levels.items():
-            level_nodes[level].append(node)
-        
-        for level, nodes in level_nodes.items():
-            n_nodes = len(nodes)
-            nodes.sort(key=lambda n: len(nx.ancestors(G, n)), reverse=True)
-            for i, node in enumerate(nodes):
-                x = (i - (n_nodes-1)/2) * 2.0
-                y = level * 2.0
-                pos[node] = (x, y)
-
-        # Add synergy edges without labels
-        if synergies:
-            for (base_erc, target_erc), syn_list in synergies.items():
-                for syn_erc, _, _ in syn_list:
-                    synergy_info = f"{base_erc.label}+{syn_erc.label}→{target_erc.label}"
-                    G.add_edge(base_erc.label, target_erc.label,
-                             color='red', edge_type='synergy',
-                             synergy_info=synergy_info)
-
-        # Draw the graph
-        nodes = nx.draw_networkx_nodes(G, pos, node_color='lightblue', 
-                                     node_size=500, ax=ax)
-        
-        # Draw edges with different styles
-        hierarchy_edges = [(u, v) for u, v in G.edges() if G[u][v]['edge_type'] == 'hierarchy']
-        synergy_edges = [(u, v) for u, v in G.edges() if G[u][v]['edge_type'] == 'synergy']
-        
-        nx.draw_networkx_edges(G, pos, edgelist=hierarchy_edges,
-                             edge_color='black',
-                             arrows=True,
-                             arrowsize=20)
-        
-        nx.draw_networkx_edges(G, pos, edgelist=synergy_edges,
-                             edge_color='red',
-                             style='dashed',
-                             arrows=True,
-                             arrowsize=20,
-                             connectionstyle="arc3,rad=0.3")
-        
-        nx.draw_networkx_labels(G, pos)
-
-        # Create hover annotation
-        annot = ax.annotate("", xy=(0,0), xytext=(10,10),
-                          textcoords="offset points",
-                          bbox=dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9),
-                          arrowprops=dict(arrowstyle="->"))
-        annot.set_visible(False)
-
-        def update_annot(obj_type, idx=None, edge=None):
-            if obj_type == 'node':
-                node = list(G.nodes())[idx]
-                text = G.nodes[node]['species']
-                pos_node = pos[node]
-                annot.xy = pos_node
-            else:  # edge
-                text = G.edges[edge]['synergy_info']
-                pos_src = pos[edge[0]]
-                pos_dst = pos[edge[1]]
-                annot.xy = ((pos_src[0] + pos_dst[0])/2, ((pos_src[1] + pos_dst[1])/2))
-            annot.set_text(text)
-
-        def hover(event):
-            if event.inaxes != ax:
-                return
-            
-            # Check for nodes
-            cont, ind = nodes.contains(event)
-            if cont:
-                annot.set_visible(True)
-                update_annot('node', ind['ind'][0])
-                fig.canvas.draw_idle()
-                return
-            
-            # Check for synergy edges
-            for edge in synergy_edges:
-                edge_pos = np.array([[pos[edge[0]][0], pos[edge[0]][1]],
-                                   [pos[edge[1]][0], pos[edge[1]][1]]])
-                dist = np.linalg.norm(np.cross(edge_pos[1]-edge_pos[0],
-                                   edge_pos[0]-np.array([event.xdata, event.ydata])))/np.linalg.norm(edge_pos[1]-edge_pos[0])
-                if dist < 0.1:
-                    annot.set_visible(True)
-                    update_annot('edge', edge=edge)
-                    fig.canvas.draw_idle()
-                    return
-            
-            annot.set_visible(False)
-            fig.canvas.draw_idle()
-
-        fig.canvas.mpl_connect("motion_notify_event", hover)
-        if title is None:
-            ax.set_title("ERC Hierarchy with Synergies\n(Hover over red edges to see synergy details)")
+            # Get all ERCs that contain this ERC (ancestors)
+            ancestors = set()
+            if erc.label in self.graph:
+                ancestors = set(nx.ancestors(self.graph, erc.label))
+            self._contained_cache[erc] = [e for e in self.ercs if e.label in ancestors]
+    
+    def get_contain(self, erc):
+        """Get all ERCs contained by the given ERC (cached)"""
+        if erc not in self._containment_cache:
+            self._build_containment_caches()
+        return self._containment_cache.get(erc, [])
+    
+    def get_contained(self, erc):
+        """Get all ERCs that contain the given ERC (cached)"""
+        if erc not in self._contained_cache:
+            self._build_containment_caches()
+        return self._contained_cache.get(erc, [])
+    
+    def get_erc_from_reaction(self, RN, hierarchy, reaction):
+        """Get ERC from a reaction (assumes reaction is a reaction object or name)"""
+        if hasattr(reaction, 'name'):
+            reaction_name = reaction.name()
         else:
-            ax.set_title(title)
-        ax.set_axis_on()
-        ax.grid(False)
+            reaction_name = str(reaction)
         
-        return fig
+        # Find the ERC that contains this reaction
+        for erc in self.ercs:
+            erc_reactions = erc.get_reacs(RN)
+            erc_reaction_names = [r.name() if hasattr(r, 'name') else str(r) for r in erc_reactions]
+            if reaction_name in erc_reaction_names:
+                return erc
+        
+        return None
 
-    @staticmethod
-    def plot_hierarchy_html(ercs, RN, hierarchy_graph=None, figsize=(800, 600)):
-        """Generate interactive HTML plot of ERC hierarchy."""
-        if hierarchy_graph is None:
-            hierarchy_graph = ERC.build_hierarchy_graph(ercs, RN)
-        
-        # Use get_node_levels for consistent level calculation
-        levels = ERC.get_node_levels(hierarchy_graph)
-        
-        # Position nodes
-        pos = {}
-        level_nodes = defaultdict(list)
-        
-        for node, level in levels.items():
-            level_nodes[level].append(node)
-        
-        for level, nodes in level_nodes.items():
-            n_nodes = len(nodes)
-            nodes.sort()
-            for i, node in enumerate(nodes):
-                x = (i - (n_nodes-1)/2) * 2.0
-                y = level * 2.0
-                pos[node] = (x, y)
-        
-        # Create edges
-        edge_x = []
-        edge_y = []
-        for edge in hierarchy_graph.edges():
-            x0, y0 = pos[edge[0]]
-            x1, y1 = pos[edge[1]]
-            edge_x.extend([x0, x1, None])
-            edge_y.extend([y0, y1, None])
-        
-        # Create figure
-        fig = go.Figure()
-        
-        # Add edges
-        fig.add_trace(go.Scatter(
-            x=edge_x, y=edge_y,
-            line=dict(width=0.5, color='#888'),
-            hoverinfo='none',
-            mode='lines'))
-        
-        # Add nodes
-        node_x = []
-        node_y = []
-        node_text = []
-        
-        for node in hierarchy_graph.nodes():
-            x, y = pos[node]
-            node_x.append(x)
-            node_y.append(y)
-            erc = hierarchy_graph.nodes[node]['erc']
-            hover_text = f"ERC {erc.label}<br>Species: {species_list_to_names(erc.get_closure(RN))}"
-            node_text.append(hover_text)
-        
-        fig.add_trace(go.Scatter(
-            x=node_x, y=node_y,
-            mode='markers+text',
-            hoverinfo='text',
-            hovertext=node_text,
-            text=[f"ERC{node}" for node in hierarchy_graph.nodes()],
-            textposition="top center",
-            marker=dict(
-                showscale=False,
-                size=20,
-                line_width=2)))
-        
-        fig.update_layout(
-            title="ERC Hierarchy",
-            showlegend=False,
-            hovermode='closest',
-            margin=dict(b=20,l=5,r=5,t=40),
-            width=figsize[0],
-            height=figsize[1],
-            plot_bgcolor='white')
-        
-        return fig
 
-    @staticmethod
-    def plot_hierarchy_synergies_html(ercs, RN, hierarchy_graph=None, synergies=None, figsize=(800, 600)):
-        """Generate interactive HTML plot of ERC hierarchy with synergies."""
-        if hierarchy_graph is None:
-            hierarchy_graph = ERC.build_hierarchy_graph(ercs, RN)
-        
-        # Get base hierarchy plot
-        fig = ERC.plot_hierarchy_html(ercs, RN, hierarchy_graph, figsize)
-        
-        if synergies:
-            # Get node positions (same as in plot_hierarchy_html)
-            levels = ERC.get_node_levels(hierarchy_graph)
-            pos = {}
-            level_nodes = defaultdict(list)
-            
-            for node, level in levels.items():
-                level_nodes[level].append(node)
-            
-            for level, nodes in level_nodes.items():
-                n_nodes = len(nodes)
-                nodes.sort()
-                for i, node in enumerate(nodes):
-                    x = (i - (n_nodes-1)/2) * 2.0
-                    y = level * 2.0
-                    pos[node] = (x, y)
-            
-            # Add synergy edges
-            for (base_erc, target_erc), syn_list in synergies.items():
-                for syn_erc, covered_gens, ratio in syn_list:
-                    x0, y0 = pos[base_erc.label]
-                    x1, y1 = pos[target_erc.label]
-                    
-                    hover_text = f"{base_erc.label}+{syn_erc.label}→{target_erc.label}"
-                    
-                    fig.add_trace(go.Scatter(
-                        x=[x0, x1],
-                        y=[y0, y1],
-                        mode='lines',
-                        line=dict(color='red', width=1, dash='dash'),
-                        hoverinfo='text',
-                        hovertext=hover_text))
-        
-        return fig
 __all__ = [
     'ERC',
+    'ERC_Hierarchy',
     'generators',
     'species_list_to_names',
     'closure',
     'closures'
 ]
-
-
-
