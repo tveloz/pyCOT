@@ -1,4 +1,0 @@
-Level,Node_Count,Avg_In_Degree,Avg_Out_Degree,Max_In_Degree,Max_Out_Degree,Std_In_Degree,Std_Out_Degree
-0,3,0.6666666666666666,0.0,1,0,0.4714045207910317,0.0
-1,2,0.5,1.0,1,1,0.5,0.0
-2,1,0.0,1.0,0,1,0.0,0.0
