@@ -3,7 +3,7 @@
 """
 Core Synergy and Complementarity Classes and Functions
 """
-
+import time
 from itertools import combinations
 import networkx as nx
 from collections import defaultdict
@@ -45,55 +45,6 @@ class ERC_Complementarity:
         
     def __str__(self):
         return f"{self.erc1.label} ⊕ {self.erc2.label} (Type {self.comp_type})"
-
-class ERC_SORN:
-    """Base SORN class"""
-    
-    def __init__(self, hierarchy, RN):
-        self.hierarchy = hierarchy
-        self.RN = RN
-        self.synergy_lookup = {}
-        self.complementarity_lookup = {}
-        
-    def get_synergies(self, erc1_label, erc2_label):
-        """Get synergies between two ERCs."""
-        key = tuple(sorted([erc1_label, erc2_label]))
-        return self.synergy_lookup.get(key, [])
-        
-    def get_statistics(self):
-        """Get basic statistics about the SORN."""
-        return {
-            'total_synergies': sum(len(syns) for syns in self.synergy_lookup.values()),
-            'pairs_with_synergies': len(self.synergy_lookup),
-            'total_pairs': len(self.hierarchy.ercs) * (len(self.hierarchy.ercs) - 1) // 2
-        }
-
-# ============================================================================
-# ENHANCED CLASSES
-# ============================================================================
-
-class ERC_SORN_Enhanced(ERC_SORN):
-    """Enhanced SORN implementation"""
-    
-    def __init__(self, hierarchy, RN):
-        super().__init__(hierarchy, RN)
-        self.generator_cache = {}
-        self.closure_cache = {}
-        
-    def build(self, verbose=False):
-        """Build the enhanced SORN using efficient algorithm."""
-        self.synergy_lookup = {}
-        synergies = get_fundamental_synergies_efficient(
-            self.hierarchy.ercs, self.hierarchy, self.RN, verbose)
-            
-        # Organize synergies by ERC pair
-        for syn in synergies:
-            key = tuple(sorted(syn.rlabel))
-            if key not in self.synergy_lookup:
-                self.synergy_lookup[key] = []
-            self.synergy_lookup[key].append(syn)
-        
-        return self
 
 # ============================================================================
 # HELPER FUNCTIONS
@@ -153,15 +104,12 @@ def has_generator_coverage(base1_erc, base2_erc, target_erc, RN):
     
     return False
 # ============================================================================
-# SYNERGY DETECTION
+# SYNERGY DETECTION: BRUTE FORCE FASHION ONLY FOR TESTING
 # ============================================================================
 
 def get_basic_synergies(erc1, erc2, hierarchy, RN):
     """
-    CORRECTED: Get all basic synergies - one for each distinct target ERC.
-    
-    Key fix: Don't filter by containment at the basic level. Generate separate
-    synergy objects for each target ERC that can be produced by the base pair.
+    Generate all synergetic pairs by brute force
     """
     if not can_interact(erc1, erc2, hierarchy):
         return []
@@ -211,7 +159,7 @@ def get_basic_synergies(erc1, erc2, hierarchy, RN):
     if len(joint_closure_names) > len(union_reac_names):   
         novel_reac_names = joint_closure_names - union_reac_names
         
-        # CORRECTED: Track all target ERCs separately
+        # CORRECTED: Track all target )s separately
         target_ercs_found = set()  # Track which targets we've found
         
         for r in joint_closure_reacs:
@@ -230,8 +178,6 @@ def get_basic_synergies(erc1, erc2, hierarchy, RN):
 
 def get_maximal_synergies(erc1, erc2, hierarchy, RN):
     """
-    CORRECTED: Get maximal synergies with proper per-target maximality checking.
-    
     A synergy ERC1 + ERC2 → Target is maximal if there's no other synergy
     ERC1 + ERC2 → LargerTarget where LargerTarget contains Target.
     """
@@ -257,16 +203,14 @@ def get_maximal_synergies(erc1, erc2, hierarchy, RN):
     
     return maximal_synergies
 
-def get_fundamental_synergies(erc1, erc2, hierarchy, RN):
-    """
-    CORRECTED: Get fundamental synergies with proper per-target fundamentality checking.
-    
+def get_fundamental_synergies_brute_force(erc1, erc2, hierarchy, RN, maximal_synergies=None):
+    """    
     A maximal synergy ERC1 + ERC2 → Target is fundamental if there's no synergy 
-    MoreFundamental1 + MoreFundamental2 → Target where the reactants are more fundamental.
-    
+    MoreFundamental1 + MoreFundamental2 → Target where the reactants are more fundamental.  
     CRITICAL: Fundamentality is checked SEPARATELY for each target!
     """
-    maximal_synergies = get_maximal_synergies(erc1, erc2, hierarchy, RN)
+    if maximal_synergies==None:
+        maximal_synergies = get_maximal_synergies(erc1, erc2, hierarchy, RN)
     if not maximal_synergies:
         return []
     
@@ -323,7 +267,7 @@ def get_fundamental_synergies(erc1, erc2, hierarchy, RN):
     
     return fundamental_synergies
 # ============================================================================
-# EFFICIENT ALGORITHM
+# SYNERGY COMPUTATION EFFICIENT ALGORITHM
 # ============================================================================
 
 def build_base_target_relationships_efficient(ercs, hierarchy, RN, verbose=False):
@@ -794,41 +738,48 @@ def explore_targets_with_proper_hierarchy(target_pairs, base_target_map, ercs, h
                         stats['pairs_skipped_generator'] += 1
                         continue
                     
-                    # Verify actual synergy using original algorithm
-                    synergies = get_fundamental_synergies(base1, base2, hierarchy, RN)
                     
-                    # Check if any synergy produces this specific target
-                    target_synergy_found = False
-                    for synergy in synergies:
+                # Check if any synergy produces this specific target
+                # Optional debug flag at the top of your function or as parameter
+                verify_with_brute_force = False  # Set True only for testing correctness
+
+                if verify_with_brute_force:
+                    # Debug-only: confirm using brute force fundamental synergy method
+                    brute_synergies = get_fundamental_synergies_brute_force(base1, base2, hierarchy, RN)
+                    for synergy in brute_synergies:
                         if synergy.plabel == target_label:
+                            target_synergy_found = True
                             discovered_synergies.append(synergy)
                             stats['synergies_found'] += 1
-                            target_synergy_found = True
-                            
-                            if verbose:
-                                base1_level = levels.get(base1_label, 0)
-                                base2_level = levels.get(base2_label, 0)
-                                print(f"        ✓ SYNERGY: {base1_label}(L{base1_level}) + {base2_label}(L{base2_level}) → {target_label}(L{target_level})")
-                            
-                            # Apply constraints with proper hierarchy awareness
-                            pruned = apply_hierarchical_constraints(
-                                base1_label, base2_label, target_label,
-                                target_pairs, constraints, base_target_map, hierarchy, levels)
-                            
-                            if verbose and pruned > 0:
-                                print(f"          Pruned {pruned} non-fundamental combinations")
-                            
-                            break  # Found the synergy for this target
+                            break
+                else:
+                    # Use current algorithm's result directly (construct ERC_Synergy here)
+                    synergy_obj = ERC_Synergy([base1, base2], hierarchy.get_erc_by_label(target_label), "fundamental")
+                    discovered_synergies.append(synergy_obj)
+                    stats['synergies_found'] += 1
+                    target_synergy_found = True
+
+                if target_synergy_found:
+                    if verbose:
+                        base1_level = levels.get(base1_label, 0)
+                        base2_level = levels.get(base2_label, 0)
+                        print(f"        ✓ SYNERGY: {base1_label}(L{base1_level}) + {base2_label}(L{base2_level}) → {target_label}(L{target_level})")
+
+                    # Apply constraints with proper hierarchy awareness
+                    pruned = apply_hierarchical_constraints(
+                        base1_label, base2_label, target_label,
+                        target_pairs, constraints, base_target_map, hierarchy, levels)
+
+                    if verbose and pruned > 0:
+                        print(f"          Pruned {pruned} non-fundamental combinations")
+
+                    # Skip higher-level combinations for this target
+                    remaining_levels = [lv for lv in pair_levels.keys() if lv > combined_level]
+                    if remaining_levels and verbose:
+                        remaining_pairs = sum(len(pair_levels[lv]) for lv in remaining_levels)
+                        print(f"          Skipping {remaining_pairs} less fundamental pairs")
+                    break
                     
-                    # If we found a fundamental synergy at this level, 
-                    # we can skip higher-level (less fundamental) combinations for this target
-                    if target_synergy_found:
-                        # Skip remaining pairs at higher levels for this target
-                        remaining_levels = [lv for lv in pair_levels.keys() if lv > combined_level]
-                        if remaining_levels and verbose:
-                            remaining_pairs = sum(len(pair_levels[lv]) for lv in remaining_levels)
-                            print(f"          Skipping {remaining_pairs} less fundamental pairs")
-                        break
     
     if verbose:
         print(f"\n📊 Hierarchical Exploration Statistics:")
@@ -933,7 +884,7 @@ def apply_hierarchical_constraints(base1_label, base2_label, target_label,
                     total_pruned += 1
     
     return total_pruned
-def get_fundamental_synergies_efficient(ercs, hierarchy, RN, verbose=True):
+def get_fundamental_synergies(ercs, hierarchy, RN, verbose=True):
     """
     CORRECTED: Efficient algorithm with proper hierarchical exploration.
     """
@@ -974,36 +925,15 @@ def get_fundamental_synergies_efficient(ercs, hierarchy, RN, verbose=True):
     
     return fundamental_synergies
 
-# Convenience function
-def efficient_fundamental_synergies(hierarchy, RN, verbose=True):
-    """Convenience function for the corrected hierarchical algorithm."""
-    return get_fundamental_synergies_efficient(hierarchy.ercs, hierarchy, RN, verbose)
-def build_erc_sorn_enhanced(hierarchy, RN, verbose=False):
-    """Build enhanced SORN using efficient algorithm"""
-    sorn = ERC_SORN_Enhanced(hierarchy, RN)
-    sorn.synergy_lookup = {}
-    synergies = get_fundamental_synergies_efficient(
-        hierarchy.ercs, hierarchy, RN, verbose)
-        
-    # Organize synergies by ERC pair
-    for syn in synergies:
-        key = tuple(sorted(syn.rlabel))
-        if key not in sorn.synergy_lookup:
-            sorn.synergy_lookup[key] = []
-        sorn.synergy_lookup[key].append(syn)
-    
-    return sorn
+
 # ============================================================================
 # COMPLEMENTARITY DETECTION FUNCTIONS
 # ============================================================================
 
-def is_complementary_type1(erc1, erc2, hierarchy, RN):
+def is_complementary_type1(erc1, erc2, req1, req2, joint_req, joint_consumed,
+                           joint_produced, prod1, prod2, hierarchy, RN):
     """
     Check Type 1 complementarity: |reqs(X')|<|reqs(X)|+|reqs(E)|
-    
-    CORRECTED: Uses closure operator (∨) to calculate joint requirements.
-    This means the combination reduces the total required species.
-    
     Parameters
     ----------
     erc1, erc2 : ERC
@@ -1012,67 +942,36 @@ def is_complementary_type1(erc1, erc2, hierarchy, RN):
         Hierarchy containing the ERCs
     RN : ReactionNetwork
         The reaction network
-        
+    req1, req2, prod1, prod2 : set
+        Sets of requirements and produced species for ERC1 and ERC2
+    joint_req, joint_consumed, joint_produced : set
+        Set of joint requirements, consumed, and produced species for both ERCs
     Returns
     -------
     tuple
         (is_complementary: bool, info: dict)
     """
-    if not can_interact(erc1, erc2, hierarchy):
-        return False, {}
-    
-    try:
-        # Get individual ERC requirements and products (cached)
-        req1 = erc1.get_required_species(RN)
-        req2 = erc2.get_required_species(RN)
-        prod1 = erc1.get_produced_species(RN)
-        prod2 = erc2.get_produced_species(RN)
-        
-        # CRITICAL FIX: Calculate joint closure using ∨ operator (like synergies)
-        erc1_closure = erc1.get_closure(RN)
-        erc2_closure = erc2.get_closure(RN)
-        union_species = list(set(erc1_closure).union(set(erc2_closure)))
-        joint_closure = closure(RN, union_species)  # ∨ operator!
-        
-        # Get reactions from the joint closure
-        joint_closure_reacs = RN.get_reactions_from_species(joint_closure)
-        
-        # Calculate joint requirements from the FULL closure (including synergies)
-        joint_consumed = set()
-        joint_produced = set()
-        
-        for reaction in joint_closure_reacs:
-            # Get reactants (support) from reaction edges
-            for edge in reaction.edges:
-                if edge.type == "reactant":
-                    joint_consumed.add(edge.species_name)
-                elif edge.type == "product":
-                    joint_produced.add(edge.species_name)
-        
-        # Joint requirements = what's consumed but not produced in the joint closure
-        joint_req = joint_consumed - joint_produced
-        
-        # Type 1: Reduction in total requirements
-        reduction = len(req1) + len(req2) - len(joint_req)
-        
-        if reduction > 0:
-            return True, {
-                'req1': req1,
-                'req2': req2, 
-                'joint_req': joint_req,
-                'joint_consumed': joint_consumed,
-                'joint_produced': joint_produced,
-                'reduction': reduction,
-                'satisfied_by_1': req2 & prod1,  # What erc2 needs that erc1 produces
-                'satisfied_by_2': req1 & prod2,  # What erc1 needs that erc2 produces
-                'satisfied_by_synergy': (req1 | req2) & joint_produced - (prod1 | prod2)  # Novel satisfaction
-            }
-    except Exception as e:
-        print(f"⚠️  Warning: Error in type1 complementarity for {erc1.label}, {erc2.label}: {e}")
-    
-    return False, {}
 
-def is_complementary_type2(erc1, erc2, hierarchy, RN):
+        # Type 1: Reduction in total requirements
+    reduction = len(req1) + len(req2) - len(joint_req)
+        
+    if reduction > 0:
+        return True, {
+            'req1': req1,
+            'req2': req2, 
+            'joint_req': joint_req,
+            'joint_consumed': joint_consumed,
+            'joint_produced': joint_produced,
+            'reduction': reduction,
+            'satisfied_by_1': req2 & prod1,  # What erc2 needs that erc1 produces
+            'satisfied_by_2': req1 & prod2,  # What erc1 needs that erc2 produces
+            'satisfied_by_synergy': (req1 | req2) & joint_produced - (prod1 | prod2)  # Novel satisfaction
+            }
+    else:
+        return False, {}
+
+def is_complementary_type2(erc1, erc2, req1, req2, joint_req, joint_consumed,
+                           joint_produced, prod1, prod2, hierarchy, RN):
     """
     Check Type 2 complementarity: |reqs(X')|=|reqs(X)|+|reqs(E)| and reqs(X')≠reqs(X)
     
@@ -1082,12 +981,15 @@ def is_complementary_type2(erc1, erc2, hierarchy, RN):
     Parameters
     ----------
     erc1, erc2 : ERC
-        ERCs to check for Type 2 complementarity
+        ERCs to check for Type 1 complementarity
     hierarchy : ERC_Hierarchy
         Hierarchy containing the ERCs
     RN : ReactionNetwork
         The reaction network
-        
+    req1, req2, prod1, prod2 : set
+        Sets of requirements and produced species for ERC1 and ERC2
+    joint_req, joint_consumed, joint_produced : set
+        Set of joint requirements, consumed, and produced species for both ERCs
     Returns
     -------
     tuple
@@ -1097,34 +999,6 @@ def is_complementary_type2(erc1, erc2, hierarchy, RN):
         return False, {}
         
     try:
-        # Get individual ERC requirements and products (cached)
-        req1 = erc1.get_required_species(RN)
-        req2 = erc2.get_required_species(RN)
-        prod1 = erc1.get_produced_species(RN)
-        prod2 = erc2.get_produced_species(RN)
-        
-        # CRITICAL FIX: Calculate joint closure using ∨ operator
-        erc1_closure = erc1.get_closure(RN)
-        erc2_closure = erc2.get_closure(RN)
-        union_species = list(set(erc1_closure).union(set(erc2_closure)))
-        joint_closure = closure(RN, union_species)  # ∨ operator!
-        
-        # Get reactions from the joint closure
-        joint_closure_reacs = RN.get_reactions_from_species(joint_closure)
-        
-        # Calculate joint requirements from the FULL closure
-        joint_consumed = set()
-        joint_produced = set()
-        
-        for reaction in joint_closure_reacs:
-            for edge in reaction.edges:
-                if edge.type == "reactant":
-                    joint_consumed.add(edge.species_name)
-                elif edge.type == "product":
-                    joint_produced.add(edge.species_name)
-        
-        joint_req = joint_consumed - joint_produced
-        
         # Type 2: Same total requirements but different set
         if len(joint_req) == len(req1) + len(req2) and joint_req != req1:
             return True, {
@@ -1141,7 +1015,8 @@ def is_complementary_type2(erc1, erc2, hierarchy, RN):
     
     return False, {}
 
-def is_complementary_type3(erc1, erc2, hierarchy, RN):
+def is_complementary_type3(erc1, erc2, req1, req2, joint_req, joint_consumed,
+                           joint_produced, prod1, prod2, hierarchy, RN):
     """
     Check Type 3 complementarity: reqs(X')=reqs(X) and prods(X')≠prods(X)
     
@@ -1151,12 +1026,15 @@ def is_complementary_type3(erc1, erc2, hierarchy, RN):
     Parameters
     ----------
     erc1, erc2 : ERC
-        ERCs to check for Type 3 complementarity
+        ERCs to check for Type 1 complementarity
     hierarchy : ERC_Hierarchy
         Hierarchy containing the ERCs
     RN : ReactionNetwork
         The reaction network
-        
+    req1, req2, prod1, prod2 : set
+        Sets of requirements and produced species for ERC1 and ERC2
+    joint_req, joint_consumed, joint_produced : set
+        Set of joint requirements, consumed, and produced species for both ERCs
     Returns
     -------
     tuple
@@ -1167,41 +1045,11 @@ def is_complementary_type3(erc1, erc2, hierarchy, RN):
         
     try:
         # Get individual ERC requirements and products (cached)
-        req1 = erc1.get_required_species(RN)
-        req2 = erc2.get_required_species(RN)
-        prod1 = erc1.get_produced_species(RN)
-        prod2 = erc2.get_produced_species(RN)
+
         
-        # CRITICAL FIX: Calculate joint closure using ∨ operator
-        erc1_closure = erc1.get_closure(RN)
-        erc2_closure = erc2.get_closure(RN)
-        union_species = list(set(erc1_closure).union(set(erc2_closure)))
-        joint_closure = closure(RN, union_species)  # ∨ operator!
-        
-        # Get reactions from the joint closure
-        joint_closure_reacs = RN.get_reactions_from_species(joint_closure)
-        
-        # Calculate joint requirements and products from the FULL closure
-        joint_consumed = set()
-        joint_produced = set()
-        
-        for reaction in joint_closure_reacs:
-            for edge in reaction.edges:
-                if edge.type == "reactant":
-                    joint_consumed.add(edge.species_name)
-                elif edge.type == "product":
-                    joint_produced.add(edge.species_name)
-        
-        joint_req = joint_consumed - joint_produced
-        
-        # Check if there are novel products from synergies
-        basic_synergies = get_basic_synergies(erc1, erc2, hierarchy, RN)
-        novel_products_from_synergies = set()
-        
-        for syn in basic_synergies:
-            syn_prod = syn.product.get_produced_species(RN)
-            novel_products_from_synergies |= syn_prod
-        
+        # Check if joint_prod contains elements not in the prod1 or prod2
+        novel_products = set(joint_produced) - (prod1 | prod2)
+
         # Total products including synergistic products
         total_products = joint_produced
         
@@ -1213,9 +1061,8 @@ def is_complementary_type3(erc1, erc2, hierarchy, RN):
                 'prod1': prod1,
                 'joint_produced': joint_produced,
                 'total_products': total_products,
-                'novel_products_from_synergies': novel_products_from_synergies,
-                'novel_products_direct': joint_produced - (prod1 | prod2),  # Direct novel products
-                'has_synergy': len(basic_synergies) > 0
+                'novel_products': joint_produced - (prod1 | prod2),
+                'has_synergy': len(joint_produced - (prod1 | prod2)) >0
             }
     except Exception as e:
         print(f"⚠️  Warning: Error in type3 complementarity for {erc1.label}, {erc2.label}: {e}")
@@ -1245,18 +1092,48 @@ def get_complementarity(erc1, erc2, hierarchy, RN):
     
     complementarities = []
     
+    req1 = erc1.get_required_species(RN)
+    req2 = erc2.get_required_species(RN)
+    prod1 = erc1.get_produced_species(RN)
+    prod2 = erc2.get_produced_species(RN)
+    
+    # CRITICAL FIX: Calculate joint closure using ∨ operator
+    erc1_closure = erc1.get_closure(RN)
+    erc2_closure = erc2.get_closure(RN)
+    union_species = list(set(erc1_closure).union(set(erc2_closure)))
+    joint_closure = closure(RN, union_species)  # ∨ operator!
+    
+    # Get reactions from the joint closure
+    joint_closure_reacs = RN.get_reactions_from_species(joint_closure)
+    
+    # Calculate joint requirements and products from the FULL closure
+    joint_consumed = set()
+    joint_produced = set()
+    
+    for reaction in joint_closure_reacs:
+        for edge in reaction.edges:
+            if edge.type == "reactant":
+                joint_consumed.add(edge.species_name)
+            elif edge.type == "product":
+                joint_produced.add(edge.species_name)
+    
+    joint_req = joint_consumed - joint_produced
+
     # Check Type 1
-    is_type1, info1 = is_complementary_type1(erc1, erc2, hierarchy, RN)
+    is_type1, info1 = is_complementary_type1(erc1, erc2, req1, req2, joint_req, joint_consumed,
+                           joint_produced, prod1, prod2, hierarchy, RN)
     if is_type1:
         complementarities.append(ERC_Complementarity(erc1, erc2, 1, info1))
     
     # Check Type 2
-    is_type2, info2 = is_complementary_type2(erc1, erc2, hierarchy, RN)
+    is_type2, info2 = is_complementary_type2(erc1, erc2, req1, req2, joint_req, joint_consumed,
+                           joint_produced, prod1, prod2, hierarchy, RN)
     if is_type2:
         complementarities.append(ERC_Complementarity(erc1, erc2, 2, info2))
     
     # Check Type 3
-    is_type3, info3 = is_complementary_type3(erc1, erc2, hierarchy, RN)
+    is_type3, info3 = is_complementary_type3(erc1, erc2, req1, req2, joint_req, joint_consumed,
+                           joint_produced, prod1, prod2, hierarchy, RN)
     if is_type3:
         complementarities.append(ERC_Complementarity(erc1, erc2, 3, info3))
     
@@ -1295,63 +1172,93 @@ class ERC_SORN:
         self.hierarchy = hierarchy
         self.RN = RN
         self.ercs = hierarchy.ercs
-        
+
         # Core storage structures for O(1) lookup
-        self._synergies = {}  # (erc1_label, erc2_label) -> list of ERC_Synergy
-        self._complementarities = {}  # (erc1_label, erc2_label) -> list of ERC_Complementarity
-        
-        # Additional indexes for efficient queries
-        self._erc_to_synergies = defaultdict(list)  # erc_label -> list of (partner_label, synergies)
-        self._erc_to_complementarities = defaultdict(list)  # erc_label -> list of (partner_label, complementarities)
-        self._productive_partners = defaultdict(set)  # erc_label -> set of partner labels with ANY productive relationship
-        
-        # Performance tracking
+        self._synergies = {}  # (a,b) -> list[ERC_Synergy]
+        self._complementarities = {}  # (a,b) -> list[ERC_Complementarity]
+
+        # Indexes
+        self._erc_to_synergies = defaultdict(list)
+        self._erc_to_complementarities = defaultdict(list)
+        self._productive_partners = defaultdict(set)
+
+        # Minimal stats
         self.computation_stats = {
             'total_pairs_checked': 0,
-            'synergistic_pairs': 0,
-            'complementary_pairs': 0,
+            'productive_pairs': 0,
             'total_synergies': 0,
-            'total_complementarities': 0
+            'total_complementarities': 0,
+            'synergistic_pairs': 0,
+            'build_time': 0.0
         }
         
         # Build the SORN
         self._build_sorn()
     
     def _build_sorn(self):
-        """Pre-compute all synergies and complementarities between ERC pairs."""
+        start = time.time()
         print(f"Building ERC_SORN for {len(self.ercs)} ERCs...")
-        
-        # Check all pairs of ERCs
+
+        # Fix: Pass pairs of ERCs and RN correctly
+        all_synergies = []
+        for erc1 in self.ercs:
+            for erc2 in self.ercs:
+                if erc1.label >= erc2.label:
+                    continue
+                # Pass arguments in correct order: erc1, erc2, hierarchy, RN
+                synergies = get_fundamental_synergies_brute_force(erc1, erc2, self.hierarchy, self.RN)
+                all_synergies.extend(synergies)
+
+        # Map synergies by pair key for O(1) per-pair lookup
+        synergies_by_pair = defaultdict(list)
+        for syn in all_synergies:
+            a_label = syn.rlabel[0]
+            b_label = syn.rlabel[1]
+            key = tuple(sorted((a_label, b_label)))
+            synergies_by_pair[key].append(syn)
+
+        # Update internal stores with synergies_by_pair
+        for pair_key, syn_list in synergies_by_pair.items():
+            a_label, b_label = pair_key
+            self._store_synergies(a_label, b_label, syn_list)
+            # productivity indexes updated in _store_synergies
+
+        # STEP B: iterate all pairs to compute complementarities (one pass)
         for erc1, erc2 in combinations(self.ercs, 2):
             self.computation_stats['total_pairs_checked'] += 1
-            
-            # Skip if ERCs cannot interact (one contains the other)
+
             if not can_interact(erc1, erc2, self.hierarchy):
                 continue
-            
-            # Get fundamental synergies
-            synergies = get_fundamental_synergies(erc1, erc2, self.hierarchy, self.RN)
-            if synergies:
-                self._store_synergies(erc1.label, erc2.label, synergies)
+
+            key = tuple(sorted((erc1.label, erc2.label)))
+            pair_has_productive = False
+
+            # Complementarities (compute once per pair)
+            comps = get_complementarity(erc1, erc2, self.hierarchy, self.RN)
+            if comps:
+                self._store_complementarities(erc1.label, erc2.label, comps)
+                pair_has_productive = True
+                self.computation_stats['total_complementarities'] += len(comps)
+
+            # Check if this pair had synergies (from the precomputed map)
+            syns = synergies_by_pair.get(key, [])
+            if syns:
+                # already stored by _store_synergies above; but mark pair as productive
+                pair_has_productive = True
+                self.computation_stats['total_synergies'] += len(syns)
                 self.computation_stats['synergistic_pairs'] += 1
-                self.computation_stats['total_synergies'] += len(synergies)
-            
-            # Get complementarities
-            complementarities = get_complementarity(erc1, erc2, self.hierarchy, self.RN)
-            if complementarities:
-                self._store_complementarities(erc1.label, erc2.label, complementarities)
-                self.computation_stats['complementary_pairs'] += 1
-                self.computation_stats['total_complementarities'] += len(complementarities)
-            
-            # Update productive partners index
-            if synergies or complementarities:
+            if pair_has_productive:
                 self._productive_partners[erc1.label].add(erc2.label)
                 self._productive_partners[erc2.label].add(erc1.label)
-        
-        print(f"ERC_SORN built: {self.computation_stats['synergistic_pairs']} synergistic pairs, "
-              f"{self.computation_stats['complementary_pairs']} complementary pairs")
-        print(f"Total relationships: {self.computation_stats['total_synergies']} synergies, "
-              f"{self.computation_stats['total_complementarities']} complementarities")
+                self.computation_stats['productive_pairs'] += 1
+
+        # Finalize stats
+        self.computation_stats['build_time'] = time.time() - start
+
+        print(f"ERC_SORN built: productive_pairs={self.computation_stats['productive_pairs']}, "
+            f"synergies={self.computation_stats['total_synergies']}, "
+            f"complementarities={self.computation_stats['total_complementarities']}, "
+            f"time={self.computation_stats['build_time']:.2f}s")
     
     def _store_synergies(self, erc1_label, erc2_label, synergies):
         """Store synergies with bidirectional lookup."""
@@ -1628,7 +1535,7 @@ class ERC_SORN:
                 analysis['complementarity_only_pairs'] += 1
             
             if has_synergy:
-                synergistic_pairs += 1
+                #synergistic_pairs += 1
                 total_synergies += len(synergies)
             
             if has_complementarity:

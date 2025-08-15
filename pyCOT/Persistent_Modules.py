@@ -631,7 +631,7 @@ def compute_elementary_sos(generators, RN, hierarchy=None):
     # Create ElementarySO objects for ALL identified semi-organizations.
     # Based on the theoretical guarantees, these are already the elementary ones.
     elementary_sos = []
-    hierarchy = ERC_Hierarchy(RN) # Re-initialize hierarchy for consistency if needed
+    #hierarchy = ERC_Hierarchy(RN) # Re-initialize hierarchy for consistency if needed
     
     for closure_signature, gens in closure_groups.items():
         representative_gen = gens[0]
@@ -1376,7 +1376,7 @@ def extend_module_with_elementary_so(current_module, elementary_so, RN):
     return CompositeModule(new_elementary_sos, new_combined_closure, new_constituent_ercs, RN)
 
 
-def compute_all_organizations(RN, max_module_size=10, max_generator_size=8, 
+def compute_all_organizations(RN, max_module_size=10, max_generator_size=8, hierarchy=None,
                             elementary_sos=None, elementary_organizations=None, 
                             verbose=True):
     """
@@ -1445,8 +1445,9 @@ def compute_all_organizations(RN, max_module_size=10, max_generator_size=8,
         print("\nBuilding ERC_SORN for efficient productive relationship lookup...")
     
     # We need the hierarchy for SORN construction
-    hierarchy = ERC_Hierarchy(RN)
-    hierarchy.build_hierarchy_graph()
+    if hierarchy == None:
+        hierarchy = ERC_Hierarchy(RN)
+        hierarchy.build_hierarchy_graph()
     erc_sorn = build_erc_sorn(hierarchy, RN)
     
     if verbose:

@@ -430,7 +430,12 @@ class ERC_Hierarchy:
         if erc not in self._contained_cache:
             self._build_containment_caches()
         return self._contained_cache.get(erc, [])
-    
+    def get_erc_by_label(self, label):
+        """Get ERC object by its label"""
+        for erc in self.ercs:
+            if erc.label == label:
+                return erc
+        raise ValueError(f"ERC with label '{label}' not found")
     def get_erc_from_reaction(self, RN, hierarchy, reaction):
         """Get ERC from a reaction (assumes reaction is a reaction object or name)"""
         if hasattr(reaction, 'name'):
