@@ -1453,7 +1453,8 @@ def compute_all_organizations(RN, max_module_size=10, max_generator_size=8, hier
     if verbose:
         sorn_stats = erc_sorn.get_statistics()
         print(f"SORN built: {sorn_stats['synergistic_pairs']} synergistic pairs, "
-              f"{sorn_stats['complementary_pairs']} complementary pairs")
+            #   f"{sorn_stats['complementary_pairs']} complementary pairs"
+              f"{sorn_stats.get('complementary_pairs', 0)} complementary pairs")
     
     # Step 3: Initialize with elementary SOs as size-1 modules
     if verbose:

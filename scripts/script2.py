@@ -13,18 +13,19 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import pyCOT modules
 from pyCOT.io.functions import read_txt 
 from pyCOT.plot_dynamics import plot_series_ode
-from pyCOT.simulations import *
+from pyCOT.simulations import simulation
 
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ========================================
-file_path = 'pyCOT/networks/testing/autopoietic.txt'  
+# file_path = 'pyCOT/networks/testing/autopoietic.txt'  
 # Alternative examples:
+# file_path = 'Txt/autopoietic.txt'  # Autopoietic network
 # file_path = 'Txt/2019fig1.txt'
 # file_path = 'Txt/2019fig2.txt'
 # file_path = 'Txt/non_connected_example.txt' 
 # file_path = 'Txt/PassiveUncomforableIndignated_problemsolution.txt'
-# file_path = 'Txt/Farm.txt' 
+file_path = 'Txt/Farm.txt' 
 
 rn = read_txt(file_path)  # Create ReactionNetwork object from file
 
@@ -32,8 +33,17 @@ rn = read_txt(file_path)  # Create ReactionNetwork object from file
 # 3. SIMULATION OF THE REACTION NETWORK
 # ========================================
 ###################################################################################
-# Example 1: ODE simulation using only 'mak' kinetics
+# Example 1: ODE simulation with one kinetic equation for all reactions
 ###################################################################################
+rate_list = "mmk"  # Kinetics for all reactions ("mak": mass action kinetics, "mmk": Michaelis-Menten kinetics, "hill": Hill kinetics)
+time_series, flux_vector = simulation(rn, rate=rate_list)
+
+print("ODE Time Series:")
+print(time_series)
+plot_series_ode(time_series)
+# ###################################################################################
+# # Example 2: ODE simulation with one kinetic equation for all reactions and specific parameters
+# ###################################################################################
 # x0 = [0, 1, 0]  # Initial concentrations
 # rate_list = 'mak'  # Kinetics for all reactions
 # spec_vector = [[0.7], [0.5], [1.0], [1.0], [1.0]]  # Parameters for each reaction
@@ -46,12 +56,10 @@ rn = read_txt(file_path)  # Create ReactionNetwork object from file
 
 # print("ODE Time Series:")
 # print(time_series)
-
 # plot_series_ode(time_series)
-
-###################################################################################
-# Example 2: ODE simulation using a mix of 'mak' and 'mmk' kinetics
-###################################################################################
+# ##################################################################################
+# # Example 3: ODE simulation using a mix of 'mak' and 'mmk' kinetics
+# ##################################################################################
 # x0 = [0, 1, 0]  # Initial concentrations
 # rate_list = ['mak', 'mak', 'mmk', 'mmk', 'mak']
 # spec_vector = [[0.7], [0.5], [1.0, 0.3], [1.0, 0.4], [1.0]]
@@ -64,10 +72,9 @@ rn = read_txt(file_path)  # Create ReactionNetwork object from file
 # print("ODE Time Series:")
 # print(time_series)
 # plot_series_ode(time_series)
-
-###################################################################################
-# Example 3: Simulation with additional kinetics and random parameters
-###################################################################################
+# ##################################################################################
+# # Example 4: Simulation with additional kinetics and random parameters
+# ##################################################################################
 # x0 = [5, 7, 10]  # Initial concentrations
 # rate_list = ['mak', 'mak', 'mmk', 'ping_pong', 'hill']
 
@@ -80,10 +87,9 @@ rn = read_txt(file_path)  # Create ReactionNetwork object from file
 # print("ODE Time Series with Custom Kinetics:")
 # print(time_series)
 # plot_series_ode(time_series)
-
-###################################################################################
-# Example 4: Simulation with defined parameters for additional kinetics
-###################################################################################
+# ##################################################################################
+# # Example 5: Simulation with defined parameters for additional kinetics
+# ##################################################################################
 # x0 = [0.1, 0.5, 0.2]
 # rate_list = ['mak', 'mak', 'mmk', 'ping_pong', 'hill']
 # spec_vector = [
@@ -103,18 +109,4 @@ rn = read_txt(file_path)  # Create ReactionNetwork object from file
 
 # print("ODE Time Series with Defined Parameters:")
 # print(time_series)
-# plot_series_ode(time_series)
-
-###################################################################################
-# Example 5: Discrete stochastic simulation
-###################################################################################
-x0 = [5, 7, 10]  # Initial concentrations
-ts, vs = simulate_discrete_random(rn, S=rn.stoichiometry_matrix(), x=x0, n_iter=11)
-
-print("\nTime Series (Discrete Random Simulation):")
-print(ts)
-plot_series_ode(ts)
-
-print("\nFlux Vector (Discrete Random Simulation):")
-print(vs)
-plot_series_ode(vs)
+# plot_series_ode(time_series) 

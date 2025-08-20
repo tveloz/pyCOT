@@ -51,6 +51,8 @@ def rate_mmk(reactants, concentrations, species_idx, spec_vector):
     Returns:
     - rate: The rate of the reaction.
     """
+    if not reactants:  # Handle case where no reactants are defined
+            return 0.0    
     Vmax, Km = spec_vector
     s = reactants[0][0]
     S = concentrations[species_idx[s]]
@@ -74,6 +76,8 @@ def rate_hill(substrate, concentrations, species_idx, spec_vector):
     Returns:
     - rate: The rate of the reaction.
     """
+    if not substrate:  # Handle case where no substrate is defined
+            return 0.0    
     Vmax, K, n = spec_vector
 
     if isinstance(substrate, list) and isinstance(substrate[0], tuple):
@@ -141,9 +145,10 @@ def update_rate_laws(rate_list, additional_laws=None):
     return rate_laws 
 
 # Function to generate a random vector of size n
-def generate_random_vector(n, seed=None):
-    rng = np.random.default_rng(seed)
-    return rng.random(n)
+def generate_random_vector(n, seed=None, min_value=0.1, max_value=1.0):
+    rng = np.random.default_rng(seed)             # Generator with optional seed
+    values = rng.uniform(min_value, max_value, n) # Random vector between [0.1, 1.0)
+    return np.round(values, 2)                    # Round to 2 decimal places
 
 # Function to validate the rate list
 def validate_rate_list(rate, n_reactions):
@@ -311,64 +316,130 @@ def flux_vector(rn, rn_dict, rate, result, time_points, spec_vector, additional_
     return flux_vector
 
 # Function to simulate the reaction network
-def simulation(rn, rate='mak', spec_vector=None, x0=None, t_span=(0, 100), n_steps=300, additional_laws=None):
-    species = rn.stoichiometry_matrix().species
-    reactions = rn.stoichiometry_matrix().reactions
+def simulation(rn, rate='mak', spec_vector=None, x0=None, t_span=(0, 200),
+               n_steps=200, additional_laws=None, method='LSODA', rtol=1e-8, atol=1e-10):
+    
+    species = [specie.name for specie in rn.species()]
+    reactions = [reaction.name() for reaction in rn.reactions()]
     rn_dict = build_reaction_dict(rn)
-
     rate = validate_rate_list(rate, len(reactions))
-
+    
     # Initial conditions vector by default random
     if x0 is None:
-        x0 = generate_random_vector(len(species), seed=3).round(1) * 20
-        print(f"\nx0 = {x0.tolist()}")
-    else:
-        print(f"\nx0 = {x0}") 
-
+        x0 = generate_random_vector(len(species), min_value=50, max_value=100.0).astype(int).tolist()
+        print(f"\nx0 = {x0}")
+    
+    # If spec_vector is None, generate random parameters for each reaction
     if spec_vector is None:
         spec_vector = []
         for kinetic in rate:
             if kinetic == 'mak':
-                params = np.round(np.random.uniform(0.1, 1.0, 1), 3)
+                params = generate_random_vector(1, min_value=0.01, max_value=1.0)
             elif kinetic == 'mmk':
-                params = np.round(np.random.uniform(0.1, 2.0, 2), 3)
+                Vmax = generate_random_vector(1, min_value=1, max_value=1.5)
+                Km = generate_random_vector(1, min_value=5, max_value=10)
+                params = np.round([float(Vmax), float(Km)], 2)
             elif kinetic == 'hill':
-                Vmax = np.random.uniform(0.5, 2.0)
-                Kd = np.random.uniform(0.1, 1.5)
-                n = np.random.randint(1, 4)
-                params = np.round([Vmax, Kd, n], 3)
-            elif kinetic in (additional_laws or {}):  # soporte para cinéticas extra
-                # Generar 3 parámetros aleatorios genéricos por defecto
+                Vmax = generate_random_vector(1, min_value=1, max_value=1.5)
+                Kd = generate_random_vector(1, min_value=5, max_value=10)
+                n = generate_random_vector(1, min_value=1, max_value=4) #np.random.randint(1, 4) #
+                params = np.round([float(Vmax), float(Kd), float(n)], 2)
+            elif kinetic in (additional_laws or {}):
                 params = np.round(np.random.uniform(0.1, 1.0, 3), 3)
             else:
                 raise ValueError(f"Unknown kinetic law: {kinetic}")
             spec_vector.append(params.tolist())
-
-
-        parameters = parse_parameters(rn, rn_dict, rate, spec_vector) 
+        parameters = parse_parameters(rn, rn_dict, rate, spec_vector)
         print("spec_vector =", spec_vector)
     else:
         parameters = parse_parameters(rn, rn_dict, rate, spec_vector)
         print("spec_vector =", spec_vector)
-
+    
     rate_laws = {
         'mak': rate_mak,
         'mmk': rate_mmk,
         'hill': rate_hill
     }
+    
     # Register the rate laws
     rate_laws = update_rate_laws(rate, rate_laws if additional_laws is None else {**rate_laws, **additional_laws})
-
-    rates_fn = compute_reaction_rates(rn, rn_dict, rate, parameters, rate_laws)
-
+    
+    # Crear índice de especies
+    species_idx = {s: i for i, s in enumerate(species)}
+    
+    # Función de velocidades CON RESTRICCIÓN DE NO-NEGATIVIDAD
+    def rates_fn_constrained(t, x):
+        # Asegurar que las concentraciones no sean negativas
+        x_constrained = np.maximum(x, 0)
+        
+        dxdt = np.zeros_like(x_constrained)
+        concentrations = x_constrained
+        rates = np.zeros(len(reactions))
+        
+        for i, reaction in enumerate(reactions):
+            kinetic = rate[i]
+            reactants = rn_dict[reaction][0]
+            if kinetic == 'mmk' and (not reactants or len(reactants) == 0):
+                continue
+            param_vector = parameters[reaction]
+            rate_fn = rate_laws[kinetic]
+            rates[i] = rate_fn(reactants, concentrations, species_idx, param_vector)
+        
+        for i, reaction in enumerate(reactions):
+            for sp, coef in rn_dict[reaction][0]:
+                dxdt[species_idx[sp]] -= coef * rates[i]
+            for sp, coef in rn_dict[reaction][1]:
+                dxdt[species_idx[sp]] += coef * rates[i]
+        
+        return dxdt
+    
+    # Imprimir ecuaciones y expresiones
     print_differential_equations(rn, rn_dict)
     print_velocity_expressions(rn, rn_dict, rate, additional_laws)
-
+    
+    # Puntos de tiempo
     time_points = np.linspace(t_span[0], t_span[1], n_steps)
-    result = odeint(rates_fn, x0, time_points)
-
-    time_series_df = time_series(rn, result, time_points) 
+    
+    # INTEGRACIÓN CON solve_ivp
+    try:
+        sol = solve_ivp(rates_fn_constrained, t_span, x0, t_eval=time_points,
+                       method=method, rtol=rtol, atol=atol)
+        
+        if not sol.success:
+            print(f"Warning: Integration failed: {sol.message}")
+            # Fallback a método más robusto
+            print("Trying with LSODA method...")
+            sol = solve_ivp(rates_fn_constrained, t_span, x0, t_eval=time_points,
+                           method='LSODA', rtol=1e-6, atol=1e-8)
+        
+        # Extraer resultado y transponer para mantener compatibilidad
+        result = sol.y.T
+        
+        # Asegurar que no hay valores negativos pequeños
+        result = np.maximum(result, 0)
+        
+        # Reportar valores negativos corregidos
+        negative_mask = sol.y.T < -1e-10  # Solo reportar negativos significativos
+        if np.any(negative_mask):
+            neg_count = np.sum(negative_mask)
+            print(f"Warning: {neg_count} valores negativos detectados y corregidos a 0")
+            
+    except Exception as e:
+        print(f"Error durante la integración: {e}")
+        print("Usando método de respaldo (odeint)...")
+        from scipy.integrate import odeint
+        
+        # Función original para odeint (t, x en orden diferente)
+        def rates_fn_odeint(x, t):
+            return rates_fn_constrained(t, x)
+        
+        result = odeint(rates_fn_odeint, x0, time_points)
+        result = np.maximum(result, 0)  # Limpiar negativos
+    
+    # Crear DataFrames de salida
+    time_series_df = time_series(rn, result, time_points)
     flux_vector_df = flux_vector(rn, rn_dict, rate, result, time_points, spec_vector, additional_laws)
+    
     return time_series_df, flux_vector_df
 
 ###############################################################################

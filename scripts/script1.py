@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # A
 
 # Import the necessary modules from pyCOT  
 from pyCOT.io.functions import read_txt, print_reaction_network
-from pyCOT.rn_visualize import rn_visualize_html, rn_get_visualization
+from pyCOT.rn_visualize import rn_visualize_html
 
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
@@ -125,8 +125,5 @@ for r in reactions:
 
 # ========================================
 # 8. VISUALIZATION OF THE REACTION NETWORK
-# ======================================== 
-# Visualize the reaction network in HTML format
-print("-"*100)
-rn_visualize_html(rn, filename="reaction_network.html")
-#rn_get_visualization(rn, filename="network.png")
+# ========================================  
+rn_visualize_html(rn, filename="reaction_network.html") 

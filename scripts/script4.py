@@ -8,11 +8,10 @@
 import os
 import sys 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # Add the root directory to the PYTHONPATH
-import pandas as pd
 
 # Import the necessary modules from pyCOT  
-from pyCOT.io.functions import read_txt, print_reaction_network
-from pyCOT.rn_visualize import *
+from pyCOT.io.functions import read_txt 
+from pyCOT.rn_visualize import rn_visualize_html, create_bipartite_graph_from_rn, visualize_metabolic_network, plot_graph_with_graphviz
 
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
@@ -37,6 +36,7 @@ print(rxn_nodes)
 # =========================================
 # 4. VISUALIZATION OF THE METABOLIC NETWORK
 # =========================================
+# Create the visualization of reaction network using Pyvis (html)
 rn_visualize_html(rn,curvature='curvedCCW')
 
 # Create bipartite graph visualization using Graphviz (png)
