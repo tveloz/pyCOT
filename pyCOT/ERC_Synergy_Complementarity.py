@@ -891,7 +891,7 @@ def get_fundamental_synergies(ercs, hierarchy, RN, verbose=True):
     if verbose:
         print("="*70)
         print("CORRECTED HIERARCHICAL SYNERGY FINDER")
-        print("="*70)
+        print("="*70)   
         print(f"Network: {len(ercs)} ERCs, {len(RN.species())} species")
         if hierarchy.graph:
             print(f"Hierarchy: {hierarchy.graph.number_of_edges()} containment relations")
