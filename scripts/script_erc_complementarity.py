@@ -48,21 +48,13 @@ for i, erc1 in enumerate(hierarchy.ercs):
                 
                 if comp.comp_type == 1:
                     print(f"  ✨ Type 1 (Requirement Reduction): {comp}")
-                    reduction = comp.reduction_info.get('reduction', 0)
-                    print(f"     - Reduction in requirements: {reduction} species")
                     
                 elif comp.comp_type == 2:
                     print(f"  🔄 Type 2 (Requirement Change): {comp}")
-                    req_change = comp.reduction_info.get('requirement_change', set())
-                    if req_change:
-                        print(f"     - New requirements: {req_change}")
                     
                 elif comp.comp_type == 3:
                     print(f"  📈 Type 3 (Product Expansion): {comp}")
-                    novel_products = comp.reduction_info.get('novel_products_direct', set())
-                    if novel_products:
-                        print(f"     - Novel products: {novel_products}")
-
+                 
 end_time = time.time()
 
 # Summary of results
@@ -85,45 +77,20 @@ if total_complementarities > 0:
     if complementarity_results['type1']:
         print(f"\nType 1 Complementarity Example:")
         comp = complementarity_results['type1'][0]
-        info = comp.reduction_info
         print(f"  Complementarity: {comp}")
-        print(f"  ERC {comp.erc1.label} requirements: {info.get('req1', set())}")
-        print(f"  ERC {comp.erc2.label} requirements: {info.get('req2', set())}")
-        print(f"  Joint requirements: {info.get('joint_req', set())}")
-        print(f"  Reduction: {info.get('reduction', 0)} species")
-        satisfied_by_1 = info.get('satisfied_by_1', set())
-        satisfied_by_2 = info.get('satisfied_by_2', set())
-        if satisfied_by_1:
-            print(f"  {comp.erc1.label} satisfies {comp.erc2.label}'s needs: {satisfied_by_1}")
-        if satisfied_by_2:
-            print(f"  {comp.erc2.label} satisfies {comp.erc1.label}'s needs: {satisfied_by_2}")
+       
     
     if complementarity_results['type2']:
         print(f"\nType 2 Complementarity Example:")
         comp = complementarity_results['type2'][0]
-        info = comp.reduction_info
         print(f"  Complementarity: {comp}")
-        print(f"  Same total requirements but different requirement set")
-        print(f"  Original requirements: {info.get('req1', set())}")
-        print(f"  Joint requirements: {info.get('joint_req', set())}")
-        req_change = info.get('requirement_change', set())
-        if req_change:
-            print(f"  Requirement changes: {req_change}")
-    
+       
     if complementarity_results['type3']:
         print(f"\nType 3 Complementarity Example:")
         comp = complementarity_results['type3'][0]
-        info = comp.reduction_info
         print(f"  Complementarity: {comp}")
         print(f"  Same requirements but different products")
-        print(f"  Requirements: {info.get('req1', set())}")
-        print(f"  Original products: {info.get('prod1', set())}")
-        print(f"  Joint products: {info.get('joint_produced', set())}")
-        novel_products = info.get('novel_products_direct', set())
-        if novel_products:
-            print(f"  Novel products: {novel_products}")
-        if info.get('has_synergy', False):
-            print(f"  🔄 This complementarity involves synergistic effects")
+       
 
 else:
     print(f"\n❌ No complementarities found in this network.")

@@ -41,13 +41,51 @@ def get_sorted_species_names(species_set, RN):
     """Get sorted species names from a closure"""
     return sorted([sp.name for sp in closure(RN, species_set)])
 
+def closure(RN, species_set):
+    """
+    Compute the closure of a set of species in a reaction network.
+    
+    Parameters
+    ----------
+    RN : ReactionNetwork
+        The reaction network object
+    species_set : list or set
+        Set of species to compute closure for
+        
+    Returns
+    -------
+    list
+        Closure of the species set
+    """
+    # Verify RN is a ReactionNetwork object
+    if not hasattr(RN, 'get_prod_from_species'):
+        raise TypeError("RN must be a ReactionNetwork object")
+        
+    # Convert input to list if needed
+    temp = list(species_set)
+    prev_len = -1
+    
+    while prev_len != len(temp):
+        prev_len = len(temp)
+        # Get products from current species set
+        CL = list(set(temp).union(set(RN.get_prod_from_species(temp))))
+        temp = CL
+        
+    return temp
+
 def generators(RN):
-    """Get list of generators from reactions' support"""
+    """Get generators from reaction network."""
+    # Verify RN is a ReactionNetwork object
+    if not hasattr(RN, 'get_prod_from_species'):
+        raise TypeError("RN must be a ReactionNetwork object")
+        
+    # Check empty set closure
+    #if closure(RN, []) != []:
+    #    return [[]]
+        
+    # Rest of function remains the same
     #Check if closure of empty set is non-empty
-    if closure(RN, [])!=[]:
-        gen=[closure(RN, [])]
-    else:
-        gen = []
+    gen=[closure(RN, [])]
     for reaction in RN.reactions():
         #print(f"Processing reaction: {reaction.name()}"+ " number of generatirs: "+str(len(gen)))
         support = RN.get_supp_from_reactions(reaction)
@@ -55,89 +93,48 @@ def generators(RN):
             gen.append(support)
     return gen
 
-def closure(RN, X):
-    """Get closure of species set X"""
-    temp = X
-    CL = list(set(temp).union(set(RN.get_prod_from_species(temp))))
-    reacstemp=[reaction.name() for reaction in RN.get_reactions_from_species(temp)]
-    reacsCL=[reaction.name() for reaction in RN.get_reactions_from_species(CL)]
-    while set(reacstemp) != set(reacsCL):
-        #print("is "+str(reacsCL) + " == "+ str(reacstemp))
-        temp = CL
-        CL = list(set(temp).union(set(RN.get_prod_from_species(temp))))
-        reacstemp=[reaction.name() for reaction in RN.get_reactions_from_species(temp)]
-        reacsCL=[reaction.name() for reaction in RN.get_reactions_from_species(CL)]
-    return sorted(CL, key=lambda sp: sp.name)
-
-def closures(RN, ListX):
-    """Get closures for a list of species sets"""
-    return [closure(RN, X) for X in ListX]
-
 class ERC:
     def __init__(self, min_generators, label, all_generators=None):
         """Initialize an ERC object."""
         self.label = label
         self.min_generators = min_generators
         self.all_generators = all_generators
-        # Cache for closure and related computations
-
+        # Simple caching without RN reference tracking
         self._closure = None
         self._closure_names = None
         self._reactions = None
         self._required_species = None
         self._produced_species = None
-        self._RN_reference = None  # Keep track of which RN this was computed for
 
     def get_closure(self, RN):
-        """Get closure with caching"""
-        if self._closure is None or self._RN_reference != id(RN):
+        """Get closure with simple caching"""
+        if self._closure is None:
             self._closure = closure(RN, self.min_generators[0])
             self._closure_names = set(species_list_to_names(self._closure))
-            self._RN_reference = id(RN)
-            # Clear other caches since they depend on RN
-            self._reactions = None
-            self._required_species = None
-            self._produced_species = None
         return self._closure
     
     def get_closure_names(self, RN):
         """Get closure as set of species names with caching"""
-        if self._closure_names is None or self._RN_reference != id(RN):
+        if self._closure_names is None:
             self.get_closure(RN)  # This will populate _closure_names
         return self._closure_names
     
     def get_reacs(self, RN):
         """Get reactions with caching"""
-        if self._reactions is None or self._RN_reference != id(RN):
+        if self._reactions is None:
             specs = self.get_closure(RN)
             self._reactions = RN.get_reactions_from_species(specs)
         return self._reactions
 
-    def get_erc_from_reaction(self, RN, hierarchy, reaction):
-        """Get ERC from a reaction (assumes reaction is a reaction object or name)"""
-        if hasattr(reaction, 'name'):
-            reaction_name = reaction.name()
-        else:
-            reaction_name = str(reaction)
-        
-        # Find the ERC that contains this reaction
-        for erc in hierarchy.ercs:
-            erc_reactions = erc.get_reacs(RN)
-            erc_reaction_names = [r.name() if hasattr(r, 'name') else str(r) for r in erc_reactions]
-            if reaction_name in erc_reaction_names:
-                return erc
-        
-        return None
     def get_required_species(self, RN):
         """Get required species (consumed but not produced) with caching"""
-        if self._required_species is None or self._RN_reference != id(RN):
+        if self._required_species is None:
             reactions = self.get_reacs(RN)
             
             consumed = set()
             produced = set()
             
             for reaction in reactions:
-                # Get all edges and filter by type
                 for edge in reaction.edges:
                     if edge.type == "reactant":
                         consumed.add(edge.species_name)
@@ -149,13 +146,12 @@ class ERC:
 
     def get_produced_species(self, RN):
         """Get produced species with caching"""
-        if self._produced_species is None or self._RN_reference != id(RN):
+        if self._produced_species is None:
             reactions = self.get_reacs(RN)
             
             produced = set()
             
             for reaction in reactions:
-                # Get all edges and filter for products
                 for edge in reaction.edges:
                     if edge.type == "product":
                         produced.add(edge.species_name)
@@ -164,14 +160,13 @@ class ERC:
         return self._produced_species
     
     def clear_cache(self):
-        """Clear all cached computations (useful if RN changes)"""
+        """Clear all cached computations"""
         self._closure = None
         self._closure_names = None
         self._reactions = None
         self._required_species = None
         self._produced_species = None
-        self._RN_reference = None
-    
+
     @staticmethod
     def find_minimal_generators(generators):
         minimal = []
@@ -385,15 +380,38 @@ class ERC:
 class ERC_Hierarchy:
     """Helper class to manage ERC hierarchies and containment relationships"""
     
-    def __init__(self, RN):
-        self.RN = RN
-        self.ercs = ERC.ERCs(RN)
-        self.graph = None
-        self._containment_cache = {}
-        self._contained_cache = {}
+    def __init__(self, RN_or_ercs, RN=None):
+        """
+        Initialize ERC hierarchy.
         
+        Parameters
+        ----------
+        RN_or_ercs : ReactionNetwork or list
+            Either a ReactionNetwork object or a list of pre-computed ERCs
+        RN : ReactionNetwork, optional
+            Required when passing a list of ERCs without RN references
+        """
+        if isinstance(RN_or_ercs, list):
+            self.ercs = RN_or_ercs
+            # Try to get RN from ERCs first, fallback to provided RN
+            self.RN = getattr(self.ercs[0], 'RN', None) if self.ercs else None
+            if self.RN is None:
+                if RN is None:
+                    raise ValueError("RN must be provided when ERCs don't have RN reference")
+                self.RN = RN
+        else:
+            if not isinstance(RN_or_ercs, ReactionNetwork):
+                raise TypeError(f"Expected ReactionNetwork or list of ERCs, got {type(RN_or_ercs)}")
+            self.RN = RN_or_ercs
+            self.ercs = ERC.ERCs(self.RN)
+        
+        self.graph = None
+        self.build_hierarchy_graph()
+
     def build_hierarchy_graph(self):
-        """Build hierarchy graph using ultra-optimized method"""
+        """Build hierarchy graph using ERCs."""
+        if not hasattr(self, 'RN'):
+            raise AttributeError("RN not initialized")
         self.graph = ERC.build_hierarchy_graph(self.ercs, self.RN)
         self._build_containment_caches()
         return self.graph

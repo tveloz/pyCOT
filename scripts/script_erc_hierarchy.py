@@ -12,7 +12,7 @@ import numpy as np
 file_path= 'networks/testing/ERCs_test2.txt'
 file_path= 'networks/testing/Farm.txt'
 #file_path= 'networks/Navarino/RN_IN_05.txt'
-#file_path= 'networks/biomodels_interesting/bigg_iAF692.txt'  # Adjust path as needed
+file_path= 'networks/biomodels_interesting/bigg_iAF692.txt'  # Adjust path as needed
 print("Loading network and computing ERCs...")
 RN = read_txt(file_path)
 ercs = ERC.ERCs(RN)
