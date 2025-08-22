@@ -11,12 +11,13 @@ from collections import defaultdict      # Dictionary that provides default valu
 import plotly.graph_objects as go        # Generates interactive plots and advanced visualizations using Plotly.
 from itertools import combinations       # Generates all possible combinations of elements in an iterable.
 import numpy as np                       # Library for numerical computing in Python.
-import networkx as nx
-from networkx.drawing.nx_agraph import graphviz_layout
 
-import itertools
-import matplotlib.pyplot as plt
+from networkx.drawing.nx_agraph import graphviz_layout
+import itertools 
 from mpl_toolkits.mplot3d import Axes3D
+
+import warnings
+warnings.filterwarnings('ignore')
 
 import sys                               # Provides access to system-specific parameters and functions.
 sys.stdout.reconfigure(encoding='utf-8') # Reconfigures the standard output to use UTF-8 encoding, ensuring proper handling of special characters.
@@ -69,7 +70,365 @@ def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", title="T
     plt.show()             # Display the plot
 
 ######################################################################################## 
+# Reaction-Diffusion Dynamics Plotting
+########################################################################################
+# Function to plot time series for each species in each grid cell
+def plot_series_diffusion_2D(t, X, grid_shape, xlabel="Time", ylabel="Concentration", title="Time Series of Concentrations"): 
+    rows, cols = grid_shape
+    celdas = [f'G{i}{j}' for i in range(rows) for j in range(cols)]
+    indices = [(i, j) for i in range(rows) for j in range(cols)]
+    especies = list(X.keys())
 
+    fig, axs = plt.subplots(rows, cols, figsize=(12, 8), sharex=True)
+    axs = axs.flatten()
+
+    base_colors = ['red', 'green', 'blue', 'orange', 'purple', 'brown', 'cyan', 'magenta',
+                   'yellow', 'gray', 'black', 'pink', 'lime', 'teal', 'navy', 'maroon',
+                   'olive', 'coral', 'gold', 'indigo', 'violet', 'turquoise', 'salmon', 'plum',
+                   'orchid', 'crimson', 'sienna', 'khaki', 'lavender', 'peachpuff']
+    colors = {sp: base_colors[i % len(base_colors)] for i, sp in enumerate(especies)}
+
+    for ax, label, (i, j) in zip(axs, celdas, indices):
+        for sp in especies:
+            ax.plot(t, X[sp][:, i, j], label=sp, color=colors.get(sp, 'black'), linewidth=2)
+
+        ax.set_title(f'{label}', fontsize=12, fontweight='bold')
+        ax.set(xlabel=xlabel, ylabel=ylabel)
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+
+    plt.suptitle(title, fontsize=14, fontweight='bold')
+    plt.tight_layout(rect=[0, 0, 1, 0.92])
+    plt.show()
+
+# Function to plot heatmaps for a given species at selected time points
+def plot_heatmaps_for_species_2D(X, species_name, t, time_indices=None, title="Heatmap for Specie"):
+    data = np.array(X[species_name])  # shape: (time, rows, cols)
+    n_time, rows, cols = data.shape
+    if time_indices is None:
+        time_indices = np.linspace(0, len(t)-1, 3, dtype=int)
+
+    n = len(time_indices)
+    fig = plt.figure(figsize=(5 * n, 4))
+    gs = fig.add_gridspec(1, n + 1, width_ratios=[1]*n + [0.05], wspace=0.3)
+    
+    vmin = np.min([X[species_name][idx].min() for idx in time_indices])
+    vmax = np.max([X[species_name][idx].max() for idx in time_indices])
+    
+    axes = [fig.add_subplot(gs[0, i]) for i in range(n)]
+    cbar_ax = fig.add_subplot(gs[0, -1])
+    imgs = []
+
+    for ax, idx in zip(axes, time_indices):
+        heat_data = X[species_name][idx]
+        img = ax.imshow(heat_data, cmap='viridis', vmin=vmin, vmax=vmax, origin='upper')
+        imgs.append(img)
+        ax.set_title(f"t = {t[idx]:.2f}")
+        ax.set_xlabel("") # ("Column")
+        ax.set_ylabel("") # ("Row")
+        ax.set_xticks(np.arange(cols))
+        ax.set_yticks(np.arange(rows))
+
+        # Cursor y función propia para cada imagen
+        cursor = mplcursors.cursor(img, hover=False)
+
+        def make_callback(data):
+            def on_add(sel):
+                x, y = int(sel.target[0]), int(sel.target[1])
+                if 0 <= y < data.shape[0] and 0 <= x < data.shape[1]:
+                    sel.annotation.set_text(f"{data[y, x]:.3f}")
+            return on_add
+
+        cursor.connect("add", make_callback(heat_data))
+
+    # Barra de color común
+    fig.colorbar(imgs[0], cax=cbar_ax)
+    plt.suptitle(f"{title} {species_name}", fontsize=16)
+    plt.tight_layout()
+    plt.show()
+
+# Función para animar los mapas de calor con controles interactivos
+def animate_diffusion_heatmaps_for_species_2D(X, species_name, t, title="Heatmap for Specie"):
+    t = np.round(t, 2)  # Redondear a dos decimales
+    data = np.array(X[species_name])  # shape: (time, rows, cols)
+    n_time, rows, cols = data.shape
+
+    vmin = np.min(data)
+    vmax = np.max(data)
+
+    fig, ax = plt.subplots(figsize=(6, 5))
+    plt.subplots_adjust(bottom=0.35)  # Más espacio para controles
+
+    im = ax.imshow(data[0], cmap='viridis', origin='upper', vmin=vmin, vmax=vmax)
+    ax.set_title(f"{title} {species_name} (t = {t[0]:.2f})")
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.set_xticks(np.arange(cols))
+    ax.set_yticks(np.arange(rows))
+
+    cbar = fig.colorbar(im, ax=ax, orientation='vertical')
+
+    # Slider
+    ax_slider = plt.axes([0.2, 0.2, 0.6, 0.03])
+    slider = Slider(ax_slider, 'Time', t[0], t[-1], valinit=t[0], valstep=(t[1] - t[0]))
+
+    # Botones
+    ax_play = plt.axes([0.3, 0.1, 0.1, 0.05])
+    ax_pause = plt.axes([0.6, 0.1, 0.1, 0.05])
+    btn_play = Button(ax_play, 'Play')
+    btn_pause = Button(ax_pause, 'Pause')
+
+    playing = [False]  # Usamos lista para que sea mutable dentro del cierre
+
+    def update(val):
+        idx = np.argmin(np.abs(t - val))
+        im.set_data(data[idx])
+        ax.set_title(f"Specie {species_name} (t = {t[idx]:.2f})")
+        fig.canvas.draw_idle()
+
+    def play(event):
+        playing[0] = True
+
+    def pause(event):
+        playing[0] = False
+
+    btn_play.on_clicked(play)
+    btn_pause.on_clicked(pause)
+    slider.on_changed(update)
+
+    def animate(frame):
+        if playing[0]:
+            current_val = slider.val
+            next_val = current_val + (t[1] - t[0])
+            if next_val > t[-1]:
+                next_val = t[0]  # Loop
+            slider.set_val(next_val)
+
+    ani = animation.FuncAnimation(fig, animate, interval=20)  # Intervalo en ms
+
+    update(t[0])  # Inicializa el primer frame
+    plt.show()
+
+########################################################################################
+
+import matplotlib.pyplot as plt
+
+def plot_species_dynamics_MP(t, time_series, species, num_patches=4, separate_plots=False, 
+                         filename='dynamics.png', title='Dinámicas de Especies en Cada Parche', 
+                         figsize=(12, 8)):
+    """
+    Grafica las series temporales de las concentraciones de especies en cada parche.
+    
+    Parámetros:
+    - t: Arreglo de tiempos (numpy array).
+    - time_series: DataFrame con las concentraciones, columnas en formato (especie, parche).
+    - species: Lista de nombres de las especies (ej. ['l', 's1', 's2']).
+    - num_patches: Número de parches (default: 4).
+    - separate_plots: Si True, crea un subgráfico por especie; si False, grafica todo en una figura (default: False).
+    - filename: Nombre del archivo para guardar el gráfico (default: 'dynamics.png').
+    - title: Título del gráfico (default: 'Dinámicas de Especies en Cada Parche').
+    - figsize: Tupla con el tamaño de la figura (default: (12, 8)).
+    """
+    if separate_plots:
+        # Crear subgráficos para cada especie
+        fig, axs = plt.subplots(len(species), 1, figsize=(figsize[0], figsize[1] * len(species) / 2), sharex=True)
+        for i, sp in enumerate(species):
+            for p in range(num_patches):
+                axs[i].plot(t, time_series[(sp, p)], label=f'Parche {p}')
+            axs[i].set_title(f'Concentración de {sp}')
+            axs[i].set_ylabel('Concentración')
+            axs[i].legend()
+            axs[i].grid(True)
+        axs[-1].set_xlabel('Tiempo')
+        plt.suptitle(title, y=1.02)
+    else:
+        # Graficar todas las especies en una sola figura
+        plt.figure(figsize=figsize)
+        for sp in species:
+            for p in range(num_patches):
+                plt.plot(t, time_series[(sp, p)], label=f'{sp}, Parche {p}')
+        plt.xlabel('Tiempo')
+        plt.ylabel('Concentración')
+        plt.title(title)
+        plt.legend()
+        plt.grid(True)
+    
+    plt.tight_layout()
+    plt.savefig(filename)
+    plt.show()
+
+import matplotlib.pyplot as plt
+import numpy as np
+import mplcursors
+
+def plot_heatmaps_for_species_2d(time_series, species, t, patch_shape=(2, 2), time_indices=None, 
+                                filename_prefix='heatmap_2d', figsize=(5, 4)):
+    """
+    Grafica mapas de calor 2D para cada especie en una cuadrícula de parches en múltiples puntos temporales.
+    
+    Parámetros:
+    - time_series: DataFrame con las concentraciones, columnas en formato (especie, parche).
+    - species: Lista de nombres de las especies (ej. ['l', 's1', 's2']).
+    - t: Arreglo de tiempos (numpy array).
+    - patch_shape: Tupla (filas, columnas) de la cuadrícula de parches (default: (2, 2)).
+    - time_indices: Lista de índices de tiempo a graficar (default: None, usa 3 tiempos equiespaciados).
+    - filename_prefix: Prefijo para los nombres de los archivos guardados (default: 'heatmap_2d').
+    - figsize: Tupla con el tamaño base de cada subgráfico (default: (5, 4)).
+    """
+    rows, cols = patch_shape
+    num_patches = rows * cols
+    num_species = len(species)
+    
+    if time_indices is None:
+        time_indices = np.linspace(0, len(t)-1, 3, dtype=int)  # Inicio, medio, final
+    
+    n_times = len(time_indices)
+    
+    # Crear una figura por especie
+    for sp in species:
+        # Obtener los valores mínimo y máximo para la especie en los tiempos seleccionados
+        vmin = np.min([time_series[(sp, p)].iloc[time_indices] for p in range(num_patches)])
+        vmax = np.max([time_series[(sp, p)].iloc[time_indices] for p in range(num_patches)])
+        
+        # Configurar la figura
+        fig = plt.figure(figsize=(figsize[0] * n_times, figsize[1]))
+        gs = fig.add_gridspec(1, n_times + 1, width_ratios=[1]*n_times + [0.05], wspace=0.3)
+        axes = [fig.add_subplot(gs[0, i]) for i in range(n_times)]
+        cbar_ax = fig.add_subplot(gs[0, -1])
+        imgs = []
+        
+        # Graficar un mapa de calor para cada tiempo seleccionado
+        for ax, idx in zip(axes, time_indices):
+            # Obtener concentraciones para el tiempo idx
+            conc_data = np.array([time_series[(sp, p)].iloc[idx] for p in range(num_patches)]).reshape(rows, cols)
+            
+            # Mapa de calor
+            img = ax.imshow(conc_data, cmap='viridis', vmin=vmin, vmax=vmax, origin='upper')
+            imgs.append(img)
+            ax.set_title(f"t = {t[idx]:.2f}")
+            ax.set_xlabel("Columna")
+            ax.set_ylabel("Fila")
+            ax.set_xticks(np.arange(cols))
+            ax.set_yticks(np.arange(rows))
+            
+            # Añadir valores numéricos
+            for r in range(rows):
+                for c in range(cols):
+                    ax.text(c, r, f'{conc_data[r, c]:.2f}', ha='center', va='center', color='white')
+            
+            # Añadir interacción con mplcursors
+            cursor = mplcursors.cursor(img, hover=False)
+            
+            def make_callback(data):
+                def on_add(sel):
+                    x, y = int(sel.target[0]), int(sel.target[1])
+                    if 0 <= y < data.shape[0] and 0 <= x < data.shape[1]:
+                        sel.annotation.set_text(f"{data[y, x]:.3f}")
+                return on_add
+            
+            cursor.connect("add", make_callback(conc_data))
+        
+        # Añadir barra de color común
+        fig.colorbar(imgs[0], cax=cbar_ax)
+        plt.suptitle(f"Especie {sp}", fontsize=16)
+        plt.tight_layout()
+        plt.savefig(f"{filename_prefix}_{sp}.png")
+        plt.show()
+
+# Función para animar mapas de calor 2D
+def animate_diffusion_heatmaps_for_species_2d(time_series, species_name, t, patch_shape=(2, 2), 
+                                             filename=None, figsize=(6, 5)):
+    """
+    Anima mapas de calor 2D para una especie en una cuadrícula de parches con controles interactivos.
+    """
+    rows, cols = patch_shape
+    num_patches = rows * cols
+    
+    # Redondear tiempos a dos decimales
+    t = np.round(t, 2)
+    
+    # Extraer datos para la especie específica y reorganizar en (time, rows, cols)
+    data = np.array([time_series[(species_name, p)] for p in range(num_patches)]).T.reshape(-1, rows, cols)
+    n_time, _, _ = data.shape
+    
+    # Calcular valores mínimo y máximo para la escala de color
+    vmin = np.min(data)
+    vmax = np.max(data)
+    
+    # Configurar la figura
+    fig, ax = plt.subplots(figsize=figsize)
+    plt.subplots_adjust(bottom=0.35)  # Espacio para controles
+    
+    # Mapa de calor inicial
+    im = ax.imshow(data[0], cmap='viridis', origin='upper', vmin=vmin, vmax=vmax)
+    ax.set_title(f"Especie {species_name} (t = {t[0]:.2f})")
+    ax.set_xlabel("Columna")
+    ax.set_ylabel("Fila")
+    ax.set_xticks(np.arange(cols))
+    ax.set_yticks(np.arange(rows))
+    
+    # Añadir valores numéricos en cada celda
+    texts = []
+    for r in range(rows):
+        for c in range(cols):
+            text = ax.text(c, r, f'{data[0, r, c]:.2f}', ha='center', va='center', color='white')
+            texts.append(text)
+    
+    # Barra de color
+    cbar = fig.colorbar(im, ax=ax, orientation='vertical')
+    
+    # Slider
+    ax_slider = plt.axes([0.2, 0.2, 0.6, 0.03])
+    slider = Slider(ax_slider, 'Time', t[0], t[-1], valinit=t[0], valstep=(t[1] - t[0]))
+    
+    # Botones
+    ax_play = plt.axes([0.3, 0.1, 0.1, 0.05])
+    ax_pause = plt.axes([0.6, 0.1, 0.1, 0.05])
+    btn_play = Button(ax_play, 'Play')
+    btn_pause = Button(ax_pause, 'Pause')
+    
+    playing = [False]  # Estado mutable para la animación
+    
+    def update(val):
+        idx = np.argmin(np.abs(t - val))
+        im.set_data(data[idx])
+        ax.set_title(f"Especie {species_name} (t = {t[idx]:.2f})")
+        # Actualizar valores numéricos
+        for r in range(rows):
+            for c in range(cols):
+                texts[r * cols + c].set_text(f'{data[idx, r, c]:.2f}')
+        fig.canvas.draw_idle()
+    
+    def play(event):
+        playing[0] = True
+    
+    def pause(event):
+        playing[0] = False
+    
+    btn_play.on_clicked(play)
+    btn_pause.on_clicked(pause)
+    slider.on_changed(update)
+    
+    def animate(frame):
+        if playing[0]:
+            current_val = slider.val
+            next_val = current_val + (t[1] - t[0])
+            if next_val > t[-1]:
+                next_val = t[0]  # Loop
+            slider.set_val(next_val)
+    
+    ani = animation.FuncAnimation(fig, animate, interval=20, frames=n_time)
+    
+    update(t[0])  # Inicializa el primer frame
+    
+    if filename:
+        # Guardar la animación como MP4 (requiere ffmpeg)
+        ani.save(filename, writer='ffmpeg', fps=50)
+    
+    plt.show()
+################################################################################
+# Plot the number of abstractions over time
+################################################################################
 def plot_abstraction_size(abstract_time_series, xlabel="Time", ylabel="Number of Species", title="Number of species per abstraction over time", marker='o', label="Abstraction Size"):
     """
     Plots the number of abstractions over the time series.

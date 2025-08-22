@@ -7,7 +7,7 @@ from scipy.integrate import solve_ivp
 from scipy.integrate import odeint
 from matplotlib.widgets import Slider
 from scipy.optimize import linprog  
-import matplotlib.animation as animation  
+import matplotlib.animation as animation   
 
 # -----------------------------
 # USER-DEFINED KINETIC FUNCTIONS
@@ -93,36 +93,6 @@ rate_hill.expression = lambda reactants, reaction: (
     f"(Vmax_{reactants[0][0]} * [{reactants[0][0]}]^n) / "
     f"(Km_{reactants[0][0]}^n + [{reactants[0][0]}]^n)"
     if reactants else "0  (hill without defined substrate)"
-)
-
-# Function to calculate the rate of reaction of the type 'ping_pong' 
-def rate_ping_pong(substrates, concentrations, species_idx, spec_vector):
-    """
-    Calculate the rate of reaction using the ping-pong mechanism.
-    The ping-pong mechanism is a type of enzyme kinetics where the enzyme alternates between two states.
-    It assumes two substrates and a single product.
-    Parameters:
-    - substrates: List of tuples (species, stoichiometric coefficient) for the substrates.
-    - concentrations: List of current concentrations of the species.
-    - species_idx: Dictionary mapping species names to their indices in the concentrations list.
-    - spec_vector: List of parameters for the reaction, including Vmax, KmA, and KmB.
-    Returns:
-    - rate: The rate of the reaction.
-    """
-    # Extract the parameters from the spec_vector
-    Vmax, KmA, KmB = spec_vector
-    if len(substrates) < 2:
-        return 0  # No suficientes sustratos definidos
-    
-    substrateA = substrates[0][0]
-    substrateB = substrates[1][0]
-    A = concentrations[species_idx[substrateA]]
-    B = concentrations[species_idx[substrateB]]
-    return Vmax * A * B / (KmA * B + KmB * A + A * B)
-rate_ping_pong.expression = lambda substrates, reaction: (
-    f"(Vmax_{reaction} * [{substrates[0][0]}] * [{substrates[1][0]}]) / "
-    f"(Km_{substrates[0][0]} * [{substrates[1][0]}] + Km_{substrates[1][0]} * [{substrates[0][0]}] + [{substrates[0][0]}] * [{substrates[1][0]}])"
-    if len(substrates) >= 2 else "0 (ping-pong requires two substrates)"
 )
 
 def update_rate_laws(rate_list, additional_laws=None):
@@ -519,8 +489,353 @@ def simulate_discrete_random(rn, S, x, n_iter=10):
 
     return df_state, df_flux # Return the state and flux DataFrames
 
+####################################################################################
+# Function to simulate diffusion dynamics 2D
+def simulate_diffusion_dynamics_2D(rn, rate='mak', grid_shape=None, D_dict=None, 
+                                     x0_dict=None, spec_vector=None, t_span=(0, 20), n_steps=500, additional_laws=None):
+    """
+    Simulates the reaction-diffusion dynamics of a reaction network in a 2D grid.
+    Parameters:
+    - rn: Reaction network object containing species and reactions.
+    - rate: List of kinetic laws for each reaction (default is 'mak').
+    - grid_shape: Tuple defining the shape of the grid (rows, cols).
+    - D_dict: Dictionary with diffusion coefficients for each species (default is random).
+    - x0_dict: Dictionary with initial conditions for each species (default is random).
+    - spec_vector: List of parameters for each reaction (default is random).
+    - t_span: Tuple defining the time span for the simulation (default is (0, 20)).
+    - n_steps: Number of time steps for the simulation (default is 500).
+    - additional_laws: Dictionary with additional kinetic laws (default is None).
+    Returns:
+    - time_series_df: DataFrame with the time series of species concentrations.
+    - flux_vector_df: DataFrame with the flux vector for each reaction.
+    """
+    np.random.seed(seed=42)  # Para reproducibilidad 
+    species = [specie.name for specie in rn.species()]
+    reactions = [reaction.name() for reaction in rn.reactions()] 
+
+    rate = validate_rate_list(rate, len(reactions)) 
+
+    if grid_shape is None:
+        grid_shape = (2, 2)  # Por defecto, una cuadrícula de 2x2
+
+    rows, cols = grid_shape
+    num_cells = rows * cols
+
+    if D_dict is None:
+        D_dict = {sp: np.round(np.random.uniform(0.01, 0.2), 3) for sp in species}
+        # print("Difusividades generadas aleatoriamente:", D_dict)
+
+    if x0_dict is None:
+        x0_dict = {sp: np.round(np.random.uniform(0, 2.0, size=(rows, cols)), 2) for sp in species}
+        # print("Condiciones iniciales generadas aleatoriamente.")
+
+    # Flatten the initial state dictionary to a 1D array
+    def flatten_state(x0_dict):
+        return np.concatenate([x0_dict[sp].flatten() for sp in species])
+
+    # Reshape the initial state to match the grid shape
+    def reshape_state(x):
+        return {sp: x[i*num_cells:(i+1)*num_cells].reshape((rows, cols)) for i, sp in enumerate(species)}
+
+    x0 = flatten_state(x0_dict)
+
+    # If spec_vector is None, generate random parameters for each reaction
+    if spec_vector is None:
+        spec_vector = []
+        for kinetic in rate:
+            if kinetic == 'mak':
+                params = generate_random_vector(1, min_value=0.01, max_value=1.0)
+            elif kinetic == 'mmk':
+                Vmax = generate_random_vector(1, min_value=1, max_value=1.5)
+                Km = generate_random_vector(1, min_value=5, max_value=10)
+                params = np.round([float(Vmax), float(Km)], 2)
+            elif kinetic == 'hill':
+                Vmax = generate_random_vector(1, min_value=1, max_value=1.5)
+                Kd = generate_random_vector(1, min_value=5, max_value=10)
+                n = generate_random_vector(1, min_value=1, max_value=4) #np.random.randint(1, 4) #
+                params = np.round([float(Vmax), float(Kd), float(n)], 2)
+            elif kinetic in (additional_laws or {}):
+                params = np.round(np.random.uniform(0.1, 1.0, 3), 3)
+            else:
+                raise ValueError(f"Unknown kinetic law: {kinetic}")
+            spec_vector.append(params.tolist())
+
+    ## Define the ODE system for the reaction-diffusion dynamics
+    # reaction_dynamics computes the local reaction dynamics for each species
+    def reaction_dynamics(Xdict, rate=rate, spec_vector=spec_vector):
+        dxdt_dict = {sp: np.zeros((rows, cols)) for sp in species}
+        # Each point (i,j) of the grid is traversed.
+        for i in range(rows):
+            for j in range(cols):
+                local_x = [Xdict[sp][i, j] for sp in species] # Current local concentrations
+                try:
+                    ts, fs = simulation(rn, rate=rate, spec_vector=spec_vector, x0=local_x, t_span=(0, 1e-6), n_steps=2) # Simula la dinámica local en dos pasos de tiempo
+                    if len(ts) > 1:
+                        # Discretization of the derivative
+                        dt = ts.index[1] - ts.index[0]
+                        dxdt_local = (ts.iloc[1].values - ts.iloc[0].values) / dt
+                    else:
+                        dxdt_local = np.zeros(len(species))
+                except:
+                    dxdt_local = np.zeros(len(species))
+                for k, sp in enumerate(species):
+                    dxdt_dict[sp][i, j] = dxdt_local[k]
+        return dxdt_dict
+
+    # The Laplacian is computed as the difference between the central value and the average of the neighbors
+    def diffusion_term(Xdict):
+        def laplacian(D):
+            # Return a simple finite difference approximation of the diffusion term
+            return (-4*D +
+                    np.roll(D, 1, axis=0) + # Arriba
+                    np.roll(D, -1, axis=0)+ # Abajo
+                    np.roll(D, 1, axis=1) + # Derecha
+                    np.roll(D, -1, axis=1)) # Izquierda
+        return {sp: D_dict.get(sp, 0.0) * laplacian(Xdict[sp]) for sp in species}
+
+    # Combined ODE function for reaction and diffusion dynamics
+    def combined_ode(t, x):
+        Xdict = reshape_state(x)
+
+        dxdt_reac = reaction_dynamics(Xdict, rate=rate, spec_vector=spec_vector)
+        dxdt_diff = diffusion_term(Xdict)
+
+        dxdt_total = {sp: dxdt_reac[sp] + dxdt_diff[sp] for sp in species}
+        return flatten_state(dxdt_total)
+
+    # ODE integration
+    t_eval = np.linspace(*t_span, n_steps)
+    sol = solve_ivp(combined_ode, t_span, x0, t_eval=t_eval, method='RK45', rtol=1e-6)
+
+    X_out = {sp: np.zeros((n_steps, rows, cols)) for sp in species}
+    for i, xt in enumerate(sol.y.T):
+        xt_dict = reshape_state(xt)
+        for sp in species:
+            X_out[sp][i] = xt_dict[sp]
+
+    return sol.t, X_out 
 
 ###################################################################################
+# METAPOPULATION SIMULATION
+###################################################################################
+
+def get_reaction_components(reaction, species):
+    """
+    Obtiene reactantes, productos y estequiometría de un objeto Reaction de pyCOT.
+    Construye la estequiometría manualmente usando support_edges() y products_edges().
+    """
+    try:
+        # Reactantes desde support_edges()
+        reactants = [(species.index(edge.species_name), edge.coefficient) for edge in reaction.support_edges()]
+        # Productos desde products_edges()
+        products = [(species.index(edge.species_name), edge.coefficient) for edge in reaction.products_edges()]
+        # Construir estequiometría manualmente
+        stoichiometry = [0] * len(species)
+        for sp_idx, coeff in reactants:
+            stoichiometry[sp_idx] -= coeff  # Reactantes tienen coeficientes negativos
+        for sp_idx, coeff in products:
+            stoichiometry[sp_idx] += coeff  # Productos tienen coeficientes positivos
+        return reactants, products, stoichiometry
+    except Exception as e:
+        print(f"Error al obtener componentes de la reacción {reaction.name()}: {e}")
+        print(f"Atributos disponibles: {dir(reaction)}")
+        raise
+
+def simulate_metapopulation_dynamics(rn, rate='mak', patch_shape=None, D_dict=None, 
+                                    x0_dict=None, spec_vector=None, t_span=(0, 20), 
+                                    n_steps=500, prob_matrix=None, additional_laws=None):
+    """
+    Simula la dinámica de metapoblaciones con reacciones locales y dispersión entre parches.
+    
+    Parámetros:
+    - rn: Objeto ReactionNetwork con especies y reacciones.
+    - rate: Lista de leyes cinéticas para cada reacción ('mak', 'mmk', 'hill' o adicionales).
+    - patch_shape: Tupla (filas, columnas) definiendo la disposición de parches (o None para 1D).
+    - D_dict: Diccionario con tasas de dispersión global por especie (default: aleatorio).
+    - x0_dict: Diccionario con condiciones iniciales por especie y parche (default: aleatorio).
+    - spec_vector: Lista de parámetros para cada reacción (default: aleatorio).
+    - t_span: Tupla con el intervalo de tiempo de simulación (default: (0, 20)).
+    - n_steps: Número de pasos temporales (default: 500).
+    - prob_matrix: Matriz de probabilidad de dispersión (patch_shape[0]*patch_shape[1], patch_shape[0]*patch_shape[1]).
+    - additional_laws: Diccionario con leyes cinéticas adicionales (default: None).
+    
+    Retorna:
+    - time_series_df: DataFrame con series temporales de concentraciones por especie y parche.
+    - flux_vector_df: DataFrame con flujos de reacción por parche.
+    """
+    np.random.seed(seed=42)  # Para reproducibilidad
+    species = [specie.name for specie in rn.species()]
+    reactions = [reaction.name() for reaction in rn.reactions()]
+    
+    rate = validate_rate_list(rate, len(reactions))
+    
+    # Configurar la forma de los parches
+    if patch_shape is None:
+        patch_shape = (2, 2)  # Cuadrícula 2x2 por defecto
+    rows, cols = patch_shape
+    num_patches = rows * cols
+    
+    # Tasas de dispersión por especie
+    if D_dict is None:
+        D_dict = {sp: np.round(np.random.uniform(0.01, 0.2), 3) for sp in species}
+    
+    # Condiciones iniciales
+    if x0_dict is None:
+        x0_dict = {sp: np.round(np.random.uniform(0, 2.0, size=(rows, cols)), 2) for sp in species}
+    
+    # Matriz de probabilidad de dispersión
+    if prob_matrix is None:
+        prob_matrix = np.random.uniform(0, 1, size=(num_patches, num_patches))
+        prob_matrix = prob_matrix / np.sum(prob_matrix, axis=1, keepdims=True)
+        np.fill_diagonal(prob_matrix, 0)
+    else:
+        # Validar prob_matrix
+        if prob_matrix.shape != (num_patches, num_patches):
+            raise ValueError(f"prob_matrix debe tener forma {(num_patches, num_patches)}")
+        if not np.allclose(np.sum(prob_matrix, axis=1), 1.0, atol=1e-6):
+            prob_matrix = prob_matrix / np.sum(prob_matrix, axis=1, keepdims=True)
+            np.fill_diagonal(prob_matrix, 0)
+    # Imprimir matriz final
+    print("Matriz de probabilidad de dispersión:")
+    print(prob_matrix)
+
+    # Parámetros de reacción
+    if spec_vector is None:
+        spec_vector = []
+        for kinetic in rate:
+            if kinetic == 'mak':
+                params = generate_random_vector(1, min_value=0.01, max_value=1.0)
+            elif kinetic == 'mmk':
+                Vmax = generate_random_vector(1, min_value=1, max_value=1.5)
+                Km = generate_random_vector(1, min_value=5, max_value=10)
+                params = np.round([float(Vmax), float(Km)], 2)
+            elif kinetic == 'hill':
+                Vmax = generate_random_vector(1, min_value=1, max_value=1.5)
+                Kd = generate_random_vector(1, min_value=5, max_value=10)
+                n = generate_random_vector(1, min_value=1, max_value=4)
+                params = np.round([float(Vmax), float(Kd), float(n)], 2)
+            elif kinetic in (additional_laws or {}):
+                params = np.round(np.random.uniform(0.1, 1.0, 3), 3)
+            else:
+                raise ValueError(f"Ley cinética desconocida: {kinetic}")
+            spec_vector.append(params.tolist())
+    
+    # Aplanar el estado inicial
+    def flatten_state(x0_dict):
+        return np.concatenate([x0_dict[sp].flatten() for sp in species])
+    
+    # Reconstruir el estado
+    def reshape_state(x):
+        return {sp: x[i*num_patches:(i+1)*num_patches].reshape((rows, cols)) for i, sp in enumerate(species)}
+    
+    x0 = flatten_state(x0_dict)
+    
+    # Término de reacciones locales 
+    def reaction_dynamics(Xdict, rate, spec_vector):
+        dxdt_dict = {sp: np.zeros((rows, cols)) for sp in species}
+        flux_dict = {r: np.zeros((rows, cols)) for r in reactions}
+        
+        for i in range(rows):
+            for j in range(cols):
+                local_x = [Xdict[sp][i, j] for sp in species]
+                for r_idx, reaction in enumerate(rn.reactions()):
+                    # Obtener reactantes, productos y estequiometría
+                    reactants, products, stoichiometry = get_reaction_components(reaction, species)
+                    
+                    # Calcular tasa de reacción según la ley cinética
+                    v_r = 0
+                    if rate[r_idx] == 'mak':
+                        k = spec_vector[r_idx][0]
+                        v_r = k
+                        if reactants:  # Reacciones con reactantes
+                            for sp_idx, stoich in reactants:
+                                v_r *= local_x[sp_idx] ** abs(stoich)
+                    elif rate[r_idx] == 'mmk':
+                        Vmax, Km = spec_vector[r_idx]
+                        sp_idx = reactants[0][0] if reactants else 0
+                        v_r = Vmax * local_x[sp_idx] / (Km + local_x[sp_idx]) if reactants else 0
+                    elif rate[r_idx] == 'hill':
+                        Vmax, Kd, n = spec_vector[r_idx]
+                        sp_idx = reactants[0][0] if reactants else 0
+                        v_r = Vmax * (local_x[sp_idx] ** n) / (Kd ** n + local_x[sp_idx] ** n) if reactants else 0
+                    elif rate[r_idx] in (additional_laws or {}):
+                        v_r = additional_laws[rate[r_idx]](local_x, spec_vector[r_idx])
+                    
+                    flux_dict[reaction.name()][i, j] = v_r
+                    for sp_idx, stoich in enumerate(stoichiometry):
+                        if stoich != 0:
+                            dxdt_dict[species[sp_idx]][i, j] += stoich * v_r # Estoquiometría por tasa de reacción
+        
+        return dxdt_dict, flux_dict
+    
+    # Término de dispersión
+    def dispersal_term(Xdict):
+        dxdt_dict = {sp: np.zeros((rows, cols)) for sp in species}
+        for sp in species:
+            D = D_dict.get(sp, 0.0) # Tasa de dispersión para la especie
+            X = Xdict[sp]           # Concentraciones de la especie
+            for i in range(rows):
+                for j in range(cols):
+                    p_idx = i * cols + j
+                    dxdt = 0
+                    for k in range(num_patches):
+                        dxdt += D * prob_matrix[k, p_idx] * Xdict[sp].flatten()[k]          # Entrante
+                        dxdt -= D * prob_matrix[p_idx, k] * X[p_idx // cols, p_idx % cols]  # Saliente 
+                        # p_idx // cols: fila correspondiente en la cuadrícula original. 
+                        # p_idx % cols: columna correspondiente en la cuadrícula original.
+                    dxdt_dict[sp][i, j] = dxdt
+        return dxdt_dict
+    
+    # Sistema ODE combinado
+    def combined_ode(t, x):
+        Xdict = reshape_state(x)
+        dxdt_reac, _ = reaction_dynamics(Xdict, rate, spec_vector)
+        dxdt_disperse = dispersal_term(Xdict)
+        dxdt_total = {sp: dxdt_reac[sp] + dxdt_disperse[sp] for sp in species}
+        return flatten_state(dxdt_total)
+    
+    # Integración de ODEs
+    t_eval = np.linspace(t_span[0], t_span[1], n_steps)
+    sol = solve_ivp(combined_ode, t_span, x0, t_eval=t_eval, method='RK45', rtol=1e-6)
+    
+    # Formatear salida
+    X_out = {sp: np.zeros((n_steps, rows, cols)) for sp in species}
+    flux_out = {r: np.zeros((n_steps, rows, cols)) for r in reactions}
+    
+    for i, xt in enumerate(sol.y.T):
+        Xdict = reshape_state(xt)
+        _, flux_dict = reaction_dynamics(Xdict, rate, spec_vector)
+        for sp in species:
+            X_out[sp][i] = Xdict[sp]
+        for r in reactions:
+            flux_out[r][i] = flux_dict[r]
+    
+    # Convertir a DataFrames
+    time_series_df = pd.DataFrame({
+        (sp, p): X_out[sp][:, p // cols, p % cols]
+        for sp in species for p in range(num_patches)
+    }, index=t_eval)
+    
+    flux_vector_df = pd.DataFrame({
+        (r, p): flux_out[r][:, p // cols, p % cols]
+        for r in reactions for p in range(num_patches)
+    }, index=t_eval)
+    
+    return sol.t, time_series_df, flux_vector_df
+
+# Reconstruir diccionario de resultados para animación
+def reconstruct_tensor(time_series, species, patch_shape):
+    rows, cols = patch_shape
+    n_time = time_series.shape[0]
+    X = {}
+    for sp in species:
+        data = np.zeros((n_time, rows, cols))
+        for i in range(rows):
+            for j in range(cols):
+                patch_idx = i * cols + j
+                data[:, i, j] = time_series[(sp, patch_idx)].values
+        X[sp] = data
+    return X
 ###################################################################################
 ###################################################################################
 ###########################################################################################
