@@ -13,34 +13,35 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import pyCOT modules
 from pyCOT.io.functions import read_txt 
 from pyCOT.plot_dynamics import plot_series_ode
-from pyCOT.simulations import simulation
+from pyCOT.simulations import *
 
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ========================================
 # file_path = 'pyCOT/networks/testing/autopoietic.txt'  
 # Alternative examples:
-# file_path = 'Txt/autopoietic.txt'  # Autopoietic network
+file_path = 'Txt/autopoietic.txt'  # Autopoietic network
 # file_path = 'Txt/2019fig1.txt'
 # file_path = 'Txt/2019fig2.txt'
 # file_path = 'Txt/non_connected_example.txt' 
 # file_path = 'Txt/PassiveUncomforableIndignated_problemsolution.txt'
-file_path = 'Txt/Farm.txt' 
+# file_path = 'Txt/Farm.txt' 
+# file_path = 'Txt/SEIR.txt' 
 
 rn = read_txt(file_path)  # Create ReactionNetwork object from file
 
 # ========================================
 # 3. SIMULATION OF THE REACTION NETWORK
 # ========================================
-###################################################################################
-# Example 1: ODE simulation with one kinetic equation for all reactions
-###################################################################################
-rate_list = "mmk"  # Kinetics for all reactions ("mak": mass action kinetics, "mmk": Michaelis-Menten kinetics, "hill": Hill kinetics)
-time_series, flux_vector = simulation(rn, rate=rate_list)
+# ###################################################################################
+# # Example 1: ODE simulation with one kinetic equation for all reactions
+# ###################################################################################
+# rate_list = "mak"  # Kinetics for all reactions ("mak": mass action kinetics, "mmk": Michaelis-Menten kinetics, "hill": Hill kinetics)
+# time_series, flux_vector = simulation(rn, rate=rate_list)
 
-print("ODE Time Series:")
-print(time_series)
-plot_series_ode(time_series)
+# print("ODE Time Series:")
+# print(time_series)
+# plot_series_ode(time_series)
 # ###################################################################################
 # # Example 2: ODE simulation with one kinetic equation for all reactions and specific parameters
 # ###################################################################################
@@ -72,41 +73,90 @@ plot_series_ode(time_series)
 # print("ODE Time Series:")
 # print(time_series)
 # plot_series_ode(time_series)
-# ##################################################################################
-# # Example 4: Simulation with additional kinetics and random parameters
-# ##################################################################################
-# x0 = [5, 7, 10]  # Initial concentrations
-# rate_list = ['mak', 'mak', 'mmk', 'ping_pong', 'hill']
 
-# additional_laws = {'ping_pong': rate_ping_pong}
-# time_series, flux_vector = simulation(
-#     rn, rate=rate_list, x0=x0, t_span=(0, 50), n_steps=500, 
-#     additional_laws=additional_laws
-# )
+############################################################################
+# DEFINING NEW KINETICS
+############################################################################
+###############################
+# Función nueva: rate_ping_pong
+def rate_ping_pong(substrates, concentrations, species_idx, spec_vector):
+    """
+    Calculate the rate of reaction using the ping-pong mechanism. The ping-pong mechanism is a type of enzyme kinetics where the enzyme alternates between two states. It assumes two substrates and a single product.
+    Parameters:
+    - substrates: List of tuples (species, stoichiometric coefficient) for the substrates. Example: substrates=[('A', 1), ('B', 1)]
+    - concentrations: List of current concentrations of the species. Example: concentrations = [0.1, 0.2, 0.3]
+    - species_idx: Dictionary mapping species names to their indices in the concentrations list. Example: {'A': 0, 'B': 1, 'C': 2}
+    - spec_vector: List of parameters for the reaction, including. Example: spec_vector = [Vmax, KmA, KmB]
+    Returns:
+    - rate: The reaction rate equation for the ping-pong mechanism. Example: rate = Vmax * A * B / (KmA * B + KmB * A + A * B)
+    """
+    Vmax, KmA, KmB = spec_vector # Extract the parameters from the spec_vector
+    if len(substrates) < 2:      # Check if there are at least two substrates
+        return 0  # Return 0 if not enough substrates are provided
+    
+    substrateA = substrates[0][0]               # Assuming the first substrate is A. 
+    substrateB = substrates[1][0]               # Assuming the second substrate is B
+    A = concentrations[species_idx[substrateA]] # Concentration of substrate A
+    B = concentrations[species_idx[substrateB]] # Concentration of substrate B
+    return Vmax * A * B / (KmA * B + KmB * A + A * B) # The reaction rate equation for ping-pong mechanism
+rate_ping_pong.expression = lambda substrates, reaction: (
+    "0 (ping-pong requires two substrates)"
+    if len(substrates) < 2 else
+    f"(Vmax_{reaction} * [{substrates[0][0]}] * [{substrates[1][0]}]) / (Km_{substrates[0][0]} * [{substrates[1][0]}] + Km_{substrates[1][0]} * [{substrates[0][0]}] + [{substrates[0][0]}] * [{substrates[1][0]}])"
+) # Expression of the equation for the ping-pong rate. 
+
+################################
+# Función nueva: rate_thresholds 
+def rate_thresholds(reactants, concentrations, species_idx, spec_vector):
+    k, threshold_min, threshold_max= spec_vector 
+    
+    rate_mak_value = rate_mak(reactants, concentrations, species_idx, [k]) 
+    
+    if rate_mak_value < threshold_min:
+        return 0.0  
+    elif rate_mak_value > threshold_max:
+        return threshold_max
+    else:
+        return rate_mak_value
+rate_thresholds.expression = lambda reactants, reaction: (
+    f"0 if (rate < threshold_min_{reaction}); "
+    f"v{reaction[1]} = threshold_max_{reaction} if (rate > threshold_max_{reaction}); "
+    f"v{reaction[1]} = k_{reaction} * " + " * ".join(
+        f"[{reactant}]^{coef}" if coef != 1 else f"[{reactant}]"
+        for reactant, coef in reactants
+    ) + f" if (threshold_min_{reaction} <= rate <= threshold_max_{reaction})"
+)
+# ##################################################################################
+# # Example 4: Simulation with defined parameters for additional kinetics
+# ##################################################################################
+x0 = [80, 50, 60]
+rate_list = ['mmk', 'hill', 'mak', 'ping_pong', 'threshold']
+spec_vector = [
+    [1.0, 0.3],      # Parameters for 'mmk' (Vmax, Km)
+    [1.0, 2, 2],     # Parameters for 'hill' (Vmax, n, K)
+    [0.7],           # Parameter  for 'mak' (k)
+    [1.0, 0.4, 0.6], # Parameters for 'ping_pong' (Vmax, KmA, KmB)
+    [0.1, 0.6, 8]  # Parameters for 'threshold' (k, threshold_min, threshold_max)
+]
+
+additional_laws = {'ping_pong': rate_ping_pong, 'threshold': rate_thresholds}
+
+time_series, flux_vector = simulation(rn, rate=rate_list, spec_vector=spec_vector, x0=x0, t_span=(0, 50), n_steps=100, additional_laws=additional_laws)
+
+
+print("ODE Time Series with Defined Parameters:")
+print(time_series)
+plot_series_ode(time_series) 
+
+# ##################################################################################
+# # Example 5: Simulation with additional kinetics and random parameters
+# ##################################################################################
+# rate_list = ['mmk', 'hill', 'mak', 'ping_pong', 'threshold']
+
+# additional_laws = {'ping_pong': rate_ping_pong, 'threshold': rate_thresholds}
+
+# time_series, flux_vector = simulation(rn, rate=rate_list, additional_laws=additional_laws)
 
 # print("ODE Time Series with Custom Kinetics:")
 # print(time_series)
 # plot_series_ode(time_series)
-# ##################################################################################
-# # Example 5: Simulation with defined parameters for additional kinetics
-# ##################################################################################
-# x0 = [0.1, 0.5, 0.2]
-# rate_list = ['mak', 'mak', 'mmk', 'ping_pong', 'hill']
-# spec_vector = [
-#     [0.5],             # mak
-#     [0.3],             # mak
-#     [1.2, 0.4],        # mmk
-#     [0.9, 0.5, 0.1],   # ping_pong
-#     [0.1, 0.9, 0.5]    # hill
-# ]
-
-# additional_laws = {'ping_pong': rate_ping_pong}
-# time_series, flux_vector = simulation(
-#     rn, rate=rate_list, spec_vector=spec_vector, 
-#     x0=x0, t_span=(0, 50), n_steps=500, 
-#     additional_laws=additional_laws
-# )
-
-# print("ODE Time Series with Defined Parameters:")
-# print(time_series)
-# plot_series_ode(time_series) 
