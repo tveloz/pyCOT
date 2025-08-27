@@ -12,9 +12,8 @@ from pyCOT.simulations import *
 from pyCOT.plot_dynamics import * 
 
 ################################################################################################# 
-# Ejemplo de uso 
-file_path = 'Txt/autopoietic.txt'
-# file_path = 'Txt/Farm.txt'  
+# Ejemplo de uso  
+file_path = 'Txt/Farm.txt'  
 rn = read_txt(file_path)
 
 species = [s.name for s in rn.species()]
@@ -22,70 +21,70 @@ print("Especies:", species)
 reactions = [r.name() for r in rn.reactions()]
 print("Reacciones:", reactions) 
 
-# ##########################################################################
-# # Diffusion dynamics in 2D
-# ##########################################################################
+##########################################################################
+# Diffusion dynamics in 2D
+##########################################################################
+rate='mak'
 grid_shape = (3, 3) 
 
-D_dict = {sp: np.round(np.random.uniform(0.01, 0.06), 3) for sp in species} 
-x0_dict = {sp: np.round(np.random.uniform(0, 2.0, size=grid_shape), 2) for sp in species}
-print("Coeficientes de difusión generadas aleatoriamente:\nD_dict =", D_dict)
-print("Condiciones iniciales generadas aleatoriamente:\nx0_dict =", x0_dict)
-
 # Simulación de la dinámica de difusión en 2D
-t, X = simulate_diffusion_dynamics_2D(rn, rate='mak', grid_shape=grid_shape,D_dict=D_dict, x0_dict=x0_dict, t_span=(0,5)) 
-print("Tiempo de simulación:", t)
-
-print("Concentraciones de especies en las celdas:")
-print(X) 
-
-# Dimensiones del vector de tiempo y de las concentraciones
-print("Dimensión de t:", t.shape) 
-print("Dimensión de X:")
-for key, val in X.items():
-    print(f"{key}: shape = {val.shape}")
+t_diff, X_diff, flux_diff = simulate_diffusion_dynamics_2D(rn, rate, grid_shape=grid_shape, t_span=(0,10)) 
 
 # Visualization 
-plot_series_diffusion_2D(t, X, grid_shape)
+plot_diffusion_time_series_2D(time=t_diff,concentration_data= X_diff, grid_shape= grid_shape, xlabel='Tiempo', ylabel='Concentración', main_title='Serie de tiempo de las Concentraciones por Difusión', legend_title='Especies', cell_prefix='G')
+plot_diffusion_time_series_2D(time=t_diff,concentration_data=flux_diff, grid_shape=grid_shape, xlabel='Tiempo', ylabel='Concentración', main_title='Serie de tiempo del Flujo por Difusión', legend_title='Flujos', cell_prefix='G')
 
-for sp in X.keys():
-    plot_heatmaps_for_species_2D(X, sp, t, time_indices=np.linspace(0, len(t)-1, 3, dtype=int))
-    animate_diffusion_heatmaps_for_species_2D(X, sp, t)
+plot_heatmaps_all_species_2D(t_diff, X_diff, time_indices=3, main_title="Evolución de los perfiles de concentración por Difusión")
+animate_diffusion_heatmaps_all_species_2D(t_diff, X_diff, main_title="Animación de la Dinámica de Difusión") 
 
 ##########################################################################
-# Metapopulation dynamics simulation
+# Metapopulation dynamics simulation 
 ##########################################################################
-rate = ['mak'] * len(reactions)
-spec_vector = [[0.1]] * len(reactions)
-grid_shape = (2, 2)
-D_dict = {"l": 0., "s1": 0.1, "s2": 0.5}
-x0_dict = {
-    "l": np.array([[0.5, 0.5], [0.5, 0.5]]),
-    "s1": np.array([[0.5, 0.5], [0.5, 0.5]]),
-    "s2": np.array([[0.5, 0.5], [0.5, 0.5]])
-}
+rate = 'mak'
+grid_shape = (3, 3)
+t_MP, X_MP, flux_MP = simulate_metapopulation_dynamics(rn, rate, grid_shape = grid_shape, t_span=(0,10))
 
-# Filas sumar 1
-prob_matrix = np.array([
-    [0.5, 0, 0.5, 0.],
-    [0., 1, 0., 0.],
-    [0., 0., 0.5, 0.5],
-    [0.2, 0., 0., 0.8]
-])
+# Visualization  
+plot_diffusion_time_series_2D(time=t_MP,concentration_data=X_MP, grid_shape=grid_shape, xlabel='Tiempo', ylabel='Concentración', main_title='Serie de tiempo de las Concentraciones de Metapoblaciones', legend_title='Especies', cell_prefix='G')
+plot_diffusion_time_series_2D(time=t_MP,concentration_data=flux_MP, grid_shape=grid_shape, xlabel='Tiempo', ylabel='Concentración', main_title='Serie de tiempo del Flujo de Metapoblaciones', legend_title='Flujos', cell_prefix='G')
 
-# Simulation of metapopulation dynamics
-# t, ts_MP, fv_MP = simulate_metapopulation_dynamics(rn, rate)
-t, ts_MP, fv_MP = simulate_metapopulation_dynamics(rn, rate, grid_shape, D_dict, x0_dict, spec_vector, prob_matrix=prob_matrix,t_span=(0, 300), n_steps=600)
+plot_heatmaps_all_species_2D(t_MP, X_MP, time_indices=3, main_title="Evolución de los perfiles de concentración de Metapoblaciones")
+animate_diffusion_heatmaps_all_species_2D(t_MP, X_MP, main_title="Animación de la Dinámica de Metapoblaciones")
 
-print("Tiempos:", t)
-print("Series temporales (primeras filas):\n", ts_MP.head())
-print("Flujos de reacción (primeras filas):\n", fv_MP.head())
+# ##########################################################################
+# # EJEMPLO: Metapopulation dynamics with custom parameters for autopoietic
+# ##########################################################################
+# file_path = 'Txt/autopoietic.txt'
+# rn = read_txt(file_path)
+# species = [s.name for s in rn.species()]
+# print("Especies:", species)
+# reactions = [r.name() for r in rn.reactions()]
+# print("Reacciones:", reactions)
 
-X = reconstruct_tensor(ts_MP, species, grid_shape)
+# rate = 'mak'
+# grid_shape = (2, 2)
+# spec_vector = [[0.1]] * len(reactions) # [[0.7], [0.5], [1.0], [1.0], [1.0]]    
+# D_dict = {"l": 0., "s1": 0.5, "s2": 0.9}
+# x0_dict = {
+#     "l": np.array([[0.5, 0.5], [0.5, 0.5]]),
+#     "s1": np.array([[0.5, 0.5], [0.5, 0.5]]),
+#     "s2": np.array([[0.5, 0.5], [0.5, 0.5]])
+# }
 
-# Visualization 
-plot_series_diffusion_2D(t, X, grid_shape, xlabel='Tiempo', ylabel='Concentración', title=' Serie de tiempo de Metapoblaciones')
+# # Las filas deben sumar 1
+# connectivity_matrix = np.array([
+#     [0.5, 0, 0.5, 0.],
+#     [0., 1, 0., 0.],
+#     [0., 0., 0.5, 0.5],
+#     [0.2, 0., 0., 0.8]
+# ])
 
-for sp in X.keys():
-    plot_heatmaps_for_species_2D(X, sp, t, time_indices=np.linspace(0, len(t)-1, 3, dtype=int))
-    animate_diffusion_heatmaps_for_species_2D(X, sp, t)
+# # Simulation of metapopulation dynamics
+# t_MP, X_MP, flux_MP = simulate_metapopulation_dynamics(rn, rate, grid_shape=grid_shape, D_dict=D_dict, x0_dict=x0_dict, spec_vector=spec_vector, t_span=(0,150), n_steps=200, connectivity_matrix=connectivity_matrix) 
+
+# # Visualization  
+# plot_diffusion_time_series_2D(time=t_MP,concentration_data=X_MP, grid_shape=grid_shape, xlabel='Tiempo', ylabel='Concentración', main_title='Serie de tiempo de las Concentraciones de Metapoblaciones', legend_title='Especies', cell_prefix='G')
+# plot_diffusion_time_series_2D(time=t_MP,concentration_data=flux_MP, grid_shape=grid_shape, xlabel='Tiempo', ylabel='Concentración', main_title='Serie de tiempo del Flujo de Metapoblaciones', legend_title='Flujos', cell_prefix='G')
+
+# plot_heatmaps_all_species_2D(t_MP, X_MP, time_indices=3, main_title="Evolución de los perfiles de concentración de Metapoblaciones")
+# animate_diffusion_heatmaps_all_species_2D(t_MP, X_MP, main_title="Animación de la Dinámica de Metapoblaciones")

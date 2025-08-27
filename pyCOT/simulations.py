@@ -415,31 +415,31 @@ def simulation(rn, rate='mak', spec_vector=None, x0=None, t_span=(0, 200),
 ###############################################################################
 #################################################################################
 #########################################################################
-# Function to create the stoichiometric matrix 
-def universal_stoichiometric_matrix(rn):
-    """
-    Creates the stoichiometric matrix based on the reaction network (RN).
+# # Function to create the stoichiometric matrix 
+# def universal_stoichiometric_matrix(rn):
+#     """
+#     Creates the stoichiometric matrix based on the reaction network (RN).
     
-    Parameters:
-    RN (object): The reaction network object that contains species and reaction details.
+#     Parameters:
+#     RN (object): The reaction network object that contains species and reaction details.
     
-    Returns:
-    np.ndarray: The stoichiometric matrix representing the reactions, with integer values.
-    """
-    species =   rn.stoichiometry_matrix().species
-    reactions = rn.stoichiometry_matrix().reactions
-    reactants_vectors, products_vectors=build_stoichiometric_vectors(file_path, species)
-    # Initialize the stoichiometric matrix with zeros
-    matrix = np.zeros((len(species), len(reactions)))  # #species x #reactions
+#     Returns:
+#     np.ndarray: The stoichiometric matrix representing the reactions, with integer values.
+#     """
+#     species =   rn.stoichiometry_matrix().species
+#     reactions = rn.stoichiometry_matrix().reactions
+#     reactants_vectors, products_vectors=build_stoichiometric_vectors(file_path, species)
+#     # Initialize the stoichiometric matrix with zeros
+#     matrix = np.zeros((len(species), len(reactions)))  # #species x #reactions
 
-    # Iterate over reactions
-    for i in range(len(reactions)):  # For each reaction 
-        for j in range(len(species)):  # Same for products
-            coef_p = products_vectors[i][j]  # Coefficient of the product in reaction i for species j
-            coef_r = reactants_vectors[i][j]  # Coefficient of the reactant in reaction i for species j
-            matrix[j, i] = coef_p - coef_r  # Product coefficients are positive (transposition here)  
+#     # Iterate over reactions
+#     for i in range(len(reactions)):  # For each reaction 
+#         for j in range(len(species)):  # Same for products
+#             coef_p = products_vectors[i][j]  # Coefficient of the product in reaction i for species j
+#             coef_r = reactants_vectors[i][j]  # Coefficient of the reactant in reaction i for species j
+#             matrix[j, i] = coef_p - coef_r  # Product coefficients are positive (transposition here)  
 
-    return matrix  # Returns the stoichiometric matrix with integer values
+#     return matrix  # Returns the stoichiometric matrix with integer values
 
 # Function to update the state vector at each time step 
 def simulate_discrete_random(rn, S, x, n_iter=10):
@@ -506,8 +506,9 @@ def simulate_diffusion_dynamics_2D(rn, rate='mak', grid_shape=None, D_dict=None,
     - n_steps: Number of time steps for the simulation (default is 500).
     - additional_laws: Dictionary with additional kinetic laws (default is None).
     Returns:
-    - time_series_df: DataFrame with the time series of species concentrations.
-    - flux_vector_df: DataFrame with the flux vector for each reaction.
+    - t: array of time points
+    - X_out: dictionary with concentration time series for each species
+    - flux_out: dictionary with flux time series for each reaction
     """
     np.random.seed(seed=42)  # Para reproducibilidad 
     species = [specie.name for specie in rn.species()]
@@ -523,11 +524,9 @@ def simulate_diffusion_dynamics_2D(rn, rate='mak', grid_shape=None, D_dict=None,
 
     if D_dict is None:
         D_dict = {sp: np.round(np.random.uniform(0.01, 0.2), 3) for sp in species}
-        # print("Difusividades generadas aleatoriamente:", D_dict)
 
     if x0_dict is None:
         x0_dict = {sp: np.round(np.random.uniform(0, 2.0, size=(rows, cols)), 2) for sp in species}
-        # print("Condiciones iniciales generadas aleatoriamente.")
 
     # Flatten the initial state dictionary to a 1D array
     def flatten_state(x0_dict):
@@ -552,7 +551,7 @@ def simulate_diffusion_dynamics_2D(rn, rate='mak', grid_shape=None, D_dict=None,
             elif kinetic == 'hill':
                 Vmax = generate_random_vector(1, min_value=1, max_value=1.5)
                 Kd = generate_random_vector(1, min_value=5, max_value=10)
-                n = generate_random_vector(1, min_value=1, max_value=4) #np.random.randint(1, 4) #
+                n = generate_random_vector(1, min_value=1, max_value=4)
                 params = np.round([float(Vmax), float(Kd), float(n)], 2)
             elif kinetic in (additional_laws or {}):
                 params = np.round(np.random.uniform(0.1, 1.0, 3), 3)
@@ -564,23 +563,43 @@ def simulate_diffusion_dynamics_2D(rn, rate='mak', grid_shape=None, D_dict=None,
     # reaction_dynamics computes the local reaction dynamics for each species
     def reaction_dynamics(Xdict, rate=rate, spec_vector=spec_vector):
         dxdt_dict = {sp: np.zeros((rows, cols)) for sp in species}
+        flux_dict = {r: np.zeros((rows, cols)) for r in reactions}
+        
         # Each point (i,j) of the grid is traversed.
         for i in range(rows):
             for j in range(cols):
                 local_x = [Xdict[sp][i, j] for sp in species] # Current local concentrations
-                try:
-                    ts, fs = simulation(rn, rate=rate, spec_vector=spec_vector, x0=local_x, t_span=(0, 1e-6), n_steps=2) # Simula la dinámica local en dos pasos de tiempo
-                    if len(ts) > 1:
-                        # Discretization of the derivative
-                        dt = ts.index[1] - ts.index[0]
-                        dxdt_local = (ts.iloc[1].values - ts.iloc[0].values) / dt
-                    else:
-                        dxdt_local = np.zeros(len(species))
-                except:
-                    dxdt_local = np.zeros(len(species))
-                for k, sp in enumerate(species):
-                    dxdt_dict[sp][i, j] = dxdt_local[k]
-        return dxdt_dict
+                
+                # Calculate reaction rates and fluxes directly
+                for r_idx, reaction in enumerate(rn.reactions()):
+                    # Obtener reactantes, productos y estequiometría
+                    reactants, products, stoichiometry = get_reaction_components(reaction, species)
+                    
+                    # Calcular tasa de reacción según la ley cinética
+                    v_r = 0
+                    if rate[r_idx] == 'mak':
+                        k = spec_vector[r_idx][0]
+                        v_r = k
+                        if reactants:  # Reacciones con reactantes
+                            for sp_idx, stoich in reactants:
+                                v_r *= local_x[sp_idx] ** abs(stoich)
+                    elif rate[r_idx] == 'mmk':
+                        Vmax, Km = spec_vector[r_idx]
+                        sp_idx = reactants[0][0] if reactants else 0
+                        v_r = Vmax * local_x[sp_idx] / (Km + local_x[sp_idx]) if reactants else 0
+                    elif rate[r_idx] == 'hill':
+                        Vmax, Kd, n = spec_vector[r_idx]
+                        sp_idx = reactants[0][0] if reactants else 0
+                        v_r = Vmax * (local_x[sp_idx] ** n) / (Kd ** n + local_x[sp_idx] ** n) if reactants else 0
+                    elif rate[r_idx] in (additional_laws or {}):
+                        v_r = additional_laws[rate[r_idx]](local_x, spec_vector[r_idx])
+                    
+                    flux_dict[reaction.name()][i, j] = v_r
+                    for sp_idx, stoich in enumerate(stoichiometry):
+                        if stoich != 0:
+                            dxdt_dict[species[sp_idx]][i, j] += stoich * v_r
+        
+        return dxdt_dict, flux_dict
 
     # The Laplacian is computed as the difference between the central value and the average of the neighbors
     def diffusion_term(Xdict):
@@ -596,10 +615,8 @@ def simulate_diffusion_dynamics_2D(rn, rate='mak', grid_shape=None, D_dict=None,
     # Combined ODE function for reaction and diffusion dynamics
     def combined_ode(t, x):
         Xdict = reshape_state(x)
-
-        dxdt_reac = reaction_dynamics(Xdict, rate=rate, spec_vector=spec_vector)
+        dxdt_reac, _ = reaction_dynamics(Xdict, rate=rate, spec_vector=spec_vector)
         dxdt_diff = diffusion_term(Xdict)
-
         dxdt_total = {sp: dxdt_reac[sp] + dxdt_diff[sp] for sp in species}
         return flatten_state(dxdt_total)
 
@@ -607,13 +624,25 @@ def simulate_diffusion_dynamics_2D(rn, rate='mak', grid_shape=None, D_dict=None,
     t_eval = np.linspace(*t_span, n_steps)
     sol = solve_ivp(combined_ode, t_span, x0, t_eval=t_eval, method='RK45', rtol=1e-6)
 
+    # Formatear salida de concentraciones
     X_out = {sp: np.zeros((n_steps, rows, cols)) for sp in species}
     for i, xt in enumerate(sol.y.T):
         xt_dict = reshape_state(xt)
         for sp in species:
             X_out[sp][i] = xt_dict[sp]
-
-    return sol.t, X_out 
+    
+    # Calcular series temporales de flujos
+    flux_out = {r: np.zeros((n_steps, rows, cols)) for r in reactions}
+    
+    for time_idx, t_val in enumerate(sol.t):
+        x_val = sol.y[:, time_idx]
+        Xdict = reshape_state(x_val)
+        _, flux_dict = reaction_dynamics(Xdict, rate, spec_vector)
+        
+        for r in reactions:
+            flux_out[r][time_idx] = flux_dict[r]
+    
+    return sol.t, X_out, flux_out  
 
 ###################################################################################
 # METAPOPULATION SIMULATION
@@ -641,22 +670,22 @@ def get_reaction_components(reaction, species):
         print(f"Atributos disponibles: {dir(reaction)}")
         raise
 
-def simulate_metapopulation_dynamics(rn, rate='mak', patch_shape=None, D_dict=None, 
+def simulate_metapopulation_dynamics(rn, rate='mak', grid_shape=None, D_dict=None, 
                                     x0_dict=None, spec_vector=None, t_span=(0, 20), 
-                                    n_steps=500, prob_matrix=None, additional_laws=None):
+                                    n_steps=500, connectivity_matrix=None, additional_laws=None):
     """
     Simula la dinámica de metapoblaciones con reacciones locales y dispersión entre parches.
     
     Parámetros:
     - rn: Objeto ReactionNetwork con especies y reacciones.
     - rate: Lista de leyes cinéticas para cada reacción ('mak', 'mmk', 'hill' o adicionales).
-    - patch_shape: Tupla (filas, columnas) definiendo la disposición de parches (o None para 1D).
+    - grid_shape: Tupla (filas, columnas) definiendo la disposición de parches (o None para 1D).
     - D_dict: Diccionario con tasas de dispersión global por especie (default: aleatorio).
     - x0_dict: Diccionario con condiciones iniciales por especie y parche (default: aleatorio).
     - spec_vector: Lista de parámetros para cada reacción (default: aleatorio).
     - t_span: Tupla con el intervalo de tiempo de simulación (default: (0, 20)).
     - n_steps: Número de pasos temporales (default: 500).
-    - prob_matrix: Matriz de probabilidad de dispersión (patch_shape[0]*patch_shape[1], patch_shape[0]*patch_shape[1]).
+    - connectivity_matrix: Matriz de conectividad o probabilidad de dispersión. Las filas deben sumar 1 (default: aleatorio).
     - additional_laws: Diccionario con leyes cinéticas adicionales (default: None).
     
     Retorna:
@@ -670,9 +699,9 @@ def simulate_metapopulation_dynamics(rn, rate='mak', patch_shape=None, D_dict=No
     rate = validate_rate_list(rate, len(reactions))
     
     # Configurar la forma de los parches
-    if patch_shape is None:
-        patch_shape = (2, 2)  # Cuadrícula 2x2 por defecto
-    rows, cols = patch_shape
+    if grid_shape is None:
+        grid_shape = (2, 2)  # Cuadrícula 2x2 por defecto
+    rows, cols = grid_shape
     num_patches = rows * cols
     
     # Tasas de dispersión por especie
@@ -683,21 +712,58 @@ def simulate_metapopulation_dynamics(rn, rate='mak', patch_shape=None, D_dict=No
     if x0_dict is None:
         x0_dict = {sp: np.round(np.random.uniform(0, 2.0, size=(rows, cols)), 2) for sp in species}
     
-    # Matriz de probabilidad de dispersión
-    if prob_matrix is None:
-        prob_matrix = np.random.uniform(0, 1, size=(num_patches, num_patches))
-        prob_matrix = prob_matrix / np.sum(prob_matrix, axis=1, keepdims=True)
-        np.fill_diagonal(prob_matrix, 0)
+    # Matriz de conectividad o probabilidad de dispersión
+    if connectivity_matrix is None:
+        # Generar matriz aleatoria con dos decimales
+        connectivity_matrix = np.random.uniform(0, 1, size=(num_patches, num_patches))
+        connectivity_matrix = np.round(connectivity_matrix, 2)  # Redondear a dos decimales
+        
+        # Asegurar que las filas sumen 1
+        row_sums = np.sum(connectivity_matrix, axis=1, keepdims=True)
+        connectivity_matrix = connectivity_matrix / row_sums
+        connectivity_matrix = np.round(connectivity_matrix, 2)  # Redondear nuevamente
+        
+        # Ajustar para compensar errores de redondeo y asegurar suma exacta de 1
+        for i in range(num_patches):
+            current_sum = np.sum(connectivity_matrix[i])
+            if current_sum != 1.0:
+                # Encontrar el elemento más grande para ajustar la diferencia
+                diff = 1.0 - current_sum
+                max_idx = np.argmax(connectivity_matrix[i])
+                connectivity_matrix[i, max_idx] += diff
+                connectivity_matrix[i, max_idx] = np.round(connectivity_matrix[i, max_idx], 2)
+        
+        # Asegurar diagonal cero
+        np.fill_diagonal(connectivity_matrix, 0)
+        
+        # Re-normalizar después de poner ceros en la diagonal
+        for i in range(num_patches):
+            row_sum = np.sum(connectivity_matrix[i])
+            if row_sum > 0:
+                connectivity_matrix[i] = connectivity_matrix[i] / row_sum
+                connectivity_matrix[i] = np.round(connectivity_matrix[i], 2)
+                
+                # Ajuste final para suma exacta
+                current_sum = np.sum(connectivity_matrix[i])
+                if current_sum != 1.0:
+                    diff = 1.0 - current_sum
+                    non_zero_indices = np.where(connectivity_matrix[i] > 0)[0]
+                    if len(non_zero_indices) > 0:
+                        adjust_idx = non_zero_indices[0]
+                        connectivity_matrix[i, adjust_idx] += diff
+                        connectivity_matrix[i, adjust_idx] = np.round(connectivity_matrix[i, adjust_idx], 2)
     else:
-        # Validar prob_matrix
-        if prob_matrix.shape != (num_patches, num_patches):
-            raise ValueError(f"prob_matrix debe tener forma {(num_patches, num_patches)}")
-        if not np.allclose(np.sum(prob_matrix, axis=1), 1.0, atol=1e-6):
-            prob_matrix = prob_matrix / np.sum(prob_matrix, axis=1, keepdims=True)
-            np.fill_diagonal(prob_matrix, 0)
+        # Validar connectivity_matrix
+        if connectivity_matrix.shape != (num_patches, num_patches):
+            raise ValueError(f"\nThe connectivity matrix must be shaped like {(num_patches, num_patches)}")
+        if not np.allclose(np.sum(connectivity_matrix, axis=1), 1.0, atol=1e-6):
+            connectivity_matrix = connectivity_matrix / np.sum(connectivity_matrix, axis=1, keepdims=True)
+            connectivity_matrix = np.round(connectivity_matrix, 2)
+            np.fill_diagonal(connectivity_matrix, 0)
+
     # Imprimir matriz final
-    print("Matriz de probabilidad de dispersión:")
-    print(prob_matrix)
+    print("\nConnectivity or probability matrix:\n", connectivity_matrix)
+    # print(f"\nRow sums: {np.sum(connectivity_matrix, axis=1)}")
 
     # Parámetros de reacción
     if spec_vector is None:
@@ -779,8 +845,8 @@ def simulate_metapopulation_dynamics(rn, rate='mak', patch_shape=None, D_dict=No
                     p_idx = i * cols + j
                     dxdt = 0
                     for k in range(num_patches):
-                        dxdt += D * prob_matrix[k, p_idx] * Xdict[sp].flatten()[k]          # Entrante
-                        dxdt -= D * prob_matrix[p_idx, k] * X[p_idx // cols, p_idx % cols]  # Saliente 
+                        dxdt += D * connectivity_matrix[k, p_idx] * Xdict[sp].flatten()[k]          # Entrante
+                        dxdt -= D * connectivity_matrix[p_idx, k] * X[p_idx // cols, p_idx % cols]  # Saliente 
                         # p_idx // cols: fila correspondiente en la cuadrícula original. 
                         # p_idx % cols: columna correspondiente en la cuadrícula original.
                     dxdt_dict[sp][i, j] = dxdt
@@ -797,272 +863,32 @@ def simulate_metapopulation_dynamics(rn, rate='mak', patch_shape=None, D_dict=No
     # Integración de ODEs
     t_eval = np.linspace(t_span[0], t_span[1], n_steps)
     sol = solve_ivp(combined_ode, t_span, x0, t_eval=t_eval, method='RK45', rtol=1e-6)
-    
+
     # Formatear salida
     X_out = {sp: np.zeros((n_steps, rows, cols)) for sp in species}
+    for i, xt in enumerate(sol.y.T):
+        xt_dict = reshape_state(xt)
+        for sp in species:
+            X_out[sp][i] = xt_dict[sp]
+  
+    # Calcular series temporales de flujos
     flux_out = {r: np.zeros((n_steps, rows, cols)) for r in reactions}
     
-    for i, xt in enumerate(sol.y.T):
-        Xdict = reshape_state(xt)
+    for time_idx, t_val in enumerate(sol.t):
+        x_val = sol.y[:, time_idx]
+        Xdict = reshape_state(x_val)
         _, flux_dict = reaction_dynamics(Xdict, rate, spec_vector)
-        for sp in species:
-            X_out[sp][i] = Xdict[sp]
+        
         for r in reactions:
-            flux_out[r][i] = flux_dict[r]
+            flux_out[r][time_idx] = flux_dict[r]
     
-    # Convertir a DataFrames
-    time_series_df = pd.DataFrame({
-        (sp, p): X_out[sp][:, p // cols, p % cols]
-        for sp in species for p in range(num_patches)
-    }, index=t_eval)
-    
-    flux_vector_df = pd.DataFrame({
-        (r, p): flux_out[r][:, p // cols, p % cols]
-        for r in reactions for p in range(num_patches)
-    }, index=t_eval)
-    
-    return sol.t, time_series_df, flux_vector_df
-
-# Reconstruir diccionario de resultados para animación
-def reconstruct_tensor(time_series, species, patch_shape):
-    rows, cols = patch_shape
-    n_time = time_series.shape[0]
-    X = {}
-    for sp in species:
-        data = np.zeros((n_time, rows, cols))
-        for i in range(rows):
-            for j in range(cols):
-                patch_idx = i * cols + j
-                data[:, i, j] = time_series[(sp, patch_idx)].values
-        X[sp] = data
-    return X
+    return sol.t, X_out, flux_out    
 ###################################################################################
+
 ###################################################################################
-###########################################################################################
-# Function that computes the time series of a metapopulation reaction-diffusion model
-def simulate_odes_metapop_mak(RN, x0=None, t_span=None, n_steps=None, k=None, exchange_rates=None, D=None, grid_shape=None):
-    """
-    Simulates the dynamics of a spatiotemporal metapopulation with reaction-diffusion terms.
-    Specifically, it models the evolution of species in a reaction network distributed over a 
-    discrete space (a grid of patches), considering both chemical interactions within each patch 
-    and exchange between patches through diffusion and exchange rates.
 
-    Parameters:
-        RN (dict): Object describing the reaction network.
-        x0 (array-like, optional): Initial conditions of the species. Default is None.
-        t_span (tuple, optional): Time range for the simulation. Default is None.
-        n_steps (int, optional): Number of steps for the simulation. Default is None.
-        k (array-like, optional): Reaction rate constants. Default is None.
-        exchange_rates (array-like, optional): Exchange rates between modules (diffusion between nodes). Default is None.
-        D (array-like, optional): Spatial diffusion coefficients for each species. Default is None.
-        grid_shape (tuple, optional): Shape of the spatial grid (rows, columns). Default is None.
-
-    Returns:
-        dict: Simulation results for each patch (key: patch index).
-    """
-    # Validate that RN and its attributes are not None
-    if RN is None or not hasattr(RN, 'SpStr') or not hasattr(RN, 'RnStr'):
-        raise ValueError("The reaction network (RN) is invalid or incomplete.")
-    
-    # Default parameters if not specified
-    if grid_shape is None:
-        grid_shape = (2, 2)                   # Default configuration if not provided
-    if x0 is None:
-        x0 = np.random.rand(grid_shape[0], grid_shape[1], len(RN.SpStr)) * 2 # Random initial conditions
-    if n_steps is None:
-        n_steps = 500                         # Default number of steps    
-    if t_span is None:
-        t_span = (0, 100)                      # Default simulation time
-    if k is None:
-        k = np.random.rand(len(RN.RnStr)) * 1 # Random rate constants
-    if exchange_rates is None:
-        exchange_rates = np.ones((grid_shape[0], grid_shape[1], len(RN.SpStr)))  # No exchange by default 
-    if D is None:
-        D = np.random.rand(len(RN.SpStr))     # Default uniform diffusion coefficients
-    
-    # Function describing the system of differential equations with diffusion
-    def ode_system(x_flat, t, k, RN, exchange_rates, D, grid_shape):
-        # Reconstruct the spatial grid
-        x = x_flat.reshape(grid_shape[0], grid_shape[1], -1)
-        dxdt = np.zeros_like(x)
-        
-        # Stoichiometric matrices
-        S = np.array(RN.RnMsupp)
-        P = np.array(RN.RnMprod)
-        
-        # Reaction terms
-        for i in range(len(RN.SpStr)):      # For each species
-            for r in range(len(RN.RnStr)):  # For each reaction
-                rate = k[r] * np.prod(x[:, :, :] ** S[r, :], axis=-1)
-                dxdt[:, :, i] += rate * (P[r, i] - S[r, i])
-        
-        # Diffusion terms (diffusion in the grid)
-        for i in range(len(RN.SpStr)):      # For each species
-            dxdt[:, :, i] += D[i] * (
-                np.roll(x[:, :, i],  1, axis=0) +  # Upper neighbor
-                np.roll(x[:, :, i], -1, axis=0) +  # Lower neighbor
-                np.roll(x[:, :, i],  1, axis=1) +  # Left neighbor
-                np.roll(x[:, :, i], -1, axis=1) -  # Right neighbor
-                4 * x[:, :, i]  # Center
-            )
-        
-        # Exchange rates between nodes (patches)
-        for i in range(len(RN.SpStr)):
-            dxdt[:, :, i] += exchange_rates[:, :, i]
-        
-        return dxdt.flatten()
-    # Verify that t_span is a tuple with two values
-    if not (isinstance(t_span, tuple) and len(t_span) == 2):
-        raise TypeError(f"t_span must be a tuple (t0, tf), but received {t_span} of type {type(t_span)}.")
-    
-    # Define the time range
-    t = np.linspace(t_span[0], t_span[1], n_steps)
-    
-    # Solve the system of ODEs
-    result = odeint(ode_system, x0.flatten(), t, args=(k, RN, exchange_rates, D, grid_shape))
-    
-    # Reconstruct results as a dictionary 
-    modules = {
-        f'Patch ({i+1}, {j+1})': result[:, (i * grid_shape[1] + j    ) * len(RN.SpStr):
-                                           (i * grid_shape[1] + j + 1) * len(RN.SpStr)]
-        for i in range(grid_shape[0]) for j in range(grid_shape[1])
-    }
-    # Number of patches
-    num_patches = grid_shape[0] * grid_shape[1]
-    print(f"Number of patches: {num_patches}")
-    
-    return modules
-
-###########################################################################################
-# Function to simulate the dynamics of a metapopulation with Michaelis-Menten kinetics and diffusion
-def simulate_odes_metapop_mmk(RN, x0=None, t_span=None, n_steps=None, Vmax=None, Km=None, D=None, grid_shape=None):
-    """
-    Simulates the dynamics of a metapopulation with Michaelis-Menten kinetics and diffusion on a spatial grid.
-
-    Parameters:
-        RN (dict): Object describing the reaction network.
-        x0 (array-like, optional): Initial conditions of the species.
-        t_span (tuple, optional): Simulation time range.
-        n_steps (int, optional): Number of simulation steps.
-        Vmax (array-like, optional): Maximum reaction rate for each reaction.
-        Km (array-like, optional): Michaelis-Menten constant for each reaction.
-        D (array-like, optional): Diffusion coefficients for each species.
-        grid_shape (tuple, optional): Shape of the spatial grid (rows, columns).
-
-    Returns:
-        dict: Simulation results for each patch (key: patch index).
-    """
-    if RN is None or not hasattr(RN, 'SpStr') or not hasattr(RN, 'RnStr'):
-        raise ValueError("The reaction network (RN) is invalid or incomplete.")
-    
-    if grid_shape is None:
-        grid_shape = (2, 2)
-    if x0 is None:
-        x0 = np.random.rand(grid_shape[0], grid_shape[1], len(RN.SpStr)) * 2
-    if n_steps is None:
-        n_steps = 500
-    if t_span is None:
-        t_span = (0, 100)
-    if Vmax is None:
-        Vmax = np.random.rand(len(RN.RnStr))
-    if Km is None:
-        Km = np.random.rand(len(RN.RnStr))
-    if D is None:
-        D = np.random.rand(len(RN.SpStr))
-    
-    def ode_system(x_flat, t, Vmax, Km, RN, D, grid_shape):
-        x = x_flat.reshape(grid_shape[0], grid_shape[1], -1)
-        dxdt = np.zeros_like(x)
-        
-        S = np.array(RN.RnMsupp)
-        P = np.array(RN.RnMprod)
-        
-        for i in range(len(RN.SpStr)):
-            for r in range(len(RN.RnStr)):
-                rate = Vmax[r] * (x[:, :, :] ** S[r, :]) / (Km[r] + x[:, :, :])
-                dxdt[:, :, i] += np.sum(rate * (P[r, i] - S[r, i]), axis=-1)
-        
-        for i in range(len(RN.SpStr)):
-            dxdt[:, :, i] += D[i] * (
-                np.roll(x[:, :, i],  1, axis=0) + 
-                np.roll(x[:, :, i], -1, axis=0) + 
-                np.roll(x[:, :, i],  1, axis=1) + 
-                np.roll(x[:, :, i], -1, axis=1) - 
-                4 * x[:, :, i]
-            )
-        
-        return dxdt.flatten()
-    
-    t = np.linspace(t_span[0], t_span[1], n_steps)
-    result = odeint(ode_system, x0.flatten(), t, args=(Vmax, Km, RN, D, grid_shape))
-    
-    modules = {
-        f'Patch ({i+1}, {j+1})': result[:, (i * grid_shape[1] + j) * len(RN.SpStr):
-                                           (i * grid_shape[1] + j + 1) * len(RN.SpStr)]
-        for i in range(grid_shape[0]) for j in range(grid_shape[1])
-    }
-    
-    print(f"Number of patches: {grid_shape[0] * grid_shape[1]}")
-    return modules
-
-###########################################################################################
-# Function to create the simulations of the metapopulation dynamics of a reaction-diffusion model PDE
-def simulate_pde_rd(RN, x0=None, t_span=None, n_steps=None, k=None, exchange_rates=None, D=None, grid_shape=None):
-    if RN is None or not hasattr(RN, 'SpStr') or not hasattr(RN, 'RnStr'):
-        raise ValueError("The reaction network (RN) is invalid or incomplete.")
-    
-    if grid_shape is None:
-        grid_shape = (2, 2)
-    if x0 is None:
-        x0 = np.random.rand(grid_shape[0], grid_shape[1], len(RN.SpStr)) * 2
-        print(f"Values of x0: {x0}")
-    if n_steps is None:
-        n_steps = 500
-    if t_span is None:
-        t_span = (0, 100)
-    if k is None:
-        k = np.random.rand(len(RN.RnStr)) * 1 # Random rate constants into the interval [0, 1]
-    if exchange_rates is None:
-        exchange_rates = np.ones((grid_shape[0], grid_shape[1], len(RN.SpStr)))  # No exchange by default        
-    if D is None:
-        D = np.random.rand(len(RN.SpStr)) # Default diffusion coefficients 
-    
-    def ode_system(x_flat, t, k, RN, D, grid_shape):
-        x = x_flat.reshape(grid_shape[0], grid_shape[1], -1)
-        dxdt = np.zeros_like(x)
-        
-        S = np.array(RN.RnMsupp)
-        P = np.array(RN.RnMprod)
-        
-        for i in range(len(RN.SpStr)):
-            for r in range(len(RN.RnStr)):
-                rate = k[r] * np.prod(x[:, :, :] ** S[r, :], axis=-1) # Calculate the reaction rate 
-                dxdt[:, :, i] += rate * (P[r, i] - S[r, i])           # Mass action kinetics
-            
-            # Difusión con diferencias finitas centradas en una malla 2D con coeficientes D_i específicos para cada especie.
-            dxdt[:, :, i] += D[i] * (
-                np.roll(x[:, :, i],  1, axis=0) +  # Vecino superior
-                np.roll(x[:, :, i], -1, axis=0) +  # Vecino inferior
-                np.roll(x[:, :, i],  1, axis=1) +  # Vecino derecho
-                np.roll(x[:, :, i], -1, axis=1) -  # Vecino izquierdo
-                4 * x[:, :, i]  # Centro (multiplicado por 4)
-            )
-
-        # Exchange rates between nodes (patches)
-        for i in range(len(RN.SpStr)):
-            dxdt[:, :, i] += exchange_rates[:, :, i]            
-        
-        return dxdt.flatten()
-    
-    if not (isinstance(t_span, tuple) and len(t_span) == 2):
-        raise TypeError(f"t_span must be a tuple (t0, tf), but received {t_span} of type {type(t_span)}.")
-    
-    t = np.linspace(t_span[0], t_span[1], n_steps)
-    
-    result = odeint(ode_system, x0.flatten(), t, args=(k, RN, D, grid_shape))
-    
-    return result.reshape(n_steps, grid_shape[0], grid_shape[1], len(RN.SpStr))
-
+########################################################################################### 
+# LINEAR PROGRAMMING 
 ###########################################################################################
 # Function for solve the Linear Programming Problem: S.v>=0, v>0
 def minimize_sv(S, epsilon=1,method='highs'):

@@ -73,117 +73,359 @@ def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", title="T
 # Reaction-Diffusion Dynamics Plotting
 ########################################################################################
 # Function to plot time series for each species in each grid cell
-def plot_series_diffusion_2D(t, X, grid_shape, xlabel="Time", ylabel="Concentration", title="Time Series of Concentrations"): 
+def plot_diffusion_time_series_2D(time, concentration_data, grid_shape, colors=None, 
+                                 xlabel="Time", ylabel="Concentration", 
+                                 main_title="Time Evolution of Concentration Profiles",
+                                 legend_title="Species", cell_prefix='G'):
+    """
+    Plot 2D time series of concentration data from diffusion simulation.
+    
+    Parameters:
+    -----------
+    time : array-like
+        Time vector for the x-axis
+    concentration_data : dict
+        Dictionary with species names as keys and 3D arrays (time, row, col) as values
+    grid_shape : tuple (rows, cols)
+        Shape of the spatial grid
+    colors : dict, optional
+        Color mapping for each species
+    xlabel, ylabel : str
+        Axis labels
+    main_title : str
+        Main title for the entire figure
+    legend_title : str
+        Title for the legend
+    cell_prefix : str
+        Prefix for cell labels (e.g., 'G' for G00, G01, etc.)
+    """
+    
     rows, cols = grid_shape
-    celdas = [f'G{i}{j}' for i in range(rows) for j in range(cols)]
-    indices = [(i, j) for i in range(rows) for j in range(cols)]
-    especies = list(X.keys())
-
-    fig, axs = plt.subplots(rows, cols, figsize=(12, 8), sharex=True)
-    axs = axs.flatten()
-
-    base_colors = ['red', 'green', 'blue', 'orange', 'purple', 'brown', 'cyan', 'magenta',
-                   'yellow', 'gray', 'black', 'pink', 'lime', 'teal', 'navy', 'maroon',
-                   'olive', 'coral', 'gold', 'indigo', 'violet', 'turquoise', 'salmon', 'plum',
-                   'orchid', 'crimson', 'sienna', 'khaki', 'lavender', 'peachpuff']
-    colors = {sp: base_colors[i % len(base_colors)] for i, sp in enumerate(especies)}
-
-    for ax, label, (i, j) in zip(axs, celdas, indices):
-        for sp in especies:
-            ax.plot(t, X[sp][:, i, j], label=sp, color=colors.get(sp, 'black'), linewidth=2)
-
-        ax.set_title(f'{label}', fontsize=12, fontweight='bold')
-        ax.set(xlabel=xlabel, ylabel=ylabel)
-        ax.legend()
+    total_cells = rows * cols
+    
+    # Create figure with adjusted width for the legend
+    fig, axs = plt.subplots(rows, cols, figsize=(15, 8), sharex=True, squeeze=False)
+    axs_flat = axs.flatten()
+    
+    # Get default color cycle
+    prop_cycle = plt.rcParams['axes.prop_cycle']
+    default_colors = prop_cycle.by_key()['color']
+    
+    # Create color mapping
+    species_list = list(concentration_data.keys())
+    if colors is None:
+        colors = {}
+    
+    color_mapping = {}
+    for i, species in enumerate(species_list):
+        color_mapping[species] = colors.get(species, default_colors[i % len(default_colors)])
+    
+    # Dictionary to store legend handles (one per species)
+    legend_handles = {}
+    
+    # Plot data for each cell
+    for cell_idx in range(total_cells):
+        row = cell_idx // cols
+        col = cell_idx % cols
+        ax = axs_flat[cell_idx]
+        
+        # Plot each species in this cell
+        for species in species_list:
+            line = ax.plot(time, concentration_data[species][:, row, col], 
+                          color=color_mapping[species], linewidth=2, label=species)
+            
+            # Store handle for legend (first occurrence only)
+            if species not in legend_handles:
+                legend_handles[species] = line[0]
+        
+        # Set cell title and labels
+        cell_label = f'{cell_prefix}{row}{col}'
+        ax.set_title(cell_label, fontsize=12, fontweight='bold')
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
         ax.grid(True, alpha=0.3)
-
-    plt.suptitle(title, fontsize=14, fontweight='bold')
-    plt.tight_layout(rect=[0, 0, 1, 0.92])
+    
+    # Create legend
+    handles = [legend_handles[sp] for sp in species_list]
+    legend = fig.legend(handles, species_list, 
+                       loc='center right',
+                       bbox_to_anchor=(0.98, 0.5),
+                       fontsize=10, 
+                       title=legend_title, 
+                       title_fontsize=12)
+    
+    # Set main title
+    plt.suptitle(main_title, fontsize=14, fontweight='bold')
+    
+    # Adjust layout to accommodate legend
+    plt.tight_layout(rect=[0, 0, 0.88, 0.95])
+    
     plt.show()
 
 # Function to plot heatmaps for a given species at selected time points
-def plot_heatmaps_for_species_2D(X, species_name, t, time_indices=None, title="Heatmap for Specie"):
-    data = np.array(X[species_name])  # shape: (time, rows, cols)
-    n_time, rows, cols = data.shape
+import numpy as np
+import matplotlib.pyplot as plt
+import mplcursors
+
+def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None, main_title="Evolution of Concentration Profiles", cmap='viridis', figsize_multiplier=3, bar_label="Concentration"):
+    """
+    Plot heatmaps for all species at multiple time points in a single figure.
+    
+    Parameters:
+    -----------
+    t : array-like
+        Time vector
+    X : dict
+        Dictionary with species names as keys and 3D arrays (time, rows, cols) as values
+    species_names : list, optional
+        List of species to plot. If None, plots all species in X.
+    time_indices : int or list of int, optional
+        Single time index or list of time indices to display. 
+        If None, shows 5 evenly spaced time points.
+        If integer, shows that many evenly spaced time points.
+    main_title : str
+        Main title for the entire figure
+    cmap : str
+        Colormap to use for heatmaps
+    figsize_multiplier : float
+        Multiplier for figure size calculation
+    bar_label : str
+        Label for the color bar
+    """
+    
+    if species_names is None:
+        species_names = list(X.keys())
+    
+    n_species = len(species_names)
+    
+    # Manejo de índices de tiempo
     if time_indices is None:
-        time_indices = np.linspace(0, len(t)-1, 3, dtype=int)
-
-    n = len(time_indices)
-    fig = plt.figure(figsize=(5 * n, 4))
-    gs = fig.add_gridspec(1, n + 1, width_ratios=[1]*n + [0.05], wspace=0.3)
+        time_indices = np.linspace(0, len(t)-1, 5, dtype=int)
+    elif isinstance(time_indices, int):
+        time_indices = np.linspace(0, len(t)-1, time_indices, dtype=int)
+    elif not hasattr(time_indices, '__len__'):
+        raise ValueError("time_indices must be an integer, list of integers, or None")
     
-    vmin = np.min([X[species_name][idx].min() for idx in time_indices])
-    vmax = np.max([X[species_name][idx].max() for idx in time_indices])
+    time_indices = np.array(time_indices, dtype=int)
+    n_times = len(time_indices)
     
-    axes = [fig.add_subplot(gs[0, i]) for i in range(n)]
-    cbar_ax = fig.add_subplot(gs[0, -1])
-    imgs = []
-
-    for ax, idx in zip(axes, time_indices):
-        heat_data = X[species_name][idx]
-        img = ax.imshow(heat_data, cmap='viridis', vmin=vmin, vmax=vmax, origin='upper')
-        imgs.append(img)
-        ax.set_title(f"t = {t[idx]:.2f}")
-        ax.set_xlabel("") # ("Column")
-        ax.set_ylabel("") # ("Row")
-        ax.set_xticks(np.arange(cols))
-        ax.set_yticks(np.arange(rows))
-
-        # Cursor y función propia para cada imagen
-        cursor = mplcursors.cursor(img, hover=False)
-
-        def make_callback(data):
-            def on_add(sel):
-                x, y = int(sel.target[0]), int(sel.target[1])
-                if 0 <= y < data.shape[0] and 0 <= x < data.shape[1]:
-                    sel.annotation.set_text(f"{data[y, x]:.3f}")
-            return on_add
-
-        cursor.connect("add", make_callback(heat_data))
-
-    # Barra de color común
-    fig.colorbar(imgs[0], cax=cbar_ax)
-    plt.suptitle(f"{title} {species_name}", fontsize=16)
+    # Min y max global para escala de colores común
+    global_vmin = min([X[species][time_indices].min() for species in species_names])
+    global_vmax = max([X[species][time_indices].max() for species in species_names])
+    
+    # Crear figura con espacio para la barra de color global
+    fig = plt.figure(figsize=(figsize_multiplier * n_times + 1, figsize_multiplier * n_species))
+    
+    # Crear grid con espacio para la barra de color global a la derecha
+    width_ratios = [1] * n_times
+    gs = fig.add_gridspec(n_species, n_times, width_ratios=width_ratios, 
+                         hspace=0.4, wspace=0.3, right=0.85)  # Dejar espacio a la derecha para la barra
+    
+    # Lista para almacenar todas las imágenes (necesario para la barra de color)
+    all_imgs = []
+    
+    for i, species in enumerate(species_names):
+        data = X[species]
+        
+        for j, time_idx in enumerate(time_indices):
+            ax = fig.add_subplot(gs[i, j])
+            heat_data = data[time_idx]
+            
+            img = ax.imshow(heat_data, cmap=cmap, vmin=global_vmin, vmax=global_vmax, origin='upper', aspect='auto')
+            all_imgs.append(img)  # Guardar referencia para la barra de color
+            
+            # Título de tiempos (solo en la primera fila)
+            if i == 0:
+                # ax.set_title(f"t = {int(t[time_idx])}", fontweight='bold', pad=15) # 
+                ax.set_title(f"t = {t[time_idx]:.1f}", fontweight='bold', pad=15)
+            
+            # Nombre de la especie al inicio de la fila
+            if j == 0:
+                ax.annotate(species, xy=(-0.1, 0.5), xycoords='axes fraction',
+                            ha='right', va='center', fontweight='bold', rotation=90) #, fontsize=12, fontweight='bold', rotation=90)
+            
+            # Ejes
+            if i == n_species - 1:
+                ax.set_xlabel(" ") #Column", fontsize=10)
+            
+            ax.set_ylabel(" ") #Row", fontsize=10)
+            
+            # Grilla y ticks
+            rows, cols = heat_data.shape
+            ax.set_xticks(np.arange(cols))
+            ax.set_yticks(np.arange(rows))
+            ax.grid(False)
+            
+            # Interacción con cursor
+            cursor = mplcursors.cursor(img, hover=False)
+            
+            def make_callback(data_matrix):
+                def on_add(sel):
+                    x, y = int(sel.target[0]), int(sel.target[1])
+                    if 0 <= y < data_matrix.shape[0] and 0 <= x < data_matrix.shape[1]:
+                        sel.annotation.set_text(f"{data_matrix[y, x]:.3f}")
+                return on_add
+            
+            cursor.connect("add", make_callback(heat_data))
+    
+    # Añadir barra de color global
+    cbar_ax = fig.add_axes([0.87, 0.15, 0.02, 0.7])  # [left, bottom, width, height]
+    fig.colorbar(all_imgs[0], cax=cbar_ax, label=bar_label)
+    
+    # Título general
+    plt.suptitle(main_title, fontsize=16, fontweight='bold', y=0.98)
+    
     plt.tight_layout()
+    plt.subplots_adjust(top=0.92, right=0.85)  # Ajustar para dejar espacio para la barra
     plt.show()
 
+# def plot_heatmaps_for_species_2D(X, species_name, t, time_indices=None, title="Heatmap for Specie"):
+#     data = np.array(X[species_name])  # shape: (time, rows, cols)
+#     n_time, rows, cols = data.shape
+#     if time_indices is None:
+#         time_indices = np.linspace(0, len(t)-1, 3, dtype=int)
+
+#     n = len(time_indices)
+#     fig = plt.figure(figsize=(5 * n, 4))
+#     gs = fig.add_gridspec(1, n + 1, width_ratios=[1]*n + [0.05], wspace=0.3)
+    
+#     vmin = np.min([X[species_name][idx].min() for idx in time_indices])
+#     vmax = np.max([X[species_name][idx].max() for idx in time_indices])
+    
+#     axes = [fig.add_subplot(gs[0, i]) for i in range(n)]
+#     cbar_ax = fig.add_subplot(gs[0, -1])
+#     imgs = []
+
+#     for ax, idx in zip(axes, time_indices):
+#         heat_data = X[species_name][idx]
+#         img = ax.imshow(heat_data, cmap='viridis', vmin=vmin, vmax=vmax, origin='upper')
+#         imgs.append(img)
+#         ax.set_title(f"t = {t[idx]:.2f}")
+#         ax.set_xlabel("") # ("Column")
+#         ax.set_ylabel("") # ("Row")
+#         ax.set_xticks(np.arange(cols))
+#         ax.set_yticks(np.arange(rows))
+
+#         # Cursor y función propia para cada imagen
+#         cursor = mplcursors.cursor(img, hover=False)
+
+#         def make_callback(data):
+#             def on_add(sel):
+#                 x, y = int(sel.target[0]), int(sel.target[1])
+#                 if 0 <= y < data.shape[0] and 0 <= x < data.shape[1]:
+#                     sel.annotation.set_text(f"{data[y, x]:.3f}")
+#             return on_add
+
+#         cursor.connect("add", make_callback(heat_data))
+
+#     # Barra de color común
+#     fig.colorbar(imgs[0], cax=cbar_ax)
+#     plt.suptitle(f"{title} {species_name}", fontsize=16)
+#     plt.tight_layout()
+#     plt.show()
+
 # Función para animar los mapas de calor con controles interactivos
-def animate_diffusion_heatmaps_for_species_2D(X, species_name, t, title="Heatmap for Specie"):
-    t = np.round(t, 2)  # Redondear a dos decimales
-    data = np.array(X[species_name])  # shape: (time, rows, cols)
-    n_time, rows, cols = data.shape
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib.widgets import Slider, Button
 
-    vmin = np.min(data)
-    vmax = np.max(data)
+def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_title="Heatmaps for All Species", slider_label="Time", bar_label="Concentration"):
+    """
+    Animate the evolution of multiple species in heatmaps arranged by columns.
+    
+    Parameters
+    ----------
+    t : array-like
+        Time vector    
+    X : dict
+        Dictionary {species_name: 3D array (time, rows, cols)}
+    species_names : list, optional
+        List of species to plot. If None, all species in X are plotted.
+    main_title : str
+        Main title of the figure. Default is "Heatmaps for All Species".
+    slider_label : str
+        Label for the time slider. Default is "Time".
+    bar_label : str
+        Label for the color bar. Default is "Concentration".
+    """
+    t = np.round(t, 2)
 
-    fig, ax = plt.subplots(figsize=(6, 5))
-    plt.subplots_adjust(bottom=0.35)  # Más espacio para controles
+    if species_names is None:
+        species_names = list(X.keys())
+    n_species = len(species_names)
+    
+    # Calcular número de filas y columnas (máximo 5 columnas)
+    max_cols = 5
+    n_cols = min(n_species, max_cols)
+    n_rows = (n_species + n_cols - 1) // n_cols  # División entera hacia arriba
 
-    im = ax.imshow(data[0], cmap='viridis', origin='upper', vmin=vmin, vmax=vmax)
-    ax.set_title(f"{title} {species_name} (t = {t[0]:.2f})")
-    ax.set_xlabel("")
-    ax.set_ylabel("")
-    ax.set_xticks(np.arange(cols))
-    ax.set_yticks(np.arange(rows))
+    # Min/max global para todas las especies
+    vmin = min(np.min(X[sp]) for sp in species_names)
+    vmax = max(np.max(X[sp]) for sp in species_names)
 
-    cbar = fig.colorbar(im, ax=ax, orientation='vertical')
+    # Figura y ejes (disposición por columnas)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(4*n_cols, 4*n_rows))
+    
+    # Si hay solo una fila o columna, convertir axes a array 2D para consistencia
+    if n_rows == 1 and n_cols == 1:
+        axes = np.array([[axes]])
+    elif n_rows == 1:
+        axes = axes.reshape(1, -1)
+    elif n_cols == 1:
+        axes = axes.reshape(-1, 1)
+    
+    # Ajustar espacio para el slider y botones
+    plt.subplots_adjust(bottom=0.25, top=0.9, hspace=0.4, wspace=0.3)
+
+    ims = []
+    for i, sp in enumerate(species_names):
+        row_idx = i // n_cols
+        col_idx = i % n_cols
+        ax = axes[row_idx, col_idx]
+        
+        data = np.array(X[sp])
+        im = ax.imshow(data[0], cmap='viridis', origin='upper', vmin=vmin, vmax=vmax)
+        ax.set_title(f"{sp}", fontweight="bold") # (t = {t[0]:.2f})", fontweight="bold")
+        ax.set_xlabel(" ") # Column")
+        ax.set_ylabel(" ") # Row")
+        rows, cols = data.shape[1:]
+        ax.set_xticks(np.arange(cols))
+        ax.set_yticks(np.arange(rows))
+        ims.append((im, data, ax))
+
+    # Ocultar ejes vacíos si el número de especies no llena completamente la cuadrícula
+    total_cells = n_rows * n_cols
+    if total_cells > n_species:
+        for i in range(n_species, total_cells):
+            row_idx = i // n_cols
+            col_idx = i % n_cols
+            axes[row_idx, col_idx].axis('off')
+
+    # Un único colorbar global
+    cbar_ax = fig.add_axes([0.92, 0.25, 0.02, 0.6])  # [left, bottom, width, height]
+    fig.colorbar(ims[0][0], cax=cbar_ax, label=bar_label)
 
     # Slider
-    ax_slider = plt.axes([0.2, 0.2, 0.6, 0.03])
-    slider = Slider(ax_slider, 'Time', t[0], t[-1], valinit=t[0], valstep=(t[1] - t[0]))
+    ax_slider = plt.axes([0.2, 0.12, 0.6, 0.03])
+    slider = Slider(ax_slider, slider_label, t[0], t[-1], valinit=t[0], valstep=(t[1]-t[0]))
 
     # Botones
-    ax_play = plt.axes([0.3, 0.1, 0.1, 0.05])
-    ax_pause = plt.axes([0.6, 0.1, 0.1, 0.05])
+    ax_play = plt.axes([0.3, 0.05, 0.1, 0.05])
+    ax_pause = plt.axes([0.6, 0.05, 0.1, 0.05])
     btn_play = Button(ax_play, 'Play')
     btn_pause = Button(ax_pause, 'Pause')
 
-    playing = [False]  # Usamos lista para que sea mutable dentro del cierre
+    playing = [False]
 
     def update(val):
         idx = np.argmin(np.abs(t - val))
-        im.set_data(data[idx])
-        ax.set_title(f"Specie {species_name} (t = {t[idx]:.2f})")
+        for im, data, ax, sp in zip([item[0] for item in ims], 
+                                   [item[1] for item in ims], 
+                                   [item[2] for item in ims], 
+                                   species_names):
+            im.set_data(data[idx])
+            ax.set_title(f"{sp}", fontweight="bold") # (t = {t[idx]:.2f})", fontweight="bold")
         fig.canvas.draw_idle()
 
     def play(event):
@@ -201,17 +443,16 @@ def animate_diffusion_heatmaps_for_species_2D(X, species_name, t, title="Heatmap
             current_val = slider.val
             next_val = current_val + (t[1] - t[0])
             if next_val > t[-1]:
-                next_val = t[0]  # Loop
-            slider.set_val(next_val)
+                playing[0] = False  # Detener la animación al llegar al final
+            else:
+                slider.set_val(next_val)
 
-    ani = animation.FuncAnimation(fig, animate, interval=20)  # Intervalo en ms
+    ani = animation.FuncAnimation(fig, animate, interval=50)
+    update(t[0])  # inicializa el primer frame
 
-    update(t[0])  # Inicializa el primer frame
-    plt.show()
-
+    plt.suptitle(main_title, fontsize=16, fontweight="bold", y=0.97)
+    plt.show() 
 ########################################################################################
-
-import matplotlib.pyplot as plt
 
 def plot_species_dynamics_MP(t, time_series, species, num_patches=4, separate_plots=False, 
                          filename='dynamics.png', title='Dinámicas de Especies en Cada Parche', 
@@ -570,7 +811,7 @@ def plot_static_abstraction_graph(abstract_time_series, title="Static Abstractio
         G.add_edge(source, target, weight=weight)  # Adds edges to the graph with the corresponding weight
 
     # Hierarchical layout
-    pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot")  # Calculates the node positions in a hierarchical layout
+    pos = nx.planar_layout(G) # pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot")  # Calculates the node positions in a hierarchical layout
     pos = {node: (x, -y) for node, (x, y) in pos.items()}  # Inverts the y-axis so the graph is drawn from bottom to top
 
     # Create the plot
@@ -1282,7 +1523,7 @@ def plot_abstraction_graph_movie(abstract_time_series, interval=400, title="Abst
         G.add_edge(source, target, weight=weight)
 
     # Hierarchical layout
-    pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot")
+    pos = nx.planar_layout(G) # pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot")
     pos = {node: (x, -y) for node, (x, y) in pos.items()}
 
     # Create the figure and axis for animation
@@ -1419,7 +1660,7 @@ def plot_abstraction_graph_movie_3last_nodes(abstract_time_series,
         G.add_edge(source, target, weight=weight)
 
     # Hierarchical layout
-    pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot")
+    pos = nx.planar_layout(G) # pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot")
     pos = {node: (x, -y) for node, (x, y) in pos.items()}
 
     # Create the figure and axis for animation
@@ -1543,8 +1784,50 @@ def get_plot_abstraction_graph_movie_html(abstract_time_series,
     for (source, target), weight in transitions_freq.items(): # Itera sobre las transiciones y sus frecuencias.
         G.add_edge(source, target, weight=weight)             # Añade las transiciones como aristas con su peso (frecuencia).
 
-    pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot") # Calcula las posiciones de los nodos utilizando Graphviz.
-    pos = {node: (x, -y) for node, (x, y) in pos.items()}     # Invierte la coordenada y para ajustar la visualización.
+    # Primero necesitas asignar niveles a los nodos basado en el tamaño del conjunto
+    # En la función get_plot_abstraction_graph_movie_html, alrededor de línea 1554:
+
+    # Crear el subset_key correctamente para multipartite_layout
+    subset_key = {}
+    max_size = 0
+
+    # Primero encontrar el tamaño máximo entre todos los nodos
+    for node in G.nodes:
+        if isinstance(node, (tuple, list, set)):
+            node_size = len(node)
+            max_size = max(max_size, node_size)
+        else:
+            max_size = max(max_size, 1)
+
+    # Asignar niveles (conjuntos más grandes nivel más alto)
+    for node in G.nodes:
+        if isinstance(node, (tuple, list, set)):
+            node_size = len(node)
+            level = node_size  # Conjuntos más grandes = nivel más alto
+        else:
+            level = 1  # Nodos individuales
+        
+        # Agrupar nodos por nivel
+        if level not in subset_key:
+            subset_key[level] = []
+        subset_key[level].append(node)
+
+    # Usar el layout multipartita
+    pos = nx.multipartite_layout(G, subset_key=subset_key, align='vertical')  # Cambiar a vertical
+
+    # INVERTIR LAS COORDENADAS para que los conjuntos grandes estén arriba
+    for node in pos:
+        x, y = pos[node]
+        # Intercambiar X e Y para orientación vertical
+        # e invertir Y para que niveles más altos estén arriba
+        pos[node] = (-y, x)  # Intercambiar y ajustar orientación
+
+    # Ajustar espaciado para mejor visualización
+    for node in pos:
+        x, y = pos[node]
+        pos[node] = (x * 1.2, y * 1.5)  # Aumentar separación
+    # # pos = nx.planar_layout(G) # pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot") # Calcula las posiciones de los nodos utilizando Graphviz.
+    # pos = {node: (x, -y) for node, (x, y) in pos.items()}     # Invierte la coordenada y para ajustar la visualización.
 
     frames = []                                               # Lista para almacenar los frames de la animación.
     sliders_steps = []                                        # Lista para los pasos del control deslizante de la animación.
@@ -1871,7 +2154,7 @@ def plot_abstraction_graph_movie_html0(abstract_time_series, interval=400, title
         G.add_edge(source, target, weight=weight)
 
     # Hierarchical layout
-    pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot")
+    pos = nx.planar_layout(G) # pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot")
     pos = {node: (x, -y) for node, (x, y) in pos.items()}
 
     # Prepare the PyVis network
@@ -2203,9 +2486,9 @@ def get_film_semiorganizations_abstractions_html(abstract_time_series, input_dat
     # pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot")
     # pos = {node: (x, -y) for node, (x, y) in pos.items()}
 
-    # Usar disposición con Graphviz y ajustar con un desplazamiento
-    # pos = nx.shell_layout(G)
-    pos = graphviz_layout(G, prog="dot")
+
+    # Usar disposición con Graphviz y ajustar con un desplazamiento# pos = nx.shell_layout(G)
+    pos = nx.planar_layout(G) # pos = graphviz_layout(G, prog="dot")
     # # pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot")
     offset_x, offset_y = 10, 10
     pos = {node: (x + offset_x, y + offset_y) for node, (x, y) in pos.items()}
