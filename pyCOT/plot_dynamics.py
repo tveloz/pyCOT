@@ -29,10 +29,14 @@ import tempfile                          # Provides utilities for creating tempo
 ######################################################################################
 # Plots the time series of ODE concentrations and abstractions
 ######################################################################################
+import matplotlib.pyplot as plt
+import os
 
-def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", title="Time Series of Concentrations", show_grid=True):
+def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", 
+                   title="Time Series of Concentrations", show_grid=True,
+                   save_figure=True, filename="time_series_plot.png"):
     """
-    Plots the time series of ODE concentrations.
+    Plots the time series of ODE concentrations and optionally saves the figure.
 
     Parameters:
     time_series (pd.DataFrame): Time series with a 'Time' column and species concentrations as columns.
@@ -40,6 +44,8 @@ def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", title="T
     ylabel (str): Label for the y-axis. Default is "Concentration".
     title (str): Title of the plot. Default is "Time Series of Concentrations".
     show_grid (bool): Whether to display the grid. Default is True.
+    save_figure (bool): Whether to save the figure. Default is False.
+    filename (str): Name of the file to save. Default is "time_series_plot.png".
 
     Raises:
     ValueError: If the DataFrame does not contain a 'Time' column.
@@ -48,37 +54,91 @@ def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", title="T
     None: Displays a line plot for each species in the time series.
     """
     if 'Time' not in time_series.columns:
-        # Check if the 'Time' column exists, raise error if not found
         raise ValueError("The DataFrame must include a 'Time' column for time values.")
     
     # Create a new figure and axis object for the plot
-    fig, ax = plt.subplots(figsize=(10, 6))  # Plot size 10x6 inches
+    fig, ax = plt.subplots(figsize=(10, 6))
     
     # Iterate over the columns to plot each species
     for species in time_series.columns:
-        if species != 'Time':                # Skip the 'Time' column
-            ax.plot(time_series['Time'], time_series[species], label=species)  # Plot species concentration
+        if species != 'Time':
+            ax.plot(time_series['Time'], time_series[species], label=species)
     
     # Set axis labels and plot title
-    ax.set_xlabel(xlabel)  # Set x-axis label
-    ax.set_ylabel(ylabel)  # Set y-axis label
-    ax.set_title(title)    # Set the title of the plot
-    ax.grid(show_grid)     # Enable grid on the plot
-    ax.legend()            # Add a legend for species
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+    ax.grid(show_grid)
+    ax.legend()
     
-    plt.tight_layout()     # Adjust layout to fit all elements
-    plt.show()             # Display the plot
+    plt.tight_layout()
+    
+    # Save the figure if requested
+    if save_figure:
+        # Create the directory if it doesn't exist
+        os.makedirs("visualizations/plot_series_ode", exist_ok=True)
+        
+        # Construct the full file path
+        filepath = os.path.join("visualizations", "plot_series_ode", filename)
+        
+        # Save the figure with high quality
+        plt.savefig(filepath, dpi=300, bbox_inches='tight')
+        print(f"Figure saved as: {filepath}")
+    
+    plt.show()
+# def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", title="Time Series of Concentrations", show_grid=True):
+#     """
+#     Plots the time series of ODE concentrations.
+
+#     Parameters:
+#     time_series (pd.DataFrame): Time series with a 'Time' column and species concentrations as columns.
+#     xlabel (str): Label for the x-axis. Default is "Time".
+#     ylabel (str): Label for the y-axis. Default is "Concentration".
+#     title (str): Title of the plot. Default is "Time Series of Concentrations".
+#     show_grid (bool): Whether to display the grid. Default is True.
+
+#     Raises:
+#     ValueError: If the DataFrame does not contain a 'Time' column.
+
+#     Returns:
+#     None: Displays a line plot for each species in the time series.
+#     """
+#     if 'Time' not in time_series.columns:
+#         # Check if the 'Time' column exists, raise error if not found
+#         raise ValueError("The DataFrame must include a 'Time' column for time values.")
+    
+#     # Create a new figure and axis object for the plot
+#     fig, ax = plt.subplots(figsize=(10, 6))  # Plot size 10x6 inches
+    
+#     # Iterate over the columns to plot each species
+#     for species in time_series.columns:
+#         if species != 'Time':                # Skip the 'Time' column
+#             ax.plot(time_series['Time'], time_series[species], label=species)  # Plot species concentration
+    
+#     # Set axis labels and plot title
+#     ax.set_xlabel(xlabel)  # Set x-axis label
+#     ax.set_ylabel(ylabel)  # Set y-axis label
+#     ax.set_title(title)    # Set the title of the plot
+#     ax.grid(show_grid)     # Enable grid on the plot
+#     ax.legend()            # Add a legend for species
+    
+#     plt.tight_layout()     # Adjust layout to fit all elements
+#     plt.show()             # Display the plot
 
 ######################################################################################## 
 # Reaction-Diffusion Dynamics Plotting
 ########################################################################################
 # Function to plot time series for each species in each grid cell
+import matplotlib.pyplot as plt
+import os
+
 def plot_diffusion_time_series_2D(time, concentration_data, grid_shape, colors=None, 
                                  xlabel="Time", ylabel="Concentration", 
                                  main_title="Time Evolution of Concentration Profiles",
-                                 legend_title="Species", cell_prefix='G'):
+                                 legend_title="Species", cell_prefix='G',
+                                 save_figure=True, filename="diffusion_time_series_2D.png"):
     """
-    Plot 2D time series of concentration data from diffusion simulation.
+    Plot 2D time series of concentration data from diffusion simulation and optionally save the figure.
     
     Parameters:
     -----------
@@ -98,6 +158,10 @@ def plot_diffusion_time_series_2D(time, concentration_data, grid_shape, colors=N
         Title for the legend
     cell_prefix : str
         Prefix for cell labels (e.g., 'G' for G00, G01, etc.)
+    save_figure : bool, optional
+        Whether to save the figure. Default is True.
+    filename : str, optional
+        Name of the file to save. Default is "diffusion_time_series_2D.png".
     """
     
     rows, cols = grid_shape
@@ -160,6 +224,18 @@ def plot_diffusion_time_series_2D(time, concentration_data, grid_shape, colors=N
     # Adjust layout to accommodate legend
     plt.tight_layout(rect=[0, 0, 0.88, 0.95])
     
+    # Save the figure if requested
+    if save_figure:
+        # Create the directory if it doesn't exist
+        os.makedirs("visualizations/plot_diffusion_time_series_2D", exist_ok=True)
+        
+        # Construct the full file path
+        filepath = os.path.join("visualizations", "plot_diffusion_time_series_2D", filename)
+        
+        # Save the figure with high quality
+        plt.savefig(filepath, dpi=300, bbox_inches='tight')
+        print(f"Figure saved as: {filepath}")
+    
     plt.show()
 
 # Function to plot heatmaps for a given species at selected time points
@@ -167,9 +243,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import mplcursors
 
-def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None, main_title="Evolution of Concentration Profiles", cmap='viridis', figsize_multiplier=3, bar_label="Concentration"):
+import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib as mpl
+import mplcursors
+import os
+
+def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None, 
+                                main_title="Evolution of Concentration Profiles", 
+                                cmap='viridis', figsize_multiplier=3, bar_label="Concentration",
+                                save_figure=True, filename="heatmaps_all_species_2D.png"):
     """
-    Plot heatmaps for all species at multiple time points in a single figure.
+    Plot heatmaps for all species at multiple time points in a single figure and optionally save the figure.
     
     Parameters:
     -----------
@@ -191,6 +276,10 @@ def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None, ma
         Multiplier for figure size calculation
     bar_label : str
         Label for the color bar
+    save_figure : bool, optional
+        Whether to save the figure. Default is True.
+    filename : str, optional
+        Name of the file to save. Default is "heatmaps_all_species_2D.png".
     """
     
     if species_names is None:
@@ -236,19 +325,18 @@ def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None, ma
             
             # Título de tiempos (solo en la primera fila)
             if i == 0:
-                # ax.set_title(f"t = {int(t[time_idx])}", fontweight='bold', pad=15) # 
                 ax.set_title(f"t = {t[time_idx]:.1f}", fontweight='bold', pad=15)
             
             # Nombre de la especie al inicio de la fila
             if j == 0:
                 ax.annotate(species, xy=(-0.1, 0.5), xycoords='axes fraction',
-                            ha='right', va='center', fontweight='bold', rotation=90) #, fontsize=12, fontweight='bold', rotation=90)
+                            ha='right', va='center', fontweight='bold', rotation=90)
             
             # Ejes
             if i == n_species - 1:
-                ax.set_xlabel(" ") #Column", fontsize=10)
+                ax.set_xlabel(" ")
             
-            ax.set_ylabel(" ") #Row", fontsize=10)
+            ax.set_ylabel(" ")
             
             # Grilla y ticks
             rows, cols = heat_data.shape
@@ -277,6 +365,19 @@ def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None, ma
     
     plt.tight_layout()
     plt.subplots_adjust(top=0.92, right=0.85)  # Ajustar para dejar espacio para la barra
+    
+    # Save the figure if requested
+    if save_figure:
+        # Create the directory if it doesn't exist
+        os.makedirs("visualizations/plot_heatmaps_all_species_2D", exist_ok=True)
+        
+        # Construct the full file path
+        filepath = os.path.join("visualizations", "plot_heatmaps_all_species_2D", filename)
+        
+        # Save the figure with high quality
+        plt.savefig(filepath, dpi=300, bbox_inches='tight')
+        print(f"Figure saved as: {filepath}")
+    
     plt.show()
 
 # def plot_heatmaps_for_species_2D(X, species_name, t, time_indices=None, title="Heatmap for Specie"):
@@ -324,12 +425,113 @@ def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None, ma
 #     plt.tight_layout()
 #     plt.show()
 
-# Función para animar los mapas de calor con controles interactivos
+# Función para animar los mapas de calor con controles interactivos en html como video 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib.widgets import Slider, Button
+from matplotlib.animation import FuncAnimation
+import os
 
+# def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_title="Heatmaps for All Species", slider_label="Time", bar_label="Concentration"):
+#     """
+#     Animate the evolution of multiple species in heatmaps arranged by columns and save as HTML.
+    
+#     Parameters
+#     ----------
+#     t : array-like
+#         Time vector    
+#     X : dict
+#         Dictionary {species_name: 3D array (time, rows, cols)}
+#     species_names : list, optional
+#         List of species to plot. If None, all species in X are plotted.
+#     main_title : str
+#         Main title of the figure. Default is "Heatmaps for All Species".
+#     slider_label : str
+#         Label for the time slider. Default is "Time".
+#     bar_label : str
+#         Label for the color bar. Default is "Concentration".
+#     """
+#     t = np.round(t, 2)
+
+#     if species_names is None:
+#         species_names = list(X.keys())
+#     n_species = len(species_names)
+    
+#     # Calcular número de filas y columnas (máximo 5 columnas)
+#     max_cols = 5
+#     n_cols = min(n_species, max_cols)
+#     n_rows = (n_species + n_cols - 1) // n_cols  # División entera hacia arriba
+
+#     # Min/max global para todas las especies
+#     vmin = min(np.min(X[sp]) for sp in species_names)
+#     vmax = max(np.max(X[sp]) for sp in species_names)
+
+#     # Figura y ejes (disposición por columnas)
+#     fig, axes = plt.subplots(n_rows, n_cols, figsize=(4*n_cols, 4*n_rows))
+    
+#     # Si hay solo una fila o columna, convertir axes a array 2D para consistencia
+#     if n_rows == 1 and n_cols == 1:
+#         axes = np.array([[axes]])
+#     elif n_rows == 1:
+#         axes = axes.reshape(1, -1)
+#     elif n_cols == 1:
+#         axes = axes.reshape(-1, 1)
+    
+#     # Ajustar espacio
+#     plt.subplots_adjust(bottom=0.1, top=0.9, hspace=0.4, wspace=0.3)
+
+#     ims = []
+#     for i, sp in enumerate(species_names):
+#         row_idx = i // n_cols
+#         col_idx = i % n_cols
+#         ax = axes[row_idx, col_idx]
+        
+#         data = np.array(X[sp])
+#         im = ax.imshow(data[0], cmap='viridis', origin='upper', vmin=vmin, vmax=vmax)
+#         ax.set_title(f"{sp} (t = {t[0]:.2f})", fontweight="bold")
+#         ax.set_xlabel(" ") # Column")
+#         ax.set_ylabel(" ") # Row")
+#         rows, cols = data.shape[1:]
+#         ax.set_xticks(np.arange(cols))
+#         ax.set_yticks(np.arange(rows))
+#         ims.append((im, data, ax, sp))
+
+#     # Ocultar ejes vacíos si el número de especies no llena completamente la cuadrícula
+#     total_cells = n_rows * n_cols
+#     if total_cells > n_species:
+#         for i in range(n_species, total_cells):
+#             row_idx = i // n_cols
+#             col_idx = i % n_cols
+#             axes[row_idx, col_idx].axis('off')
+
+#     # Un único colorbar global
+#     cbar_ax = fig.add_axes([0.92, 0.1, 0.02, 0.8])  # [left, bottom, width, height]
+#     fig.colorbar(ims[0][0], cax=cbar_ax, label=bar_label)
+
+#     def update(frame):
+#         for im, data, ax, sp in ims:
+#             im.set_data(data[frame])
+#             ax.set_title(f"{sp} (t = {t[frame]:.2f})", fontweight="bold")
+#         return [item[0] for item in ims]
+
+#     ani = FuncAnimation(fig, update, frames=len(t), interval=50, blit=False)
+
+#     plt.suptitle(main_title, fontsize=16, fontweight="bold", y=0.97)
+
+#     # Generar HTML
+#     html = ani.to_html5_video()
+
+#     # Crear carpeta si no existe
+#     folder_path = 'visualizations/plot_heatmaps_all_species_2D_animate'
+#     os.makedirs(folder_path, exist_ok=True)
+
+#     # Guardar en archivo HTML
+#     file_path = os.path.join(folder_path, 'animation.html')
+#     with open(file_path, 'w') as f:
+#         f.write(html)
+#     print(f"Animation saved as: {file_path}")
+
+
+# Función para animar los mapas de calor con controles interactivos
 def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_title="Heatmaps for All Species", slider_label="Time", bar_label="Concentration"):
     """
     Animate the evolution of multiple species in heatmaps arranged by columns.
@@ -451,7 +653,8 @@ def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_tit
     update(t[0])  # inicializa el primer frame
 
     plt.suptitle(main_title, fontsize=16, fontweight="bold", y=0.97)
-    plt.show() 
+    plt.show()
+
 ########################################################################################
 
 def plot_species_dynamics_MP(t, time_series, species, num_patches=4, separate_plots=False, 
@@ -670,9 +873,14 @@ def animate_diffusion_heatmaps_for_species_2d(time_series, species_name, t, patc
 ################################################################################
 # Plot the number of abstractions over time
 ################################################################################
-def plot_abstraction_size(abstract_time_series, xlabel="Time", ylabel="Number of Species", title="Number of species per abstraction over time", marker='o', label="Abstraction Size"):
+import matplotlib.pyplot as plt
+import os
+
+def plot_abstraction_size(abstract_time_series, xlabel="Time", ylabel="Number of Species", 
+                         title="Number of species per abstraction over time", marker='o', 
+                         label="Abstraction Size", save_figure=True, filename="abstraction_size_plot.png"):
     """
-    Plots the number of abstractions over the time series.
+    Plots the number of abstractions over the time series and optionally saves the figure.
 
     Parameters:
     abstract_time_series (pd.DataFrame): Time series with a 'Time' column and a column for species abstractions.
@@ -681,6 +889,8 @@ def plot_abstraction_size(abstract_time_series, xlabel="Time", ylabel="Number of
     title (str): Title of the plot. Default is "Number of species per abstraction over time".
     marker (str): Marker style for the plot. Default is 'o'.
     label (str): Legend label for the plot. Default is "Abstraction Size".
+    save_figure (bool): Whether to save the figure. Default is True.
+    filename (str): Name of the file to save. Default is "abstraction_size_plot.png".
 
     Raises:
     ValueError: If the DataFrame does not contain a 'Time' column.
@@ -689,7 +899,6 @@ def plot_abstraction_size(abstract_time_series, xlabel="Time", ylabel="Number of
     None: Displays a line plot of abstraction sizes over time.
     """
     if 'Time' not in abstract_time_series.columns:
-        # Check if the 'Time' column exists, raise error if not found
         raise ValueError("The DataFrame must include a 'Time' column for time values.")
     
     # Create a new figure and axis object for the plot
@@ -714,13 +923,32 @@ def plot_abstraction_size(abstract_time_series, xlabel="Time", ylabel="Number of
     ax.legend()  # Add a legend for the abstraction size
     
     plt.tight_layout()  # Adjust layout to fit all elements
+    
+    # Save the figure if requested
+    if save_figure:
+        # Create the directory if it doesn't exist
+        os.makedirs("visualizations/plot_abstraction_size", exist_ok=True)
+        
+        # Construct the full file path
+        filepath = os.path.join("visualizations", "plot_abstraction_size", filename)
+        
+        # Save the figure with high quality
+        plt.savefig(filepath, dpi=300, bbox_inches='tight')
+        print(f"Figure saved as: {filepath}")
+    
     plt.show()  # Display the plot
 
 ######################################################################################## 
 
-def plot_abstraction_sets(abstract_time_series, xlabel="Time",ylabel="Species",title="Abstraction of Time Series"):
+import matplotlib.pyplot as plt
+import pandas as pd
+import os
+
+def plot_abstraction_sets(abstract_time_series, xlabel="Time", ylabel="Species", 
+                         title="Abstraction of Time Series", save_figure=True, 
+                         filename="abstraction_sets_plot.png"):
     """
-    Plots the time series abstraction generated by the abstraction_ordinary function.
+    Plots the time series abstraction generated by the abstraction_ordinary function and optionally saves the figure.
 
     Parameters:
     abstract_time_series (pd.DataFrame): DataFrame containing 'Time' and 'Abstraction' columns.
@@ -728,6 +956,8 @@ def plot_abstraction_sets(abstract_time_series, xlabel="Time",ylabel="Species",t
     xlabel (str): Label for the x-axis. Default is "Time".
     ylabel (str): Label for the y-axis. Default is "Presence of Species".
     title (str): Title of the plot. Default is "Abstraction of ODE Time Series".
+    save_figure (bool): Whether to save the figure. Default is True.
+    filename (str): Name of the file to save. Default is "abstraction_sets_plot.png".
 
     Returns:
     None: Displays a stacked bar chart showing the presence of species over time.
@@ -761,6 +991,18 @@ def plot_abstraction_sets(abstract_time_series, xlabel="Time",ylabel="Species",t
     ax.set_ylabel(ylabel)  # Set y-axis label
     ax.set_title(title)  # Set plot title
     ax.legend(title="Species")  # Add legend with title
+    
+    # Save the figure if requested
+    if save_figure:
+        # Create the directory if it doesn't exist
+        os.makedirs("visualizations/plot_abstraction_sets", exist_ok=True)
+        
+        # Construct the full file path
+        filepath = os.path.join("visualizations", "plot_abstraction_sets", filename)
+        
+        # Save the figure with high quality
+        plt.savefig(filepath, dpi=300, bbox_inches='tight')
+        print(f"Figure saved as: {filepath}")
     
     plt.show()  # Display the plot
 
@@ -2025,6 +2267,9 @@ def get_plot_abstraction_graph_movie_html(abstract_time_series,
 
 ############################################################################################## 
  
+import os
+import webbrowser
+
 def plot_abstraction_graph_movie_html(
                 abstract_time_series, 
                 first_node_size=25, colour_first_nodes="lightcyan",
@@ -2035,8 +2280,8 @@ def plot_abstraction_graph_movie_html(
                 filename="abstraction_graph_movie.html"):
     """
     Generates an interactive animation of an abstraction graph from an abstract time series, 
-    saving the animation as an HTML file. The animation shows how the graph evolves over time, 
-    highlighting the most important nodes.
+    saving the animation as an HTML file in the specified directory. The animation shows how 
+    the graph evolves over time, highlighting the most important nodes.
 
     Parameters:
     ----------
@@ -2069,7 +2314,14 @@ def plot_abstraction_graph_movie_html(
     # Call the function to generate the animation
     plot_abstraction_graph_movie_html(abstract_time_series, filename="graph_movie.html")
     """    
-    # Call the `rn_get_visualization` function to generate the HTML file
+    # Create the directory if it doesn't exist
+    output_dir = "visualizations/plot_abstraction_graph_movie_html"
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Construct the full file path
+    filepath = os.path.join(output_dir, filename)
+    
+    # Call the `rn_get_visualization` function to generate the HTML file with the correct path
     get_plot_abstraction_graph_movie_html(
         abstract_time_series,
         first_node_size=first_node_size, colour_first_nodes=colour_first_nodes,
@@ -2077,13 +2329,12 @@ def plot_abstraction_graph_movie_html(
         colour_last_nodes=colour_last_nodes, 
         interval=interval, showlegend=showlegend,
         title=title,
-        filename=filename
+        filename=filepath  # Pass the full path here
     )
     
     # Convert to an absolute path
-    abs_path = os.path.abspath(filename) 
-    # print("absolute path")
-    # print(abs_path)
+    abs_path = os.path.abspath(filepath) 
+    
     # Check if the file was created correctly
     if not os.path.isfile(abs_path):
         print(f"File not found at {abs_path}")  # Additional message for debugging
@@ -2094,6 +2345,8 @@ def plot_abstraction_graph_movie_html(
     
     # Open the HTML file in the default browser
     webbrowser.open(f"file://{abs_path}")
+    
+    return abs_path  # Return the absolute path for reference
 
 ##############################################################################################    
 

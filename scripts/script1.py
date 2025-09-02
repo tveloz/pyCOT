@@ -15,8 +15,11 @@ from pyCOT.rn_visualize import rn_visualize_html
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ======================================== 
-# file_path = 'Txt/Farm.txt' 
-file_path = 'Txt/autopoietic.txt'  # Change this path according to the desired file
+file_path = 'Txt/Farm.txt' 
+# file_path = 'Txt/autopoietic.txt'  # Change this path according to the desired file
+# file_path = 'Txt/SEIR.txt' 
+# file_path = 'Txt/2007Dittrich-Speroni_E.coli.txt'
+
 rn = read_txt(file_path)  # Creates the variable rn containing an object of ReactionNetwork class
 
 """ 
@@ -46,6 +49,7 @@ for specie in species_list:
 
 species = [specie.name for specie in species_list]
 print("\nSpecies Set =",species) # Prints the list of the set of species 
+print(f"Number of species: {len(species)}")
 
 # ========================================
 # 4. REACTIONS OF THE REACTION NETWORK
@@ -74,6 +78,7 @@ print(reactions_list)
 # Print the reactions set as a list
 reactions = [reaction.name() for reaction in reactions_list]
 print("\nReactions Set =",reactions) # Prints the list of the set of reactions
+print(f"Number of reactions: {len(reactions)}")
 
 # ========================================
 # 5. REACTION NETWORK IN TEXT FORMAT
