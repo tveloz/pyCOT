@@ -229,6 +229,9 @@ def rn_get_visualization(rn, lst_color_spcs=None, lst_color_reacs=None,
 
 ###########################################################################################
 # Function to visualize the reaction network and open the HTML file in a browser
+import os
+import webbrowser
+
 def rn_visualize_html(rn, lst_color_spcs=None, lst_color_reacs=None, 
                  global_species_color=None, global_reaction_color=None,
                  global_input_edge_color=None, global_output_edge_color=None, 
@@ -245,17 +248,25 @@ def rn_visualize_html(rn, lst_color_spcs=None, lst_color_reacs=None,
     # Visualize the reaction network and open the HTML file in a browser
     rn_visualize_html(rn, lst_color_spcs=[('yellow', ['s1'])], filename="reaction_network.html")
     """    
+    # Create visualizations directory if it doesn't exist
+    visualizations_dir = "visualizations/rn_visualize_html"
+    if not os.path.exists(visualizations_dir):
+        os.makedirs(visualizations_dir)
+    
+    # Create the full path including the visualizations folder
+    full_path = os.path.join(visualizations_dir, filename)
+    
     # Call the rn_get_visualization function to generate the HTML file
     rn_get_visualization(
         rn, lst_color_spcs, lst_color_reacs, 
         global_species_color, global_reaction_color,
         global_input_edge_color, global_output_edge_color, 
         node_size=node_size, shape_species_node=shape_species_node, shape_reactions_node=shape_reactions_node,
-        curvature=curvature, physics_enabled=physics_enabled, filename=filename
+        curvature=curvature, physics_enabled=physics_enabled, filename=full_path
     )
     
     # Convert to an absolute path
-    abs_path = os.path.abspath(filename)  
+    abs_path = os.path.abspath(full_path)  
     # Check if the file was created correctly
     if not os.path.isfile(abs_path):
         print(f"\nFile not found at {abs_path}")  # Additional message for debugging
@@ -270,95 +281,6 @@ def rn_visualize_html(rn, lst_color_spcs=None, lst_color_reacs=None,
 ###########################################################################################
 # # Plot the Hierarchy
 ###########################################################################################
-
-# from pyCOT.rn_hierarchy import *
-
-# def hierarchy_visualize(input_data):
-#     """
-#     Visualizes the containment hierarchy among sets.
-    
-#     Args:
-#         input_data (list): List of lists or sets, where each element represents a set.
-        
-#     Displays a graph with nodes and containment relationships between sets. Smaller sets 
-#     will be at lower levels, and interactive cursors are used to view set elements 
-#     when hovering over nodes.
-#     """
-#     # Build the graph with species sets stored in nodes
-#     G = hierarchy_build(input_data)
-    
-#     # Extract labels for visualization
-#     labels = nx.get_node_attributes(G, 'label')
-    
-#     # Automatically assign positions by levels in the graph
-#     levels = {}
-#     for node in nx.topological_sort(G):  # Topologically sort the nodes
-#         depth = 0
-#         for parent in G.predecessors(node):  # Find predecessors of the current node
-#             depth = max(depth, levels.get(parent, 0) + 1)  # Define the depth of the current node
-#         levels[node] = depth
-    
-#     # Arrange nodes by levels and center them on the X-axis
-#     pos = {}  # Dictionary to store node positions
-#     nodes_by_level = defaultdict(list)  # Group nodes by containment levels
-    
-#     for node, level in levels.items():
-#         nodes_by_level[level].append(node)  # Add nodes to the corresponding level
-    
-#     max_nodes_in_level = max(len(nodes) for nodes in nodes_by_level.values()) if nodes_by_level else 1
-    
-#     # Do not invert levels on the Y-axis; smaller sets will be at the bottom
-#     for level, nodes in nodes_by_level.items():
-#         num_nodes = len(nodes)  # Number of nodes at the current level
-#         horizontal_spacing = max_nodes_in_level / (num_nodes + 1)  # Horizontal spacing between nodes
-#         start_x = -((num_nodes - 1) * horizontal_spacing) / 2  # Initial X-coordinate to center nodes
-        
-#         # Calculate vertical position without inverting the Y-axis
-#         for i, node in enumerate(nodes):
-#             pos[node] = (start_x + i * horizontal_spacing, level)  # Assign position (X, Y) to each node
-    
-#     try:
-#         import matplotlib.pyplot as plt
-#         import mplcursors
-
-#         # Draw the graph with labels and arrows, adjusting visual properties
-#         plt.figure(figsize=(10, 8))
-#         nx.draw(
-#             G, pos, labels=labels, arrows=True, arrowstyle='-|>', arrowsize=20, 
-#             node_size=1000, node_color="skyblue", font_size=12, font_weight="bold", 
-#             edge_color="gray"
-#         )
-
-#         # Create cursor labels using the species sets stored in nodes
-#         cursor_texts = {}
-#         for node in G.nodes():
-#             species_set = G.nodes[node]['species_set']
-#             cursor_texts[node] = ', '.join(sorted(list(species_set))) if species_set else '∅'
-        
-#         # Configure interactive cursor to display set labels
-#         cursor = mplcursors.cursor(plt.gca(), hover=True)
-        
-#         @cursor.connect("add")
-#         def on_add(sel):
-#             """Displays the content of the set when hovering over a node."""
-#             node = list(G.nodes())[sel.index]
-#             sel.annotation.set_text(cursor_texts.get(node, ''))
-#             sel.annotation.set_visible(True)
-
-#         @cursor.connect("remove")
-#         def on_remove(sel):
-#             """Hides the annotation when the cursor leaves the node."""
-#             sel.annotation.set_visible(False)
-        
-#         plt.show()  # Display the graph
-#     except ImportError:
-#         print("Matplotlib or mplcursors not available, skipping visualization")
-    
-#     # Extract positions and store in a vector
-#     node_positions = {node: pos[node] for node in G.nodes()}
-    
-#     return G, node_positions  # Return both the graph and the positions
-
 # Function to access species sets from nodes
 def get_species_from_node(G, node_name):
     """
@@ -514,6 +436,9 @@ def hierarchy_get_visualization_html(
 
 ##################################################################
 # Function to visualize the hierarchy of sets and open the HTML file in a browser   
+import os
+import webbrowser
+
 def hierarchy_visualize_html(
     input_data, 
     node_size=20, 
@@ -541,6 +466,14 @@ def hierarchy_visualize_html(
     
     Generates the visualization and opens it in the default web browser.
     """
+    # Create the directory structure if it doesn't exist
+    target_dir = "visualizations/hierarchy_visualize_html"
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir, exist_ok=True)
+    
+    # Create the full path including the directory structure
+    full_path = os.path.join(target_dir, filename)
+    
     # Call the hierarchy_get_visualization_html function to generate the HTML file with the additional parameters
     hierarchy_get_visualization_html(
         input_data,  
@@ -551,11 +484,11 @@ def hierarchy_visualize_html(
         lst_color_subsets=lst_color_subsets,  
         node_font_size=node_font_size, 
         edge_width=edge_width,  
-        filename=filename
+        filename=full_path
     )
     
     # Convert to an absolute path
-    abs_path = os.path.abspath(filename) 
+    abs_path = os.path.abspath(full_path) 
     
     # Check if the file was created correctly
     if not os.path.isfile(abs_path):
@@ -627,7 +560,11 @@ def create_bipartite_graph_from_rn(rn):
     return graph, metabolite_nodes, reaction_nodes
 
 # Function to plot the bipartite graph using Graphviz library
-def plot_graph_with_graphviz(
+import os
+from graphviz import Digraph
+from IPython.display import Image
+
+def rn_visualize_png_in_out(
     graph,
     lst_color_spcs=None,
     lst_color_reacs=None,
@@ -638,9 +575,16 @@ def plot_graph_with_graphviz(
     node_size=20,
     shape_species_node='circle',
     shape_reactions_node='box',
-    filename="metabolic_network"
+    filename="rn_visualize_png_in_out"  # Quita la extensión .png aquí
 ):
-    dot = Digraph(comment="Bipartite Metabolic Network")
+    # Crear el directorio si no existe
+    output_dir = "visualizations/rn_visualize_png_in_out"
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Construir la ruta completa del archivo (sin extensión)
+    filepath = os.path.join(output_dir, filename)
+    
+    dot = Digraph(comment="Bipartite Network")
 
     # Crear diccionarios para color específico por nombre
     species_colors = {species: color for color, species_list in (lst_color_spcs or []) for species in species_list}
@@ -678,13 +622,14 @@ def plot_graph_with_graphviz(
         else:
             dot.edge(str(src), str(dst), label=label, color=color)
 
-    dot.render(filename, format='png', cleanup=True)
-    full_path = os.path.abspath(f"{filename}.png")
+    # Renderizar en la ruta especificada (graphviz añadirá automáticamente .png)
+    dot.render(filepath, format='png', cleanup=True)
+    full_path = os.path.abspath(f"{filepath}.png")
     print(f"Reaction network saved as: {full_path}")
 
-    return Image(filename + '.png')
+    return Image(f"{filepath}.png")
 
-# def plot_graph_with_graphviz(graph, filename="metabolic_network"):
+# def rn_visualize_png_in_out(graph, filename="metabolic_network"):
 #     dot = Digraph(comment="Bipartite Metabolic Network")
 
 #     for idx, (tipo, nombre) in enumerate(graph.nodes()):
@@ -711,7 +656,7 @@ def plot_graph_with_graphviz(
 #     return Image(filename + '.png')
 
 # Function to get the visualization of the bipartite metabolic network graph as an interactive HTML file using the pyvis library
-def get_visualize_metabolic_network(graph, lst_color_spcs=None, lst_color_reacs=None, 
+def get_rn_visualize_html_in_out(graph, lst_color_spcs=None, lst_color_reacs=None, 
                          global_species_color=None, global_reaction_color=None,
                          global_input_edge_color=None, global_output_edge_color=None, 
                          node_size=20, shape_species_node='dot', shape_reactions_node='box', 
@@ -764,7 +709,7 @@ def get_visualize_metabolic_network(graph, lst_color_spcs=None, lst_color_reacs=
     
     curvature : str or None, optional
         Determines whether edges are curved or straight. If 'curvedCCW' (curved counter-clockwise), 
-        edges will be curved. Default is None (straight edges).
+        edges will be curved. Default is None (straight edges). Other options can be 'curvedCW' (curved clockwise) or 'straight', 'curved', 
     
     physics_enabled : bool, optional
         If True, enables physics-based positioning for the nodes in the visualization. Default is False.
@@ -779,7 +724,7 @@ def get_visualize_metabolic_network(graph, lst_color_spcs=None, lst_color_reacs=
     """
     # Initialize the network visualization
     
-    net = Network(height='750px', width='100%', notebook=True, directed=True, cdn_resources='in_line')
+    net = Network(height='750px', width='100%', notebook=True, directed=True, cdn_resources='in_line') #, cdn_resources='remote'
     # net = Network(height='100%', width='100%', notebook=True, directed=True, cdn_resources='in_line')
     # net = Network(height='750px', width='100%', notebook=True, directed=True, cdn_resources='in_line')
     # net = Network(height="100%", width="100%", directed=True)
@@ -978,34 +923,47 @@ def get_visualize_metabolic_network(graph, lst_color_spcs=None, lst_color_reacs=
     # return filename
 
 # Function to visualize the metabolic network graph as an interactive HTML file using the pyvis library
-def visualize_metabolic_network(graph, lst_color_spcs=None, lst_color_reacs=None, 
+import os
+import webbrowser
+
+def rn_visualize_html_in_out(graph, lst_color_spcs=None, lst_color_reacs=None, 
                          global_species_color=None, global_reaction_color=None,
                          global_input_edge_color=None, global_output_edge_color=None, 
                          node_size=20, shape_species_node='dot', shape_reactions_node='box', 
                          curvature=None, physics_enabled=False, filename="metabolic_network.html"):
     """
+    Visualizes an interactive graph object and saves it in the specified directory.
+    
     Example:
     -------
     # Visualize an interactive graph object 
     graph = create_bipartite_graph_from_rn()
-    get_plot_graph_interactive(graph, lst_color_spcs=[('blue', ['node1'])], filename="interactive_graph.html")
-    """    
-    # Call a function to generate the interactive graph HTML file
-    get_visualize_metabolic_network(
+    rn_visualize_html_in_out(graph, lst_color_spcs=[('blue', ['node1'])], filename="interactive_graph.html")
+    """
+    
+    # Create the directory if it doesn't exist
+    output_dir = "visualizations/rn_visualize_html_in_out"
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Construct the full file path
+    filepath = os.path.join(output_dir, filename)
+    
+    # Call a function to generate the interactive graph HTML file with the correct path
+    get_rn_visualize_html_in_out(
         graph, lst_color_spcs, lst_color_reacs, 
         global_species_color, global_reaction_color,
         global_input_edge_color, global_output_edge_color, 
         node_size=node_size, shape_species_node=shape_species_node, shape_reactions_node=shape_reactions_node,
-        curvature=curvature, physics_enabled=physics_enabled, filename=filename
+        curvature=curvature, physics_enabled=physics_enabled, filename=filepath  # Pass the full path here
     )
     
-    # Convert the filename to an absolute path
-    abs_path = os.path.abspath(filename)  
+    # Convert the filepath to an absolute path
+    abs_path = os.path.abspath(filepath)  
     
     # Check if the file was created successfully
     if not os.path.isfile(abs_path):
         print(f"\nFile not found at {abs_path}")  # Debugging message
-        raise FileNotFoundError(f"\nThe file {abs_path} was not found. Check if get_visualize_metabolic_network created the file correctly.")
+        raise FileNotFoundError(f"\nThe file {abs_path} was not found. Check if get_rn_visualize_html_in_out created the file correctly.")
     
     # Inform the user about the file's location
     print(f"\nThe visualization of the bipartite graph of the metabolic network was saved in HTML format:\n{abs_path}\n")

@@ -1013,8 +1013,14 @@ def check_elementary_sos_are_organizations(elementary_sos, RN, verbose=True):
         print("="*70)
         print(f"Elementary SOs checked: {len(elementary_sos)}")
         print(f"Organizations found: {len(organizations)}")
-        print(f"Conversion rate: {len(organizations)/len(elementary_sos)*100:.1f}%")
-        
+        ####################################################################################
+        # print(f"Conversion rate: {len(organizations)/len(elementary_sos)*100:.1f}%")
+        if len(elementary_sos) > 0:
+            print(f"Conversion rate: {len(organizations)/len(elementary_sos)*100:.1f}%")
+        else:
+            print("Conversion rate: 0.0% (no elementary semi-organizations found)")        
+        ####################################################################################
+
         # Analyze by type
         p_erc_count = sum(1 for so in elementary_sos if so.is_p_erc)
         p_erc_orgs = sum(1 for org in organizations if org.is_p_erc)

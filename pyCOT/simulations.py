@@ -490,7 +490,7 @@ def simulate_discrete_random(rn, S, x, n_iter=10):
     return df_state, df_flux # Return the state and flux DataFrames
 
 ####################################################################################
-# Function to simulate diffusion dynamics 2D
+# Function to simulate diffusion dynamics 2D 
 def simulate_diffusion_dynamics_2D(rn, rate='mak', grid_shape=None, D_dict=None, 
                                      x0_dict=None, spec_vector=None, t_span=(0, 20), n_steps=500, additional_laws=None):
     """
