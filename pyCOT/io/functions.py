@@ -40,7 +40,7 @@ def from_string(string: str) -> ReactionNetwork:
 
 def read_txt(file: str) -> ReactionNetwork:
     """
-    Loads a ReactionNetwork from a .txt file
+    Loads a ReactionNetwork from a .txt file with optional comments after ';'.
 
     Parameters
     ----------
@@ -56,26 +56,47 @@ def read_txt(file: str) -> ReactionNetwork:
     -------
     The format of the .txt file is as the following example:
 
-    R1:	=> l;
-    R2:	s1+l => 2s1;
-    R3:	s1 => s2;
-    R4:	s2 + l=>s1;
-    R5:	s2=>
+    R1: => l; Inflow (Entrada de la sustancia l al sistema)
+    R2: s1 + l => 2s1; Autocatálisis (s1 se duplica usando l como reactivo)
+    R3: s1 => s2;
+    R4: s2 + l => s1; Retroconversión (s2 se convierte en s1 usando l)
+    R5: s2 => 
     """
     rn = ReactionNetwork()
+    reaction_comments = {}  # opcional: guardar comentarios asociados a cada reacción
 
     # Read reactions line by line and add them to the ReactionNetwork
     with open(file, 'r') as f:
         for line in f:
             line = line.strip()
             if line and not line.startswith('#'):
-                reactions = separate_string(remove_comments(line))
+                # Separar reacción del comentario (si existe)
+                if ";" in line:
+                    reaction_part, comment_part = line.split(";", 1)
+                    comment_part = comment_part.strip()
+                else:
+                    reaction_part, comment_part = line, None
+
+                reaction_part = reaction_part.strip()
+
+                # Procesar la reacción
+                reactions = separate_string(remove_comments(reaction_part))
                 reactions = [reaction for reaction in reactions if reaction]
+
                 for reaction in reactions:
                     reaction_name = reaction.split(':', 1)[0]
                     if rn.has_reaction(reaction_name):
                         raise ValueError(f"Reaction '{reaction_name}' already exists in the ReactionNetwork")
+                    
                     rn.add_from_reaction_string(reaction)
+
+                    # Guardar comentario si existe
+                    if comment_part:
+                        reaction_comments[reaction_name] = comment_part
+
+    # Si quieres asociar los comentarios al ReactionNetwork
+    rn.reaction_comments = reaction_comments  
+
     return rn
 
 #############################################################

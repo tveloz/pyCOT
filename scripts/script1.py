@@ -15,12 +15,16 @@ from pyCOT.rn_visualize import rn_visualize_html
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ======================================== 
-file_path = 'Txt/Farm.txt' 
+# file_path = 'Txt/Farm.txt' 
 # file_path = 'Txt/autopoietic.txt'  # Change this path according to the desired file
+file_path = 'Txt/autopoietic1.txt'
 # file_path = 'Txt/SEIR.txt' 
 # file_path = 'Txt/2007Dittrich-Speroni_E.coli.txt'
 
 rn = read_txt(file_path)  # Creates the variable rn containing an object of ReactionNetwork class
+
+rn_comments = rn.reaction_comments
+print("Diccionario con las reacciones que tienen comentarios:\n",rn_comments)
 
 """ 
 Some of the methods of the ReactionNetwork class are: 
