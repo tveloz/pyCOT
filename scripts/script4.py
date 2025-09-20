@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # A
 
 # Import the necessary modules from pyCOT  
 from pyCOT.io.functions import read_txt 
-from pyCOT.rn_visualize import rn_visualize_html, create_bipartite_graph_from_rn, visualize_metabolic_network, plot_graph_with_graphviz
+from pyCOT.rn_visualize import rn_visualize_html, create_bipartite_graph_from_rn, rn_visualize_html_in_out, rn_visualize_png_in_out
 
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
@@ -22,6 +22,7 @@ file_path = 'Txt/autopoietic.txt'  # Change this path according to the desired f
 # file_path = 'Txt/RN_IN_04.txt' 
 # file_path = 'Txt/2025fig1.txt' 
 # file_path = 'Txt/2025fig2.txt' 
+# file_path = 'Txt/2007Dittrich-Speroni_E.coli.txt'
 
 # Create ReactionNetwork object from text file
 rn = read_txt(file_path)   
@@ -40,7 +41,7 @@ print(rxn_nodes)
 rn_visualize_html(rn,curvature='curvedCCW')
 
 # Create bipartite graph visualization using Graphviz (png)
-plot_graph_with_graphviz(graph) 
+rn_visualize_png_in_out(graph) 
 
-# Create the metabolic network visualization using Pyvis (html)
-visualize_metabolic_network(graph, shape_species_node='circle', curvature='curvedCCW')
+# Create the metabolic network visualization using Pyvis (html) 
+rn_visualize_html_in_out(graph, shape_species_node='circle', curvature=None) #'curvedCCW') #Curva las aristas
