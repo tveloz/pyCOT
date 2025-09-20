@@ -45,6 +45,7 @@ print("Loading reaction network...")
 
 # Load a reaction network
 file_path = 'networks/testing/Farm.txt'
+file_path = 'networks/Navarino/RN_IN_05.txt'
 RN = read_txt(file_path)
 
 # Verify we got a proper ReactionNetwork object

@@ -16,7 +16,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import required modules
 from pyCOT.rn_rustworkx import ReactionNetwork
 from pyCOT.io.functions import read_txt
-from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy
+from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_names
 
 # Import our new SORN_Generators module
 from pyCOT.SORN_Generators import (
@@ -39,10 +39,11 @@ def test_sorn_generators():
     # Load reaction network
     print("Loading reaction network...")
     file_path = 'networks/testing/Farm.txt'
+    #file_path = 'networks/Navarino/RN_IN_05.txt'
     # Alternative networks for testing:
     # file_path = 'networks/RandomAlife/RN_Ns_20_Norg_4_id_12.txt'
-    file_path = 'networks/RandomAlife/RN_Ns_40_Norg_12_id_358.txt'
-    file_path= 'networks/biomodels_interesting/bigg_iAF692.txt'  # Adjust path as needed
+    #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_12_id_358.txt'
+    #file_path= 'networks/biomodels_interesting/bigg_iAF692.txt'  # Adjust path as needed
 
 
     RN = read_txt(file_path)
@@ -75,10 +76,12 @@ def test_sorn_generators():
     if p_ercs:
         print("P-ERCs found:")
         for i, p_erc in enumerate(p_ercs[:5]):  # Show first 5
-            closure_size = len(p_erc.get_closure(RN))
-            print(f"  {i+1}. {p_erc.label}: {closure_size} species in closure")
-        if len(p_ercs) > 5:
-            print(f"  ... and {len(p_ercs) - 5} more")
+            closure_species=species_list_to_names(p_erc.get_closure(RN)) 
+            print(p_erc.label + ":" + str(closure_species)) 
+            print(f"  Minimal Generators: {species_list_to_names(p_erc.min_generators)}")
+            print(str(len(closure_species))+ " species in" f"  {i+1}")
+        if len(p_ercs) > 10:
+            print(f"  ... and {len(p_ercs) - 10} more")
     else:
         print("No P-ERCs found")
     
@@ -122,7 +125,7 @@ def test_sorn_generators():
     print("-"*50)
     
     start_time = time.time()
-    generators = build_irreducible_generators(hierarchy, RN, max_size=6, verbose=True)
+    generators = build_irreducible_generators(hierarchy, RN, max_size=50, verbose=True)
     generator_time = time.time() - start_time
     
     print(f"\n✅ Built {len(generators)} irreducible generators in {generator_time:.2f}s")

@@ -47,8 +47,9 @@ def test_persistent_modules_generator():
     print("Loading reaction network...")
     file_path = 'networks/testing/Farm.txt'
     # Alternative networks for testing:
-    # file_path = 'networks/RandomAlife/RN_Ns_40_Norg_12_id_358.txt'
-    file_path = 'networks/biomodels_interesting/bigg_iAF692.txt'
+    #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_12_id_358.txt'
+    #file_path = 'networks/Navarino/RN_IN_05.txt'
+    #file_path = 'networks/biomodels_interesting/bigg_iAF692.txt'
     RN = read_txt(file_path)
     
     # Verify we got a proper ReactionNetwork object
@@ -68,7 +69,7 @@ def test_persistent_modules_generator():
     # Build generators using SORN_Generators
     print("Building irreducible generators...")
     start_time = time.time()
-    generators = build_irreducible_generators(hierarchy, RN, max_size=6, verbose=False)
+    generators = build_irreducible_generators(hierarchy, RN, max_size=50, verbose=False)
     generators_time = time.time() - start_time
     print(f"✅ Built {len(generators)} generators in {generators_time:.2f}s")
     
@@ -212,7 +213,7 @@ def test_persistent_modules_generator():
     if len(elementary_organizations) >= 2:
         start_time = time.time()
         non_elementary_orgs = build_non_elementary_organizations(
-            elementary_organizations, erc_sorn, max_size=3, verbose=True)
+            elementary_organizations, erc_sorn, max_size=50, verbose=True)
         non_elem_time = time.time() - start_time
         
         print(f"✅ Built {len(non_elementary_orgs)} non-elementary organizations in {non_elem_time:.3f}s")
@@ -285,7 +286,7 @@ def test_persistent_modules_generator():
     
     complete_results = compute_all_organizations(
         RN, 
-        max_generator_size=5,  # Smaller for testing
+        max_generator_size=50,  # Smaller for testing
         max_organization_size=3,
         verbose=True
     )
@@ -361,6 +362,13 @@ def test_persistent_modules_generator():
                       hierarchy_build_time + complete_time)
     print(f"✅ Total test time: {total_test_time:.2f}s")
     
+    print("Elementary Organizations")
+    print(elementary_organizations)
+    print("Non- Elementary Organizations")
+    print(non_elementary_orgs)
+    
+    
+
     return {
         'RN': RN,
         'hierarchy': hierarchy,

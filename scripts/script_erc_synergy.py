@@ -1,16 +1,17 @@
 from pyCOT.rn_rustworkx import ReactionNetwork
 from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_names
-from pyCOT.ERC_Synergy_Complementarity import get_fundamental_synergies_brute_force, get_fundamental_synergies
+from pyCOT.ERC_Synergy_Complementarity import *
 from pyCOT.io.functions import read_txt
 import time
 from itertools import combinations
 
 # Load network and compute ERCs
 file_path = 'networks/testing/ERCs_test2.txt'
-#file_path = 'networks/Navarino/RN_IN_05.txt'
-file_path = 'networks/testing/Farm.txt'
+file_path = 'networks/Navarino/RN_IN_05.txt'
+#file_path = 'networks/testing/Farm.txt'
 #file_path = 'networks/biomodels_interesting/bigg_iAF692.txt'
-
+file_path= 'networks/RandomAlife/RN_Ns_40_Norg_20_id_396.txt'
+#file_path = 'networks/biomodels_interesting/central_ecoli.txt'
 print("Loading network and computing ERCs...")
 RN = read_txt(file_path)
 hierarchy = ERC_Hierarchy(RN)
@@ -22,7 +23,7 @@ print(f"- Species: {len(RN.species())}")
 print(f"- ERCs found: {len(hierarchy.ercs)}")
 
 print("\n" + "="*60)
-print("BRUTE FORCE vs EFFICIENT ALGORITHM COMPARISON")
+print("BRUTE FORCE vs EFFICIENT but incomplete ALGORITHM COMPARISON")
 print("="*60)
 
 # ============================================================================
@@ -31,17 +32,14 @@ print("="*60)
 print("\n🐌 Running BRUTE FORCE algorithm...")
 start_time = time.time()
 
-brute_force_synergies = []
-for erc1, erc2 in combinations(hierarchy.ercs, 2):
-    fundamental_syn = get_fundamental_synergies_brute_force(erc1, erc2, hierarchy, RN)
-    brute_force_synergies.extend(fundamental_syn)
+brute_force_synergies = get_all_fundamental_synergies_brute_force(hierarchy.ercs, hierarchy, RN, verbose=False)
 
 brute_force_time = time.time() - start_time
 
 # ============================================================================
 # EFFICIENT APPROACH (all at once)
 # ============================================================================
-print("🚀 Running EFFICIENT algorithm...")
+print("🚀 Running EFFICIENT but incomplete  algorithm...")
 start_time = time.time()
 
 efficient_synergies = get_fundamental_synergies(hierarchy.ercs, hierarchy, RN, verbose=False)

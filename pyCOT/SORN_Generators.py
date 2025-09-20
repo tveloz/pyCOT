@@ -29,10 +29,7 @@ from itertools import combinations
 import networkx as nx
 from collections import defaultdict, Counter
 from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, closure, species_list_to_names
-from pyCOT.ERC_Synergy_Complementarity import (
-    get_fundamental_synergies_brute_force, get_fundamental_synergies, get_complementarity, 
-    ERC_Synergy, ERC_Complementarity, can_interact
-)
+from pyCOT.ERC_Synergy_Complementarity import *
 
 # ============================================================================
 # HELPER CLASSES
@@ -253,7 +250,7 @@ class ERC_SORN:
         #             continue
         #         synergies = get_fundamental_synergies_brute_force(erc1, erc2, self.hierarchy, self.RN)
         #         all_synergies.extend(synergies)
-        synergies = get_fundamental_synergies(self.ercs,self.hierarchy, self.RN, verbose=True)
+        synergies = get_all_fundamental_synergies_brute_force(self.ercs,self.hierarchy, self.RN, verbose=False)
         all_synergies.extend(synergies)
 
         # Map synergies by pair key for O(1) per-pair lookup
