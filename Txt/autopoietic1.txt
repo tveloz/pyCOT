@@ -1,0 +1,5 @@
+R1: => l; Inflow
+R2: s1 + l => 2s1; Autocatálisis
+R3: s1 => s2; 
+R4: s2 + l => s1; Conversión
+R5: s2 =>
