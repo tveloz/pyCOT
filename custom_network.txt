@@ -1,0 +1,14 @@
+
+# Custom Reaction Network
+# Species: W_V, V, V_W, W_R, R, R_W, V_u, V_n, R_n, R_u
+
+=> W_V
+W_V + V => V + V_W
+W_V => W_R
+W_R + R => R + R_W
+V_W + V => V_u + V
+V => V + V_n
+V_n + V_u => 
+R => R + R_n
+R_W + R => R_u + R
+R_n + R_u => 
