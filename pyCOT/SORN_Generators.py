@@ -3,7 +3,7 @@
 """
 SORN_Generators.py
 
-Second Order Reaction Network and Irreducible Generator Construction
+Irreducible Generator Construction
 
 This module handles the construction of irreducible generators through productive 
 novelty steps (synergy and complementarity). It provides efficient lookup of 
@@ -11,12 +11,10 @@ productive relationships between ERCs via the ERC_SORN class.
 
 Classes:
     IrreducibleGenerator: Represents ERC sequences built through productive novelty
-    ERC_SORN: Pre-computed network of productive relationships between ERCs
     ProductiveExtension: Helper class for extension possibilities
     
 Functions:
     identify_p_ercs: Find persistent single ERCs
-    build_erc_sorn: Factory function for ERC_SORN construction
     find_productive_extensions: Find productive extensions for generators
     build_irreducible_generators: Main generator construction function
     analyze_generator_statistics: Analysis utilities
@@ -29,7 +27,11 @@ from itertools import combinations
 import networkx as nx
 from collections import defaultdict, Counter
 from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, closure, species_list_to_names
-from pyCOT.ERC_Synergy_Complementarity import *
+from pyCOT.ERC_Synergy_Complementarity import (
+    ERC_SORN,
+    build_erc_sorn,
+    get_fundamental_synergies_brute_force
+)
 
 # ============================================================================
 # HELPER CLASSES
@@ -38,9 +40,6 @@ from pyCOT.ERC_Synergy_Complementarity import *
 class ProductiveExtension:
     """
     Represents a single productive extension possibility for a generator.
-    
-    This helper class encapsulates the information needed to extend a generator
-    through productive novelty (synergy or complementarity).
     """
     
     def __init__(self, target_erc, step_type, step_details):
@@ -71,9 +70,6 @@ class IrreducibleGenerator:
     """
     Represents a sequence of ERCs that generates a closed set through 
     exclusively productive novelty steps (synergy and complementarity).
-    
-    This class tracks the construction path and provides methods to compute
-    closures and check semi-self-maintenance properties.
     """
     
     def __init__(self, initial_erc_sequence=None):
@@ -86,8 +82,8 @@ class IrreducibleGenerator:
             Initial sequence of ERCs
         """
         self.erc_sequence = initial_erc_sequence or []
-        self.construction_path = []  # List of dicts with step details
-        self.is_irreducible = True   # Built exclusively through productive novelty
+        self.construction_path = []
+        self.is_irreducible = True
         self._cached_closure = None
         self._cached_ssm = None
         
@@ -110,7 +106,6 @@ class IrreducibleGenerator:
             'step_type': step_type,
             'details': step_details
         })
-        # Clear caches when generator changes
         self._cached_closure = None
         self._cached_ssm = None
         
@@ -132,16 +127,13 @@ class IrreducibleGenerator:
             if not self.erc_sequence:
                 self._cached_closure = []
             else:
-                # Collect all species from ERC closures
                 all_species = []
                 for erc in self.erc_sequence:
                     all_species.extend(erc.get_closure(RN))
                 
-                # Remove duplicates while preserving Species objects
                 unique_species_dict = {sp.name: sp for sp in all_species}
                 unique_species = list(unique_species_dict.values())
                 
-                # Use RN's closure method
                 self._cached_closure = list(RN.generated_closure(unique_species))
             
         return self._cached_closure
@@ -191,237 +183,6 @@ class IrreducibleGenerator:
         labels = self.get_erc_labels()
         return f"IrreducibleGenerator({labels}, size={self.size()})"
 
-class ERC_SORN:
-    """
-    Second Order Reaction Network: Pre-computed network of relationships between ERCs.
-    
-    Stores all synergies and complementarities between ERC pairs for efficient lookup
-    during generator construction, eliminating the need for repeated calculations.
-    """
-    
-    def __init__(self, hierarchy, RN):
-        """
-        Initialize ERC_SORN by pre-computing all productive relationships.
-        
-        Parameters
-        ----------
-        hierarchy : ERC_Hierarchy
-            The ERC hierarchy containing all ERCs
-        RN : ReactionNetwork
-            The reaction network
-        """
-        self.hierarchy = hierarchy
-        self.RN = RN
-        self.ercs = hierarchy.ercs
-
-        # Core storage structures for O(1) lookup
-        self._synergies = {}  # (a,b) -> list[ERC_Synergy]
-        self._complementarities = {}  # (a,b) -> list[ERC_Complementarity]
-
-        # Indexes for efficient queries
-        self._erc_to_synergies = defaultdict(list)
-        self._erc_to_complementarities = defaultdict(list)
-        self._productive_partners = defaultdict(set)
-
-        # Statistics
-        self.computation_stats = {
-            'total_pairs_checked': 0,
-            'productive_pairs': 0,
-            'total_synergies': 0,
-            'total_complementarities': 0,
-            'synergistic_pairs': 0,
-            'complementary_pairs': 0,
-            'build_time': 0.0
-        }
-        
-        # Build the SORN
-        self._build_sorn()
-    
-    def _build_sorn(self):
-        """Build the SORN by computing all productive relationships."""
-        start = time.time()
-        print(f"Building ERC_SORN for {len(self.ercs)} ERCs...")
-
-        # Compute all fundamental synergies
-        all_synergies = []
-        # for erc1 in self.ercs:
-        #     for erc2 in self.ercs:
-        #         if erc1.label >= erc2.label:
-        #             continue
-        #         synergies = get_fundamental_synergies_brute_force(erc1, erc2, self.hierarchy, self.RN)
-        #         all_synergies.extend(synergies)
-        synergies = get_all_fundamental_synergies_brute_force(self.ercs,self.hierarchy, self.RN, verbose=False)
-        all_synergies.extend(synergies)
-
-        # Map synergies by pair key for O(1) per-pair lookup
-        synergies_by_pair = defaultdict(list)
-        for syn in all_synergies:
-            a_label = syn.rlabel[0]
-            b_label = syn.rlabel[1]
-            key = tuple(sorted((a_label, b_label)))
-            synergies_by_pair[key].append(syn)
-
-        # Store synergies
-        for pair_key, syn_list in synergies_by_pair.items():
-            a_label, b_label = pair_key
-            self._store_synergies(a_label, b_label, syn_list)
-
-        # Compute complementarities for all pairs
-        for erc1, erc2 in combinations(self.ercs, 2):
-            self.computation_stats['total_pairs_checked'] += 1
-
-            if not can_interact(erc1, erc2, self.hierarchy):
-                continue
-
-            key = tuple(sorted((erc1.label, erc2.label)))
-            pair_has_productive = False
-
-            # Compute complementarities
-            comps = get_complementarity(erc1, erc2, self.hierarchy, self.RN)
-            if comps:
-                self._store_complementarities(erc1.label, erc2.label, comps)
-                pair_has_productive = True
-                self.computation_stats['total_complementarities'] += len(comps)
-                self.computation_stats['complementary_pairs'] += 1
-
-            # Check if this pair had synergies
-            syns = synergies_by_pair.get(key, [])
-            if syns:
-                pair_has_productive = True
-                self.computation_stats['total_synergies'] += len(syns)
-                self.computation_stats['synergistic_pairs'] += 1
-
-            if pair_has_productive:
-                self._productive_partners[erc1.label].add(erc2.label)
-                self._productive_partners[erc2.label].add(erc1.label)
-                self.computation_stats['productive_pairs'] += 1
-
-        # Finalize stats
-        self.computation_stats['build_time'] = time.time() - start
-
-        print(f"ERC_SORN built: {self.computation_stats['productive_pairs']} productive pairs, "
-              f"{self.computation_stats['total_synergies']} synergies, "
-              f"{self.computation_stats['total_complementarities']} complementarities, "
-              f"time={self.computation_stats['build_time']:.2f}s")
-    
-    def _store_synergies(self, erc1_label, erc2_label, synergies):
-        """Store synergies with bidirectional lookup."""
-        key1 = (erc1_label, erc2_label)
-        key2 = (erc2_label, erc1_label)
-        
-        self._synergies[key1] = synergies
-        self._synergies[key2] = synergies  # Bidirectional
-        
-        # Update indexes
-        self._erc_to_synergies[erc1_label].append((erc2_label, synergies))
-        self._erc_to_synergies[erc2_label].append((erc1_label, synergies))
-    
-    def _store_complementarities(self, erc1_label, erc2_label, complementarities):
-        """Store complementarities with bidirectional lookup."""
-        key1 = (erc1_label, erc2_label)
-        key2 = (erc2_label, erc1_label)
-        
-        self._complementarities[key1] = complementarities
-        self._complementarities[key2] = complementarities  # Bidirectional
-        
-        # Update indexes
-        self._erc_to_complementarities[erc1_label].append((erc2_label, complementarities))
-        self._erc_to_complementarities[erc2_label].append((erc1_label, complementarities))
-    
-    # ============================================================================
-    # PUBLIC QUERY METHODS
-    # ============================================================================
-    
-    def get_synergies(self, erc1_label, erc2_label):
-        """Get all fundamental synergies between two ERCs."""
-        return self._synergies.get((erc1_label, erc2_label), [])
-    
-    def get_complementarities(self, erc1_label, erc2_label):
-        """Get all complementarities between two ERCs."""
-        return self._complementarities.get((erc1_label, erc2_label), [])
-    
-    def has_synergy(self, erc1_label, erc2_label):
-        """Check if two ERCs have any fundamental synergy."""
-        return len(self.get_synergies(erc1_label, erc2_label)) > 0
-    
-    def has_complementarity(self, erc1_label, erc2_label):
-        """Check if two ERCs have any complementarity."""
-        return len(self.get_complementarities(erc1_label, erc2_label)) > 0
-    
-    def has_productive_relationship(self, erc1_label, erc2_label):
-        """Check if two ERCs have any productive relationship."""
-        return self.has_synergy(erc1_label, erc2_label) or self.has_complementarity(erc1_label, erc2_label)
-    
-    def get_productive_partners(self, erc_label):
-        """Get all ERCs that have productive relationships with the given ERC."""
-        return self._productive_partners.get(erc_label, set())
-    
-    def get_all_synergistic_partners(self, erc_label):
-        """Get all ERCs that have synergistic relationships with the given ERC."""
-        return self._erc_to_synergies.get(erc_label, [])
-    
-    def get_all_complementary_partners(self, erc_label):
-        """Get all ERCs that have complementary relationships with the given ERC."""
-        return self._erc_to_complementarities.get(erc_label, [])
-    
-    def get_productive_extensions_for_generator(self, erc_labels_in_generator):
-        """
-        Get all possible productive extensions for a generator (set of ERCs).
-        
-        Parameters
-        ----------
-        erc_labels_in_generator : list of str
-            Labels of ERCs currently in the generator
-            
-        Returns
-        -------
-        list of ProductiveExtension
-            List of productive extension possibilities
-        """
-        current_erc_set = set(erc_labels_in_generator)
-        extensions = []
-        candidate_extensions = {}  # candidate_label -> list of extension details
-        
-        # For each ERC in the current generator, find its productive partners
-        for erc_label in erc_labels_in_generator:
-            # Get synergistic partners
-            for partner_label, synergies in self._erc_to_synergies.get(erc_label, []):
-                if partner_label not in current_erc_set:
-                    if partner_label not in candidate_extensions:
-                        candidate_extensions[partner_label] = []
-                    for synergy in synergies:
-                        candidate_extensions[partner_label].append(('synergy', {
-                            'synergy_type': 'fundamental',
-                            'synergy_object': synergy,
-                            'with_erc': erc_label
-                        }))
-            
-            # Get complementary partners
-            for partner_label, complementarities in self._erc_to_complementarities.get(erc_label, []):
-                if partner_label not in current_erc_set:
-                    if partner_label not in candidate_extensions:
-                        candidate_extensions[partner_label] = []
-                    for comp in complementarities:
-                        candidate_extensions[partner_label].append(('complementarity', {
-                            'comp_type': comp.comp_type,
-                            'comp_object': comp,
-                            'with_erc': erc_label
-                        }))
-        
-        # Convert to ProductiveExtension objects
-        label_to_erc = {erc.label: erc for erc in self.ercs}
-        for candidate_label, extension_list in candidate_extensions.items():
-            candidate_erc = label_to_erc[candidate_label]
-            # For now, take the first extension found (could be enhanced)
-            step_type, step_details = extension_list[0]
-            extensions.append(ProductiveExtension(candidate_erc, step_type, step_details))
-        
-        return extensions
-    
-    def get_statistics(self):
-        """Get statistics about the SORN."""
-        return self.computation_stats.copy()
-
 # ============================================================================
 # UTILITY FUNCTIONS
 # ============================================================================
@@ -442,10 +203,8 @@ def is_semi_self_maintaining(RN, species_set):
     bool
         True if semi-self-maintaining (requirements = ∅)
     """
-    # Get reactions from the species set
     reactions = RN.get_reactions_from_species(species_set)
     
-    # Calculate consumed and produced species
     consumed = set()
     produced = set()
     
@@ -456,7 +215,6 @@ def is_semi_self_maintaining(RN, species_set):
             elif edge.type == "product":
                 produced.add(edge.species_name)
     
-    # Semi-self-maintaining if no species are required (consumed but not produced)
     required = consumed - produced
     return len(required) == 0
 
@@ -489,24 +247,6 @@ def identify_p_ercs(hierarchy, RN):
     
     return p_ercs
 
-def build_erc_sorn(hierarchy, RN):
-    """
-    Factory function to build an ERC_SORN.
-    
-    Parameters
-    ----------
-    hierarchy : ERC_Hierarchy
-        The ERC hierarchy
-    RN : ReactionNetwork
-        The reaction network
-        
-    Returns
-    -------
-    ERC_SORN
-        Pre-computed second-order reaction network
-    """
-    return ERC_SORN(hierarchy, RN)
-
 def find_productive_extensions(generator, erc_sorn):
     """
     Find all ERCs that can extend a generator through productive novelty.
@@ -525,18 +265,20 @@ def find_productive_extensions(generator, erc_sorn):
     list of ProductiveExtension
         List of productive extension possibilities
     """
-    # Get ERC labels in current generator
     current_erc_labels = generator.get_erc_labels()
     
-    # Use ERC_SORN's method to find extensions
-    return erc_sorn.get_productive_extensions_for_generator(current_erc_labels)
+    extension_tuples = erc_sorn.get_productive_extensions_for_generator(current_erc_labels)
+    
+    extensions = []
+    for candidate_label, step_type, step_details in extension_tuples:
+        target_erc = next(erc for erc in erc_sorn.ercs if erc.label == candidate_label)
+        extensions.append(ProductiveExtension(target_erc, step_type, step_details))
+    
+    return extensions
 
-def build_irreducible_generators(hierarchy, RN, max_size=10, verbose=True):
+def build_irreducible_generators(hierarchy, RN, erc_sorn=None, max_size=10, verbose=True):
     """
     Build irreducible generators maintaining only one per unique closure.
-    
-    This version dramatically reduces redundant computation by recognizing that multiple
-    generators producing the same closure will explore identical productive extensions.
     
     Parameters
     ----------
@@ -544,6 +286,8 @@ def build_irreducible_generators(hierarchy, RN, max_size=10, verbose=True):
         The ERC hierarchy
     RN : ReactionNetwork
         The reaction network
+    erc_sorn : ERC_SORN, optional
+        Pre-computed SORN (will be built if not provided)
     max_size : int
         Maximum size of generators to build
     verbose : bool
@@ -551,18 +295,17 @@ def build_irreducible_generators(hierarchy, RN, max_size=10, verbose=True):
         
     Returns
     -------
-    list of IrreducibleGenerator
-        List of irreducible generators
+    tuple
+        (list of IrreducibleGenerator, ERC_SORN)
     """
     if verbose:
         print("=" * 80)
         print("BUILDING IRREDUCIBLE GENERATORS")
         print("=" * 80)
     
-    # Build ERC_SORN once at the beginning for efficient lookup
-    erc_sorn = build_erc_sorn(hierarchy, RN)
+    if erc_sorn is None:
+        erc_sorn = build_erc_sorn(hierarchy, RN)
     
-    # Statistics tracking
     stats = {
         'total_generators_explored': 0,
         'unique_closures_found': 0,
@@ -572,10 +315,9 @@ def build_irreducible_generators(hierarchy, RN, max_size=10, verbose=True):
         'fundamental_synergies': 0
     }
     
-    # Map from closure signature -> representative generator
     closure_to_generator = {}
     
-    # Phase 1: Initialize with P-ERCs
+    # Phase 1: P-ERCs
     p_ercs = identify_p_ercs(hierarchy, RN)
     stats['p_ercs'] = len(p_ercs)
     
@@ -589,7 +331,7 @@ def build_irreducible_generators(hierarchy, RN, max_size=10, verbose=True):
         closure_to_generator[closure_sig] = gen
         stats['total_generators_explored'] += 1
     
-    # Phase 2: Initialize with fundamental synergies
+    # Phase 2: Fundamental synergies
     if verbose:
         print("\nPhase 2: Building fundamental synergy generators using ERC_SORN...")
     
@@ -600,7 +342,6 @@ def build_irreducible_generators(hierarchy, RN, max_size=10, verbose=True):
         synergistic_partners = erc_sorn.get_all_synergistic_partners(erc1.label)
         
         for partner_label, synergies in synergistic_partners:
-            # Avoid duplicate pairs
             if erc1.label >= partner_label:
                 continue
                 
@@ -614,7 +355,6 @@ def build_irreducible_generators(hierarchy, RN, max_size=10, verbose=True):
                     'with_erc': erc1.label
                 })
                 
-                # Check if this closure already exists
                 closure = gen.get_closure(RN)
                 closure_sig = tuple(sorted(sp.name for sp in closure))
                 
@@ -633,7 +373,7 @@ def build_irreducible_generators(hierarchy, RN, max_size=10, verbose=True):
         print(f"  - Found {synergy_count} unique fundamental synergy closures")
         print(f"  - Pruned {redundant_synergies} redundant synergy generators")
     
-    # Phase 3: Iterative extension with closure-based deduplication
+    # Phase 3: Iterative extension
     if verbose:
         print("\nPhase 3: Extending generators through productive novelty...")
         print("         (maintaining one generator per unique closure)")
@@ -642,7 +382,6 @@ def build_irreducible_generators(hierarchy, RN, max_size=10, verbose=True):
     current_size = 1 if p_ercs else 2
     
     while current_size < max_size:
-        # Get current generators of this size
         current_gens = [(sig, gen) for sig, gen in closure_to_generator.items() 
                        if gen.size() == current_size]
         
@@ -657,23 +396,19 @@ def build_irreducible_generators(hierarchy, RN, max_size=10, verbose=True):
             print(f"\nSize {current_size}: Processing {len(current_gens)} unique closures")
         
         for closure_sig, gen in current_gens:
-            # Find productive extensions using ERC_SORN
             extensions = find_productive_extensions(gen, erc_sorn)
             
             for extension in extensions:
-                # Create new generator
                 new_gen = IrreducibleGenerator(gen.erc_sequence.copy())
                 new_gen.construction_path = gen.construction_path.copy()
                 new_gen.add_productive_step(extension.target_erc, extension.step_type, extension.step_details)
                 
-                # Check if this creates a new closure
                 new_closure = new_gen.get_closure(RN)
                 new_closure_sig = tuple(sorted(sp.name for sp in new_closure))
                 
                 generators_explored_this_size += 1
                 stats['total_generators_explored'] += 1
                 
-                # Only keep if this produces a NEW closure
                 if (new_closure_sig not in closure_to_generator and 
                     new_closure_sig not in new_closure_to_generator):
                     new_closure_to_generator[new_closure_sig] = new_gen
@@ -681,10 +416,7 @@ def build_irreducible_generators(hierarchy, RN, max_size=10, verbose=True):
                     redundant_this_size += 1
                     stats['redundant_generators_pruned'] += 1
         
-        # Update main dictionary with new closures
         closure_to_generator.update(new_closure_to_generator)
-        
-        # Update statistics
         stats['generators_by_size'][current_size] = generators_explored_this_size
         
         if verbose:
@@ -698,7 +430,6 @@ def build_irreducible_generators(hierarchy, RN, max_size=10, verbose=True):
         
         current_size += 1
     
-    # Convert to list of generators
     all_generators = list(closure_to_generator.values())
     stats['unique_closures_found'] = len(all_generators)
     
@@ -712,7 +443,7 @@ def build_irreducible_generators(hierarchy, RN, max_size=10, verbose=True):
         print(f"  Overall reduction: {total_reduction:.1f}%")
         print("=" * 80)
     
-    return all_generators
+    return all_generators, erc_sorn
 
 def analyze_generator_statistics(generators):
     """
@@ -746,25 +477,18 @@ def analyze_generator_statistics(generators):
     }
     
     for gen in generators:
-        # Size distribution
         stats['size_distribution'][gen.size()] += 1
-        
-        # Synergy usage
         stats['synergy_usage'].append(gen.get_synergy_count())
         
-        # Complementarity usage
         comp_counts = gen.get_complementarity_counts()
         for comp_type in ['type1', 'type2', 'type3']:
             stats['complementarity_usage'][comp_type].append(comp_counts[comp_type])
         
-        # ERC usage
         for erc_label in gen.get_erc_labels():
             stats['erc_usage'][erc_label] += 1
         
-        # Construction paths
         stats['construction_paths'].append(len(gen.construction_path))
     
-    # Compute summary statistics
     stats['summary'] = {
         'avg_size': sum(stats['synergy_usage']) / len(generators) if generators else 0,
         'max_size': max(stats['size_distribution'].keys()) if stats['size_distribution'] else 0,

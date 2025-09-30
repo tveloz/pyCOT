@@ -39,7 +39,7 @@ def rate_cosine(substrates, concentrations, species_idx, spec_vector, t=None):
         current_t = 0.0
     
     # Use (1 + cos(wt))/2 to ensure always positive and smooth oscillation
-    rate = A * (1 + np.cos(w * current_t)) / 2
+    rate = A * (1 + np.cos(w * current_t/(2*np.pi))) / 2
     
     # Debug print
     if int(current_t * 100) % 100 == 0:  # Print every 1 time unit
@@ -127,7 +127,11 @@ rate_list = [
     'mak',        # R10: R => R_n (mass action)
     'mak',        # R11: V_W + V_W => (mass action degradation)
     'mak',        # R12: R_W + R_W => (mass action degradation)
-    'mak'         # R13: 2W_R => (mass action degradation)
+    'mak',        # R13: 2W_R => (mass action degradation)
+    'mak',      # R14: V_n => (mass action degradation)
+    'mak',    # R15: R_n => (mass action degradation
+    'mak',
+   'mak'
 ]
 
 # Define parameters with SYMMETRY between R and V reactions
@@ -135,12 +139,14 @@ rate_list = [
 water_processing_params = [2, 0.5]     # [Vmax, Km] for R2, R3, R5, R6 - SET TO ZERO FOR TESTING
 satisfaction_params = [0.4, 1.0]         # [Vmax, Km] for R7, R9 - SET TO ZERO FOR TESTING
 need_generation_rate = [0.2]             # [k] for R8, R10 - SET TO ZERO FOR TESTING
-water_degradation_rate = [0.4]          # [k] for R11, R12 - SET TO ZERO FOR TESTING
+water_degradation_rate = [0.4]          # [k] for R11, R12, R13 - SET TO ZERO FOR TESTING
+death_rate=[0]
+birth_rate=[0]
 
-spec_vector = [[20, 1.0],                   # R1: [A, w] - amplitude=5.0, frequency=1.0 (clear oscillation)
+spec_vector = [[20, 1.0],      # R1: [A, w] - amplitude=5.0, frequency=1.0 (clear oscillation)
 water_processing_params,       # R2: [Vmax, Km] - water processing by V
 water_processing_params,        # R3: [Vmax, Km] - need-based water processing by V
-[0.5],                        # R4: [k] - water transfer rate - SET TO ZERO FOR TESTING
+[10],                        # R4: [k] - water transfer rate - SET TO ZERO FOR TESTING
 water_processing_params,       # R5: [Vmax, Km] - water processing by R (SAME as R2)
 water_processing_params,        # R6: [Vmax, Km] - need-based water processing by R (SAME as R3)
 satisfaction_params,           # R7: [Vmax, Km] - satisfaction of V
@@ -149,7 +155,11 @@ satisfaction_params,           # R9: [Vmax, Km] - satisfaction of R (SAME as R7)
 need_generation_rate,          # R10: [k] - need generation by R (SAME as R8)
 water_degradation_rate,        # R11: [k] - V water degradation
 water_degradation_rate,        # R12: [k] - R water degradation (SAME as R11)
-water_degradation_rate         # R13: [k] - 2W_R water degradation (SAME as R12)
+water_degradation_rate,        # R13: [k] - 2W_R water degradation (SAME as R12)
+death_rate,                 # R14: [k] - V_n death (SAME as R12)
+death_rate,
+birth_rate,                  # R15: [k] - R_n death (SAME as R12)
+birth_rate                   # R15: [k] - R_n death (SAME as R12)
 ]
 
 # Dictionary of additional kinetic laws

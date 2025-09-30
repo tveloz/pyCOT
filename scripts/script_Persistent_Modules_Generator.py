@@ -19,10 +19,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from pyCOT.rn_rustworkx import ReactionNetwork
 from pyCOT.io.functions import read_txt
 from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy
-
+from pyCOT.ERC_Synergy_Complementarity import build_erc_sorn
 # Import SORN_Generators for building generators
 from pyCOT.SORN_Generators import (
-    build_irreducible_generators, build_erc_sorn
+    build_irreducible_generators 
 )
 
 # Import our new Persistent_Modules_Generator module
@@ -48,8 +48,8 @@ def test_persistent_modules_generator():
     file_path = 'networks/testing/Farm.txt'
     # Alternative networks for testing:
     #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_12_id_358.txt'
-    #file_path = 'networks/Navarino/RN_IN_05.txt'
-    #file_path = 'networks/biomodels_interesting/bigg_iAF692.txt'
+    file_path = 'networks/Navarino/RN_IN_05.txt'
+    file_path = 'networks/biomodels_interesting/bigg_iAF692.txt'
     RN = read_txt(file_path)
     
     # Verify we got a proper ReactionNetwork object
@@ -65,11 +65,19 @@ def test_persistent_modules_generator():
     hierarchy = ERC_Hierarchy(ercs, RN)
     setup_time = time.time() - start_time
     print(f"✅ Created hierarchy: {len(hierarchy.ercs)} ERCs in {setup_time:.2f}s")
+        # Test 2: Build ERC_SORN
+    print("\n" + "-"*50)
+    print("TEST 2: Building ERC_SORN")
+    print("-"*50)
     
+    start_time = time.time()
+    erc_sorn = build_erc_sorn(hierarchy, RN)
+    sorn_time = time.time() - start_time
+
     # Build generators using SORN_Generators
     print("Building irreducible generators...")
     start_time = time.time()
-    generators = build_irreducible_generators(hierarchy, RN, max_size=50, verbose=False)
+    generators, erc_sorn = build_irreducible_generators(hierarchy, RN, erc_sorn=erc_sorn, max_size=50, verbose=False)
     generators_time = time.time() - start_time
     print(f"✅ Built {len(generators)} generators in {generators_time:.2f}s")
     

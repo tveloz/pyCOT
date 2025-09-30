@@ -24,6 +24,7 @@ Functions:
 Author: Based on theoretical work by Tomas Veloz et al.
 """
 
+from tabnanny import verbose
 import time
 import numpy as np
 from scipy.optimize import linprog
@@ -720,28 +721,34 @@ def compute_all_organizations(RN, max_generator_size=8, max_organization_size=5,
     hierarchy_time = time.time() - hierarchy_start
     if verbose:
         print(f"✅ Created hierarchy: {len(hierarchy.ercs)} ERCs in {hierarchy_time:.2f}s")
-    
-    # Step 2: Build irreducible generators
     if verbose:
-        print("\nStep 2: Building irreducible generators...")
+        print("\nStep 2: Building ERC_SORN...")
+        sorn_start = time.time()
+        erc_sorn = build_erc_sorn(hierarchy, RN)
+        sorn_time = time.time() - sorn_start
+    if verbose:
+        print(f"✅ Built SORN in {sorn_time:.2f}s")
+    # Step 3: Build irreducible generators
+    if verbose:
+        print("\nStep 3: Building irreducible generators...")
     generators_start = time.time()
-    generators = build_irreducible_generators(hierarchy, RN, max_generator_size, verbose)
+    generators, _ = build_irreducible_generators(hierarchy, RN, erc_sorn, max_generator_size, verbose)
     generators_time = time.time() - generators_start
     if verbose:
         print(f"✅ Built {len(generators)} generators in {generators_time:.2f}s")
-    
-    # Step 3: Compute elementary semi-organizations
+
+    # Step 4: Compute elementary semi-organizations
     if verbose:
-        print("\nStep 3: Computing elementary semi-organizations...")
+        print("\nStep 4: Computing elementary semi-organizations...")
     esos_start = time.time()
     elementary_sos = compute_elementary_sos(generators, RN, hierarchy)
     esos_time = time.time() - esos_start
     if verbose:
         print(f"✅ Found {len(elementary_sos)} elementary SOs in {esos_time:.2f}s")
     
-    # Step 4: Check self-maintenance for elementary SOs
+    # Step 5: Check self-maintenance for elementary SOs
     if verbose:
-        print("\nStep 4: Checking self-maintenance...")
+        print("\nStep 5: Checking self-maintenance...")
     sm_start = time.time()
     elementary_organizations = []
     for eso in elementary_sos:
@@ -752,11 +759,11 @@ def compute_all_organizations(RN, max_generator_size=8, max_organization_size=5,
     if verbose:
         print(f"✅ Found {len(elementary_organizations)} elementary organizations in {sm_time:.2f}s")
     
-    # Step 5: Build non-elementary organizations (if we have elementary ones)
+    # Step 6: Build non-elementary organizations (if we have elementary ones)
     non_elementary_organizations = []
     if elementary_organizations and len(elementary_organizations) >= 2:
         if verbose:
-            print("\nStep 5: Building non-elementary organizations...")
+            print("\nStep 6: Building non-elementary organizations...")
         non_elem_start = time.time()
         # Use the SORN from generators construction
         erc_sorn = build_erc_sorn(hierarchy, RN)  # Reuse if possible
@@ -770,9 +777,9 @@ def compute_all_organizations(RN, max_generator_size=8, max_organization_size=5,
         if verbose:
             print("\nStep 5: Skipping non-elementary organizations (need ≥2 elementary organizations)")
     
-    # Step 6: Create organization hierarchy
+    # Step 7: Create organization hierarchy
     if verbose:
-        print("\nStep 6: Creating organization hierarchy...")
+        print("\nStep 7: Creating organization hierarchy...")
     hierarchy_obj = OrganizationHierarchy()
     
     # Add all organizations to hierarchy

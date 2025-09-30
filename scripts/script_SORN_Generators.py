@@ -17,11 +17,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from pyCOT.rn_rustworkx import ReactionNetwork
 from pyCOT.io.functions import read_txt
 from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_names
-
+from pyCOT.ERC_Synergy_Complementarity import *
 # Import our new SORN_Generators module
 from pyCOT.SORN_Generators import (
     IrreducibleGenerator,
-    ERC_SORN,
     ProductiveExtension,
     identify_p_ercs,
     build_erc_sorn,
@@ -125,7 +124,7 @@ def test_sorn_generators():
     print("-"*50)
     
     start_time = time.time()
-    generators = build_irreducible_generators(hierarchy, RN, max_size=50, verbose=True)
+    generators, erc_sorn = build_irreducible_generators(hierarchy, RN, erc_sorn=erc_sorn, max_size=50, verbose=True)
     generator_time = time.time() - start_time
     
     print(f"\n✅ Built {len(generators)} irreducible generators in {generator_time:.2f}s")
@@ -187,7 +186,7 @@ def test_sorn_generators():
     
     if p_ercs:
         # Create a simple generator from a P-ERC
-        test_gen = IrreducibleGenerator([p_ercs[0]])
+        test_gen = IrreducibleGenerator([p_ercs[2]])
         print(f"✅ Created generator: {test_gen}")
         
         closure = test_gen.get_closure(RN)
