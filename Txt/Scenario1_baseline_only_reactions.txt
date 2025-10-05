@@ -1,0 +1,21 @@
+R1: => W_V;
+R2: W_V + V => V + V_W;
+R3: W_V + V_n => V_n + V_W;
+R4: W_V => W_R;
+R5: W_R + R => R + R_W;
+R6: W_R + R_n => R_n + R_W;
+R7: V_W + V_n => V;
+R8: V => V_n;
+R9: R_n +R_W => R;
+R10: R => R_n ;
+R11: 2V_W =>;
+R12: 2R_W =>;
+R13: 2W_R =>;
+R14: 2V_n=>;
+R15: 2R_n=>;
+R16: 2V=>3V;
+R17: 2R=>3R;
+
+
+
+
