@@ -19,7 +19,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt 
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from scipy.spatial import ConvexHull
-import sympy as sp 
+#import sympy as sp 
 from scipy.optimize import linprog  
 from collections import Counter  
 import warnings 

@@ -24,26 +24,37 @@ from pyCOT.abstractions import abstraction_ordinary
 
 def rate_cosine(substrates, concentrations, species_idx, spec_vector, t=None):
     """
-    Cosine inflow kinetics: A*(1 + cos(w*t))/2 (always positive, oscillates between 0 and A)
-    Used for: R1 (seasonal water inflow)
-    Parameters: [A, w] where A is amplitude, w is frequency
+    Cosine inflow kinetics with arbitrary seasonal durations.
+
+    Parameters
+    ----------
+    spec_vector : [A_values, T_values, w]
+        A_values : list of amplitudes for each season
+        T_values : list of durations (same length as A_values)
+        w        : frequency of the cosine oscillation within each season
     """
-    A, w = spec_vector
-    
-    # Handle time parameter - it should be passed from the modified simulation
-    if t is not None:
-        current_t = float(t)
-    else:
-        print("WARNING: No time parameter received, using t=0")
-        current_t = 0.0
-    
-    # Use (1 + cos(wt))/2 to ensure always positive and smooth oscillation
-    rate = A * (1 + np.cos(w * current_t/(2*np.pi))) / 2
-    
-    # Debug print
-    if int(current_t * 100) % 100 == 0:  # Print every 1 time unit
-        print(f"Time: {current_t:.2f}, Rate: {rate:.4f}")
-    
+    A_values, T_values, w = spec_vector
+    current_t = float(t) if t is not None else 0.0
+
+    # Compute the total length of one full cycle
+    total_cycle = np.sum(T_values)
+
+    # Reduce time to within one cycle
+    t_mod = current_t % total_cycle
+
+    # Determine which season we are in
+    cumulative = np.cumsum(T_values)
+    season_idx = np.searchsorted(cumulative, t_mod)
+
+    # Compute the total length of one full cycle
+    total_cycle = np.sum(T_values)
+
+    # Select amplitude for this season
+    A = A_values[season_idx]
+
+    # Smooth oscillation within season (you can adapt w per season if desired)
+    rate = A * (1 + np.cos(w * t_mod)) / 2
+
     return rate
 
 rate_cosine.expression = lambda substrates, reaction: (
@@ -113,7 +124,7 @@ print("R12: R_W + R_W =>             (R water degradation)")
 
 # Define initial conditions
 # Species order: [W_V, V, V_W, V_n, W_R, R, R_W, R_n]
-x0 = [0, 5, 0, 0, 0, 10, 0, 0]  # Start with populations but no water
+x0 = [0, 1, 0, 0, 0, 1, 0, 0]  # Start with populations but no water
 
 # Define kinetic types for each reaction
 rate_list = [
@@ -129,47 +140,49 @@ rate_list = [
     'mak',        # R10: R => R_n (mass action)
     'mak',        # R11: V_W + V_W => (mass action degradation)
     'mak',        # R12: R_W + R_W => (mass action degradation)
-    'mak',        # R13: 2W_R => (mass action degradation)
-    'mak',      # R14: V_n => (mass action degradation)
-    'mak',    # R15: R_n => (mass action degradation
-    'mak',
-   'mak'
-]
+    'mak',        # R13: W_R => (mass action degradation)
+    'saturated',      # R14: V_W+V=>2V; (saturated)
+    'mak',    # R15: 2V_n => (mass action degradation)
+    'saturated',   # R16: => V_W+R=>2R; => (saturated) (mass action birth)
+   'mak',   # R17: 2R_n=> (mass action degradation)
+   ]
+#Water Inflow parameters
+A_values = [3, 6]   # Amplitudes for 3 seasons
+T_values = [100, 100]    # Durations (not equal)
+w = 0.05                     # Frequency of internal oscillation within each season
+water_inflow = [A_values, T_values, w]           # R1
+#Other reaction params
+water_processing_params = [0.5, 1]     
+satisfaction_params = [1, 1]        
+river_speed_V=[2]             
+river_speed_R=[1]         
+need_generation_rate = [0.1]             
+water_degradation_rate = [0.2]          
+birth_rate=[0.2,0.1]                    
+death_rate=[0.1]                         
 
-# Define parameters with SYMMETRY between R and V reactions
-# For testing oscillations, set most rates to zero except water inflow
-A_values = [0.1, 1]   # Amplitudes for 3 seasons
-T_values = [150, 150]    # Durations (not equal)
-w = 0.5                     # Frequency of internal oscillation within each season
-water_inflow = [A_values, T_values, w]             # [A_min, A_max, w] for R1
-water_processing_params = [0.5, 1]     # [Vmax, Km] for R2, R3, R5, R6 - SET TO ZERO FOR TESTING
-satisfaction_params = [1, 1]
-river_speed_V=[2]         # [Vmax, Km] for R7, R9 - SET TO ZERO FOR TESTING
-river_speed_R=[0.1]         # [Vmax, Km] for R7, R9 - SET TO ZERO FOR TESTING
-need_generation_rate = [0.12]             # [k] for R8, R10 - SET TO ZERO FOR TESTING
-water_degradation_rate = [0.2]          # [k] for R11, R12, R13 - SET TO ZERO FOR TESTING
-birth_rate=[0.04,0.1]                    # [Vmax, Km] for birth - SET TO ZERO FOR TESTING
-death_rate=[0.1]                         # [k] for R15 - SET TO ZERO FOR TESTING
-
-spec_vector = [[20, 1.0],      # R1: [A, w] - amplitude=5.0, frequency=1.0 (clear oscillation)
+spec_vector = [
+water_inflow,      # R1: Oscillatory definition [[A_values], [T_values], w]
 water_processing_params,       # R2: [Vmax, Km] - water processing by V
 water_processing_params,        # R3: [Vmax, Km] - need-based water processing by V
-[10],                        # R4: [k] - water transfer rate - SET TO ZERO FOR TESTING
+river_speed_V,                        # R4: [k] - water transfer rate from V to R
 water_processing_params,       # R5: [Vmax, Km] - water processing by R (SAME as R2)
 water_processing_params,        # R6: [Vmax, Km] - need-based water processing by R (SAME as R3)
 satisfaction_params,           # R7: [Vmax, Km] - satisfaction of V
 need_generation_rate,          # R8: [k] - need generation by V
 satisfaction_params,           # R9: [Vmax, Km] - satisfaction of R (SAME as R7)
 need_generation_rate,          # R10: [k] - need generation by R (SAME as R8)
-water_degradation_rate,        # R11: [k] - V water degradation
-water_degradation_rate,        # R12: [k] - R water degradation (SAME as R11)
-water_degradation_rate,        # R13: [k] - 2W_R water degradation (SAME as R12)
-death_rate,                 # R14: [k] - V_n death (SAME as R12)
-death_rate,
-birth_rate,                  # R15: [k] - R_n death (SAME as R12)
-birth_rate                   # R15: [k] - R_n death (SAME as R12)
+water_degradation_rate,        # R11: [k] - V_W water degradation for overacummulation
+water_degradation_rate,        # R12: [k] - R_W water degradation (SAME as R11)
+river_speed_R,        # R13: [k] - W_R water degradation (SAME as R12)
+birth_rate,                    # R14: [Vmax, Km] - V birth (SAME as R2)
+death_rate,                 # R15: [k] - V_n death (SAME as R12)
+birth_rate,                   # R16: [k] - R birth (SAME as R12)
+death_rate,                 # R17: [k] - R_n death (SAME as R12)
 ]
-
+# Time span and steps - optimized to see oscillations clearly
+t_span = (0, 750)   # Short time span to see oscillations
+n_steps = 3000     # High resolution
 # Dictionary of additional kinetic laws
 additional_laws = {
     'cosine': rate_cosine,
@@ -184,15 +197,14 @@ time_series, flux_vector = simulation(
     rate=rate_list, 
     spec_vector=spec_vector, 
     x0=x0, 
-    t_span=(0, 200), 
-    n_steps=1000+1,
+    t_span=t_span, 
+    n_steps=n_steps,
     additional_laws=additional_laws
 )
 
 print("time_series0=\n",time_series)
 print("flux_vector0=\n",flux_vector)
 plot_series_ode(time_series, filename="Riverland_scenario1_extended_network_time_series.png", show_fig=True)
-plot_series_ode(flux_vector, filename="Riverland_scenario1_extended_network_flux_vector.png", show_fig=True)
 
 # ========================================
 # 5. PLOTS WITH COGNITIVE DOMAIN INTERVALS
@@ -270,10 +282,6 @@ def custom_simulation_with_time(rn, rate_list, spec_vector, x0, t_span, n_steps,
     flux_vector_df = pd.DataFrame(flux_data)
     
     return time_series_df, flux_vector_df
-
-# Time span and steps - optimized to see oscillations clearly
-t_span = (0, 200)   # Short time span to see oscillations
-n_steps = 1000     # High resolution
 
 # Run custom simulation with time-dependent rate handling
 time_series, flux_vector = custom_simulation_with_time(
