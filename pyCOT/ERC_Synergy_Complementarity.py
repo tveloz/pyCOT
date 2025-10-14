@@ -241,6 +241,444 @@ def get_all_fundamental_synergies_brute_force(ercs, hierarchy, RN, verbose=False
     
     return all_fundamental_synergies
 
+
+# ============================================================================
+# OPTIMIZED FUNDAMENTAL SYNERGY DETECTION WITH TARGET-SPECIFIC PRUNING
+# ============================================================================
+# Replace the get_all_fundamental_synergies_optimized function in 
+# ERC_Synergy_Complementarity.py with this improved version
+
+def get_all_fundamental_synergies_optimized(ercs, hierarchy, RN, verbose=False):
+    """
+    Find all fundamental synergies using aggressive target-specific pruning.
+    
+    Key improvements:
+    1. Fundamentality is per-triplet (E1, E2, E3), not per-pair
+    2. Once E1 + E2 ↠ E3 is found fundamental:
+       - Prune all (E1', E2, E3) where E1' ⊇ E1 (pair domination for same target)
+       - Prune all (E1, E2', E3) where E2' ⊇ E2 (pair domination for same target)
+       - Prune all (E1, E2, E4) where E3 → E4 (target containment - higher targets)
+    3. Process ERCs bottom-up (smallest first) to maximize early pruning
+    
+    Parameters
+    ----------
+    ercs : list
+        List of ERC objects
+    hierarchy : ERC_Hierarchy
+        The hierarchy object containing ERC containment relationships
+    RN : ReactionNetwork
+        The reaction network
+    verbose : bool, optional
+        If True, print detailed progress information
+        
+    Returns
+    -------
+    list
+        List of ERC_Synergy objects with synergy_type="fundamental"
+    """
+    
+    if verbose:
+        print("\n" + "="*70)
+        print("OPTIMIZED FUNDAMENTAL SYNERGY COMPUTATION")
+        print("="*70)
+        print("Computing ERC levels for bottom-up processing...")
+    
+    # Compute hierarchy levels for bottom-up processing
+    from pyCOT.ERC_Hierarchy import ERC
+    if hierarchy.graph:
+        levels = ERC.get_node_levels(hierarchy.graph)
+    else:
+        levels = {erc.label: 0 for erc in ercs}
+    
+    if verbose:
+        distinct_levels = len(set(levels.values()))
+        print(f"  Found {distinct_levels} distinct levels in hierarchy")
+        print(f"  Level 0 (leaves): {sum(1 for v in levels.values() if v == 0)} ERCs")
+        print(f"  Max level: {max(levels.values())}")
+    
+    # Pre-compute containment relationships for fast lookup
+    descendants_cache = {}  # ERC -> set of ERCs it directly contains
+    ancestors_cache = {}    # ERC -> set of ERCs that contain it
+    
+    for erc in ercs:
+        if hierarchy.graph:
+            descendants_cache[erc.label] = set(nx.descendants(hierarchy.graph, erc.label))
+            ancestors_cache[erc.label] = set(nx.ancestors(hierarchy.graph, erc.label))
+        else:
+            descendants_cache[erc.label] = set()
+            ancestors_cache[erc.label] = set()
+    
+    # Sort pairs by combined level (LOWER first = smaller ERCs = BOTTOM-UP)
+    def pair_level(pair):
+        erc1, erc2 = pair
+        level_sum = levels[erc1.label] + levels[erc2.label]
+        level_max = max(levels[erc1.label], levels[erc2.label])
+        return (level_sum, level_max)
+    
+    all_pairs = list(combinations(ercs, 2))
+    sorted_pairs = sorted(all_pairs, key=pair_level)
+    
+    if verbose:
+        print(f"\nTotal ERC pairs to consider: {len(sorted_pairs)}")
+        print("Starting fundamental synergy search with dynamic pruning...\n")
+    
+    # Track pruned triplets: (erc1_label, erc2_label, target_label) -> reason
+    pruned_triplets = {}
+    
+    # Track found fundamental synergies: target_label -> [(pair_labels, level)]
+    fundamental_producers_per_target = defaultdict(list)
+    
+    # Track all targets a pair can produce
+    pair_to_targets = defaultdict(list)
+    
+    # Results
+    fundamental_synergies = []
+    
+    # Statistics
+    pairs_checked = 0
+    pairs_with_synergies = 0
+    total_maximal = 0
+    synergies_pruned_by_pair = 0
+    synergies_pruned_by_target = 0
+    targets_seen = set()
+    
+    # Main loop: process pairs bottom-up
+    for erc1, erc2 in sorted_pairs:
+        pairs_checked += 1
+        
+        current_pair_labels = tuple(sorted([erc1.label, erc2.label]))
+        current_level_sum = levels[erc1.label] + levels[erc2.label]
+        
+        # Get maximal synergies for this pair
+        maximal_synergies = get_maximal_synergies(erc1, erc2, hierarchy, RN)
+        
+        if not maximal_synergies:
+            continue
+        
+        pairs_with_synergies += 1
+        total_maximal += len(maximal_synergies)
+        
+        if verbose and pairs_checked <= 10:
+            print(f"Pair {pairs_checked}: {erc1.label}+{erc2.label} "
+                  f"(levels: {levels[erc1.label]},{levels[erc2.label]})")
+            print(f"  Found {len(maximal_synergies)} maximal synergies")
+        
+        # Check each maximal synergy for fundamentality
+        for syn in maximal_synergies:
+            target_label = syn.plabel
+            targets_seen.add(target_label)
+            triplet_key = (erc1.label, erc2.label, target_label)
+            
+            # Check if this triplet was pruned
+            if triplet_key in pruned_triplets:
+                if verbose and pairs_checked <= 10:
+                    print(f"    PRUNED: →{target_label} ({pruned_triplets[triplet_key]})")
+                continue
+            
+            # Check fundamentality: is there a more fundamental pair for this target?
+            is_fundamental = True
+            pruned_reason = None
+            
+            # Check if a more fundamental pair (with smaller ERCs) already produces this target
+            for (other_pair, other_level) in fundamental_producers_per_target[target_label]:
+                other_erc1_label, other_erc2_label = other_pair
+                
+                # Check if current pair is dominated by the other pair
+                # (other pair uses smaller or equal ERCs in containment hierarchy)
+                erc1_dominated = (erc1.label in ancestors_cache[other_erc1_label] or 
+                                 erc1.label == other_erc1_label)
+                erc2_dominated = (erc2.label in ancestors_cache[other_erc2_label] or 
+                                 erc2.label == other_erc2_label)
+                
+                # If both ERCs are dominated and at least one is strictly dominated
+                if erc1_dominated and erc2_dominated:
+                    if (erc1.label in ancestors_cache[other_erc1_label] or 
+                        erc2.label in ancestors_cache[other_erc2_label]):
+                        is_fundamental = False
+                        pruned_reason = f"Dominated by ({other_erc1_label},{other_erc2_label})"
+                        synergies_pruned_by_pair += 1
+                        break
+            
+            # Check if this pair already produces a smaller target (target containment)
+            if is_fundamental:
+                for other_target in pair_to_targets[current_pair_labels]:
+                    # If other_target → target_label (other is smaller, contains target)
+                    if target_label in ancestors_cache[other_target]:
+                        is_fundamental = False
+                        pruned_reason = f"Pair produces smaller target {other_target}"
+                        synergies_pruned_by_target += 1
+                        break
+            
+            # If fundamental, add it and prune non-fundamental variants
+            if is_fundamental:
+                if verbose and pairs_checked <= 10:
+                    print(f"    FUNDAMENTAL: →{target_label}")
+                
+                fundamental_synergies.append(
+                    ERC_Synergy(syn.reactants, syn.product, "fundamental")
+                )
+                
+                # Track this fundamental synergy
+                fundamental_producers_per_target[target_label].append(
+                    (current_pair_labels, current_level_sum)
+                )
+                pair_to_targets[current_pair_labels].append(target_label)
+                
+                # PRUNING STEP 1: Prune descendants for SAME target
+                # Any pair with larger ERCs producing this same target is non-fundamental
+                for ancestor1_label in ancestors_cache[erc1.label]:
+                    pruned_key = (ancestor1_label, erc2.label, target_label)
+                    if pruned_key not in pruned_triplets:
+                        pruned_triplets[pruned_key] = f"Pair dominated: {erc1.label}→{ancestor1_label}"
+                
+                for ancestor2_label in ancestors_cache[erc2.label]:
+                    pruned_key = (erc1.label, ancestor2_label, target_label)
+                    if pruned_key not in pruned_triplets:
+                        pruned_triplets[pruned_key] = f"Pair dominated: {erc2.label}→{ancestor2_label}"
+                
+                # Cross products: both ERCs larger
+                for ancestor1_label in ancestors_cache[erc1.label]:
+                    for ancestor2_label in ancestors_cache[erc2.label]:
+                        pruned_key = (ancestor1_label, ancestor2_label, target_label)
+                        if pruned_key not in pruned_triplets:
+                            pruned_triplets[pruned_key] = "Both dominated"
+                
+                # PRUNING STEP 2: Prune SAME pair for higher targets
+                # If E1 + E2 ↠ E3, then E1 + E2 → E4 cannot be fundamental when E3 → E4
+                for higher_target_label in ancestors_cache[target_label]:
+                    pruned_key = (erc1.label, erc2.label, higher_target_label)
+                    if pruned_key not in pruned_triplets:
+                        pruned_triplets[pruned_key] = f"Lower target found: {target_label}→{higher_target_label}"
+                    
+                    # Also prune descendants of this pair for higher targets
+                    for ancestor1_label in ancestors_cache[erc1.label]:
+                        pruned_key = (ancestor1_label, erc2.label, higher_target_label)
+                        if pruned_key not in pruned_triplets:
+                            pruned_triplets[pruned_key] = f"Dominated pair + higher target"
+                    
+                    for ancestor2_label in ancestors_cache[erc2.label]:
+                        pruned_key = (erc1.label, ancestor2_label, higher_target_label)
+                        if pruned_key not in pruned_triplets:
+                            pruned_triplets[pruned_key] = f"Dominated pair + higher target"
+            
+            elif verbose and pairs_checked <= 10:
+                print(f"    NON-FUNDAMENTAL: →{target_label} ({pruned_reason})")
+    
+    if verbose:
+        print(f"\n{'='*70}")
+        print("OPTIMIZATION RESULTS")
+        print(f"{'='*70}")
+        print(f"Total pairs checked: {pairs_checked}")
+        print(f"Pairs with synergies: {pairs_with_synergies}")
+        print(f"Total maximal synergies: {total_maximal}")
+        print(f"Synergies pruned by pair domination: {synergies_pruned_by_pair}")
+        print(f"Synergies pruned by target containment: {synergies_pruned_by_target}")
+        total_pruned = synergies_pruned_by_pair + synergies_pruned_by_target
+        pruning_pct = 100 * total_pruned / max(1, total_maximal)
+        print(f"Total synergies pruned: {total_pruned} ({pruning_pct:.1f}%)")
+        print(f"Distinct targets seen: {len(targets_seen)}")
+        print(f"Candidate fundamental synergies found: {len(fundamental_synergies)}")
+        
+        # Additional statistics
+        synergies_per_target = defaultdict(int)
+        synergies_per_pair = defaultdict(int)
+        for syn in fundamental_synergies:
+            synergies_per_target[syn.plabel] += 1
+            pair_key = tuple(sorted(syn.rlabel))
+            synergies_per_pair[pair_key] += 1
+        
+        if synergies_per_target:
+            max_syn_target = max(synergies_per_target.values())
+            avg_syn_target = sum(synergies_per_target.values()) / len(synergies_per_target)
+            print(f"Average fundamental synergies per target: {avg_syn_target:.2f}")
+            print(f"Max fundamental synergies to one target: {max_syn_target}")
+        
+        if synergies_per_pair:
+            max_syn_pair = max(synergies_per_pair.values())
+            avg_syn_pair = sum(synergies_per_pair.values()) / len(synergies_per_pair)
+            print(f"Average fundamental synergies per pair: {avg_syn_pair:.2f}")
+            print(f"Max fundamental synergies from one pair: {max_syn_pair}")
+        print(f"{'='*70}\n")
+    
+    # CRITICAL FIX: Final verification pass
+    # The pruning heuristics are aggressive and may miss some cases
+    # Apply strict fundamentality check to all candidates
+    if verbose:
+        print("Running final verification pass to ensure strict fundamentality...")
+    
+    verified_fundamental = []
+    for syn in fundamental_synergies:
+        if verify_synergy_is_fundamental(syn, hierarchy, verbose=False):
+            verified_fundamental.append(syn)
+        elif verbose:
+            print(f"  Filtered out: {syn.rlabel[0]}+{syn.rlabel[1]}→{syn.plabel} (not truly fundamental)")
+    
+    if verbose:
+        filtered_count = len(fundamental_synergies) - len(verified_fundamental)
+        if filtered_count > 0:
+            print(f"Filtered out {filtered_count} false positives")
+        print(f"Final verified fundamental synergies: {len(verified_fundamental)}")
+    
+    return verified_fundamental
+
+
+def verify_synergy_is_fundamental(synergy, hierarchy, verbose=False):
+    """
+    Verify that a synergy is truly fundamental according to Definition 19.
+    
+    A synergy E1 + E2 → E3 is fundamental iff there is NO synergy:
+    - E1' + E2 → E3 where E1' ⊂ E1 (E1' is contained by E1)
+    - E1 + E2' → E3 where E2' ⊂ E2 (E2' is contained by E2)
+    
+    Parameters
+    ----------
+    synergy : ERC_Synergy
+        The synergy to verify
+    hierarchy : ERC_Hierarchy
+        The hierarchy object
+    verbose : bool
+        Print debug info
+        
+    Returns
+    -------
+    bool
+        True if the synergy is truly fundamental
+    """
+    erc1_label, erc2_label = synergy.rlabel
+    target_label = synergy.plabel
+    
+    # Get descendants (contained ERCs) for both reactants
+    if hierarchy.graph:
+        erc1_descendants = set(nx.descendants(hierarchy.graph, erc1_label))
+        erc2_descendants = set(nx.descendants(hierarchy.graph, erc2_label))
+    else:
+        return True  # No hierarchy, so it's fundamental by default
+    
+    # Check if any descendant of erc1 (with erc2) produces the same target
+    for desc1_label in erc1_descendants:
+        desc1 = hierarchy.get_erc_by_label(desc1_label)
+        erc2 = hierarchy.get_erc_by_label(erc2_label)
+        
+        # Get maximal synergies for this pair
+        desc_maximal = get_maximal_synergies(desc1, erc2, hierarchy, hierarchy.RN)
+        
+        for desc_syn in desc_maximal:
+            if desc_syn.plabel == target_label:
+                if verbose:
+                    print(f"Not fundamental: {desc1_label}+{erc2_label}→{target_label} exists")
+                return False
+    
+    # Check if any descendant of erc2 (with erc1) produces the same target
+    for desc2_label in erc2_descendants:
+        erc1 = hierarchy.get_erc_by_label(erc1_label)
+        desc2 = hierarchy.get_erc_by_label(desc2_label)
+        
+        # Get maximal synergies for this pair
+        desc_maximal = get_maximal_synergies(erc1, desc2, hierarchy, hierarchy.RN)
+        
+        for desc_syn in desc_maximal:
+            if desc_syn.plabel == target_label:
+                if verbose:
+                    print(f"Not fundamental: {erc1_label}+{desc2_label}→{target_label} exists")
+                return False
+    
+    return True
+
+
+def get_fundamental_synergies_optimized(erc1, erc2, hierarchy, RN, 
+                                       maximal_synergies=None, verbose=False):
+    """
+    Find fundamental synergies between two specific ERCs with target-aware pruning.
+    
+    This is a helper function for the optimized algorithm, but can also be used
+    standalone for checking a specific pair.
+    
+    Parameters
+    ----------
+    erc1, erc2 : ERC
+        The two ERCs to check for fundamental synergies
+    hierarchy : ERC_Hierarchy
+        The hierarchy object
+    RN : ReactionNetwork
+        The reaction network
+    maximal_synergies : list, optional
+        Pre-computed maximal synergies. If None, will compute them.
+    verbose : bool, optional
+        Print debug information
+        
+    Returns
+    -------
+    list
+        List of ERC_Synergy objects with synergy_type="fundamental"
+    """
+    if maximal_synergies is None:
+        maximal_synergies = get_maximal_synergies(erc1, erc2, hierarchy, RN)
+    
+    if not maximal_synergies:
+        return []
+    
+    fundamental_synergies = []
+    
+    # Build descendant sets for both ERCs
+    if hierarchy.graph:
+        erc1_descendants = set(nx.descendants(hierarchy.graph, erc1.label))
+        erc1_descendants.add(erc1.label)
+        
+        erc2_descendants = set(nx.descendants(hierarchy.graph, erc2.label))
+        erc2_descendants.add(erc2.label)
+    else:
+        erc1_descendants = {erc1.label}
+        erc2_descendants = {erc2.label}
+    
+    # For each maximal synergy, check if it's fundamental
+    for syn in maximal_synergies:
+        target_label = syn.plabel
+        is_fundamental = True
+        
+        # Check all combinations of descendants
+        for desc1_label in erc1_descendants:
+            for desc2_label in erc2_descendants:
+                # Skip if it's the same pair
+                if (set([desc1_label, desc2_label]) == set([erc1.label, erc2.label])):
+                    continue
+                
+                # Skip if both labels are the same
+                if desc1_label == desc2_label:
+                    continue
+                
+                # Get the descendant ERCs
+                desc1 = hierarchy.get_erc_by_label(desc1_label)
+                desc2 = hierarchy.get_erc_by_label(desc2_label)
+                
+                if desc1 is None or desc2 is None:
+                    continue
+                
+                # Check if descendants produce the same target
+                desc_maximal = get_maximal_synergies(desc1, desc2, hierarchy, RN)
+                
+                for desc_syn in desc_maximal:
+                    if desc_syn.plabel == target_label:
+                        is_fundamental = False
+                        if verbose:
+                            print(f"  Non-fundamental: {erc1.label}+{erc2.label}→{target_label} "
+                                  f"because {desc1_label}+{desc2_label}→{target_label}")
+                        break
+                
+                if not is_fundamental:
+                    break
+            
+            if not is_fundamental:
+                break
+        
+        if is_fundamental:
+            fundamental_synergies.append(
+                ERC_Synergy(syn.reactants, syn.product, "fundamental")
+            )
+    
+    return fundamental_synergies
+
+
+# ============================================================================
 # ============================================================================
 # COMPLEMENTARITY DETECTION
 # ============================================================================
