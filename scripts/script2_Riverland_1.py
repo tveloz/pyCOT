@@ -18,40 +18,27 @@ from pyCOT.simulations import *
 from pyCOT.plot_dynamics import *
 from pyCOT.abstractions import abstraction_ordinary
 
-
 # ========================================
 # 2. CUSTOM KINETIC LAWS DEFINITION
 # ========================================
 
 def rate_cosine(substrates, concentrations, species_idx, spec_vector, t=None):
     """
-    Cosine inflow kinetics with arbitrary seasonal durations.
-
-    Parameters
-    ----------
-    spec_vector : [A_values, T_values, w]
-        A_values : list of amplitudes for each season
-        T_values : list of durations (same length as A_values)
-        w        : frequency of the cosine oscillation within each season
+    Cosine inflow kinetics: A*(1 + cos(w*t))/2 (always positive, oscillates between 0 and A)
+    Used for: R1 (seasonal water inflow)
+    Parameters: [A, w] where A is amplitude, w is frequency
     """
-    A_values, T_values, w = spec_vector
-    current_t = float(t) if t is not None else 0.0
-
-    # Compute the total length of one full cycle
-    total_cycle = np.sum(T_values)
-
-    # Reduce time to within one cycle
-    t_mod = current_t % total_cycle
-
-    # Determine which season we are in
-    cumulative = np.cumsum(T_values)
-    season_idx = np.searchsorted(cumulative, t_mod)
-
-    # Select amplitude for this season
-    A = A_values[season_idx]
-
-    # Smooth oscillation within season (you can adapt w per season if desired)
-    rate = A * (1 + np.cos(w * t_mod)) / 2
+    A, w = spec_vector
+    
+    # Handle time parameter - it should be passed from the modified simulation
+    if t is not None:
+        current_t = float(t)
+    else:
+        print("WARNING: No time parameter received, using t=0")
+        current_t = 0.0
+    
+    # Use (1 + cos(wt))/2 to ensure always positive and smooth oscillation
+    rate = A * (1 + np.cos(w * current_t/(2*np.pi))) / 2
     
     # Debug print
     if int(current_t * 100) % 100 == 0:  # Print every 1 time unit
@@ -85,11 +72,8 @@ def rate_saturated(substrates, concentrations, species_idx, spec_vector):
         substrate1_conc = concentrations[species_idx[substrate1_name]]
         substrate2_conc = concentrations[species_idx[substrate2_name]]
         
-        if Km + substrate1_conc>0:
-
-            return (Vmax * substrate1_conc * substrate2_conc) / (Km + substrate1_conc)
-        else:
-            return 0
+        return (Vmax * substrate1_conc * substrate2_conc) / (Km + substrate1_conc)
+    
     else:
         return 0
 
@@ -106,6 +90,9 @@ rate_saturated.expression = lambda substrates, reaction: (
 network_file = 'networks/Riverland_model/Scenario1_baseline_only_reactions.txt'
 rn = read_txt(network_file)
 
+S = rn.stoichiometry_matrix()
+
+# Print the reactions in the network
 print("Loaded extended reaction network:")
 print("R1: => W_V                    (seasonal water inflow)")
 print("R2: W_V + V => V + V_W        (water processing by V)")
@@ -121,15 +108,12 @@ print("R11: V_W + V_W =>             (V water degradation)")
 print("R12: R_W + R_W =>             (R water degradation)")
 
 # ========================================
-# 4. SIMULATION PARAMETERS WITH SYMMETRY
+# 3. SIMULATION PARAMETERS WITH SYMMETRY
 # ========================================
 
 # Define initial conditions
 # Species order: [W_V, V, V_W, V_n, W_R, R, R_W, R_n]
-V_ini=1.2
-r=1
-R_ini=V_ini*r
-x0 = [1, V_ini, 0, 0, 0, R_ini, 0, 0]  # Start with populations but no water
+x0 = [0, 5, 0, 0, 0, 10, 0, 0]  # Start with populations but no water
 
 # Define kinetic types for each reaction
 rate_list = [
@@ -146,11 +130,10 @@ rate_list = [
     'mak',        # R11: V_W + V_W => (mass action degradation)
     'mak',        # R12: R_W + R_W => (mass action degradation)
     'mak',        # R13: 2W_R => (mass action degradation)
-    'saturated',  # R14: V+W_V =>2V+W_V (saturated)
-    'mak',        # R15: V_n => (mass action)
-    'saturated',  # R16: R+W_R =>2R+W_R (saturated)
-    'mak',         # R17: R_n => (mass action)
-    'mak'         # R18: W_R => (mass action
+    'mak',      # R14: V_n => (mass action degradation)
+    'mak',    # R15: R_n => (mass action degradation
+    'mak',
+   'mak'
 ]
 
 # Define parameters with SYMMETRY between R and V reactions
@@ -168,11 +151,10 @@ water_degradation_rate = [0.2]          # [k] for R11, R12, R13 - SET TO ZERO FO
 birth_rate=[0.04,0.1]                    # [Vmax, Km] for birth - SET TO ZERO FOR TESTING
 death_rate=[0.1]                         # [k] for R15 - SET TO ZERO FOR TESTING
 
-spec_vector = [
-water_inflow,      # R1: [A, w] - amplitude=5.0, frequency=1.0 (clear oscillation)
+spec_vector = [[20, 1.0],      # R1: [A, w] - amplitude=5.0, frequency=1.0 (clear oscillation)
 water_processing_params,       # R2: [Vmax, Km] - water processing by V
-water_processing_params,        # R3: [Vmax, Km] - water processing by V_n
-river_speed_V,                        # R4: [k] - water transfer rate - SET TO ZERO FOR TESTING
+water_processing_params,        # R3: [Vmax, Km] - need-based water processing by V
+[10],                        # R4: [k] - water transfer rate - SET TO ZERO FOR TESTING
 water_processing_params,       # R5: [Vmax, Km] - water processing by R (SAME as R2)
 water_processing_params,        # R6: [Vmax, Km] - need-based water processing by R (SAME as R3)
 satisfaction_params,           # R7: [Vmax, Km] - satisfaction of V
@@ -181,17 +163,13 @@ satisfaction_params,           # R9: [Vmax, Km] - satisfaction of R (SAME as R7)
 need_generation_rate,          # R10: [k] - need generation by R (SAME as R8)
 water_degradation_rate,        # R11: [k] - V water degradation
 water_degradation_rate,        # R12: [k] - R water degradation (SAME as R11)
-water_degradation_rate,       # R13: [k] - W_R degradation (SAME as R11)
-birth_rate,               # R14: [k] - V birth (SAME as R8) 
-death_rate,                # R15: [k] - V_n death (SAME as R12)
-birth_rate,               # R16: [k] - V birth (SAME as R8) 
-death_rate,                # R17: [k] - V_n death (SAME as R12)
-river_speed_R,                        # R18: [k] - water transfer rate - SET TO ZERO FOR TESTING
- ]
-# Time span and steps - optimized to see oscillations clearly
-t_span = (0, 750)   # Short time span to see oscillations
-n_steps = 4000     # High resolution
-threshold=0.05    # Threshold for abstraction
+water_degradation_rate,        # R13: [k] - 2W_R water degradation (SAME as R12)
+death_rate,                 # R14: [k] - V_n death (SAME as R12)
+death_rate,
+birth_rate,                  # R15: [k] - R_n death (SAME as R12)
+birth_rate                   # R15: [k] - R_n death (SAME as R12)
+]
+
 # Dictionary of additional kinetic laws
 additional_laws = {
     'cosine': rate_cosine,
@@ -199,15 +177,28 @@ additional_laws = {
 }
 
 # ========================================
-# 5. RUN SIMULATION
-# ========================================
+# 4. RUN SIMULATION
+# ========================================  
+time_series, flux_vector = simulation(
+    rn, 
+    rate=rate_list, 
+    spec_vector=spec_vector, 
+    x0=x0, 
+    t_span=(0, 200), 
+    n_steps=1000+1,
+    additional_laws=additional_laws
+)
+
+print("time_series0=\n",time_series)
+print("flux_vector0=\n",flux_vector)
+plot_series_ode(time_series, filename="Riverland_scenario1_extended_network_time_series.png", show_fig=True)
+plot_series_ode(flux_vector, filename="Riverland_scenario1_extended_network_flux_vector.png", show_fig=True)
 
 # ========================================
-# 5. RUN SIMULATION WITH TIME-DEPENDENT RATE FIX
+# 5. PLOTS WITH COGNITIVE DOMAIN INTERVALS
 # ========================================
 
 # We need to use a custom simulation function since pyCOT doesn't pass time to rate functions
-
 def custom_simulation_with_time(rn, rate_list, spec_vector, x0, t_span, n_steps, additional_laws):
     """Custom simulation that properly handles time-dependent kinetics"""
     
@@ -280,6 +271,10 @@ def custom_simulation_with_time(rn, rate_list, spec_vector, x0, t_span, n_steps,
     
     return time_series_df, flux_vector_df
 
+# Time span and steps - optimized to see oscillations clearly
+t_span = (0, 200)   # Short time span to see oscillations
+n_steps = 1000     # High resolution
+
 # Run custom simulation with time-dependent rate handling
 time_series, flux_vector = custom_simulation_with_time(
     rn, 
@@ -294,13 +289,9 @@ time_series, flux_vector = custom_simulation_with_time(
 # ========================================
 # 6. DISPLAY RESULTS
 # ========================================
-
 print("\nSimulation completed successfully!")
 print("\nTime Series Shape:", time_series.shape)
 print("Species order: W_V, V, V_W, V_n, W_R, R, R_W, R_n")
-
-# Plot the results
-plot_series_ode(time_series, filename="extended_network_results.png")
 
 print("\nFinal concentrations:")
 final_concentrations = time_series.iloc[-1]
@@ -312,7 +303,7 @@ for i, species in enumerate(species_names):
 print(f"\nW_V oscillation check (first 10 values): {time_series.iloc[:10, 0].values}")
 
 
-abstract_time_series = abstraction_ordinary(time_series, threshold=threshold)
+abstract_time_series = abstraction_ordinary(time_series, threshold=0.05)
 
 #plot_abstraction_size(abstract_time_series)
 
@@ -320,15 +311,14 @@ abstract_time_series = abstraction_ordinary(time_series, threshold=threshold)
 
 #plot_abstraction_graph_movie_html(abstract_time_series, filename="abstraction_graph_movie_html.html", interval=400, title="Abstraction Graph - Time")
 
+# ========================================
+# 8. PRINT RESULTS
+# ======================================== 
 print("\nFinal concentrations:")
 final_concentrations = time_series.iloc[-1]
 species_names = ['W_V']
 for i, species in enumerate(species_names):
     print(f"{species}: {final_concentrations.iloc[i]:.4f}")
 
-
 # Check oscillation in W_V (first 100 time points)
 print(f"\nW_V oscillation check (first 10 values): {time_series.iloc[:3].values}")
-
-
-

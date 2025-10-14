@@ -20,7 +20,8 @@ from pyCOT.simulations import *
 # ========================================
 # file_path = 'pyCOT/networks/testing/autopoietic.txt'  
 # Alternative examples:
-file_path = 'networks/Riverland_model/Scenario1_baseline_only_reactions.txt'  # Autopoietic network
+file_path = 'Txt/autopoietic.txt'  
+# file_path = 'networks/Riverland_model/Scenario1_baseline_only_reactions.txt'  # Autopoietic network
 # file_path = 'Txt/2019fig1.txt'
 # file_path = 'Txt/2019fig2.txt'
 # file_path = 'Txt/non_connected_example.txt' 

@@ -15,6 +15,14 @@ import numpy as np                       # Library for numerical computing in Py
 from networkx.drawing.nx_agraph import graphviz_layout
 import itertools 
 from mpl_toolkits.mplot3d import Axes3D
+ 
+import matplotlib.pyplot as plt 
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+from scipy.spatial import ConvexHull
+import sympy as sp 
+from scipy.optimize import linprog  
+from collections import Counter  
+import warnings 
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -23,9 +31,6 @@ import sys                               # Provides access to system-specific pa
 sys.stdout.reconfigure(encoding='utf-8') # Reconfigures the standard output to use UTF-8 encoding, ensuring proper handling of special characters.
 import tempfile                          # Provides utilities for creating temporary files and directories.
 
- 
-
-
 ######################################################################################
 # Plots the time series of ODE concentrations and abstractions
 ######################################################################################
@@ -33,97 +38,35 @@ import matplotlib.pyplot as plt
 import os
 
 def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", 
-                   title="Time Series of Concentrations", show_grid=True,
-                   save_figure=True, filename="time_series_plot.png"):
-    """
-    Plots the time series of ODE concentrations and optionally saves the figure.
-
-    Parameters:
-    time_series (pd.DataFrame): Time series with a 'Time' column and species concentrations as columns.
-    xlabel (str): Label for the x-axis. Default is "Time".
-    ylabel (str): Label for the y-axis. Default is "Concentration".
-    title (str): Title of the plot. Default is "Time Series of Concentrations".
-    show_grid (bool): Whether to display the grid. Default is True.
-    save_figure (bool): Whether to save the figure. Default is False.
-    filename (str): Name of the file to save. Default is "time_series_plot.png".
-
-    Raises:
-    ValueError: If the DataFrame does not contain a 'Time' column.
-
-    Returns:
-    None: Displays a line plot for each species in the time series.
-    """
+                   title="Time Series of Concentrations", filename="time_series_plot.png",
+                   show_grid=True, save_figure=True,
+                   ax=None, show_fig=False):
     if 'Time' not in time_series.columns:
         raise ValueError("The DataFrame must include a 'Time' column for time values.")
-    
-    # Create a new figure and axis object for the plot
-    fig, ax = plt.subplots(figsize=(10, 6))
-    
-    # Iterate over the columns to plot each species
+
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(10, 6))
+    else:
+        fig = ax.get_figure()
+
     for species in time_series.columns:
         if species != 'Time':
             ax.plot(time_series['Time'], time_series[species], label=species)
-    
-    # Set axis labels and plot title
+
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title(title)
     ax.grid(show_grid)
     ax.legend()
-    
-    plt.tight_layout()
-    
-    # Save the figure if requested
+
     if save_figure:
-        # Create the directory if it doesn't exist
         os.makedirs("visualizations/plot_series_ode", exist_ok=True)
-        
-        # Construct the full file path
         filepath = os.path.join("visualizations", "plot_series_ode", filename)
-        
-        # Save the figure with high quality
-        plt.savefig(filepath, dpi=300, bbox_inches='tight')
+        fig.savefig(filepath, dpi=300, bbox_inches='tight')
         print(f"Figure saved as: {filepath}")
-    
-    plt.show()
-# def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", title="Time Series of Concentrations", show_grid=True):
-#     """
-#     Plots the time series of ODE concentrations.
-
-#     Parameters:
-#     time_series (pd.DataFrame): Time series with a 'Time' column and species concentrations as columns.
-#     xlabel (str): Label for the x-axis. Default is "Time".
-#     ylabel (str): Label for the y-axis. Default is "Concentration".
-#     title (str): Title of the plot. Default is "Time Series of Concentrations".
-#     show_grid (bool): Whether to display the grid. Default is True.
-
-#     Raises:
-#     ValueError: If the DataFrame does not contain a 'Time' column.
-
-#     Returns:
-#     None: Displays a line plot for each species in the time series.
-#     """
-#     if 'Time' not in time_series.columns:
-#         # Check if the 'Time' column exists, raise error if not found
-#         raise ValueError("The DataFrame must include a 'Time' column for time values.")
-    
-#     # Create a new figure and axis object for the plot
-#     fig, ax = plt.subplots(figsize=(10, 6))  # Plot size 10x6 inches
-    
-#     # Iterate over the columns to plot each species
-#     for species in time_series.columns:
-#         if species != 'Time':                # Skip the 'Time' column
-#             ax.plot(time_series['Time'], time_series[species], label=species)  # Plot species concentration
-    
-#     # Set axis labels and plot title
-#     ax.set_xlabel(xlabel)  # Set x-axis label
-#     ax.set_ylabel(ylabel)  # Set y-axis label
-#     ax.set_title(title)    # Set the title of the plot
-#     ax.grid(show_grid)     # Enable grid on the plot
-#     ax.legend()            # Add a legend for species
-    
-#     plt.tight_layout()     # Adjust layout to fit all elements
-#     plt.show()             # Display the plot
+    if show_fig:
+        plt.show()
+    return fig, ax
 
 ######################################################################################## 
 # Reaction-Diffusion Dynamics Plotting
@@ -3520,3 +3463,1225 @@ def animate_series_PDE(simulation_data, species_names,t_span):
 #     plt.show()
 
 
+######################################################################################
+######################################################################################
+######################################################################################
+# COGNITIVE DOMAIN
+######################################################################################
+######################################################################################
+######################################################################################
+# Función para clasificar un vector de proceso v en categorías base y extendidas
+def classify_process(v, S, v_prev=None, tol=1e-3):
+    """
+    Clasifica un vector de proceso v con respecto a la matriz estequiométrica S.
+
+    Categorías base:
+    - Stationary Mode: El proceso no produce cambios netos en las concentraciones (Sv=0).
+    - Problem: El proceso consume especies pero no produce ninguna (Sv <= 0 y al menos un Sv < 0).
+    - Challenge: El proceso consume al menos una especie (al menos un Sv < 0).
+    - Cognitive Domain: El proceso mantiene o aumenta todas las especies (Sv >= 0) y utiliza todas las reacciones de la red (v > 0).
+    
+    Categorías extendidas (requieren un proceso previo 'v_prev'):
+    - Counteraction: Un proceso 'v' que, combinado con un 'Challenge' previo 'v_prev', resulta en un no-consumo neto (S(v + v_prev) >= 0).
+    - Solution: Un proceso 'v' del espacio 'Challenge' que sirve como solución para un 'Problem' previo 'v_prev' (S(v+v_prev) >= 0).
+    - Cognitive Control: Un proceso 'v' del 'Cognitive Domain' que sirve como solución para un 'Problem' previo 'v_prev' (S(v+v_prev) >= 0, v > 0).
+
+    Args:
+        v (np.ndarray): El vector de proceso a clasificar. Debe ser un array de NumPy que representa los flujos.
+        S (np.ndarray): La matriz estequiométrica, donde las filas son especies y las columnas son reacciones.
+        v_prev (np.ndarray, optional): Un vector de proceso previo, utilizado para clasificar
+                                     'Counteraction' y 'Cognitive Control'. Por defecto es None.
+        tol (float): Tolerancia para comparaciones numéricas con cero para manejar la imprecisión de punto flotante. Por defecto es 1e-8.
+        
+    Returns:
+        list[str]: Una lista ordenada de las categorías a las que pertenece el proceso v.
+                   Si no coincide con ninguna categoría específica, se clasifica como "Other".
+                   Un proceso puede pertenecer a múltiples categorías.
+    
+    Raises:
+        TypeError: Si 'v', 'S', o 'v_prev' no son arrays de NumPy.
+    """
+    
+    # Validaciones de tipo para los inputs
+    if not isinstance(v, np.ndarray) or not isinstance(S, np.ndarray):
+        raise TypeError("Los inputs 'v' y 'S' deben ser arrays de NumPy.")
+    if v_prev is not None and not isinstance(v_prev, np.ndarray):
+        raise TypeError("El input 'v_prev', si se proporciona, debe ser un array de NumPy.")
+
+    # Calcular el cambio neto en las concentraciones de las especies (Sv)
+    Sv = S @ v
+    classifications = []
+
+    # --- Propiedades fundamentales de Sv y v (calculadas una vez para eficiencia) ---
+    is_stationary_mode = np.all((-tol <= Sv) & (Sv <= tol))         # p.all(np.abs(Sv) < tol)
+    all_Sv_non_negative = np.all(Sv >= -tol) and np.any(Sv > tol)   # np.all(Sv >= -tol) 
+    has_net_consumption = np.any(Sv < -tol)                      # (np.any(Sv < 0) and np.any((0 <= Sv) & (Sv <= tol))) #
+    all_Sv_non_positive = np.all(Sv <= tol) and np.any(Sv <= -tol) # np.all(Sv <= tol) 
+    all_Sv_negative = np.all(Sv < -tol) and np.all(Sv < -tol)       # Todos los Sv < 0 (nueva condición para Challenge)
+    all_reactions_active = np.all(v > tol) 
+
+    # --- Clasificaciones Base (basadas solo en 'v' y 'S') --- 
+    if is_stationary_mode:
+        classifications = ["Stationary Mode"]
+    elif all_Sv_non_negative and all_reactions_active:
+        classifications = ["Cognitive Domain"]        
+    elif has_net_consumption and all_Sv_non_positive:
+        classifications = ["Problem"]
+    elif has_net_consumption:
+        classifications = ["Challenge"]
+    elif all_Sv_non_negative:
+        classifications = ["Overproduction Mode"]  
+    elif all_Sv_negative:
+        classifications = ["Not Feasible"] 
+    else:
+        classifications = ["Other"]
+
+    # --- Clasificaciones Extendidas (requieren 'v_prev' para el contexto) ---
+    if v_prev is not None:
+        Sv_prev = S @ v_prev
+        is_v_prev_a_challenge = np.any(Sv_prev < -tol) # np.any(Sv < -tol)
+        is_v_prev_a_problem = is_v_prev_a_challenge and (np.all(Sv_prev <= 0) and np.any(Sv_prev <= -tol)) #np.any(Sv < -tol) and (np.all(Sv <= 0) and np.any(Sv <= -tol))
+
+        Sv_combined = S @ (v + v_prev)
+
+        # 6. Counteraction (Contramedida) → solo si fue Challenge pero no Problem
+        if is_v_prev_a_challenge and not is_v_prev_a_problem and "Challenge":
+            if np.all(Sv_combined >= -tol):
+                classifications = ["Counteraction"]
+
+        # 7. Solution (Solución extendida)
+        elif is_v_prev_a_problem and "Overproduction Mode" in classifications:
+            if np.all(Sv_combined >= -tol):
+                classifications = ["Solution"]
+
+        # 8. Cognitive Control (Control Cognitivo)
+        elif is_v_prev_a_problem and "Cognitive Domain" in classifications:
+            if np.any(Sv_combined >= -tol):
+                classifications = ["Cognitive Control"]
+
+    # Devolver una lista de clasificaciones únicas y ordenadas para una salida consistente.
+    return sorted(list(set(classifications)))
+
+#####################################################################################
+# Función para graficar el histograma de tipos de proceso y guardar en Excel
+def plot_process_types_histogram(flux_vector, S, 
+                                xlabel="Tipo de Proceso", ylabel="Frecuencia",
+                                title="Histograma de Tipos de Proceso", 
+                                excel_filename="classified_processes.xlsx",
+                                filename="histograma.png", 
+                                save_figure=True, 
+                                ax=None, show_fig=False):
+    """
+    Clasifica, grafica histograma, y guarda resultados en Excel.
+    """
+    # if not isinstance(flux_vector, pd.DataFrame):
+    #     raise TypeError("flux_vector debe ser un DataFrame de pandas.")
+    if isinstance(flux_vector, np.ndarray):
+        flux_vector = pd.DataFrame(flux_vector, columns=[f"v{i+1}" for i in range(flux_vector.shape[1])])
+        flux_vector.insert(0, "Time", range(len(flux_vector)))
+    elif not isinstance(flux_vector, pd.DataFrame):
+        raise TypeError("flux_vector debe ser un DataFrame o un ndarray de NumPy.")    
+    if not isinstance(S, np.ndarray):
+        raise TypeError("S debe ser un array de NumPy.")    
+
+    # --- Clasificar ---
+    flux_values = flux_vector.iloc[:, 1:]  # quitar columna Time
+    process_types = []
+    for _, row in flux_values.iterrows():
+        v = row.to_numpy()
+        cat = classify_process(v, S)  # ahora solo se pasa v y S
+        # Convertir la lista de clasificaciones a una cadena para hacerla hashable
+        cat_str = ",".join(cat) if cat else "None" # ",".join(sorted(cat)) if cat else "None"
+        process_types.append(cat_str)
+
+    # Calcular S*v
+    Sv_matrix = flux_values.apply(lambda v: S @ v.to_numpy(), axis=1)
+    Sv_expanded = pd.DataFrame(Sv_matrix.tolist(), 
+                               columns=[f"S*v_{i+1}" for i in range(S.shape[0])],
+                               index=flux_vector.index)
+
+    classified_df = pd.concat([flux_vector, Sv_expanded], axis=1)
+    classified_df["Process_Type"] = process_types
+    # print("classified_df=\n",classified_df)
+
+    # --- Contar ---
+    process_counts = Counter(process_types)
+    category_order = ["Stationary Mode", "Cognitive Domain", "Problem", "Challenge","Overproduction Mode", "Not Feasible", "Other", "None"]
+    labels = [cat for cat in category_order if cat in process_counts]
+    counts = [process_counts[cat] for cat in labels]
+
+    # Colores 
+    color_map = { 
+        "Stationary Mode": "cyan",
+        "Cognitive Domain": "green",
+        "Problem": "red",
+        "Challenge": "orange",
+        "Overproduction Mode": "blue",
+        "Not Feasible": "yellow",
+        "Other": "grey",
+        "None": "black"        
+    }
+
+    colors = [color_map.get(label, "grey") for label in labels]
+
+    # --- Graficar ---
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(10, 6))
+    else:
+        fig = ax.get_figure()
+
+    bars = ax.bar(labels, counts, color=colors)
+    for bar in bars:
+        yval = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2.0, yval, int(yval),
+                va='bottom', ha='center', fontweight='bold') 
+
+    ax.set_xlabel(xlabel, fontsize=12)
+    ax.set_ylabel(ylabel, fontsize=12)
+    ax.set_title(title, fontsize=14)
+    ax.tick_params(axis="x", rotation=30)
+    ax.grid(axis='y', linestyle='--', alpha=0.7)
+
+    # --- Guardar en Excel ---
+    out_dir = "./visualizations/process_classification"
+    os.makedirs(out_dir, exist_ok=True)
+    filepath_excel = os.path.join(out_dir, excel_filename)
+
+    with pd.ExcelWriter(filepath_excel, engine="openpyxl") as writer:
+        classified_df.to_excel(writer, sheet_name="All_Processes", index=False)
+        for category, group in classified_df.groupby("Process_Type", sort=False):
+            group.to_excel(writer, sheet_name=category[:31], index=False)
+    
+    print(f"Procesos clasificados guardados en: {filepath_excel}")
+
+    # --- Guardar figura ---
+    if save_figure:
+        filepath_fig = os.path.join(out_dir, filename)
+        fig.savefig(filepath_fig, dpi=300, bbox_inches="tight")
+        print(f"Histograma guardado en: {filepath_fig}")
+
+    if show_fig:
+        plt.show()
+
+    return fig, ax, classified_df
+
+#####################################################################################
+# Función para graficar el cono y la región factible en 3D
+def plot_cone_and_region(S, 
+                         grid_max=None, grid_res=5,
+                         axis_names=None, show=True,
+                         extra_vector=None, 
+                         extra_vector_labels=None,
+                         extra_vector_colors=None):   
+    """
+    Genera proyecciones 3D del cono definido por vectores en null_vectors
+    y la región factible Sv > 0 para una matriz estequiométrica S.
+    Los puntos factibles se clasifican con classify_process() y se pintan
+    con diferentes colores según su categoría.
+    Además guarda en un archivo Excel los puntos factibles (v), S*v y
+    Process_Type en una hoja principal, y en hojas separadas por categoría.
+    """
+    n = S.shape[1]
+    m = S.shape[0]
+    if axis_names is None:
+        axis_names = [f"v{i+1}" for i in range(n)]
+    
+    if extra_vector_labels is None:
+        extra_vector_labels = [f"Extra vector {i+1}" for i in range(len(extra_vector or []))]
+    
+    if extra_vector_colors is None:
+        extra_vector_colors = ['orange', 'cyan', 'purple', 'brown', 'yellow', 'pink'] + \
+                              ['gray'] * max(0, len(extra_vector or []) - 6)
+    
+    out_dir = "./visualizations/cone_projections_3D"
+    os.makedirs(out_dir, exist_ok=True)
+
+    # ---- 1. Construcción del cono (Sv=0) ----
+    S_sym = sp.Matrix(S) 
+    null_basis = S_sym.nullspace() 
+    null_vectors = [np.array(v, dtype=float).flatten() for v in null_basis]
+    print("Vectores del espacio nulo =", null_vectors)
+
+    base_max = np.max([np.max(np.abs(v)) for v in null_vectors]) if null_vectors else 1.0
+
+    if extra_vector is not None:
+        if isinstance(extra_vector, np.ndarray) and extra_vector.ndim == 1:
+            extra_vector = [extra_vector]  
+        extra_max = np.max(np.abs(np.vstack(extra_vector))) if extra_vector else 0
+    else:
+        extra_max = 0
+
+    if grid_max is None:
+        grid_max = max(base_max, extra_max)
+
+    # ---- 2. Construcción de la región factible Sv>0 ----
+    grid = np.linspace(0, grid_max, grid_res)
+    V = np.array(np.meshgrid(*([grid] * n))).T.reshape(-1, n)
+    mask = np.all(S @ V.T >= -1e-10, axis=0) 
+    points_pos = V[mask]
+
+    # ---- Guardar puntos factibles v, S*v y Process_Type en Excel ----
+    if points_pos.shape[0] > 0:
+        Sv = (S @ points_pos.T).T  
+        df_points = pd.DataFrame(points_pos, columns=axis_names)
+        df_Sv = pd.DataFrame(Sv, columns=[f"S*v=x{i+1}" for i in range(m)])
+
+        # Clasificación de procesos
+        classifications = []
+        for v in points_pos:
+            cat = classify_process(v, S)
+            cat_str = ",".join(cat) if cat else "None"
+            classifications.append(cat_str)
+        df_class = pd.DataFrame({"Process_Type": classifications})
+
+        # Combinar todo
+        df_all = pd.concat([df_points, df_Sv, df_class], axis=1)
+
+        # Guardar en un solo archivo con varias hojas
+        excel_path = os.path.join(out_dir, "classified_processes.xlsx")
+        with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
+            # Hoja principal con todo
+            df_all.to_excel(writer, sheet_name="All_Processes", index=False)
+
+            # Hojas separadas por categoría
+            for category, group in df_all.groupby("Process_Type"):
+                safe_name = str(category)[:31]  # Excel limita nombres a 31 caracteres
+                group.to_excel(writer, sheet_name=safe_name, index=False)
+
+        print(f"Vectores de procesos guardados en: {excel_path}")
+    else:
+        print("No se encontraron puntos factibles Sv>0.")
+
+    # ---- 3. Proyecciones 3D ----
+    saved_files = []
+    for (i, j, k) in itertools.combinations(range(n), 3):
+        fig = plt.figure(figsize=(7,6))
+        ax = fig.add_subplot(111, projection='3d')
+
+        # Cono (Sv=0)
+        if len(null_vectors) == 0:
+            ax.scatter([0], [0], [0], color='lightblue', s=50, label="Sv=0 (origen)")
+        elif len(null_vectors) == 1:
+            v1 = null_vectors[0]
+            ax.quiver(0, 0, 0, *(v1[[i,j,k]]), color='black', linewidth=2, 
+                      arrow_length_ratio=0.1, label="Stationary mode 1")
+        else:
+            v1, v2 = null_vectors[:2] 
+            tri = np.array([[0,0,0], v1[[i,j,k]], v2[[i,j,k]]])
+            poly = Poly3DCollection([tri], alpha=0.4, facecolor='lightblue', 
+                                   edgecolor='lightblue', label="Sv=0")
+            ax.add_collection3d(poly)
+            colors = ['black', 'lightblue', 'red', 'orange', 'purple', 'brown'] + \
+                     ['purple'] * (len(null_vectors) - 2)
+            for idx, v in enumerate(null_vectors):
+                ax.quiver(0, 0, 0, *(v[[i,j,k]]), color=colors[idx], linewidth=2, 
+                          arrow_length_ratio=0.1, label=f"Stationary mode {idx+1}")
+
+        # Región factible Sv>0 clasificada
+        if points_pos.shape[0] > 0:
+            proj_pos = points_pos[:, [i, j, k]]
+            color_map = {
+                "Stationary Mode": "cyan",
+                "Cognitive Domain": "green",
+                "Problem": "red",
+                "Challenge": "orange",
+                "Overproduction Mode": "blue",
+                "Not Feasible": "yellow",
+                "Other": "grey",
+                "None": "black"
+            }
+            categories = [c.split(",")[0] if c else "None" for c in classifications]
+
+            for cat in sorted(set(categories)):
+                mask = [c == cat for c in categories]
+                ax.scatter(proj_pos[mask, 0],
+                           proj_pos[mask, 1],
+                           proj_pos[mask, 2],
+                           alpha=0.6, s=20,
+                           c=color_map.get(cat, "grey"),
+                           label=cat)
+
+        if extra_vector is not None:
+            for k_idx, vec in enumerate(extra_vector):
+                extra_proj = vec[[i, j, k]]
+                ax.quiver(0, 0, 0, *extra_proj,
+                          color=extra_vector_colors[k_idx % len(extra_vector_colors)],
+                          linewidth=2, arrow_length_ratio=0.1,
+                          label=extra_vector_labels[k_idx] if k_idx < len(extra_vector_labels) else f"Extra vector {k_idx+1}")
+
+        ax.set_xlim([-grid_max*0.1, grid_max*1.1])
+        ax.set_ylim([-grid_max*0.1, grid_max*1.1])
+        ax.set_zlim([-grid_max*0.1, grid_max*1.1])
+
+        ax.set_xlabel(axis_names[i])
+        ax.set_ylabel(axis_names[j])
+        ax.set_zlabel(axis_names[k])
+        ax.set_title(f"Proyección 3D ({axis_names[i]}, {axis_names[j]}, {axis_names[k]})")
+        ax.legend(loc='center left', bbox_to_anchor=(1.05, 0.5))
+
+        filename = os.path.join(out_dir, f"Cone_and_region_{i+1}_{j+1}_{k+1}.png")
+        fig.savefig(filename, dpi=150, bbox_inches='tight')
+        saved_files.append(filename)
+        if show:
+            plt.show()
+        else:
+            plt.close(fig)
+
+    print(f"Se guardaron {len(saved_files)} imágenes en: {out_dir}")
+    return saved_files, points_pos
+
+#####################################################################################
+# Funciones para graficar series de tiempo con intervalos de Cognitive Control
+def plot_series_with_domain_intervals(time_series, flux_vector, S,
+                                      title="Serie de Tiempo de Concentraciones",
+                                      save_figure=False,
+                                      ax=None,
+                                      show_fig=False):
+    fig, ax = plot_series_ode(time_series, title=title, save_figure=save_figure, ax=ax)
+
+    times = time_series["Time"].to_numpy()
+    flux_values = flux_vector.iloc[:, 1:]
+    process_types = [classify_process(v.to_numpy(), S) for _, v in flux_values.iterrows()]
+
+    def get_intervals(mask, times):
+        intervals = []
+        in_interval = False
+        start = None
+        for t, flag in zip(times, mask):
+            if flag and not in_interval:
+                in_interval = True
+                start = t
+            elif not flag and in_interval:
+                in_interval = False
+                intervals.append((start, t))
+        if in_interval:
+            intervals.append((start, times[-1]))
+        return intervals
+
+    is_cd = np.array(["Cognitive Domain" in cat for cat in process_types])
+    is_sm = np.array(["Stationary Mode" in cat for cat in process_types])
+
+    cd_intervals = get_intervals(is_cd, times)
+    sm_intervals = get_intervals(is_sm, times)
+
+    for (t_start, t_end) in cd_intervals:
+        ax.axvspan(t_start, t_end, color="darkgreen", alpha=0.2)
+        ax.axvline(x=t_start, color="darkgreen", linestyle="--", alpha=0.8)
+        ax.axvline(x=t_end, color="darkgreen", linestyle="--", alpha=0.8)
+
+    for (t_start, t_end) in sm_intervals:
+        ax.axvspan(t_start, t_end, color="cyan", alpha=0.15)
+        ax.axvline(x=t_start, color="cyan", linestyle="--", alpha=0.7)
+        ax.axvline(x=t_end, color="cyan", linestyle="--", alpha=0.7)
+
+    ax.plot([], [], color="darkgreen", linestyle="--", label="Cognitive Control")
+    ax.plot([], [], color="cyan", linestyle="--", label="Stationary Mode")
+    ax.legend(loc="upper right")
+
+    if show_fig:
+        plt.show()
+
+    return fig, ax
+
+# Función para graficar flujos con intervalos de Cognitive Domain
+def plot_flux_with_domain_intervals(flux_vector, S,
+                                    title="Serie de Tiempo de Flujos",
+                                    save_figure=False,
+                                    ax=None,
+                                    show_fig=False):
+    """
+    Extiende plot_series_ode aplicada al flux_vector para resaltar los intervalos
+    donde ocurren 'Cognitive Domain' (verde) y 'Stationary Mode' (rojo).
+    """
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    # Graficar la serie original
+    fig, ax = plot_series_ode(flux_vector, title=title, save_figure=save_figure, ax=ax)
+    print("\nflux_vector_shape =", flux_vector.shape)
+    
+    # Clasificar procesos
+    flux_values = flux_vector.iloc[:, 1:]  # quitar columna Time
+    process_types = []
+    for _, row in flux_values.iterrows():
+        v = row.to_numpy()
+        cat = classify_process(v, S)
+        process_types.append(cat)
+    
+    # Extraer tiempos
+    times = flux_vector["Time"].to_numpy()
+
+    # Función auxiliar para obtener intervalos consecutivos True
+    def get_intervals(mask, times):
+        intervals = []
+        in_interval = False
+        start = None
+        for t, flag in zip(times, mask):
+            if flag and not in_interval:
+                in_interval = True
+                start = t
+            elif not flag and in_interval:
+                in_interval = False
+                intervals.append((start, t))
+        if in_interval:
+            intervals.append((start, times[-1]))
+        return intervals
+
+    # === 1. Intervalos de Cognitive Domain (verde) ===
+    is_cd = np.array(["Cognitive Domain" in cat for cat in process_types])
+    cd_intervals = get_intervals(is_cd, times)
+
+    # === 2. Intervalos de Stationary Mode (rojo) ===
+    is_sm = np.array(["Stationary Mode" in cat for cat in process_types])
+    sm_intervals = get_intervals(is_sm, times)
+
+    # --- Graficar intervalos ---
+    for (t_start, t_end) in cd_intervals:
+        ax.axvspan(t_start, t_end, color="darkgreen", alpha=0.2)
+        ax.axvline(x=t_start, color="darkgreen", linestyle="--", alpha=0.8)
+        ax.axvline(x=t_end, color="darkgreen", linestyle="--", alpha=0.8)
+
+    for (t_start, t_end) in sm_intervals:
+        ax.axvspan(t_start, t_end, color="cyan", alpha=0.15)
+        ax.axvline(x=t_start, color="cyan", linestyle="--", alpha=0.7)
+        ax.axvline(x=t_end, color="cyan", linestyle="--", alpha=0.7)
+
+    # --- Estadísticas de duración ---
+    def print_stats(name, intervals):
+        if len(intervals) == 0:
+            print(f"No se detectaron intervalos de {name}.")
+            return
+        durations = [t2 - t1 for (t1, t2) in intervals]
+        print(f"\n{name}: {len(intervals)} intervalos")
+        print(f"  T_min = {min(durations):.4f}")
+        print(f"  T_max = {max(durations):.4f}")
+        print(f"  T_avg = {np.mean(durations):.4f}")
+
+    print_stats("Cognitive Domain", cd_intervals)
+    print_stats("Stationary Mode", sm_intervals)
+
+    # Leyenda
+    ax.plot([], [], color="darkgreen", linestyle="--", label="Cognitive Control")
+    ax.plot([], [], color="cyan", linestyle="--", label="Stationary Mode")
+    ax.legend(loc="upper right")
+
+    if show_fig:
+        plt.show()
+
+    return fig, ax
+
+
+#############################################################################################################
+# Función para sumar vectores de flux1 y flux2, clasificar y graficar histograma
+def histogram_flux_sum(S, flux1, flux2, 
+                       title="Histograma de Tipos de Proceso (Suma Flux1 + Flux2)", 
+                       filename="histograma_sum.png", csv_filename="sum_flux_data.csv",
+                       excel_filename="sum_flux_data.xlsx", save_figure=True, show_fig=True, 
+                       max_combinations=None):
+    """
+    Suma cada vector de flux1 con cada vector de flux2, clasifica los vectores resultantes,
+    genera un histograma de tipos de proceso y guarda los resultados en archivos CSV y Excel.
+    - CSV: Incluye v_f1, v_f2, v_combined, S*v y Process_Type en el orden automático.
+    - Excel: Incluye solo v_combined, S*v y Process_Type, con hojas por Process_Type.
+
+    Parameters:
+    - S: Matriz de transformación (numpy array).
+    - flux1: DataFrame o NumPy array con columnas Flux_r* y opcionalmente Time (por ejemplo, vectores de desafío).
+    - flux2: DataFrame o NumPy array con columnas Flux_r* y opcionalmente Time (por ejemplo, vectores de control cognitivo).
+    - title: Título del histograma.
+    - filename: Nombre del archivo para guardar el histograma.
+    - csv_filename: Nombre del archivo CSV para guardar todos los datos.
+    - excel_filename: Nombre del archivo Excel para guardar v_combined, S*v y Process_Type.
+    - save_figure: Booleano para guardar la figura.
+    - show_fig: Booleano para mostrar la figura.
+    - max_combinations: Límite opcional para el número de combinaciones a generar (default: None).
+
+    Returns:
+    - fig, ax, combined_df: Objetos de la figura, ejes de Matplotlib y DataFrame con los vectores sumados.
+    """
+    # Convertir flux1 y flux2 a DataFrame si son NumPy arrays
+    if isinstance(flux1, np.ndarray):
+        flux1 = pd.DataFrame(flux1, columns=[f'Flux_r{i+1}' for i in range(flux1.shape[1])])
+    if isinstance(flux2, np.ndarray):
+        flux2 = pd.DataFrame(flux2, columns=[f'Flux_r{i+1}' for i in range(flux2.shape[1])])
+
+    # Extraer las columnas de flujos
+    flux_columns = [col for col in flux1.columns if col.startswith('Flux_r')]
+    if not all(col in flux2.columns for col in flux_columns):
+        raise ValueError("flux1 y flux2 deben tener las mismas columnas de flujos (Flux_r*).")
+
+    print(f"Se encontraron {len(flux1)} vectores en flux1.")
+    print(f"Se encontraron {len(flux2)} vectores en flux2.")
+
+    # Verificar que ambos DataFrames no estén vacíos
+    if flux1.empty or flux2.empty:
+        raise ValueError("Uno o ambos DataFrames (flux1 o flux2) están vacíos.")
+
+    # Verificar si las columnas 'Time' están presentes
+    has_time_f1 = 'Time' in flux1.columns
+    has_time_f2 = 'Time' in flux2.columns
+    print(f"flux1 tiene columna 'Time': {has_time_f1}")
+    print(f"flux2 tiene columna 'Time': {has_time_f2}")
+
+    # Generar combinaciones sumadas de vectores
+    flux_data = []
+    combination_count = 0
+    for idx_f2, row_f2 in flux2.iterrows():
+        time_f2 = row_f2['Time'] if has_time_f2 else idx_f2
+        v_f2 = row_f2[flux_columns].to_numpy()
+        for idx_f1, row_f1 in flux1.iterrows():
+            if max_combinations is not None and combination_count >= max_combinations:
+                break
+            time_f1 = row_f1['Time'] if has_time_f1 else idx_f1
+            v_f1 = row_f1[flux_columns].to_numpy()
+            # Sumar los vectores
+            v_combined = v_f2 + v_f1
+            # Usar el tiempo de flux2 o promedio si ambos tienen 'Time'
+            time_value = time_f2 if not has_time_f1 else (time_f1 + time_f2) / 2 if has_time_f2 else time_f1
+            # Crear diccionario para el vector combinado
+            row_data = {}
+            # Agregar v_combined
+            for col, val in zip(flux_columns, v_combined):
+                row_data[col] = val
+            # Agregar v_f1
+            for i, val in enumerate(v_f1):
+                row_data[f'Flux1_r{i+1}'] = val
+            # Agregar v_f2
+            for i, val in enumerate(v_f2):
+                row_data[f'Flux2_r{i+1}'] = val
+            # Agregar Time si está presente
+            if has_time_f1 or has_time_f2:
+                row_data['Time'] = time_value
+            flux_data.append(row_data)
+            combination_count += 1
+        if max_combinations is not None and combination_count >= max_combinations:
+            break
+
+    # Crear DataFrame con los vectores combinados
+    flux_vector = pd.DataFrame(flux_data)
+    # flux_vector_df = flux_vector
+    # print("flux_vector=\n", flux_vector_df)
+    print(f"Total de vectores combinados generados: {len(flux_vector)}")
+
+    # Clasificar los procesos en el flux_vector combinado
+    flux_values = flux_vector[flux_columns]  # Excluir columna Time si existe
+    process_types = []
+    Sv_values = []
+    for _, row in flux_values.iterrows():
+        v = row.to_numpy()
+        # Usar la lógica de classify_process
+        Sv = S @ v
+        Sv_values.append(Sv) 
+        if np.all((0 < Sv) & (Sv <= 1e-8)):
+            category = "Stationary mode"
+        elif np.all(Sv > 0) and np.any(Sv > 1e-8):
+            category = "Cognitive Control"
+        elif np.any(Sv < 0) and np.any(Sv > 0):
+            category = "Challenge"
+        elif np.any(Sv < 0):
+            category = "Problem"
+        else:
+            category = "Other"
+        process_types.append(category)
+
+    # Calcular S*v
+    Sv_expanded = pd.DataFrame(Sv_values, 
+                               columns=[f"S*v_{i+1}" for i in range(S.shape[0])],
+                               index=flux_vector.index)
+
+    # Crear DataFrame combinado
+    combined_df = pd.concat([flux_vector, Sv_expanded], axis=1)
+    combined_df["Process_Type"] = process_types
+
+    # Determinar automáticamente el orden de las columnas para CSV
+    csv_columns = []
+    if has_time_f1 or has_time_f2:
+        csv_columns.append('Time')
+    csv_columns.extend([col for col in combined_df.columns if col.startswith('Flux1_r')])
+    csv_columns.extend([col for col in combined_df.columns if col.startswith('Flux2_r')])
+    csv_columns.extend([col for col in combined_df.columns if col.startswith('Flux_r')])
+    csv_columns.extend([col for col in combined_df.columns if col.startswith('S*v_')])
+    csv_columns.append('Process_Type')
+    csv_available_columns = [col for col in csv_columns if col in combined_df.columns]
+    csv_df = combined_df.reindex(columns=csv_available_columns)
+    # print("CSV columns=\n", csv_df.columns)
+
+    # Determinar columnas para Excel (v_combined, S*v, Process_Type)
+    excel_columns = []
+    if has_time_f1 or has_time_f2:
+        excel_columns.append('Time')
+    excel_columns.extend([col for col in combined_df.columns if col.startswith('Flux_r')])
+    excel_columns.extend([col for col in combined_df.columns if col.startswith('S*v_')])
+    excel_columns.append('Process_Type')
+    excel_available_columns = [col for col in excel_columns if col in combined_df.columns]
+    excel_df = combined_df.reindex(columns=excel_available_columns)
+    # print("Excel columns=\n", excel_df.columns)
+
+    # Contar frecuencias para el histograma
+    process_counts = Counter(process_types)
+    category_order = ["Stationary mode", "Cognitive Control", "Problem", "Challenge", "Other"]
+    labels = [cat for cat in category_order if cat in process_counts]
+    counts = [process_counts[cat] for cat in labels]
+
+    # Colores para el histograma 
+    color_map = { 
+        "Stationary mode": "cyan",
+        "Cognitive Control": "green",
+        "Problem": "red",
+        "Challenge": "orange",
+        "Overproduction Mode": "blue",
+        "Not Feasible": "yellow",
+        "Other": "grey",
+        "None": "black"        
+    }
+    colors = [color_map.get(label, "grey") for label in labels]
+
+    # Graficar
+    fig, ax = plt.subplots(figsize=(10, 6))
+    bars = ax.bar(labels, counts, color=colors)
+    for bar in bars:
+        yval = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2.0, yval, int(yval),
+                va='bottom', ha='center', fontweight='bold')
+
+    ax.set_xlabel("Tipo de Proceso", fontsize=12)
+    ax.set_ylabel("Frecuencia", fontsize=12)
+    ax.set_title(title, fontsize=14)
+    ax.tick_params(axis="x", rotation=30)
+    ax.grid(axis='y', linestyle='--', alpha=0.7)
+
+    # Guardar en CSV
+    out_dir = "./visualizations/process_classification/data_xslx"
+    os.makedirs(out_dir, exist_ok=True)
+
+    # Definir la subcarpeta de salida
+    out_dir_sub = "./visualizations/process_classification/data_csv"
+    os.makedirs(out_dir_sub, exist_ok=True)  # Crear la subcarpeta si no existe
+
+    try:
+        # Guardar el archivo CSV principal en la subcarpeta
+        filepath_csv = os.path.join(out_dir_sub, csv_filename)
+        csv_df.to_csv(filepath_csv, index=False)
+        print(f"Procesos clasificados guardados en CSV: {filepath_csv}")
+
+        # Guardar archivos CSV separados por Process_Type en la subcarpeta
+        for category, group in csv_df.groupby("Process_Type"):
+            # Asegurar que el nombre del archivo sea válido (reemplazar espacios y limitar longitud)
+            safe_category = category[:31].replace(' ', '_').replace('/', '_').replace('\\', '_')
+            category_filepath = os.path.join(out_dir_sub, f"{csv_filename[:-4]}_{safe_category}.csv")
+            group.to_csv(category_filepath, index=False)
+            print(f"Procesos de tipo '{category}' guardados en CSV: {category_filepath}")
+
+    except PermissionError as e:
+        warnings.warn(f"Error de permisos al guardar el archivo CSV: {e}")
+        print("No se pudo guardar el archivo CSV. Por favor, verifica los permisos de escritura en la carpeta.")
+    except OSError as e:
+        warnings.warn(f"Error del sistema al guardar el archivo CSV: {e}")
+        print("No se pudo guardar el archivo CSV. Por favor, verifica el espacio en disco o la validez del nombre del archivo.")
+    except Exception as e:
+        warnings.warn(f"Error inesperado al guardar el archivo CSV: {e}")
+        print("No se pudo guardar el archivo CSV. Ocurrió un error inesperado.")
+
+    # Guardar en Excel
+    filepath_excel = os.path.join(out_dir, excel_filename)
+    # try:
+    with pd.ExcelWriter(filepath_excel, engine="openpyxl") as writer:
+        excel_df.to_excel(writer, sheet_name="All_Processes", index=False)
+        for category, group in excel_df.groupby("Process_Type"):
+            group.to_excel(writer, sheet_name=category[:31], index=False)
+    print(f"Procesos clasificados guardados en Excel: {filepath_excel}") 
+
+    # Guardar figura
+    out_dir_hist = "./visualizations/process_classification/histogram_flux_sum"
+    os.makedirs(out_dir_hist, exist_ok=True)
+    if save_figure:
+        filepath_fig = os.path.join(out_dir_hist, filename)
+        fig.savefig(filepath_fig, dpi=300, bbox_inches="tight")
+        print(f"Histograma guardado en: {filepath_fig}")
+
+    if show_fig:
+        plt.show()
+
+    return fig, ax, combined_df
+
+#################################################################################################
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import os
+from collections import Counter
+
+def analyze_time_scales_all(flux_vector, S, max_scale, tol=1e-8, show_fig=True):
+    """
+    Analiza la serie temporal de flujos en diferentes escalas de tiempo para encontrar
+    la frecuencia de todos los tipos de procesos.
+
+    Args:
+        flux_vector (pd.DataFrame): DataFrame de la simulación. La primera columna
+                                    debe ser el tiempo y el resto los flujos.
+        S (np.ndarray): La matriz estequiométrica.
+        max_scale (int): El tamaño máximo de la ventana de tiempo a analizar. 
+        tol (float): Tolerancia numérica para clasificar procesos.
+        show_fig (bool): Si True, muestra los gráficos.
+
+    Returns:
+        dict: Diccionario anidado con las escalas de tiempo como claves y un
+              Counter de categorías de procesos como valores.
+    """
+    if not isinstance(flux_vector, pd.DataFrame):
+        raise TypeError("flux_vector debe ser un DataFrame de pandas.")
+    if max_scale < 1 or not isinstance(max_scale, int):
+        raise ValueError("max_scale debe ser un entero mayor o igual a 1.")
+
+    print(f"Analizando {max_scale} escalas de tiempo (todas las categorías). Esto puede tardar un momento...")
+
+    flux_values = flux_vector.iloc[:, 1:].to_numpy()  # Excluir columna Time
+    results = {}
+
+    # Iterar sobre cada escala de tiempo
+    for scale in range(1, max_scale + 1):
+        categories_counter = Counter()
+        num_windows = len(flux_values) - scale + 1
+        
+        for i in range(num_windows):
+            window = flux_values[i : i + scale]
+            v_combined = np.sum(window, axis=0)
+            
+            # Clasificar el proceso combinado
+            classifications = classify_process(v_combined, S, tol=tol)
+            
+            # Actualizar el contador con todas las categorías asignadas
+            categories_counter.update(classifications)
+
+        results[scale] = categories_counter
+        print(f"Escala {scale}: {dict(categories_counter)}")
+
+    # --- Visualización de Resultados ---
+    if show_fig:
+        # Extraer todas las categorías posibles
+        all_categories = sorted(set(cat for c in results.values() for cat in c.keys()))
+
+        plt.style.use('seaborn-v0_8-whitegrid')
+        plt.figure(figsize=(12, 7))
+
+        for category in all_categories:
+            counts = [results[scale].get(category, 0) for scale in results.keys()]
+            plt.plot(results.keys(), counts, marker='o', linestyle='-', label=category)
+
+        plt.title('Análisis de la Escala de Tiempo (todas las categorías)', fontsize=16, fontweight='bold')
+        plt.xlabel('Escala de Tiempo (Tamaño de la Ventana)', fontsize=12)
+        plt.ylabel('Frecuencia de Procesos', fontsize=12)
+        plt.xticks(list(results.keys()))
+        plt.legend()
+
+        # Guardar la figura
+        out_dir = "./visualizations/process_classification"
+        filename = "time_scale_analysis_all.png"
+        os.makedirs(out_dir, exist_ok=True)
+        save_path = os.path.join(out_dir, filename)
+        plt.savefig(save_path, dpi=300, bbox_inches="tight")
+        print(f"Figura guardada en: {save_path}")
+
+        plt.show()
+
+    return results
+
+def analyze_time_scales_selected(flux_vector, S, max_scale, categories_to_plot=None, tol=1e-8, show_fig=True):
+    """
+    Analiza la serie temporal de flujos en diferentes escalas de tiempo
+    y permite graficar solo las categorías seleccionadas.
+
+    Args:
+        flux_vector (pd.DataFrame): DataFrame de la simulación. La primera columna debe ser el tiempo.
+        S (np.ndarray): La matriz estequiométrica.
+        max_scale (int): El tamaño máximo de la ventana de tiempo a analizar.
+        categories_to_plot (list, optional): Lista de categorías a graficar. Si None, grafica todas.
+        tol (float): Tolerancia para clasificar procesos.
+        show_fig (bool): Si True, muestra los gráficos.
+
+    Returns:
+        dict: Diccionario con las frecuencias de procesos por escala.
+    """
+    flux_values = flux_vector.iloc[:, 1:].to_numpy()
+    results = {}
+
+    for scale in range(1, max_scale + 1):
+        categories_counter = Counter()
+        num_windows = len(flux_values) - scale + 1
+        for i in range(num_windows):
+            window = flux_values[i : i + scale]
+            v_combined = np.sum(window, axis=0)
+            classifications = classify_process(v_combined, S, tol=tol)
+            categories_counter.update(classifications)
+        results[scale] = categories_counter
+
+    if show_fig:
+        # Determinar categorías a graficar
+        if categories_to_plot is None:
+            all_categories = sorted(set(cat for c in results.values() for cat in c.keys()))
+        else:
+            all_categories = categories_to_plot
+
+        plt.style.use('seaborn-v0_8-whitegrid')
+        plt.figure(figsize=(12, 7))
+
+        for category in all_categories:
+            counts = [results[scale].get(category, 0) for scale in results.keys()]
+            plt.plot(results.keys(), counts, marker='o', linestyle='-', label=category)
+
+        plt.title('Análisis de la Escala de Tiempo (categorías seleccionadas)', fontsize=16, fontweight='bold')
+        plt.xlabel('Escala de Tiempo (Tamaño de la Ventana)', fontsize=12)
+        plt.ylabel('Frecuencia de Procesos', fontsize=12)
+        plt.xticks(list(results.keys()))
+        plt.legend()
+
+        out_dir = "./visualizations/process_classification"
+        os.makedirs(out_dir, exist_ok=True)
+        save_path = os.path.join(out_dir, "time_scale_analysis_selected.png")
+        plt.savefig(save_path, dpi=300, bbox_inches="tight")
+        print(f"Figura guardada en: {save_path}")
+
+        plt.show()
+
+    return results
+
+
+#################################################################################################
+    
+import os
+import matplotlib.pyplot as plt
+from collections import Counter
+
+def analyze_scales(flux_vector, S, max_group_size=5, tol=1e-8, show_fig=True, save_fig=True):
+    """
+    Analiza la serie temporal de procesos en diferentes escalas de agrupación
+    y grafica la frecuencia del 'Cognitive Domain' según la escala.
+    """
+    if not isinstance(flux_vector, pd.DataFrame):
+        raise TypeError("flux_vector debe ser un DataFrame de pandas.")
+    if max_group_size < 1 or not isinstance(max_group_size, int):
+        raise ValueError("max_group_size debe ser un entero mayor o igual a 1.")
+
+    print(f"Analizando {max_group_size} escalas de tiempo. Esto puede tardar un momento...")
+
+    # Convertir a numpy y trasponer: (n_reacciones x n_tiempo)
+    flux_vector = flux_vector.iloc[:, 1:].to_numpy().T  
+
+    results = {}
+    for group_size in range(1, max_group_size+1):
+        classifications = []
+
+        for i in range(0, flux_vector.shape[1] - group_size + 1, group_size):
+            v_combined = np.sum(flux_vector[:, i:i+group_size], axis=1)  # (n_reacciones,)
+            classes = classify_process(v_combined, S, tol=tol)
+            classifications.extend(classes)
+
+        # Guardar conteo por categoría
+        results[group_size] = dict(Counter(classifications))
+
+    # ================================
+    # VISUALIZACIÓN SOLO PARA "Cognitive Domain"
+    # ================================
+    if show_fig and results:
+        scales = list(results.keys()) # Escalas de tiempo
+        counts = [results[s].get("Cognitive Domain", 0) for s in scales] # Conteos
+
+        # Encontrar escala óptima
+        optimal_scale = scales[int(np.argmax(counts))]
+        max_count = max(counts)
+
+        plt.style.use('seaborn-v0_8-whitegrid')
+        plt.figure(figsize=(12, 7))
+        plt.plot(scales, counts, marker='o', linestyle='-', color='b', label='Conteo de Dominio Cognitivo')
+
+        # Resaltar el óptimo
+        plt.axvline(x=optimal_scale, color='r', linestyle='--', 
+                    label=f'Escala Óptima = {optimal_scale} (Conteo: {max_count})')
+        plt.scatter(optimal_scale, max_count, color='red', s=100, zorder=5)
+
+        plt.title('Análisis de la Escala de Tiempo de Estabilidad', fontsize=16, fontweight='bold')
+        plt.xlabel('Escala de Tiempo (Tamaño de la Ventana)', fontsize=12)
+        plt.ylabel('Frecuencia de Procesos de "Dominio Cognitivo"', fontsize=12)
+        plt.xticks(scales)
+        plt.legend()
+
+        # Guardar automáticamente
+        if save_fig:
+            out_dir = "./visualizations/process_classification"
+            filename = "time_scale_analysis.png"
+            os.makedirs(out_dir, exist_ok=True)
+            save_path = os.path.join(out_dir, filename)
+            plt.savefig(save_path, dpi=300, bbox_inches="tight")
+            print(f"Figura guardada en: {save_path}")
+
+        plt.show()
+
+    return results
+
+
+#################################################################################################
+def analyze_time_scales(flux_vector, S, max_scale):
+    """
+    Analiza la serie temporal de flujos en diferentes escalas de tiempo para encontrar
+    la escala óptima de automantenimiento (Dominio Cognitivo).
+
+    Args:
+        flux_vector (pd.DataFrame): DataFrame de la simulación. La primera columna
+                                    debe ser el tiempo y el resto los flujos.
+        S (np.ndarray): La matriz estequiométrica.
+        max_scale (int): El tamaño máximo de la ventana de tiempo a analizar. 
+
+    Returns:
+        dict: Un diccionario con las escalas de tiempo como claves y el conteo de
+              procesos de "Dominio Cognitivo" como valores.
+    """
+    if not isinstance(flux_vector, pd.DataFrame):
+        raise TypeError("flux_vector debe ser un DataFrame de pandas.")
+    if max_scale < 1 or not isinstance(max_scale, int):
+        raise ValueError("max_scale debe ser un entero mayor o igual a 1.")
+
+    print(f"Analizando {max_scale} escalas de tiempo. Esto puede tardar un momento...")
+
+    # Extraer solo los valores de flujo como un array de NumPy para eficiencia
+    flux_values = flux_vector.iloc[:, 1:].to_numpy() # Excluir columna Time
+    
+    # Diccionario para almacenar los resultados
+    results = {}
+
+    # Iterar sobre cada escala de tiempo (tamaño de la ventana)
+    for scale in range(1, max_scale + 1):
+        cognitive_domain_count = 0
+        
+        # Deslizar la ventana a través de la serie temporal
+        # El bucle se detiene antes para asegurar que la ventana no exceda los límites
+        num_windows = len(flux_values) - scale + 1
+        for i in range(num_windows):
+            # Extraer la ventana de procesos
+            window = flux_values[i : i + scale]
+            
+            # Sumar los vectores de proceso en la ventana para obtener el "proceso combinado"
+            v_combined = np.sum(window, axis=0)
+            
+            # Clasificar el proceso combinado
+            classifications = classify_process(v_combined, S)
+            
+            # Contar si pertenece al Dominio Cognitivo
+            if "Cognitive Domain" in classifications:
+                cognitive_domain_count += 1
+        
+        results[scale] = cognitive_domain_count
+        print(f"Escala {scale}: {cognitive_domain_count} procesos de Dominio Cognitivo encontrados.")
+
+    # --- Visualización de los Resultados ---
+    scales = list(results.keys())
+    counts = list(results.values())
+
+    # Encontrar la escala con el máximo conteo
+    optimal_scale = max(results, key=results.get)
+    max_count = results[optimal_scale]
+
+    plt.style.use('seaborn-v0_8-whitegrid')
+    plt.figure(figsize=(12, 7))
+    plt.plot(scales, counts, marker='o', linestyle='-', color='b', label='Conteo de Dominio Cognitivo')
+    
+    # Resaltar el punto óptimo
+    plt.axvline(x=optimal_scale, color='r', linestyle='--', label=f'Escala Óptima = {optimal_scale} (Conteo: {max_count})')
+    plt.scatter(optimal_scale, max_count, color='red', s=100, zorder=5)
+
+    plt.title('Análisis de la Escala de Tiempo de Estabilidad', fontsize=16, fontweight='bold')
+    plt.xlabel('Escala de Tiempo (Tamaño de la Ventana)', fontsize=12)
+    plt.ylabel('Frecuencia de Procesos de "Dominio Cognitivo"', fontsize=12)
+    plt.xticks(scales)
+    plt.legend()
+
+    # --- Guardar la figura ---
+    out_dir="./visualizations/process_classification" 
+    filename="time_scale_analysis.png"
+    os.makedirs(out_dir, exist_ok=True)
+    save_path = os.path.join(out_dir, filename)
+    plt.savefig(save_path, dpi=300, bbox_inches="tight")
+    print(f"Figura guardada en: {save_path}")
+
+    plt.show()
+
+    return results
+
+################################################################################################# 
+# Función para crear series de tiempo agrupadas  
+def new_time_series(time_series, flux_vector, scale):
+    """
+    Agrupa los resultados de una simulación en una escala de tiempo mayor.
+
+    Args:
+        time_series (pd.DataFrame): DataFrame de concentraciones de la simulación.
+        flux_vector (pd.DataFrame): DataFrame de flujos de la simulación.
+        scale (int): La escala o tamaño de la ventana para agrupar.
+
+    Returns:
+        tuple: Una tupla conteniendo (ts_coarse_df, fv_coarse_df), los nuevos
+               DataFrames agrupados.
+    """
+    if scale < 1:
+        return time_series, flux_vector
+
+    # Extraer valores como arrays de NumPy para eficiencia
+    ts_values = time_series.to_numpy()
+    fv_values = flux_vector.iloc[:, 1:].to_numpy() # Excluir columna de tiempo
+
+    new_ts_rows = []
+    new_fv_rows = []
+
+    # Iterar en bloques no superpuestos del tamaño de la escala
+    for i in range(0, len(ts_values) - scale + 1, scale):
+        # La ventana de flujos a sumar
+        flux_window = fv_values[i : i + scale]
+        
+        # El proceso combinado es la suma de los flujos en la ventana
+        combined_flux = np.sum(flux_window, axis=0)
+        
+        # El punto de tiempo y las concentraciones corresponden al final de la ventana
+        end_of_window_ts = ts_values[i + scale - 1]
+        
+        # Añadir la nueva fila de flujo (tiempo + flujos sumados)
+        new_fv_rows.append(np.insert(combined_flux, 0, end_of_window_ts[0]))
+        
+        # Añadir la nueva fila de concentraciones
+        new_ts_rows.append(end_of_window_ts)
+
+    # Crear nuevos DataFrames con las columnas originales
+    ts_coarse_df = pd.DataFrame(new_ts_rows, columns=time_series.columns)
+    fv_coarse_df = pd.DataFrame(new_fv_rows, columns=flux_vector.columns)
+    
+    return ts_coarse_df, fv_coarse_df
+
+def find_min_cognitive_interval(rn, x0, spec_vector, rate_list='mak', t_max_values=None, n_steps_values=None):
+    from pyCOT.simulations import simulation
+    from pyCOT.plot_dynamics import plot_flux_with_domain_intervals
+    
+    if t_max_values is None:
+        t_max_values = [50, 75, 100, 125]  # puedes modificar
+    if n_steps_values is None:
+        n_steps_values = [500, 1000, 2000, 3000]  # puedes modificar
+    
+    best_interval = float('inf')
+    best_config = None
+    best_flux_vector = None
+    best_time_series = None
+    
+    for t_max in t_max_values:
+        for n_steps in n_steps_values:
+            # Ejecutar simulación
+            time_series, flux_vector = simulation(
+                rn, rate=rate_list, spec_vector=spec_vector, x0=x0,
+                t_span=(0, t_max), n_steps=n_steps+1
+            )
+            
+            # Obtener intervalos del Cognitive Domain
+            intervals = plot_flux_with_domain_intervals(
+                flux_vector, rn.stoichiometry_matrix(),
+                title=f"t_max={t_max}, n_steps={n_steps}", 
+                save_figure=False, show_fig=False
+            )
+            
+            # intervals devuelve lista de tuplas: [(start, end), ...]
+            if intervals:
+                min_interval = min([end-start for start, end in intervals])
+                if min_interval < best_interval:
+                    best_interval = min_interval
+                    best_config = (t_max, n_steps)
+                    best_flux_vector = flux_vector
+                    best_time_series = time_series
+    
+    print(f"Mejor configuración: t_max={best_config[0]}, n_steps={best_config[1]}")
+    print(f"Intervalo mínimo encontrado: {best_interval}")
+    
+    return best_time_series, best_flux_vector, best_config, best_interval
+
+import numpy as np
+from pyCOT.simulations import simulation
+
+def find_natural_time_scale(rn, x0=None, spec_vector=None, rate_list='mak', 
+                            t_max_values=None, n_steps_values=None, tol=1e-4):
+    """
+    Busca la escala de tiempo natural (t_max, n_steps) de la simulación que genere el 
+    mínimo periodo T.
+
+    Args:
+        rn: Red de reacciones (ReactionNetwork object)
+        x0: Condiciones iniciales
+        spec_vector: Vector de especificidad de reacciones
+        rate_list: Cinéticas
+        t_max_values: Lista de tiempos máximos a probar
+        n_steps_values: Lista de n_steps a probar
+        tol: Tolerancia para la clasificación de procesos
+
+    Returns:
+        best_time_series, best_flux_vector, best_config, min_interval
+    """
+    
+    S = rn.stoichiometry_matrix()
+    
+    if t_max_values is None:
+        t_max_values = [50, 75, 100, 125]
+    if n_steps_values is None:
+        n_steps_values = [500, 1000, 2000, 3000]
+
+    best_interval = float('inf') # Se inicializa con infinito para poder comparar y guardar el menor intervalo
+    best_config = None
+    best_flux_vector = None
+    best_time_series = None
+
+    # Iterar sobre todas las combinaciones de t_max y n_steps
+    for t_max in t_max_values:
+        for n_steps in n_steps_values:
+            # Ejecutar simulación con la configuración actual
+            time_series, flux_vector = simulation(
+                rn, rate=rate_list, spec_vector=spec_vector, x0=x0,
+                t_span=(0, t_max), n_steps=n_steps+1
+            )
+
+            # Clasificar cada vector de flujo para cada instante de tiempo
+            cognitive_times = []
+            for i in range(len(flux_vector)):
+                v = flux_vector.iloc[i, 1:].values  # excluyendo columna Time
+                classes = classify_process(v, S, tol=tol)
+                if "Cognitive Domain" in classes:
+                    cognitive_times.append(flux_vector.iloc[i, 0])  # Guardar el tiempo
+
+            # Detectar intervalos consecutivos del Cognitive Domain
+            if cognitive_times:
+                cognitive_times = np.array(cognitive_times) # Convertir a array de NumPy
+                diffs = np.diff(cognitive_times) # Diferencias entre tiempos consecutivos
+
+                # Considerar un salto mayor a dt como fin de un intervalo
+                # dt = cognitive_times[1] - cognitive_times[0] # Paso de tiempo típico entre dos instantes consecutivos que fueron clasificados dentro del Cognitive Domain
+                dt = cognitive_times[1] - cognitive_times[0] if len(cognitive_times) > 1 else 0
+                splits = np.where(diffs > 1.5*dt)[0]  # 1.5*dt para tolerancia. Si la diferencia es un poco más grande que dt (por ruido numérico), no corta el intervalo.
+                
+                intervals = []
+                start_idx = 0
+                for split in splits:
+                    intervals.append((cognitive_times[start_idx], cognitive_times[split]))
+                    start_idx = split+1
+                # Se guardan todos los intervalos como (t_start, t_end).    
+                intervals.append((cognitive_times[start_idx], cognitive_times[-1]))  # último intervalo
+
+                # Intervalo mínimo en esta configuración
+                min_interval_current = min([end-start for start, end in intervals])
+                if min_interval_current < best_interval:
+                    best_interval = min_interval_current
+                    best_config = (t_max, n_steps)
+                    best_flux_vector = flux_vector
+                    best_time_series = time_series
+
+    if best_config is not None:
+        print(f"Mejor configuración: t_max={best_config[0]}, n_steps={best_config[1]}")
+        return best_time_series, best_flux_vector, best_config, best_interval
+    else:
+        print("⚠️ No se encontró ninguna configuración válida para la escala de tiempo natural.")
+        return None, None, None, None
+
+    # print(f"Mejor configuración: t_max={best_config[0]}, n_steps={best_config[1]}")
+    # print(f"Intervalo mínimo del Cognitive Domain: {best_interval:.5f}")
+
+    # return best_time_series, best_flux_vector, best_config, best_interval

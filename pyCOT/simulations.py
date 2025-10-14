@@ -95,6 +95,93 @@ rate_hill.expression = lambda reactants, reaction: (
     if reactants else "0  (hill without defined substrate)"
 )
 
+# def rate_cosine(substrates, concentrations, species_idx, spec_vector, t=None):
+#     """
+#     Cosine inflow kinetics: A*(1 + cos(w*t))/2 (always positive, oscillates between 0 and A)
+#     Used for: R1 (seasonal water inflow)
+#     Parameters: [A, w] where A is amplitude, w is frequency
+#     """
+#     A, w = spec_vector
+    
+#     # Handle time parameter - it should be passed from the modified simulation
+#     if t is not None:
+#         current_t = float(t)
+#     else:
+#         print("WARNING: No time parameter received, using t=0")
+#         current_t = 0.0
+    
+#     # Use (1 + cos(wt))/2 to ensure always positive and smooth oscillation
+#     rate = A * (1 + np.cos(w * current_t/(2*np.pi))) / 2
+    
+#     # Debug print
+#     if int(current_t * 100) % 100 == 0:  # Print every 1 time unit
+#         print(f"Time: {current_t:.2f}, Rate: {rate:.4f}")
+    
+#     return rate
+# rate_cosine.expression = lambda substrates, reaction: (
+#     f"A_{reaction} * (1 + cos(w_{reaction} * t)) / 2"
+# )
+# Function to calculate the rate of reaction of the type 'cosine'
+def rate_cosine(reactants, concentrations, species_idx, spec_vector, t=0):
+    """
+    Calculate the rate of an inflow using a cosine-based oscillatory function.
+    This kinetic law models an oscillating inflow (e.g., seasonal water inflow)
+    that smoothly varies between 0 and amplitude A.
+    
+    Parameters:
+    - reactants: List of tuples (species, stoichiometric coefficient) for the reactants
+      (not used here but kept for consistency with the interface).
+    - concentrations: List of current concentrations of all species (not used here).
+    - species_idx: Dictionary mapping species names to their indices (not used here).
+    - spec_vector: List of parameters [A, w], where
+      A = amplitude (maximum inflow),
+      w = frequency of oscillation.
+    - t: Current simulation time (float). Default is 0.
+    
+    Returns:
+    - rate: The instantaneous inflow rate at time t.
+    """
+    # Extract amplitude (A) and frequency (w)
+    A, w = spec_vector
+    # Cosine inflow formula (always positive)
+    # Oscillates smoothly between 0 and A
+    rate = A * (1 + np.cos(w * t / (2 * np.pi))) / 2
+    return rate
+rate_cosine.expression = lambda reactants, reaction: (
+    f"A_{reaction} * (1 + cos(w_{reaction} * t)) / 2"
+)
+
+def rate_saturated(substrates, concentrations, species_idx, spec_vector):
+    """
+    Saturated kinetics: (Vmax * [substrate1] * [substrate2]) / (Km + [substrate1])
+    Used for: R2, R3, R5, R6, R7, R9 (resource processing with saturation)
+    Parameters: [Vmax, Km] where Vmax is max rate, Km is half-saturation
+    """
+    Vmax, Km = spec_vector
+    
+    if len(substrates) == 1:
+        # Single substrate reaction
+        substrate_name = substrates[0][0]
+        substrate_conc = concentrations[species_idx[substrate_name]]
+        return (Vmax * substrate_conc) / (Km + substrate_conc)
+    
+    elif len(substrates) >= 2:
+        # Two substrate reaction - use first for saturation, multiply by both
+        substrate1_name = substrates[0][0]  # Resource being processed
+        substrate2_name = substrates[1][0]  # Population/catalyst
+        
+        substrate1_conc = concentrations[species_idx[substrate1_name]]
+        substrate2_conc = concentrations[species_idx[substrate2_name]]
+        
+        return (Vmax * substrate1_conc * substrate2_conc) / (Km + substrate1_conc)
+    
+    else:
+        return 0
+rate_saturated.expression = lambda substrates, reaction: (
+    f"(Vmax_{reaction} * [{substrates[0][0]}] * [{substrates[1][0] if len(substrates) > 1 else '1'}]) / (Km_{reaction} + [{substrates[0][0]}])"
+    if len(substrates) >= 1 else "0"
+)
+
 def update_rate_laws(rate_list, additional_laws=None):
     # Diccionario base
     rate_laws = {
@@ -341,7 +428,6 @@ def simulation(rn, rate='mak', spec_vector=None, x0=None, t_span=(0, 200),
     def rates_fn_constrained(t, x):
         # Asegurar que las concentraciones no sean negativas
         x_constrained = np.maximum(x, 0)
-        
         dxdt = np.zeros_like(x_constrained)
         concentrations = x_constrained
         rates = np.zeros(len(reactions))
@@ -349,11 +435,18 @@ def simulation(rn, rate='mak', spec_vector=None, x0=None, t_span=(0, 200),
         for i, reaction in enumerate(reactions):
             kinetic = rate[i]
             reactants = rn_dict[reaction][0]
+            
             if kinetic == 'mmk' and (not reactants or len(reactants) == 0):
                 continue
+            
             param_vector = parameters[reaction]
             rate_fn = rate_laws[kinetic]
-            rates[i] = rate_fn(reactants, concentrations, species_idx, param_vector)
+            
+            # *** KEY FIX: Pass time parameter for time-dependent kinetics ***
+            if kinetic in ['cosine']:  # Add other time-dependent kinetics here
+                rates[i] = rate_fn(reactants, concentrations, species_idx, param_vector, t=t)
+            else:
+                rates[i] = rate_fn(reactants, concentrations, species_idx, param_vector)
         
         for i, reaction in enumerate(reactions):
             for sp, coef in rn_dict[reaction][0]:

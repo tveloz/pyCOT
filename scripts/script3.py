@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import pyCOT modules
 from pyCOT.io.functions import read_txt, generate_subnetwork_txt
 from pyCOT.rn_visualize import rn_visualize_html, hierarchy_visualize_html
-from pyCOT.Persistent_Modules import compute_all_organizations               
+from pyCOT.Persistent_Modules_Generator import compute_all_organizations
 
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
@@ -40,20 +40,34 @@ rn = read_txt(file_path)
 # ========================================
 # 3. COMPUTE SEMI-ORGANIZATIONS AND ORGANIZATIONS
 # ======================================== 
-elementary_sos, elementary_organizations, all_organizations, all_semi_organizations, statistics, computation_data = compute_all_organizations(
+# elementary_sos, elementary_organizations, all_organizations, all_semi_organizations, statistics, computation_data 
+results = compute_all_organizations(
     rn, 
-    max_module_size=100,    # Small size for testing
-    max_generator_size=100, # Small size for testing
+    max_generator_size=8, max_organization_size=5,
+    # max_module_size=100,    # Small size for testing
+    # max_generator_size=100, # Small size for testing
     verbose=True            # Set to True to see detailed computation steps
-)
+) 
 
-# Set of all semi-organizations 
-all_semi_organizations_sets = [set(sp.name for sp in so.combined_closure) for so in all_semi_organizations] 
+# === Semi-organizations ===
+all_semi_organizations = results['elementary_sos']
+all_semi_organizations_sets = [set(sp.name for sp in so.closure_species) for so in all_semi_organizations]
+all_semi_organizations_sets = sorted(all_semi_organizations_sets, key=len) # Ordenar por tamaño 
+print("\nSemi-organizations:\n", all_semi_organizations_sets) 
 
-# Set of all organizations sorted by size
-orgs_sets = [set(sp.name for sp in org.closure_species) for org in elementary_organizations]
-orgs_sets = sorted(orgs_sets, key=len) # Sort by size
-print("\norgs_sets =", orgs_sets)
+# === Organizations ===
+all_organizations = results['elementary_organizations']
+all_organizations_sets = []
+for org in all_organizations:
+    if hasattr(org, "combined_closure"):  # Es un Organization
+        sset = set(sp.name for sp in org.combined_closure)
+    elif hasattr(org, "closure_species"):  # Es un ElementarySO
+        sset = set(sp.name for sp in org.closure_species)
+    else:
+        sset = set()  # fallback por seguridad
+    all_organizations_sets.append(sset)
+orgs_sets = sorted(all_organizations_sets, key=len)
+print("\nOrganizations:\n", all_organizations_sets)
 
 # ========================================
 # 4. SELECTED ORGANIZATION
