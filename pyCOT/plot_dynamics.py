@@ -1,28 +1,25 @@
-from pyvis.network import Network        # Enables creating and visualizing interactive networks in HTML.
-import networkx as nx                    # Library for creating, manipulating, and analyzing graphs.
-import pandas as pd                      # Efficient handling and analysis of tabular data.
-import matplotlib.pyplot as plt          # For generating static plots and visualizations.
-import matplotlib.animation as animation # For creating animations using Matplotlib.
-from matplotlib.colors import to_hex     # Converts colors to hexadecimal format (#RRGGBB).
-import mplcursors                        # Adds interactive cursors to Matplotlib plots.
-import webbrowser                        # Opens URLs or local files in the system's default web browser.
-import os                                # Handles file and directory operations in the operating system.
-from collections import defaultdict      # Dictionary that provides default values for missing keys.
-import plotly.graph_objects as go        # Generates interactive plots and advanced visualizations using Plotly.
-from itertools import combinations       # Generates all possible combinations of elements in an iterable.
-import numpy as np                       # Library for numerical computing in Python.
+import itertools
+import matplotlib.animation as animation
+import matplotlib.pyplot as plt
+import mplcursors
+import numpy as np
+import os
+import pandas as pd
+import sympy as sp
+import webbrowser
 
-from networkx.drawing.nx_agraph import graphviz_layout
-import itertools 
+from collections import Counter, defaultdict
+from itertools import combinations
+from matplotlib.colors import to_hex
+from matplotlib.widgets import Slider, Button
 from mpl_toolkits.mplot3d import Axes3D
- 
-import matplotlib.pyplot as plt 
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+from networkx.drawing.nx_agraph import graphviz_layout
+from pyvis.network import Network
+from scipy.optimize import linprog
 from scipy.spatial import ConvexHull
-#import sympy as sp 
-from scipy.optimize import linprog  
-from collections import Counter  
-import warnings 
+import networkx as nx
+import plotly.graph_objects as go
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -31,12 +28,12 @@ import sys                               # Provides access to system-specific pa
 sys.stdout.reconfigure(encoding='utf-8') # Reconfigures the standard output to use UTF-8 encoding, ensuring proper handling of special characters.
 import tempfile                          # Provides utilities for creating temporary files and directories.
 
+from pyCOT.simulations import *
+
 ######################################################################################
 # Plots the time series of ODE concentrations and abstractions
 ######################################################################################
-import matplotlib.pyplot as plt
-import os
-
+# Function to plot time series of concentrations from ODE simulation and optionally save the figure
 def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", 
                    title="Time Series of Concentrations", filename="time_series_plot.png",
                    show_grid=True, save_figure=True,
@@ -72,9 +69,6 @@ def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration",
 # Reaction-Diffusion Dynamics Plotting
 ########################################################################################
 # Function to plot time series for each species in each grid cell
-import matplotlib.pyplot as plt
-import os
-
 def plot_diffusion_time_series_2D(time, concentration_data, grid_shape, colors=None, 
                                  xlabel="Time", ylabel="Concentration", 
                                  main_title="Time Evolution of Concentration Profiles",
@@ -181,17 +175,7 @@ def plot_diffusion_time_series_2D(time, concentration_data, grid_shape, colors=N
     
     plt.show()
 
-# Function to plot heatmaps for a given species at selected time points
-import numpy as np
-import matplotlib.pyplot as plt
-import mplcursors
-
-import matplotlib.pyplot as plt
-import numpy as np
-import matplotlib as mpl
-import mplcursors
-import os
-
+# Function to plot heatmaps for a given species at selected time points 
 def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None, 
                                 main_title="Evolution of Concentration Profiles", 
                                 cmap='viridis', figsize_multiplier=3, bar_label="Concentration",
@@ -322,157 +306,6 @@ def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None,
         print(f"Figure saved as: {filepath}")
     
     plt.show()
-
-# def plot_heatmaps_for_species_2D(X, species_name, t, time_indices=None, title="Heatmap for Specie"):
-#     data = np.array(X[species_name])  # shape: (time, rows, cols)
-#     n_time, rows, cols = data.shape
-#     if time_indices is None:
-#         time_indices = np.linspace(0, len(t)-1, 3, dtype=int)
-
-#     n = len(time_indices)
-#     fig = plt.figure(figsize=(5 * n, 4))
-#     gs = fig.add_gridspec(1, n + 1, width_ratios=[1]*n + [0.05], wspace=0.3)
-    
-#     vmin = np.min([X[species_name][idx].min() for idx in time_indices])
-#     vmax = np.max([X[species_name][idx].max() for idx in time_indices])
-    
-#     axes = [fig.add_subplot(gs[0, i]) for i in range(n)]
-#     cbar_ax = fig.add_subplot(gs[0, -1])
-#     imgs = []
-
-#     for ax, idx in zip(axes, time_indices):
-#         heat_data = X[species_name][idx]
-#         img = ax.imshow(heat_data, cmap='viridis', vmin=vmin, vmax=vmax, origin='upper')
-#         imgs.append(img)
-#         ax.set_title(f"t = {t[idx]:.2f}")
-#         ax.set_xlabel("") # ("Column")
-#         ax.set_ylabel("") # ("Row")
-#         ax.set_xticks(np.arange(cols))
-#         ax.set_yticks(np.arange(rows))
-
-#         # Cursor y función propia para cada imagen
-#         cursor = mplcursors.cursor(img, hover=False)
-
-#         def make_callback(data):
-#             def on_add(sel):
-#                 x, y = int(sel.target[0]), int(sel.target[1])
-#                 if 0 <= y < data.shape[0] and 0 <= x < data.shape[1]:
-#                     sel.annotation.set_text(f"{data[y, x]:.3f}")
-#             return on_add
-
-#         cursor.connect("add", make_callback(heat_data))
-
-#     # Barra de color común
-#     fig.colorbar(imgs[0], cax=cbar_ax)
-#     plt.suptitle(f"{title} {species_name}", fontsize=16)
-#     plt.tight_layout()
-#     plt.show()
-
-# Función para animar los mapas de calor con controles interactivos en html como video 
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
-import os
-
-# def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_title="Heatmaps for All Species", slider_label="Time", bar_label="Concentration"):
-#     """
-#     Animate the evolution of multiple species in heatmaps arranged by columns and save as HTML.
-    
-#     Parameters
-#     ----------
-#     t : array-like
-#         Time vector    
-#     X : dict
-#         Dictionary {species_name: 3D array (time, rows, cols)}
-#     species_names : list, optional
-#         List of species to plot. If None, all species in X are plotted.
-#     main_title : str
-#         Main title of the figure. Default is "Heatmaps for All Species".
-#     slider_label : str
-#         Label for the time slider. Default is "Time".
-#     bar_label : str
-#         Label for the color bar. Default is "Concentration".
-#     """
-#     t = np.round(t, 2)
-
-#     if species_names is None:
-#         species_names = list(X.keys())
-#     n_species = len(species_names)
-    
-#     # Calcular número de filas y columnas (máximo 5 columnas)
-#     max_cols = 5
-#     n_cols = min(n_species, max_cols)
-#     n_rows = (n_species + n_cols - 1) // n_cols  # División entera hacia arriba
-
-#     # Min/max global para todas las especies
-#     vmin = min(np.min(X[sp]) for sp in species_names)
-#     vmax = max(np.max(X[sp]) for sp in species_names)
-
-#     # Figura y ejes (disposición por columnas)
-#     fig, axes = plt.subplots(n_rows, n_cols, figsize=(4*n_cols, 4*n_rows))
-    
-#     # Si hay solo una fila o columna, convertir axes a array 2D para consistencia
-#     if n_rows == 1 and n_cols == 1:
-#         axes = np.array([[axes]])
-#     elif n_rows == 1:
-#         axes = axes.reshape(1, -1)
-#     elif n_cols == 1:
-#         axes = axes.reshape(-1, 1)
-    
-#     # Ajustar espacio
-#     plt.subplots_adjust(bottom=0.1, top=0.9, hspace=0.4, wspace=0.3)
-
-#     ims = []
-#     for i, sp in enumerate(species_names):
-#         row_idx = i // n_cols
-#         col_idx = i % n_cols
-#         ax = axes[row_idx, col_idx]
-        
-#         data = np.array(X[sp])
-#         im = ax.imshow(data[0], cmap='viridis', origin='upper', vmin=vmin, vmax=vmax)
-#         ax.set_title(f"{sp} (t = {t[0]:.2f})", fontweight="bold")
-#         ax.set_xlabel(" ") # Column")
-#         ax.set_ylabel(" ") # Row")
-#         rows, cols = data.shape[1:]
-#         ax.set_xticks(np.arange(cols))
-#         ax.set_yticks(np.arange(rows))
-#         ims.append((im, data, ax, sp))
-
-#     # Ocultar ejes vacíos si el número de especies no llena completamente la cuadrícula
-#     total_cells = n_rows * n_cols
-#     if total_cells > n_species:
-#         for i in range(n_species, total_cells):
-#             row_idx = i // n_cols
-#             col_idx = i % n_cols
-#             axes[row_idx, col_idx].axis('off')
-
-#     # Un único colorbar global
-#     cbar_ax = fig.add_axes([0.92, 0.1, 0.02, 0.8])  # [left, bottom, width, height]
-#     fig.colorbar(ims[0][0], cax=cbar_ax, label=bar_label)
-
-#     def update(frame):
-#         for im, data, ax, sp in ims:
-#             im.set_data(data[frame])
-#             ax.set_title(f"{sp} (t = {t[frame]:.2f})", fontweight="bold")
-#         return [item[0] for item in ims]
-
-#     ani = FuncAnimation(fig, update, frames=len(t), interval=50, blit=False)
-
-#     plt.suptitle(main_title, fontsize=16, fontweight="bold", y=0.97)
-
-#     # Generar HTML
-#     html = ani.to_html5_video()
-
-#     # Crear carpeta si no existe
-#     folder_path = 'visualizations/plot_heatmaps_all_species_2D_animate'
-#     os.makedirs(folder_path, exist_ok=True)
-
-#     # Guardar en archivo HTML
-#     file_path = os.path.join(folder_path, 'animation.html')
-#     with open(file_path, 'w') as f:
-#         f.write(html)
-#     print(f"Animation saved as: {file_path}")
-
 
 # Función para animar los mapas de calor con controles interactivos
 def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_title="Heatmaps for All Species", slider_label="Time", bar_label="Concentration"):
@@ -644,10 +477,7 @@ def plot_species_dynamics_MP(t, time_series, species, num_patches=4, separate_pl
     plt.savefig(filename)
     plt.show()
 
-import matplotlib.pyplot as plt
-import numpy as np
-import mplcursors
-
+# Función para graficar mapas de calor 2D para cada especie en múltiples tiempos
 def plot_heatmaps_for_species_2d(time_series, species, t, patch_shape=(2, 2), time_indices=None, 
                                 filename_prefix='heatmap_2d', figsize=(5, 4)):
     """
@@ -813,12 +643,11 @@ def animate_diffusion_heatmaps_for_species_2d(time_series, species_name, t, patc
         ani.save(filename, writer='ffmpeg', fps=50)
     
     plt.show()
+
 ################################################################################
 # Plot the number of abstractions over time
 ################################################################################
-import matplotlib.pyplot as plt
-import os
-
+# Function to plot the number of abstractions over time and optionally save the figure
 def plot_abstraction_size(abstract_time_series, xlabel="Time", ylabel="Number of Species", 
                          title="Number of species per abstraction over time", marker='o', 
                          label="Abstraction Size", save_figure=True, filename="abstraction_size_plot.png"):
@@ -882,11 +711,7 @@ def plot_abstraction_size(abstract_time_series, xlabel="Time", ylabel="Number of
     plt.show()  # Display the plot
 
 ######################################################################################## 
-
-import matplotlib.pyplot as plt
-import pandas as pd
-import os
-
+# Plot the time series abstraction as sets
 def plot_abstraction_sets(abstract_time_series, xlabel="Time", ylabel="Species", 
                          title="Abstraction of Time Series", save_figure=True, 
                          filename="abstraction_sets_plot.png"):
@@ -952,7 +777,7 @@ def plot_abstraction_sets(abstract_time_series, xlabel="Time", ylabel="Species",
 ######################################################################################
 # Abstraction graph static and movie 
 ######################################################################################
-# # # Original: plot_static_abstraction_graph
+# Original: plot_static_abstraction_graph
 def plot_static_abstraction_graph(abstract_time_series, title="Static Abstraction Graph"):
     """
     Plots a static abstraction graph with nodes, edges, and associated attributes.
@@ -1768,7 +1593,7 @@ def plot_abstraction_graph_movie(abstract_time_series, interval=400, title="Abst
     plt.show()
 
 ##############################################################################################
-
+# Modified: plot_abstraction_graph_movie_3last_nodes
 def plot_abstraction_graph_movie_3last_nodes(abstract_time_series, 
                                              first_node_size=125, opacity_first_node=0.5,
                                              last_node_size=500, last_adjust_sizes = [1/4, 1/2, 1], 
@@ -1910,7 +1735,7 @@ def plot_abstraction_graph_movie_3last_nodes(abstract_time_series,
     plt.show()
 
 ##############################################################################################    
-
+# Original: get_plot_abstraction_graph_movie_html
 def get_plot_abstraction_graph_movie_html(abstract_time_series, 
                                           first_node_size=25, colour_first_nodes="lightcyan",
                                           last_node_size=35, last_adjust_sizes=[1/2, 3/4, 1], 
@@ -2021,41 +1846,6 @@ def get_plot_abstraction_graph_movie_html(abstract_time_series,
         node_sizes = [G.nodes[node]["size"] * first_node_size for node in G.nodes]  # Define el tamaño de los nodos.
         node_colors = [G.nodes[node]["color"] for node in G.nodes]                  # Define el color de los nodos.
 
-        # # Destacar los nodos actuales y ajustar tamaños progresivamente
-        # for offset, size_factor in enumerate(last_adjust_sizes[::-1]):  # Ajustes de tamaño
-        #     # Calcular el índice máximo de los nodos a graficar
-        #     max_nodes_to_plot = i + 1  # Número de nodos a graficar en función del tiempo `i`
-            
-        #     # Verificar que el nodo actual esté dentro del rango permitido
-        #     if offset < max_nodes_to_plot:
-        #         current_node = tuple(abstractions.iloc[i - offset])  # Obtener el nodo actual
-                
-        #         # Verificar si el nodo existe en el grafo
-        #         if current_node in G.nodes:
-        #             index = list(G.nodes).index(current_node)        # Índice del nodo
-        #             node_sizes[index] = last_node_size * size_factor # Ajustar tamaño
-        #             node_colors[index] = colour_last_nodes           # Cambiar color del nodo
-        #         else:
-        #             continue  # Saltar si el nodo no existe en el grafo
-        # # Destacar los nodos actuales y ajustar tamaños progresivamente
-        # for offset, size_factor in enumerate(last_adjust_sizes[::-1]):  # Ajustes de tamaño
-        #     # Calcular el índice máximo de los nodos a graficar
-        #     max_nodes_to_plot = i + 1  # Número de nodos a graficar en función del tiempo `i`
-            
-        #     # Verificar que el nodo actual esté dentro del rango permitido
-        #     if offset < max_nodes_to_plot:
-        #         current_node = tuple(abstractions.iloc[i - offset])  # Obtener el nodo actual
-                
-        #         # Verificar si el nodo existe en el grafo
-        #         if current_node in G.nodes:
-        #             index = list(G.nodes).index(current_node)  # Índice del nodo
-                    
-        #             # Encontrar el tamaño máximo de nodos repetidos
-        #             max_size = max(node_sizes[index], last_node_size * size_factor)
-        #             node_sizes[index] = max_size  # Ajustar tamaño al máximo
-        #             node_colors[index] = colour_last_nodes  # Cambiar color del nodo
-        #         else:
-        #             continue  # Saltar si el nodo no existe en el grafo
         # Destacar los nodos actuales y ajustar tamaños progresivamente
         for offset, size_factor in enumerate(last_adjust_sizes[::-1]):  # Ajustes de tamaño
             # Calcular el índice máximo de los nodos a graficar
@@ -2209,10 +1999,7 @@ def get_plot_abstraction_graph_movie_html(abstract_time_series,
 
 
 ############################################################################################## 
- 
-import os
-import webbrowser
-
+# Función para generar una película animada de un grafo de abstracción y guardarla como archivo HTML.
 def plot_abstraction_graph_movie_html(
                 abstract_time_series, 
                 first_node_size=25, colour_first_nodes="lightcyan",
@@ -2292,21 +2079,9 @@ def plot_abstraction_graph_movie_html(
     return abs_path  # Return the absolute path for reference
 
 ##############################################################################################    
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Películas animadas de gráficos de abstracción y semiorganizaciones
 ##############################################################################################
-
+# Function to generate a Hasse diagram of the set of species in a reaction network.
 def plot_abstraction_graph_movie_html0(abstract_time_series, interval=400, title="Abstraction Graph - Time", 
                                       filename="abstraction_graph_movie0.html"):
     """
@@ -2408,8 +2183,7 @@ def plot_abstraction_graph_movie_html0(abstract_time_series, interval=400, title
 ##############################################################################################
 # # Películas animadas de gráficos de abstracción y semiorganizaciones
 ##############################################################################################
-
-# # Function to generate a Hasse diagram of the set of species in a reaction network.
+# Function to generate a Hasse diagram of the set of species in a reaction network.
 def plot_hasse_diagram(species_set, node_size=25, color_node='cyan', arrowcolor='black', bgcolor_legend="white", bordercolor_legend="white", name_legend="Legend:", title="Hasse diagram"):
     """
     Generates and plots a Hasse diagram for a given set of species. The diagram includes node labels 
@@ -2550,7 +2324,7 @@ def plot_hasse_diagram(species_set, node_size=25, color_node='cyan', arrowcolor=
     fig.show()
 
 ##############################################################################################
-# # Function to generate an interactive graph from a Hasse diagram of Semi-Organisations and Abstractions.
+# Function to generate an interactive graph from a Hasse diagram of Semi-Organisations and Abstractions.
 def get_film_semiorganizations_abstractions_html(abstract_time_series, input_data,
                                           first_node_size=25, 
                                           colour_abs_nodes="lightcyan", colour_semiorg_nodes="lightgreen", colour_cap_nodes="orange",
@@ -2843,7 +2617,7 @@ def get_film_semiorganizations_abstractions_html(abstract_time_series, input_dat
     return filename
 
 ############################################################################################## 
- 
+# Function to generate and open an interactive animation of an abstraction graph from an abstract time series. 
 def film_semiorganizations_abstractions_html(
                 abstract_time_series, input_data,
                 first_node_size=25, 
@@ -2922,7 +2696,7 @@ def film_semiorganizations_abstractions_html(
 ######################################################################################
 # Histograms
 ######################################################################################
-
+# Function to plot histogram of combined species concentrations
 def plot_join_concentration_histogram(time_series, bins=30, alpha=0.7, color='skyblue', edgecolor='black', xlabel="Concentration", ylabel="Frequency", title="Histogram of Species Concentrations"):
     """
     Plots a histogram of combined species concentrations from the time series.
@@ -2959,7 +2733,7 @@ def plot_join_concentration_histogram(time_series, bins=30, alpha=0.7, color='sk
     plt.tight_layout()
     plt.show()
 
-
+# Function to plot histogram of reaction rates
 def plot_reaction_rate_mak_histogram(reaction_rate_maks, bins=10, color='skyblue', edgecolor='black', alpha=0.7, xlabel="Reaction Rate", ylabel="Frequency", title="Histogram of Reaction Rates"):
     """
     Generates a histogram for the reaction rates of species.
@@ -2993,7 +2767,7 @@ def plot_reaction_rate_mak_histogram(reaction_rate_maks, bins=10, color='skyblue
     plt.tight_layout()
     plt.show()
 
-
+# Function to plot individual histograms for each species
 def plot_species_histograms(reaction_rate_maks, species_names, bins=10, alpha=0.7, color="skyblue", edgecolor="black", xlabel="Concentration", ylabel="Frequency", title_plot="Histogram of"):
     """
     Generates individual histograms for each species in the reaction rates DataFrame.
@@ -3035,7 +2809,7 @@ def plot_species_histograms(reaction_rate_maks, species_names, bins=10, alpha=0.
     plt.tight_layout()
     plt.show()
 
-
+# Function to plot combined histogram of species
 def plot_combined_species_histogram(reaction_rate_maks, species_names, bins=10, alpha=0.7, edgecolor="black", xlabel="Concentration", ylabel="Frequency", title_plot="Combined Histogram"):
     """
     Generates a combined histogram of reaction rates for a set of species.
@@ -3226,12 +3000,7 @@ def plot_all_species_3d(results, species_names=None):
         plt.show()
 
 #############################################################################################
-import matplotlib.pyplot as plt
-import numpy as np
-
-import matplotlib.pyplot as plt
-import numpy as np
-
+# PDE Plots and Animations
 def plot_series_PDE(simulation_data, species_names, t_span, time_points=None):
     n_species = simulation_data.shape[-1]
     
@@ -3255,14 +3024,7 @@ def plot_series_PDE(simulation_data, species_names, t_span, time_points=None):
         fig.colorbar(im, ax=axes.ravel().tolist(), orientation='vertical', fraction=0.02, pad=0.04)
         plt.show()
 
-
-
-
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib.widgets import Slider
-
+# Function to create an animation for a specific species
 def create_animation(simulation_data, species_idx, species_name, interval=100):
     fig, ax = plt.subplots()
     
@@ -3299,11 +3061,6 @@ def create_animation(simulation_data, species_idx, species_name, interval=100):
     plt.show()
     return ani
 
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from scipy.integrate import odeint
-
 # Suponiendo que la función simulate_pde_rd ya está definida
 def create_species_animation(RN, result, interval=50, save=False):
     """
@@ -3336,25 +3093,7 @@ def create_species_animation(RN, result, interval=50, save=False):
         
         plt.close(fig)
 
-# Ejemplo de uso
-# RN = definir_red_reaccion()
-# result = simulate_pde_rd(RN)
-# create_species_animation(RN, result, save=True)
-
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib.widgets import Slider
-
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.widgets import Slider
-
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib.widgets import Slider, Button
-
+# Función para animar la evolución de las concentraciones de especies en una simulación PDE
 def animate_series_PDE(simulation_data, species_names,t_span):
     n_species = simulation_data.shape[-1]
     n_time = t_span[1] 
@@ -3394,74 +3133,6 @@ def animate_series_PDE(simulation_data, species_names,t_span):
     
     slider.on_changed(update)
     plt.show()
-
-# def animate_series_PDE(simulation_data, species_names, t_span,interval):
-#     n_species = simulation_data.shape[-1]
-#     n_time = t_span[1]
-    
-#     fig, axes = plt.subplots(1, n_species, figsize=(5 * n_species, 5), constrained_layout=True)
-#     fig.suptitle("Evolution of Species Concentrations")
-
-#     if n_species == 1:
-#         axes = [axes]
-    
-#     ims = []
-    
-#     # Obtener valores mínimo y máximo para normalizar la escala de color
-#     vmin, vmax = np.min(simulation_data), np.max(simulation_data)
-    
-#     for s, ax in enumerate(axes):
-#         im = ax.imshow(simulation_data[0, :, :, s], cmap='viridis', origin='lower', vmin=vmin, vmax=vmax)
-#         ax.set_title(f"{species_names[s]}")
-#         ims.append(im)
-
-#         # Asegurar que los ejes solo tengan valores enteros
-#         ax.set_xticks(np.arange(simulation_data.shape[2]))
-#         ax.set_yticks(np.arange(simulation_data.shape[1]))
-
-#     # Agregar una única barra de colores a la derecha
-#     cbar = fig.colorbar(ims[0], ax=axes, orientation='vertical', fraction=0.02, pad=0.04)
-    
-#     # Crear slider para el tiempo
-#     ax_slider = plt.axes([0.1, 0.02, 0.6, 0.03])
-#     slider = Slider(ax_slider, 'Time', 0, n_time, valinit=0, valstep=1)
-    
-#     # Botones Play y Pause
-#     ax_play = plt.axes([0.75, 0.02, 0.08, 0.04])
-#     ax_pause = plt.axes([0.85, 0.02, 0.08, 0.04])
-    
-#     btn_play = Button(ax_play, "Play")
-#     btn_pause = Button(ax_pause, "Pause")
-
-#     anim_running = [True]  # Variable mutable para controlar la animación
-
-#     def update(frame):
-#         """Actualiza la imagen en cada paso de la animación."""
-#         t = frame % (n_time + 1)
-#         slider.set_val(t)  # Mueve el slider
-#         for s in range(n_species):
-#             ims[s].set_array(simulation_data[t, :, :, s])
-#         return ims
-
-#     ani = animation.FuncAnimation(fig, update, frames=n_time+1, interval=interval, repeat=True)
-
-#     def play(event):
-#         """Reanuda la animación."""
-#         if not anim_running[0]:
-#             ani.event_source.start()
-#             anim_running[0] = True
-
-#     def pause(event):
-#         """Pausa la animación."""
-#         if anim_running[0]:
-#             ani.event_source.stop()
-#             anim_running[0] = False
-
-#     btn_play.on_clicked(play)
-#     btn_pause.on_clicked(pause)
-
-#     plt.show()
-
 
 ######################################################################################
 ######################################################################################
@@ -3509,6 +3180,7 @@ def classify_process(v, S, v_prev=None, tol=1e-3):
         raise TypeError("El input 'v_prev', si se proporciona, debe ser un array de NumPy.")
 
     # Calcular el cambio neto en las concentraciones de las especies (Sv)
+    # print("DEBUG: S.shape =", np.shape(S), "v.shape =", np.shape(v))
     Sv = S @ v
     classifications = []
 
@@ -3524,7 +3196,7 @@ def classify_process(v, S, v_prev=None, tol=1e-3):
     if is_stationary_mode:
         classifications = ["Stationary Mode"]
     elif all_Sv_non_negative and all_reactions_active:
-        classifications = ["Cognitive Domain"]        
+        classifications = ["Cognitive Control"]        
     elif has_net_consumption and all_Sv_non_positive:
         classifications = ["Problem"]
     elif has_net_consumption:
@@ -3555,9 +3227,9 @@ def classify_process(v, S, v_prev=None, tol=1e-3):
                 classifications = ["Solution"]
 
         # 8. Cognitive Control (Control Cognitivo)
-        elif is_v_prev_a_problem and "Cognitive Domain" in classifications:
+        elif is_v_prev_a_problem and "Cognitive Control" in classifications:
             if np.any(Sv_combined >= -tol):
-                classifications = ["Cognitive Control"]
+                classifications = ["Control"]
 
     # Devolver una lista de clasificaciones únicas y ordenadas para una salida consistente.
     return sorted(list(set(classifications)))
@@ -3572,10 +3244,9 @@ def plot_process_types_histogram(flux_vector, S,
                                 save_figure=True, 
                                 ax=None, show_fig=False):
     """
-    Clasifica, grafica histograma, y guarda resultados en Excel.
+    Clasifica, grafica histograma, guarda resultados en Excel y
+    retorna también las frecuencias (conteos) de cada tipo de proceso.
     """
-    # if not isinstance(flux_vector, pd.DataFrame):
-    #     raise TypeError("flux_vector debe ser un DataFrame de pandas.")
     if isinstance(flux_vector, np.ndarray):
         flux_vector = pd.DataFrame(flux_vector, columns=[f"v{i+1}" for i in range(flux_vector.shape[1])])
         flux_vector.insert(0, "Time", range(len(flux_vector)))
@@ -3589,9 +3260,8 @@ def plot_process_types_histogram(flux_vector, S,
     process_types = []
     for _, row in flux_values.iterrows():
         v = row.to_numpy()
-        cat = classify_process(v, S)  # ahora solo se pasa v y S
-        # Convertir la lista de clasificaciones a una cadena para hacerla hashable
-        cat_str = ",".join(cat) if cat else "None" # ",".join(sorted(cat)) if cat else "None"
+        cat = classify_process(v, S)
+        cat_str = ",".join(cat) if cat else "None"
         process_types.append(cat_str)
 
     # Calcular S*v
@@ -3602,18 +3272,18 @@ def plot_process_types_histogram(flux_vector, S,
 
     classified_df = pd.concat([flux_vector, Sv_expanded], axis=1)
     classified_df["Process_Type"] = process_types
-    # print("classified_df=\n",classified_df)
 
     # --- Contar ---
     process_counts = Counter(process_types)
-    category_order = ["Stationary Mode", "Cognitive Domain", "Problem", "Challenge","Overproduction Mode", "Not Feasible", "Other", "None"]
+    category_order = ["Stationary Mode", "Cognitive Control", "Problem", "Challenge",
+                      "Overproduction Mode", "Not Feasible", "Other", "None"]
     labels = [cat for cat in category_order if cat in process_counts]
     counts = [process_counts[cat] for cat in labels]
 
     # Colores 
     color_map = { 
         "Stationary Mode": "cyan",
-        "Cognitive Domain": "green",
+        "Cognitive Control": "green",
         "Problem": "red",
         "Challenge": "orange",
         "Overproduction Mode": "blue",
@@ -3621,7 +3291,6 @@ def plot_process_types_histogram(flux_vector, S,
         "Other": "grey",
         "None": "black"        
     }
-
     colors = [color_map.get(label, "grey") for label in labels]
 
     # --- Graficar ---
@@ -3663,7 +3332,12 @@ def plot_process_types_histogram(flux_vector, S,
     if show_fig:
         plt.show()
 
-    return fig, ax, classified_df
+    # --- Retornar también las frecuencias ---
+    process_frequencies = dict(process_counts)  # convertir Counter → dict
+
+    return fig, ax, classified_df, process_frequencies
+
+
 
 #####################################################################################
 # Función para graficar el cono y la región factible en 3D
@@ -3782,7 +3456,7 @@ def plot_cone_and_region(S,
             proj_pos = points_pos[:, [i, j, k]]
             color_map = {
                 "Stationary Mode": "cyan",
-                "Cognitive Domain": "green",
+                "Cognitive Control": "green",
                 "Problem": "red",
                 "Challenge": "orange",
                 "Overproduction Mode": "blue",
@@ -3832,6 +3506,7 @@ def plot_cone_and_region(S,
 
 #####################################################################################
 # Funciones para graficar series de tiempo con intervalos de Cognitive Control
+# Función para graficar series de tiempo con intervalos de Cognitive Domain, Stationary Mode, Problem y Challenge
 def plot_series_with_domain_intervals(time_series, flux_vector, S,
                                       title="Serie de Tiempo de Concentraciones",
                                       save_figure=False,
@@ -3858,24 +3533,44 @@ def plot_series_with_domain_intervals(time_series, flux_vector, S,
             intervals.append((start, times[-1]))
         return intervals
 
-    is_cd = np.array(["Cognitive Domain" in cat for cat in process_types])
+    # Máscaras
+    is_cd = np.array(["Cognitive Control" in cat for cat in process_types])
     is_sm = np.array(["Stationary Mode" in cat for cat in process_types])
+    is_pb = np.array(["Problem" in cat for cat in process_types])
+    # is_ch = np.array(["Challenge" in cat for cat in process_types])
 
+    # Intervalos
     cd_intervals = get_intervals(is_cd, times)
     sm_intervals = get_intervals(is_sm, times)
+    pb_intervals = get_intervals(is_pb, times)
+    # ch_intervals = get_intervals(is_ch, times)
 
+    # === Graficar intervalos ===
     for (t_start, t_end) in cd_intervals:
-        ax.axvspan(t_start, t_end, color="darkgreen", alpha=0.2)
-        ax.axvline(x=t_start, color="darkgreen", linestyle="--", alpha=0.8)
-        ax.axvline(x=t_end, color="darkgreen", linestyle="--", alpha=0.8)
+        ax.axvspan(t_start, t_end, color="green", alpha=0.2)
+        ax.axvline(x=t_start, color="green", linestyle="--", alpha=0.8)
+        ax.axvline(x=t_end, color="green", linestyle="--", alpha=0.8)
 
     for (t_start, t_end) in sm_intervals:
         ax.axvspan(t_start, t_end, color="cyan", alpha=0.15)
         ax.axvline(x=t_start, color="cyan", linestyle="--", alpha=0.7)
         ax.axvline(x=t_end, color="cyan", linestyle="--", alpha=0.7)
 
-    ax.plot([], [], color="darkgreen", linestyle="--", label="Cognitive Control")
+    for (t_start, t_end) in pb_intervals:
+        ax.axvspan(t_start, t_end, color="red", alpha=0.25)
+        ax.axvline(x=t_start, color="red", linestyle="--", alpha=0.8)
+        ax.axvline(x=t_end, color="red", linestyle="--", alpha=0.8)
+
+    # for (t_start, t_end) in ch_intervals:
+    #     ax.axvspan(t_start, t_end, color="orange", alpha=0.25)
+    #     ax.axvline(x=t_start, color="orange", linestyle="--", alpha=0.8)
+    #     ax.axvline(x=t_end, color="orange", linestyle="--", alpha=0.8)
+
+    # Leyenda
+    ax.plot([], [], color="green", linestyle="--", label="Cognitive Control")
     ax.plot([], [], color="cyan", linestyle="--", label="Stationary Mode")
+    ax.plot([], [], color="red", linestyle="--", label="Problem")
+    # ax.plot([], [], color="orange", linestyle="--", label="Challenge")
     ax.legend(loc="upper right")
 
     if show_fig:
@@ -3883,35 +3578,20 @@ def plot_series_with_domain_intervals(time_series, flux_vector, S,
 
     return fig, ax
 
-# Función para graficar flujos con intervalos de Cognitive Domain
+
+# Función para graficar flujos con intervalos de Cognitive Domain, Stationary Mode, Problem y Challenge
 def plot_flux_with_domain_intervals(flux_vector, S,
                                     title="Serie de Tiempo de Flujos",
                                     save_figure=False,
                                     ax=None,
-                                    show_fig=False):
-    """
-    Extiende plot_series_ode aplicada al flux_vector para resaltar los intervalos
-    donde ocurren 'Cognitive Domain' (verde) y 'Stationary Mode' (rojo).
-    """
-    import numpy as np
-    import matplotlib.pyplot as plt
-
-    # Graficar la serie original
+                                    show_fig=False): 
     fig, ax = plot_series_ode(flux_vector, title=title, save_figure=save_figure, ax=ax)
     print("\nflux_vector_shape =", flux_vector.shape)
     
-    # Clasificar procesos
-    flux_values = flux_vector.iloc[:, 1:]  # quitar columna Time
-    process_types = []
-    for _, row in flux_values.iterrows():
-        v = row.to_numpy()
-        cat = classify_process(v, S)
-        process_types.append(cat)
-    
-    # Extraer tiempos
+    flux_values = flux_vector.iloc[:, 1:]
+    process_types = [classify_process(v.to_numpy(), S) for _, v in flux_values.iterrows()]
     times = flux_vector["Time"].to_numpy()
 
-    # Función auxiliar para obtener intervalos consecutivos True
     def get_intervals(mask, times):
         intervals = []
         in_interval = False
@@ -3927,26 +3607,40 @@ def plot_flux_with_domain_intervals(flux_vector, S,
             intervals.append((start, times[-1]))
         return intervals
 
-    # === 1. Intervalos de Cognitive Domain (verde) ===
-    is_cd = np.array(["Cognitive Domain" in cat for cat in process_types])
-    cd_intervals = get_intervals(is_cd, times)
-
-    # === 2. Intervalos de Stationary Mode (rojo) ===
+    # Máscaras
+    is_cd = np.array(["Cognitive Control" in cat for cat in process_types])
     is_sm = np.array(["Stationary Mode" in cat for cat in process_types])
-    sm_intervals = get_intervals(is_sm, times)
+    is_pb = np.array(["Problem" in cat for cat in process_types])
+    # is_ch = np.array(["Challenge" in cat for cat in process_types])
 
-    # --- Graficar intervalos ---
+    # Intervalos
+    cd_intervals = get_intervals(is_cd, times)
+    sm_intervals = get_intervals(is_sm, times)
+    pb_intervals = get_intervals(is_pb, times)
+    # ch_intervals = get_intervals(is_ch, times)
+
+    # Graficar intervalos
     for (t_start, t_end) in cd_intervals:
-        ax.axvspan(t_start, t_end, color="darkgreen", alpha=0.2)
-        ax.axvline(x=t_start, color="darkgreen", linestyle="--", alpha=0.8)
-        ax.axvline(x=t_end, color="darkgreen", linestyle="--", alpha=0.8)
+        ax.axvspan(t_start, t_end, color="green", alpha=0.2)
+        ax.axvline(x=t_start, color="green", linestyle="--", alpha=0.8)
+        ax.axvline(x=t_end, color="green", linestyle="--", alpha=0.8)
 
     for (t_start, t_end) in sm_intervals:
         ax.axvspan(t_start, t_end, color="cyan", alpha=0.15)
         ax.axvline(x=t_start, color="cyan", linestyle="--", alpha=0.7)
         ax.axvline(x=t_end, color="cyan", linestyle="--", alpha=0.7)
 
-    # --- Estadísticas de duración ---
+    for (t_start, t_end) in pb_intervals:
+        ax.axvspan(t_start, t_end, color="red", alpha=0.25)
+        ax.axvline(x=t_start, color="red", linestyle="--", alpha=0.8)
+        ax.axvline(x=t_end, color="red", linestyle="--", alpha=0.8)
+
+    # for (t_start, t_end) in ch_intervals:
+    #     ax.axvspan(t_start, t_end, color="orange", alpha=0.25)
+    #     ax.axvline(x=t_start, color="orange", linestyle="--", alpha=0.8)
+    #     ax.axvline(x=t_end, color="orange", linestyle="--", alpha=0.8)
+
+    # Estadísticas
     def print_stats(name, intervals):
         if len(intervals) == 0:
             print(f"No se detectaron intervalos de {name}.")
@@ -3957,18 +3651,34 @@ def plot_flux_with_domain_intervals(flux_vector, S,
         print(f"  T_max = {max(durations):.4f}")
         print(f"  T_avg = {np.mean(durations):.4f}")
 
-    print_stats("Cognitive Domain", cd_intervals)
+    print_stats("Cognitive Control", cd_intervals)
     print_stats("Stationary Mode", sm_intervals)
+    print_stats("Problem", pb_intervals)
+    # print_stats("Challenge", ch_intervals)
 
     # Leyenda
-    ax.plot([], [], color="darkgreen", linestyle="--", label="Cognitive Control")
+    ax.plot([], [], color="green", linestyle="--", label="Cognitive Control")
     ax.plot([], [], color="cyan", linestyle="--", label="Stationary Mode")
+    ax.plot([], [], color="red", linestyle="--", label="Problem")
+    # ax.plot([], [], color="orange", linestyle="--", label="Challenge")
     ax.legend(loc="upper right")
 
     if show_fig:
         plt.show()
 
     return fig, ax
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #############################################################################################################
@@ -4204,484 +3914,187 @@ def histogram_flux_sum(S, flux1, flux2,
 
     return fig, ax, combined_df
 
-#################################################################################################
-import numpy as np
+################################################################################################# 
+
+
+# # ========================================
+# # 4. ANALYSIS: Process Type Proportions Over Time
+# # ======================================== 
+
+import os
+import math
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
-import os
-from collections import Counter
 
-def analyze_time_scales_all(flux_vector, S, max_scale, tol=1e-8, show_fig=True):
+
+def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_span=(0, 200), n_steps=1001,
+    window_sizes=[1, 2, 3, 4, 5], save_path="./visualizations/process_classification/"
+):
     """
-    Analiza la serie temporal de flujos en diferentes escalas de tiempo para encontrar
-    la frecuencia de todos los tipos de procesos.
+    Analiza la evolución de 'Cognitive Control' + 'Stationary Mode'
+    en distintas ventanas de pasos de simulación, mostrando:
+      - Subplots con histogramas de tipos de procesos.
+      - Gráfico global de proporciones.
+      - Gráficos combinados de la simulación con máxima proporción total.
 
-    Args:
-        flux_vector (pd.DataFrame): DataFrame de la simulación. La primera columna
-                                    debe ser el tiempo y el resto los flujos.
-        S (np.ndarray): La matriz estequiométrica.
-        max_scale (int): El tamaño máximo de la ventana de tiempo a analizar. 
-        tol (float): Tolerancia numérica para clasificar procesos.
-        show_fig (bool): Si True, muestra los gráficos.
+    Parámetros
+    ----------
+    rn : ReactionNetwork
+        Objeto de red de reacciones.
+    S : np.ndarray
+        Matriz estequiométrica del sistema.
+    rate_list : list
+        Lista de tasas de reacción.
+    spec_vector : list o np.ndarray
+        Vector de especies.
+    x0 : np.ndarray
+        Condiciones iniciales del sistema.
+    t_span : tuple, opcional
+        Intervalo temporal de la simulación (por defecto (0, 200)).
+    n_steps : int, opcional
+        Número de pasos en la simulación (por defecto 1001).
+    window_sizes : list, opcional
+        Lista con los tamaños de ventana (número de pasos) para analizar.
+    save_path : str, opcional
+        Ruta base para guardar los resultados y figuras.
 
-    Returns:
-        dict: Diccionario anidado con las escalas de tiempo como claves y un
-              Counter de categorías de procesos como valores.
+    Retorna
+    -------
+    results_df : pd.DataFrame
+        DataFrame con las proporciones de cada tipo de proceso por ventana
+        y la ventana correspondiente al máximo 'Cognitive Domain'.
     """
-    if not isinstance(flux_vector, pd.DataFrame):
-        raise TypeError("flux_vector debe ser un DataFrame de pandas.")
-    if max_scale < 1 or not isinstance(max_scale, int):
-        raise ValueError("max_scale debe ser un entero mayor o igual a 1.")
+    os.makedirs(save_path, exist_ok=True)
+    results = []
 
-    print(f"Analizando {max_scale} escalas de tiempo (todas las categorías). Esto puede tardar un momento...")
+    n_windows = len(window_sizes)
+    n_cols = 3
+    n_rows = math.ceil(n_windows / n_cols)
 
-    flux_values = flux_vector.iloc[:, 1:].to_numpy()  # Excluir columna Time
-    results = {}
+    # SUBPLOTS DE HISTOGRAMAS
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(12, 4 * n_rows), constrained_layout=True)
+    axes = axes.flatten()
 
-    # Iterar sobre cada escala de tiempo
-    for scale in range(1, max_scale + 1):
-        categories_counter = Counter()
-        num_windows = len(flux_values) - scale + 1
-        
-        for i in range(num_windows):
-            window = flux_values[i : i + scale]
-            v_combined = np.sum(window, axis=0)
-            
-            # Clasificar el proceso combinado
-            classifications = classify_process(v_combined, S, tol=tol)
-            
-            # Actualizar el contador con todas las categorías asignadas
-            categories_counter.update(classifications)
+    time_series, flux_series = simulation(
+        rn, rate=rate_list, spec_vector=spec_vector, x0=x0,
+        t_span=t_span, n_steps=n_steps
+    )
 
-        results[scale] = categories_counter
-        print(f"Escala {scale}: {dict(categories_counter)}")
-
-    # --- Visualización de Resultados ---
-    if show_fig:
-        # Extraer todas las categorías posibles
-        all_categories = sorted(set(cat for c in results.values() for cat in c.keys()))
-
-        plt.style.use('seaborn-v0_8-whitegrid')
-        plt.figure(figsize=(12, 7))
-
-        for category in all_categories:
-            counts = [results[scale].get(category, 0) for scale in results.keys()]
-            plt.plot(results.keys(), counts, marker='o', linestyle='-', label=category)
-
-        plt.title('Análisis de la Escala de Tiempo (todas las categorías)', fontsize=16, fontweight='bold')
-        plt.xlabel('Escala de Tiempo (Tamaño de la Ventana)', fontsize=12)
-        plt.ylabel('Frecuencia de Procesos', fontsize=12)
-        plt.xticks(list(results.keys()))
-        plt.legend()
-
-        # Guardar la figura
-        out_dir = "./visualizations/process_classification"
-        filename = "time_scale_analysis_all.png"
-        os.makedirs(out_dir, exist_ok=True)
-        save_path = os.path.join(out_dir, filename)
-        plt.savefig(save_path, dpi=300, bbox_inches="tight")
-        print(f"Figura guardada en: {save_path}")
-
-        plt.show()
-
-    return results
-
-def analyze_time_scales_selected(flux_vector, S, max_scale, categories_to_plot=None, tol=1e-8, show_fig=True):
-    """
-    Analiza la serie temporal de flujos en diferentes escalas de tiempo
-    y permite graficar solo las categorías seleccionadas.
-
-    Args:
-        flux_vector (pd.DataFrame): DataFrame de la simulación. La primera columna debe ser el tiempo.
-        S (np.ndarray): La matriz estequiométrica.
-        max_scale (int): El tamaño máximo de la ventana de tiempo a analizar.
-        categories_to_plot (list, optional): Lista de categorías a graficar. Si None, grafica todas.
-        tol (float): Tolerancia para clasificar procesos.
-        show_fig (bool): Si True, muestra los gráficos.
-
-    Returns:
-        dict: Diccionario con las frecuencias de procesos por escala.
-    """
-    flux_values = flux_vector.iloc[:, 1:].to_numpy()
-    results = {}
-
-    for scale in range(1, max_scale + 1):
-        categories_counter = Counter()
-        num_windows = len(flux_values) - scale + 1
-        for i in range(num_windows):
-            window = flux_values[i : i + scale]
-            v_combined = np.sum(window, axis=0)
-            classifications = classify_process(v_combined, S, tol=tol)
-            categories_counter.update(classifications)
-        results[scale] = categories_counter
-
-    if show_fig:
-        # Determinar categorías a graficar
-        if categories_to_plot is None:
-            all_categories = sorted(set(cat for c in results.values() for cat in c.keys()))
+    # Analizar cada tamaño de ventana
+    for i, window_size in enumerate(window_sizes):
+        if window_size == 1:
+            # Copia directa sin cambios
+            flux_window = flux_series.copy()
+            print("flux_window (window_size=1) =\n", flux_window) 
+        # Suma movil para ventanas mayores a 1
         else:
-            all_categories = categories_to_plot
+            # Solo las columnas numéricas de flujo
+            flux_numeric = flux_series.drop(columns=['Time']).copy()
+            # Suma móvil
+            flux_rolling = (
+                flux_numeric
+                .rolling(window=window_size, min_periods=window_size)
+                .sum()
+                .dropna()
+                .reset_index(drop=True)
+            )
 
-        plt.style.use('seaborn-v0_8-whitegrid')
-        plt.figure(figsize=(12, 7))
+            # Ajustar tiempos para alinear con el resultado de la ventana (borde derecho)
+            time_adjusted = flux_series['Time'].iloc[window_size - 1:].reset_index(drop=True)
+            flux_window = pd.concat([time_adjusted, flux_rolling], axis=1)
+            # flux_window = flux_window.round(6) # Normalizar o limitar decimales
+            print(f"flux_window (window_size={window_size}) =\n", flux_window)
 
-        for category in all_categories:
-            counts = [results[scale].get(category, 0) for scale in results.keys()]
-            plt.plot(results.keys(), counts, marker='o', linestyle='-', label=category)
+        # Clasificar y graficar histogramas
+        _, _, _, process_frequencies = plot_process_types_histogram(
+            flux_window, S,
+            title=f"Ventana {window_size} pasos, tamaño de flux: {flux_window.shape[0]}",
+            save_figure=False,
+            ax=axes[i],
+            show_fig=False
+        ) 
 
-        plt.title('Análisis de la Escala de Tiempo (categorías seleccionadas)', fontsize=16, fontweight='bold')
-        plt.xlabel('Escala de Tiempo (Tamaño de la Ventana)', fontsize=12)
-        plt.ylabel('Frecuencia de Procesos', fontsize=12)
-        plt.xticks(list(results.keys()))
-        plt.legend()
+        # Guardar todos los subplots en una sola imagen 
+        plt.savefig(os.path.join(save_path, "histogramas_subplots.png"), dpi=300, bbox_inches="tight") 
 
-        out_dir = "./visualizations/process_classification"
-        os.makedirs(out_dir, exist_ok=True)
-        save_path = os.path.join(out_dir, "time_scale_analysis_selected.png")
-        plt.savefig(save_path, dpi=300, bbox_inches="tight")
-        print(f"Figura guardada en: {save_path}")
+        # Calcular proporciones
+        cognitive_control = process_frequencies.get("Cognitive Control", 0)
+        stationary_mode = process_frequencies.get("Stationary Mode", 0)
+        problem = process_frequencies.get("Problem", 0)
+        total_cognitive_domain = cognitive_control + stationary_mode
+        n=int(flux_window.shape[0])
 
-        plt.show()
+        # Almacenar resultados
+        results.append({
+            "Ventana": window_size,
+            "Número de pasos": int(n),
+            "CC": cognitive_control,
+            "SM": stationary_mode,
+            "PB": problem,
+            "Total CD": total_cognitive_domain,
+            "Proporción CC": cognitive_control / n,
+            "Proporción SM": stationary_mode / n,
+            "Proporción PB": problem / n,
+            "Proporción Total": total_cognitive_domain / n
+        })
 
-    return results
-
-
-#################################################################################################
-    
-import os
-import matplotlib.pyplot as plt
-from collections import Counter
-
-def analyze_scales(flux_vector, S, max_group_size=5, tol=1e-8, show_fig=True, save_fig=True):
-    """
-    Analiza la serie temporal de procesos en diferentes escalas de agrupación
-    y grafica la frecuencia del 'Cognitive Domain' según la escala.
-    """
-    if not isinstance(flux_vector, pd.DataFrame):
-        raise TypeError("flux_vector debe ser un DataFrame de pandas.")
-    if max_group_size < 1 or not isinstance(max_group_size, int):
-        raise ValueError("max_group_size debe ser un entero mayor o igual a 1.")
-
-    print(f"Analizando {max_group_size} escalas de tiempo. Esto puede tardar un momento...")
-
-    # Convertir a numpy y trasponer: (n_reacciones x n_tiempo)
-    flux_vector = flux_vector.iloc[:, 1:].to_numpy().T  
-
-    results = {}
-    for group_size in range(1, max_group_size+1):
-        classifications = []
-
-        for i in range(0, flux_vector.shape[1] - group_size + 1, group_size):
-            v_combined = np.sum(flux_vector[:, i:i+group_size], axis=1)  # (n_reacciones,)
-            classes = classify_process(v_combined, S, tol=tol)
-            classifications.extend(classes)
-
-        # Guardar conteo por categoría
-        results[group_size] = dict(Counter(classifications))
-
-    # ================================
-    # VISUALIZACIÓN SOLO PARA "Cognitive Domain"
-    # ================================
-    if show_fig and results:
-        scales = list(results.keys()) # Escalas de tiempo
-        counts = [results[s].get("Cognitive Domain", 0) for s in scales] # Conteos
-
-        # Encontrar escala óptima
-        optimal_scale = scales[int(np.argmax(counts))]
-        max_count = max(counts)
-
-        plt.style.use('seaborn-v0_8-whitegrid')
-        plt.figure(figsize=(12, 7))
-        plt.plot(scales, counts, marker='o', linestyle='-', color='b', label='Conteo de Dominio Cognitivo')
-
-        # Resaltar el óptimo
-        plt.axvline(x=optimal_scale, color='r', linestyle='--', 
-                    label=f'Escala Óptima = {optimal_scale} (Conteo: {max_count})')
-        plt.scatter(optimal_scale, max_count, color='red', s=100, zorder=5)
-
-        plt.title('Análisis de la Escala de Tiempo de Estabilidad', fontsize=16, fontweight='bold')
-        plt.xlabel('Escala de Tiempo (Tamaño de la Ventana)', fontsize=12)
-        plt.ylabel('Frecuencia de Procesos de "Dominio Cognitivo"', fontsize=12)
-        plt.xticks(scales)
-        plt.legend()
-
-        # Guardar automáticamente
-        if save_fig:
-            out_dir = "./visualizations/process_classification"
-            filename = "time_scale_analysis.png"
-            os.makedirs(out_dir, exist_ok=True)
-            save_path = os.path.join(out_dir, filename)
-            plt.savefig(save_path, dpi=300, bbox_inches="tight")
-            print(f"Figura guardada en: {save_path}")
-
-        plt.show()
-
-    return results
-
-
-#################################################################################################
-def analyze_time_scales(flux_vector, S, max_scale):
-    """
-    Analiza la serie temporal de flujos en diferentes escalas de tiempo para encontrar
-    la escala óptima de automantenimiento (Dominio Cognitivo).
-
-    Args:
-        flux_vector (pd.DataFrame): DataFrame de la simulación. La primera columna
-                                    debe ser el tiempo y el resto los flujos.
-        S (np.ndarray): La matriz estequiométrica.
-        max_scale (int): El tamaño máximo de la ventana de tiempo a analizar. 
-
-    Returns:
-        dict: Un diccionario con las escalas de tiempo como claves y el conteo de
-              procesos de "Dominio Cognitivo" como valores.
-    """
-    if not isinstance(flux_vector, pd.DataFrame):
-        raise TypeError("flux_vector debe ser un DataFrame de pandas.")
-    if max_scale < 1 or not isinstance(max_scale, int):
-        raise ValueError("max_scale debe ser un entero mayor o igual a 1.")
-
-    print(f"Analizando {max_scale} escalas de tiempo. Esto puede tardar un momento...")
-
-    # Extraer solo los valores de flujo como un array de NumPy para eficiencia
-    flux_values = flux_vector.iloc[:, 1:].to_numpy() # Excluir columna Time
-    
-    # Diccionario para almacenar los resultados
-    results = {}
-
-    # Iterar sobre cada escala de tiempo (tamaño de la ventana)
-    for scale in range(1, max_scale + 1):
-        cognitive_domain_count = 0
-        
-        # Deslizar la ventana a través de la serie temporal
-        # El bucle se detiene antes para asegurar que la ventana no exceda los límites
-        num_windows = len(flux_values) - scale + 1
-        for i in range(num_windows):
-            # Extraer la ventana de procesos
-            window = flux_values[i : i + scale]
-            
-            # Sumar los vectores de proceso en la ventana para obtener el "proceso combinado"
-            v_combined = np.sum(window, axis=0)
-            
-            # Clasificar el proceso combinado
-            classifications = classify_process(v_combined, S)
-            
-            # Contar si pertenece al Dominio Cognitivo
-            if "Cognitive Domain" in classifications:
-                cognitive_domain_count += 1
-        
-        results[scale] = cognitive_domain_count
-        print(f"Escala {scale}: {cognitive_domain_count} procesos de Dominio Cognitivo encontrados.")
-
-    # --- Visualización de los Resultados ---
-    scales = list(results.keys())
-    counts = list(results.values())
-
-    # Encontrar la escala con el máximo conteo
-    optimal_scale = max(results, key=results.get)
-    max_count = results[optimal_scale]
-
-    plt.style.use('seaborn-v0_8-whitegrid')
-    plt.figure(figsize=(12, 7))
-    plt.plot(scales, counts, marker='o', linestyle='-', color='b', label='Conteo de Dominio Cognitivo')
-    
-    # Resaltar el punto óptimo
-    plt.axvline(x=optimal_scale, color='r', linestyle='--', label=f'Escala Óptima = {optimal_scale} (Conteo: {max_count})')
-    plt.scatter(optimal_scale, max_count, color='red', s=100, zorder=5)
-
-    plt.title('Análisis de la Escala de Tiempo de Estabilidad', fontsize=16, fontweight='bold')
-    plt.xlabel('Escala de Tiempo (Tamaño de la Ventana)', fontsize=12)
-    plt.ylabel('Frecuencia de Procesos de "Dominio Cognitivo"', fontsize=12)
-    plt.xticks(scales)
-    plt.legend()
-
-    # --- Guardar la figura ---
-    out_dir="./visualizations/process_classification" 
-    filename="time_scale_analysis.png"
-    os.makedirs(out_dir, exist_ok=True)
-    save_path = os.path.join(out_dir, filename)
-    plt.savefig(save_path, dpi=300, bbox_inches="tight")
-    print(f"Figura guardada en: {save_path}")
-
+    # Ocultar subplots vacíos
+    for j in range(n_windows, n_rows * n_cols):
+        axes[j].axis('off')
     plt.show()
 
-    return results
+    # RESUMEN GLOBAL
+    results_df = pd.DataFrame(results)
+    max_row = results_df.select_dtypes(include=[np.number]).max()
+    max_row["Ventana"] = "Máximo"
+    results_df = pd.concat([results_df, pd.DataFrame([max_row])], ignore_index=True)
 
-################################################################################################# 
-# Función para crear series de tiempo agrupadas  
-def new_time_series(time_series, flux_vector, scale):
-    """
-    Agrupa los resultados de una simulación en una escala de tiempo mayor.
+    idx_max = results_df["Proporción Total"].idxmax()
+    max_row_total = results_df.loc[idx_max, "Proporción Total"]
+    max_row_n_steps = results_df.loc[idx_max, "Número de pasos"]
+    max_window_total = results_df.loc[idx_max, "Ventana"]
 
-    Args:
-        time_series (pd.DataFrame): DataFrame de concentraciones de la simulación.
-        flux_vector (pd.DataFrame): DataFrame de flujos de la simulación.
-        scale (int): La escala o tamaño de la ventana para agrupar.
+    print(f"\nMáximo Proporción Total Cognitive Domain: {max_row_total:.4f} (Ventana = {max_window_total}, n={int(max_row_n_steps)})\n")
+    print("Resumen Global:")
+    print(results_df)
 
-    Returns:
-        tuple: Una tupla conteniendo (ts_coarse_df, fv_coarse_df), los nuevos
-               DataFrames agrupados.
-    """
-    if scale < 1:
-        return time_series, flux_vector
+    # GRÁFICO GLOBAL DE PROPORCIONES 
+    results_numeric = results_df[results_df["Ventana"].apply(lambda x: isinstance(x, (int, float)))]
+    plt.figure(figsize=(8, 5))
+    plt.plot(results_numeric["Ventana"], 100 * results_numeric["Proporción PB"],
+            marker='o', linestyle='-', color='red', label="Problem")    
+    plt.plot(results_numeric["Ventana"], 100 * results_numeric["Proporción CC"],
+            marker='o', linestyle='-', color='green', label="Cognitive Control")
+    plt.plot(results_numeric["Ventana"], 100 * results_numeric["Proporción SM"],
+            marker='o', linestyle='-', color='cyan', label="Stationary Mode")
+    plt.plot(results_numeric["Ventana"], 100 * results_numeric["Proporción Total"],
+            marker='o', linestyle='-', color='purple', label="Total Cognitive Domain")
+    plt.plot(max_window_total, 100 * max_row_total, 'yo', label="Máximo Total", markersize=10)
+    plt.xlabel("Tamaño de ventana (pasos)")
+    plt.ylabel("Porcentaje (%)")
+    plt.title("Cognitive Domain vs tamaño de ventana")
+    plt.grid(alpha=0.3)
+    plt.legend()
+    plt.savefig(os.path.join(save_path, "proportions_plots.png"), dpi=150, bbox_inches="tight")
+    plt.show()
 
-    # Extraer valores como arrays de NumPy para eficiencia
-    ts_values = time_series.to_numpy()
-    fv_values = flux_vector.iloc[:, 1:].to_numpy() # Excluir columna de tiempo
+    # SIMULACIÓN FINAL CON MÁXIMA PROPORCIÓN DE COGNITIVE DOMAIN
+    times_window_max, flux_window_max = simulation(
+        rn, rate=rate_list, spec_vector=spec_vector, x0=x0,
+        t_span=t_span, n_steps=int(max_row_n_steps)
+    )
 
-    new_ts_rows = []
-    new_fv_rows = []
+    # Gráficos combinados
+    fig, axes = plt.subplots(1, 3, figsize=(18, 4))
+    plot_series_with_domain_intervals(times_window_max, flux_window_max, S,
+                                      title=f"Serie de Tiempo - Ventana {max_window_total} pasos", save_figure=False, ax=axes[0])
+    plot_flux_with_domain_intervals(flux_window_max, S,
+                                    title=f"Flujos - Ventana {max_window_total} pasos", save_figure=False, ax=axes[1])
+    plot_process_types_histogram(flux_window_max, S,
+                                 title=f"Histograma de Tipos de Procesos (n={int(max_row_n_steps)})", save_figure=False, ax=axes[2])
+    plt.tight_layout()
+    plt.savefig(os.path.join(save_path, "combined_plots.png"), dpi=150, bbox_inches="tight")
+    plt.show()
 
-    # Iterar en bloques no superpuestos del tamaño de la escala
-    for i in range(0, len(ts_values) - scale + 1, scale):
-        # La ventana de flujos a sumar
-        flux_window = fv_values[i : i + scale]
-        
-        # El proceso combinado es la suma de los flujos en la ventana
-        combined_flux = np.sum(flux_window, axis=0)
-        
-        # El punto de tiempo y las concentraciones corresponden al final de la ventana
-        end_of_window_ts = ts_values[i + scale - 1]
-        
-        # Añadir la nueva fila de flujo (tiempo + flujos sumados)
-        new_fv_rows.append(np.insert(combined_flux, 0, end_of_window_ts[0]))
-        
-        # Añadir la nueva fila de concentraciones
-        new_ts_rows.append(end_of_window_ts)
-
-    # Crear nuevos DataFrames con las columnas originales
-    ts_coarse_df = pd.DataFrame(new_ts_rows, columns=time_series.columns)
-    fv_coarse_df = pd.DataFrame(new_fv_rows, columns=flux_vector.columns)
-    
-    return ts_coarse_df, fv_coarse_df
-
-def find_min_cognitive_interval(rn, x0, spec_vector, rate_list='mak', t_max_values=None, n_steps_values=None):
-    from pyCOT.simulations import simulation
-    from pyCOT.plot_dynamics import plot_flux_with_domain_intervals
-    
-    if t_max_values is None:
-        t_max_values = [50, 75, 100, 125]  # puedes modificar
-    if n_steps_values is None:
-        n_steps_values = [500, 1000, 2000, 3000]  # puedes modificar
-    
-    best_interval = float('inf')
-    best_config = None
-    best_flux_vector = None
-    best_time_series = None
-    
-    for t_max in t_max_values:
-        for n_steps in n_steps_values:
-            # Ejecutar simulación
-            time_series, flux_vector = simulation(
-                rn, rate=rate_list, spec_vector=spec_vector, x0=x0,
-                t_span=(0, t_max), n_steps=n_steps+1
-            )
-            
-            # Obtener intervalos del Cognitive Domain
-            intervals = plot_flux_with_domain_intervals(
-                flux_vector, rn.stoichiometry_matrix(),
-                title=f"t_max={t_max}, n_steps={n_steps}", 
-                save_figure=False, show_fig=False
-            )
-            
-            # intervals devuelve lista de tuplas: [(start, end), ...]
-            if intervals:
-                min_interval = min([end-start for start, end in intervals])
-                if min_interval < best_interval:
-                    best_interval = min_interval
-                    best_config = (t_max, n_steps)
-                    best_flux_vector = flux_vector
-                    best_time_series = time_series
-    
-    print(f"Mejor configuración: t_max={best_config[0]}, n_steps={best_config[1]}")
-    print(f"Intervalo mínimo encontrado: {best_interval}")
-    
-    return best_time_series, best_flux_vector, best_config, best_interval
-
-import numpy as np
-from pyCOT.simulations import simulation
-
-def find_natural_time_scale(rn, x0=None, spec_vector=None, rate_list='mak', 
-                            t_max_values=None, n_steps_values=None, tol=1e-4):
-    """
-    Busca la escala de tiempo natural (t_max, n_steps) de la simulación que genere el 
-    mínimo periodo T.
-
-    Args:
-        rn: Red de reacciones (ReactionNetwork object)
-        x0: Condiciones iniciales
-        spec_vector: Vector de especificidad de reacciones
-        rate_list: Cinéticas
-        t_max_values: Lista de tiempos máximos a probar
-        n_steps_values: Lista de n_steps a probar
-        tol: Tolerancia para la clasificación de procesos
-
-    Returns:
-        best_time_series, best_flux_vector, best_config, min_interval
-    """
-    
-    S = rn.stoichiometry_matrix()
-    
-    if t_max_values is None:
-        t_max_values = [50, 75, 100, 125]
-    if n_steps_values is None:
-        n_steps_values = [500, 1000, 2000, 3000]
-
-    best_interval = float('inf') # Se inicializa con infinito para poder comparar y guardar el menor intervalo
-    best_config = None
-    best_flux_vector = None
-    best_time_series = None
-
-    # Iterar sobre todas las combinaciones de t_max y n_steps
-    for t_max in t_max_values:
-        for n_steps in n_steps_values:
-            # Ejecutar simulación con la configuración actual
-            time_series, flux_vector = simulation(
-                rn, rate=rate_list, spec_vector=spec_vector, x0=x0,
-                t_span=(0, t_max), n_steps=n_steps+1
-            )
-
-            # Clasificar cada vector de flujo para cada instante de tiempo
-            cognitive_times = []
-            for i in range(len(flux_vector)):
-                v = flux_vector.iloc[i, 1:].values  # excluyendo columna Time
-                classes = classify_process(v, S, tol=tol)
-                if "Cognitive Domain" in classes:
-                    cognitive_times.append(flux_vector.iloc[i, 0])  # Guardar el tiempo
-
-            # Detectar intervalos consecutivos del Cognitive Domain
-            if cognitive_times:
-                cognitive_times = np.array(cognitive_times) # Convertir a array de NumPy
-                diffs = np.diff(cognitive_times) # Diferencias entre tiempos consecutivos
-
-                # Considerar un salto mayor a dt como fin de un intervalo
-                # dt = cognitive_times[1] - cognitive_times[0] # Paso de tiempo típico entre dos instantes consecutivos que fueron clasificados dentro del Cognitive Domain
-                dt = cognitive_times[1] - cognitive_times[0] if len(cognitive_times) > 1 else 0
-                splits = np.where(diffs > 1.5*dt)[0]  # 1.5*dt para tolerancia. Si la diferencia es un poco más grande que dt (por ruido numérico), no corta el intervalo.
-                
-                intervals = []
-                start_idx = 0
-                for split in splits:
-                    intervals.append((cognitive_times[start_idx], cognitive_times[split]))
-                    start_idx = split+1
-                # Se guardan todos los intervalos como (t_start, t_end).    
-                intervals.append((cognitive_times[start_idx], cognitive_times[-1]))  # último intervalo
-
-                # Intervalo mínimo en esta configuración
-                min_interval_current = min([end-start for start, end in intervals])
-                if min_interval_current < best_interval:
-                    best_interval = min_interval_current
-                    best_config = (t_max, n_steps)
-                    best_flux_vector = flux_vector
-                    best_time_series = time_series
-
-    if best_config is not None:
-        print(f"Mejor configuración: t_max={best_config[0]}, n_steps={best_config[1]}")
-        return best_time_series, best_flux_vector, best_config, best_interval
-    else:
-        print("⚠️ No se encontró ninguna configuración válida para la escala de tiempo natural.")
-        return None, None, None, None
-
-    # print(f"Mejor configuración: t_max={best_config[0]}, n_steps={best_config[1]}")
-    # print(f"Intervalo mínimo del Cognitive Domain: {best_interval:.5f}")
-
-    # return best_time_series, best_flux_vector, best_config, best_interval
+    return results_df
