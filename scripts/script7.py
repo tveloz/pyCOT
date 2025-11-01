@@ -18,6 +18,7 @@ from pyCOT.plot_dynamics import *
 # ========================================
 file_path = 'Txt/autopoietic.txt'  
 # file_path = 'Txt/Farm.txt'
+file_path = 'networks/testing/Lotka_Volterra.txt'
 rn = read_txt(file_path)
 
 species = [specie.name for specie in rn.species()]

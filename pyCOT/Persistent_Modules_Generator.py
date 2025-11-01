@@ -209,7 +209,7 @@ class ElementarySO:
 
 class Organization:
     """
-    Non-elementary organization containing multiple ElementarySOs.
+   Organization containing one or multiple ElementarySOs.
     
     Built through productive combination of elementary semi-organizations,
     representing higher-order organizational structures.
@@ -717,7 +717,7 @@ def compute_all_organizations(RN, max_generator_size=8, max_organization_size=5,
         print("\nStep 1: Creating ERC hierarchy...")
     hierarchy_start = time.time()
     ercs = ERC.ERCs(RN)
-    hierarchy = ERC_Hierarchy(ercs, RN)
+    hierarchy = ERC_Hierarchy(RN,ercs)
     hierarchy_time = time.time() - hierarchy_start
     if verbose:
         print(f"✅ Created hierarchy: {len(hierarchy.ercs)} ERCs in {hierarchy_time:.2f}s")

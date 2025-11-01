@@ -38,6 +38,8 @@ def test_sorn_generators():
     # Load reaction network
     print("Loading reaction network...")
     file_path = 'networks/testing/Farm.txt'
+
+    file_path = 'networks/Marine_Ecosystem/Las_Cruces_251021.txt'
     #file_path = 'networks/Navarino/RN_IN_05.txt'
     # Alternative networks for testing:
     # file_path = 'networks/RandomAlife/RN_Ns_20_Norg_4_id_12.txt'
@@ -57,7 +59,7 @@ def test_sorn_generators():
     print("\nCreating ERC hierarchy...")
     start_time = time.time()
     ercs = ERC.ERCs(RN)
-    hierarchy = ERC_Hierarchy(ercs, RN)
+    hierarchy = ERC_Hierarchy(RN,ercs)
     hierarchy_time = time.time() - start_time
     print(f"✅ Created hierarchy: {len(hierarchy.ercs)} ERCs in {hierarchy_time:.2f}s")
     

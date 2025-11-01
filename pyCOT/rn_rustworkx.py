@@ -567,3 +567,196 @@ class ReactionNetwork(PyDiGraph):
                 partial_reactions.append(reaction)
         
         return partial_reactions
+
+    def generate_connected_subnetwork(self, target_percentage: float, max_attempts: int = 10000, 
+                                    seed: int = None, verbose: bool = False) -> 'ReactionNetwork':
+        """
+        Generate a connected subnetwork of approximately target_percentage size.
+        
+        This function randomly removes reactions from the network while maintaining 
+        connectivity of all species (except potentially disconnected inflow species).
+        
+        Parameters
+        ----------
+        target_percentage : float
+            Target percentage of reactions to keep (0.0 to 1.0)
+        max_attempts : int, optional
+            Maximum number of attempts to remove reactions (default: 10000)
+        seed : int, optional
+            Random seed for reproducibility (default: None)
+        verbose : bool, optional
+            Print progress information (default: False)
+            
+        Returns
+        -------
+        ReactionNetwork
+            A connected subnetwork with approximately target_percentage of reactions
+            
+        Raises
+        ------
+        ValueError
+            If target_percentage is not between 0 and 1
+            
+        Notes
+        -----
+        Connectivity is checked by verifying that all non-inflow species can be 
+        reached from other species via reactions. Inflow species may remain 
+        disconnected as they are external inputs to the network.
+        
+        Examples
+        --------
+        >>> # Generate a subnetwork with 50% of reactions
+        >>> sub_rn = rn.generate_connected_subnetwork(0.5, seed=42, verbose=True)
+        """
+        import random
+        from collections import deque
+        
+        if not 0.0 <= target_percentage <= 1.0:
+            raise ValueError("target_percentage must be between 0.0 and 1.0")
+        
+        if seed is not None:
+            random.seed(seed)
+        
+        # Get all reactions and species
+        all_reactions = self.reactions()
+        all_species = self.species()
+        inflow_species_set = set(sp.name for sp in self.inflow_species())
+        
+        target_num_reactions = max(1, int(len(all_reactions) * target_percentage))
+        
+        if verbose:
+            print(f"Original network: {len(all_species)} species, {len(all_reactions)} reactions")
+            print(f"Target: {target_num_reactions} reactions ({target_percentage*100:.1f}%)")
+            print(f"Inflow species: {len(inflow_species_set)}")
+        
+        # Start with all reactions
+        current_reactions = set(r.name() for r in all_reactions)
+        
+        def is_connected(reaction_names):
+            """
+            Check if the network is connected with given reactions.
+            
+            A network is connected if all non-inflow species can be reached 
+            from each other via the reaction hypergraph.
+            """
+            if not reaction_names:
+                return len(all_species) == len(inflow_species_set)
+            
+            # Build adjacency for species connectivity via reactions
+            # Two species are connected if they appear in the same reaction
+            species_connections = {sp.name: set() for sp in all_species}
+            
+            for r_name in reaction_names:
+                reaction = self.get_reaction(r_name)
+                species_in_reaction = set(sp.name for sp in self.get_species_from_reactions(reaction))
+                
+                # Connect all species in this reaction to each other
+                for sp1 in species_in_reaction:
+                    for sp2 in species_in_reaction:
+                        if sp1 != sp2:
+                            species_connections[sp1].add(sp2)
+            
+            # Check connectivity for non-inflow species using BFS
+            non_inflow_species = [sp.name for sp in all_species if sp.name not in inflow_species_set]
+            
+            if not non_inflow_species:
+                return True  # All species are inflow, trivially connected
+            
+            # Start BFS from first non-inflow species
+            start_species = non_inflow_species[0]
+            visited = {start_species}
+            queue = deque([start_species])
+            
+            while queue:
+                current = queue.popleft()
+                for neighbor in species_connections.get(current, []):
+                    if neighbor not in visited:
+                        visited.add(neighbor)
+                        queue.append(neighbor)
+            
+            # Check if all non-inflow species are reachable
+            non_inflow_set = set(non_inflow_species)
+            visited_non_inflow = visited & non_inflow_set
+            
+            return len(visited_non_inflow) == len(non_inflow_set)
+        
+        # Randomly remove reactions while maintaining connectivity
+        attempts = 0
+        reactions_removed = 0
+        
+        if verbose:
+            print("\nRemoving reactions...")
+        
+        while len(current_reactions) > target_num_reactions and attempts < max_attempts:
+            attempts += 1
+            
+            # Pick a random reaction to try removing
+            reaction_to_remove = random.choice(list(current_reactions))
+            
+            # Test if removing it breaks connectivity
+            test_reactions = current_reactions - {reaction_to_remove}
+            
+            if is_connected(test_reactions):
+                # Safe to remove
+                current_reactions = test_reactions
+                reactions_removed += 1
+                
+                if verbose and reactions_removed % 10 == 0:
+                    remaining = len(current_reactions)
+                    print(f"  Removed {reactions_removed} reactions, {remaining} remaining "
+                        f"({remaining/len(all_reactions)*100:.1f}%)")
+            
+            # Early exit if we've reached target
+            if len(current_reactions) <= target_num_reactions:
+                break
+        
+        # Build the subnetwork
+        if verbose:
+            print(f"\nBuilding subnetwork with {len(current_reactions)} reactions...")
+        
+        # Get all species involved in remaining reactions
+        species_in_subnet = set()
+        for r_name in current_reactions:
+            reaction = self.get_reaction(r_name)
+            species_in_subnet.update(sp.name for sp in self.get_species_from_reactions(reaction))
+        
+        # Create new network
+        subnet = ReactionNetwork()
+        
+        # Add all species
+        for sp in all_species:
+            if sp.name in species_in_subnet or sp.name in inflow_species_set:
+                subnet.add_species(sp.name, sp.quantity)
+        
+        # Add remaining reactions
+        for r_name in current_reactions:
+            reaction = self.get_reaction(r_name)
+            
+            support_species = [sp.name for sp in self.get_supp_from_reactions(reaction)]
+            products_species = [sp.name for sp in self.get_prod_from_reactions(reaction)]
+            
+            # Get coefficients
+            support_coeffs = [edge.coefficient for edge in reaction.support_edges()]
+            products_coeffs = [edge.coefficient for edge in reaction.products_edges()]
+            
+            subnet.add_reaction(
+                r_name,
+                support_species if support_species else None,
+                products_species if products_species else None,
+                support_coeffs,
+                products_coeffs,
+                reaction.node.rate
+            )
+        
+        if verbose:
+            final_percentage = len(current_reactions) / len(all_reactions) * 100
+            print(f"\nFinal subnetwork: {len(subnet.species())} species, "
+                f"{len(subnet.reactions())} reactions ({final_percentage:.1f}%)")
+            print(f"Attempts: {attempts}")
+            
+            if len(current_reactions) > target_num_reactions:
+                print(f"⚠️  Warning: Could not reach target size. "
+                    f"Stopped at {len(current_reactions)} reactions "
+                    f"(target was {target_num_reactions})")
+        
+        return subnet

@@ -12,6 +12,8 @@ import sys
 import time
 import numpy as np
 
+from pyCOT.tests.reaction_network.test_add_from_reaction_string import rn
+
 # Add the root directory to the PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -46,14 +48,16 @@ def test_persistent_modules_generator():
     # Load reaction network
     print("Loading reaction network...")
     file_path = 'networks/testing/Farm.txt'
+    file_path = 'networks/Marine_Ecosystem/Las_Cruces_251021.txt'  # Specify the network file
+
     # Alternative networks for testing:
     #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_12_id_358.txt'
-    file_path = 'networks/Navarino/RN_IN_05.txt'
-    file_path = 'networks/biomodels_interesting/bigg_iAF692.txt'
+    #file_path = 'networks/Navarino/RN_IN_05.txt'
+    #file_path = 'networks/biomodels_interesting/bigg_iAF692.txt'
     RN = read_txt(file_path)
     
     # Verify we got a proper ReactionNetwork object
-    if not isinstance(RN, ReactionNetwork):
+    if not isinstance(RN, ReactionNetwork): 
         raise TypeError(f"read_txt returned {type(RN)}, expected ReactionNetwork")
     
     print(f"✅ Loaded network: {len(RN.species())} species, {len(RN.reactions())} reactions")
@@ -62,7 +66,7 @@ def test_persistent_modules_generator():
     print("\nSetting up prerequisites...")
     start_time = time.time()
     ercs = ERC.ERCs(RN)
-    hierarchy = ERC_Hierarchy(ercs, RN)
+    hierarchy = ERC_Hierarchy(RN, ercs)
     setup_time = time.time() - start_time
     print(f"✅ Created hierarchy: {len(hierarchy.ercs)} ERCs in {setup_time:.2f}s")
         # Test 2: Build ERC_SORN
@@ -295,7 +299,7 @@ def test_persistent_modules_generator():
     complete_results = compute_all_organizations(
         RN, 
         max_generator_size=50,  # Smaller for testing
-        max_organization_size=3,
+        max_organization_size=10,
         verbose=True
     )
     
@@ -371,12 +375,15 @@ def test_persistent_modules_generator():
     print(f"✅ Total test time: {total_test_time:.2f}s")
     
     print("Elementary Organizations")
-    print(elementary_organizations)
-    print("Non- Elementary Organizations")
-    print(non_elementary_orgs)
-    
-    
+    for org in elementary_organizations:
+        species = [specie.name for specie in org.closure_species]
+        print(org.id+" =" +str(species))
+            
 
+    print("Non-Elementary Organizations")
+    for org in non_elementary_orgs:
+        species = [specie.name for specie in org.combined_closure]
+        print(org.id+" =" + str(species))
     return {
         'RN': RN,
         'hierarchy': hierarchy,

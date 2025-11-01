@@ -76,35 +76,57 @@ def closure(RN, species_set):
 
 def generators(RN):
     """
-    Generate all unique generators based on their closures, not just supports.
-    This is critical for networks with reactions that have the same support 
-    but produce different closures (e.g., a+b->c and a+b->d).
+    Get generators from reaction network with their closures.
+    
+    Parameters
+    ----------
+    RN : ReactionNetwork
+        The reaction network object
+        
+    Returns
+    -------
+    list of tuples
+        List of (support, closure) pairs where each support is paired with its computed closure
     """
-    gen = [closure(RN, [])]
+    # Verify RN is a ReactionNetwork object
+    if not hasattr(RN, 'get_prod_from_species'):
+        raise TypeError("RN must be a ReactionNetwork object")
+        
+    # Initialize with empty set and its closure
+    empty_support = []
+    empty_closure = closure(RN, empty_support)
+    gen_pairs = [(empty_support, empty_closure)]
     
-    # Track seen CLOSURES to avoid duplicates (not just supports!)
-    seen_closures = set()
+    # Track seen supports to avoid duplicates
+    seen_support_signatures = set()
     
-    # Add the empty set closure signature
-    empty_closure_sig = tuple(sorted([sp.name for sp in gen[0]]))
-    seen_closures.add(empty_closure_sig)
+    # Add the empty support signature
+    empty_support_sig = tuple(sorted([sp.name for sp in empty_support])) if empty_support else ()
+    seen_support_signatures.add(empty_support_sig)
     
     for reaction in RN.reactions():
         support = RN.get_supp_from_reactions(reaction)
         
-        if support:
-            # Compute the closure of this support
-            support_closure = closure(RN, support)
+        if support:  # Only add non-empty supports
+            # Create a hashable signature for the support
+            support_signature = tuple(sorted([sp.name for sp in support]))
             
-            # Create a hashable signature for the CLOSURE (not the support)
-            closure_signature = tuple(sorted([sp.name for sp in support_closure]))
-            
-            # Only add if we haven't seen this closure before
-            if closure_signature not in seen_closures:
-                gen.append(support)
-                seen_closures.add(closure_signature)
+            # Only add if we haven't seen this support before
+            if support_signature not in seen_support_signatures:
+                # Compute closure for this support
+                support_closure = closure(RN, support)
+                
+                # Store the pair
+                gen_pairs.append((support, support_closure))
+                seen_support_signatures.add(support_signature)
     
-    return gen
+    return gen_pairs
+
+
+
+
+
+
 
 class ERC:
     def __init__(self, min_generators, label, all_generators=None):
@@ -181,52 +203,97 @@ class ERC:
         self._produced_species = None
 
     @staticmethod
-    def find_minimal_generators(generators):
+    def find_minimal_generators(generator_pairs):
+        """
+        Find minimal generators from a list of (support, closure) pairs.
+        All pairs should have the same closure.
+        
+        Parameters
+        ----------
+        generator_pairs : list of tuples
+            List of (support, closure) pairs
+            
+        Returns
+        -------
+        list
+            List of minimal supports (without their closures)
+        """
         minimal = []
-        gen_sets = [(gen, set(sp.name for sp in gen)) for gen in generators]
-
-        for i, (gen1, set1) in enumerate(gen_sets):
+        
+        # Extract supports and create sets of species names for comparison
+        supports_with_sets = [(support, set(sp.name for sp in support)) 
+                            for support, _ in generator_pairs]
+        
+        # Check each support to see if it's minimal
+        for i, (support_i, set_i) in enumerate(supports_with_sets):
             is_minimal = True
-            for j, (gen2, set2) in enumerate(gen_sets):
-                if i != j and set2.issubset(set1) and set2 != set1:
-                    is_minimal = False
-                    break
+            
+            # Compare with all other supports
+            for j, (support_j, set_j) in enumerate(supports_with_sets):
+                if i != j:
+                    # If another support is a proper subset, this one is not minimal
+                    if set_j.issubset(set_i) and set_j != set_i:
+                        is_minimal = False
+                        break
+            
             if is_minimal:
-                minimal.append(gen1)
+                minimal.append(support_i)
+        
         return minimal
     
     @staticmethod
     def ERCs(RN):
-        """Create ERCs with closure pre-computation for efficiency"""
-        print("Computing ERCs with closure caching...")
+        """
+        Create ERCs with explicit support-closure pairing.
         
-        # 1. Compute all closures once (O(n))
-        generators_list = generators(RN)
-        closure_cache = {id(gen): closure(RN, gen) for gen in generators_list}
-        
-        # 2. Group by closure signature (O(n))
-        closure_groups = defaultdict(list)
-        for gen in generators_list:
-            sig = tuple(sorted(sp.name for sp in closure_cache[id(gen)]))
-            closure_groups[sig].append(gen)
-        
-        # 3. Find minimal generators for each group (O(Σk²))
-        ERC_list = []
-        for counter, (closure_sig, gens_group) in enumerate(closure_groups.items()):
-            min_gens = ERC.find_minimal_generators(gens_group)
+        Parameters
+        ----------
+        RN : ReactionNetwork
+            The reaction network object
             
+        Returns
+        -------
+        list
+            List of ERC objects
+        """
+        print("Computing ERCs with explicit support-closure pairs...")
+        
+        # 1. Get all (support, closure) pairs
+        generator_pairs = generators(RN)
+        
+        # 2. Group by closure signature
+        closure_groups = defaultdict(list)
+        for support, support_closure in generator_pairs:
+            # Create signature from closure
+            closure_sig = tuple(sorted(sp.name for sp in support_closure))
+            # Store the pair in the appropriate group
+            closure_groups[closure_sig].append((support, support_closure))
+        
+        # 3. Find minimal generators for each group
+        ERC_list = []
+        for counter, (closure_sig, pairs_group) in enumerate(closure_groups.items()):
+            # Find minimal supports within this group
+            min_gens = ERC.find_minimal_generators(pairs_group)
+            
+            # Extract all supports (for all_generators field)
+            all_gens = [support for support, _ in pairs_group]
+            
+            # Create ERC object
             erc = ERC(min_generators=min_gens,
                     label=f"E{counter}",
-                    all_generators=gens_group)
+                    all_generators=all_gens)
             
-            # Pre-compute and cache closure for efficiency
-            erc._closure = closure_cache[id(min_gens[0])]
+            # Pre-compute and cache closure (using the first pair's closure since all are identical)
+            erc._closure = pairs_group[0][1]
             erc._closure_names = set(species_list_to_names(erc._closure))
             erc._RN_reference = id(RN)
             
             ERC_list.append(erc)
         
-        print(f"Created {len(ERC_list)} ERCs with pre-computed closures")
+        print(f"Created {len(ERC_list)} ERCs")
+        print(f"  Total generator pairs found: {len(generator_pairs)}")
+        print(f"  Total minimal generators found: {sum(len(erc.min_generators) for erc in ERC_list)}")
+        
         return ERC_list
     
     @staticmethod  
@@ -316,84 +383,13 @@ class ERC:
             levels[node] = max_path_length
         return levels
 
-    @staticmethod
-    def plot_hierarchy(RN, ercs=None , graph=None, figsize=(10,10), title="ERC Hierarchy"):
-        """Plot the ERC hierarchy"""
-        
-        if ercs is None:
-            ercs=ERC.ERCs(RN)
-        if graph is None:
-            graph = ERC.build_hierarchy_graph(ercs, RN)            
-        fig = plt.figure(figsize=figsize)
-        ax = fig.add_subplot(111)
-        
-        levels = ERC.get_node_levels(graph)
-        pos = {}
-        level_nodes = defaultdict(list)
-        
-        for node, level in levels.items():
-            level_nodes[level].append(node)
-        
-        # Position nodes by level
-        for level, nodes in level_nodes.items():
-            n_nodes = len(nodes)
-            nodes.sort(key=lambda n: len(nx.ancestors(graph, n)), reverse=True)
-            for i, node in enumerate(nodes):
-                x = (i - (n_nodes-1)/2) * 2.0
-                y = level * 2.0
-                pos[node] = (x, y)
-
-        # Draw graph components
-        nodes = nx.draw_networkx_nodes(graph, pos,
-                                     node_color='lightblue',
-                                     node_size=1000)
-        nx.draw_networkx_edges(graph, pos,
-                             edge_color='gray',
-                             arrows=True,
-                             arrowsize=20)
-        nx.draw_networkx_labels(graph, pos,
-                              font_size=12,
-                              font_weight='bold')
-        
-        # Add hover functionality
-        annot = ax.annotate("", 
-                           xy=(0,0), xytext=(20,20),
-                           textcoords="offset points",
-                           bbox=dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9),
-                           ha='center',
-                           visible=False)
-
-        def update_annot(ind):
-            node = list(graph.nodes())[ind["ind"][0]]
-            erc = next((e for e in ercs if e.label == node), None)
-            if RN and erc:
-                closure_text = f"Closure: {species_list_to_names(erc.get_closure(RN))}"
-            else:
-                closure_text = "Hover data not available (RN not provided)"
-            pos_node = pos[node]
-            annot.xy = pos_node
-            annot.set_text(closure_text)
-
-        def hover(event):
-            if event.inaxes == ax:
-                cont, ind = nodes.contains(event)
-                annot.set_visible(cont)
-                if cont:
-                    update_annot(ind)
-                    fig.canvas.draw_idle()
-
-        fig.canvas.mpl_connect("motion_notify_event", hover)
-        
-        plt.title(title)
-        plt.axis('off')
-        plt.show()
-        return graph
+    
 
 
 class ERC_Hierarchy:
     """Helper class to manage ERC hierarchies and containment relationships"""
     
-    def __init__(self, RN_or_ercs, RN=None):
+    def __init__(self, RN, ercs):
         """
         Initialize ERC hierarchy.
         
@@ -404,20 +400,10 @@ class ERC_Hierarchy:
         RN : ReactionNetwork, optional
             Required when passing a list of ERCs without RN references
         """
-        if isinstance(RN_or_ercs, list):
-            self.ercs = RN_or_ercs
-            # Try to get RN from ERCs first, fallback to provided RN
-            self.RN = getattr(self.ercs[0], 'RN', None) if self.ercs else None
-            if self.RN is None:
-                if RN is None:
-                    raise ValueError("RN must be provided when ERCs don't have RN reference")
-                self.RN = RN
-        else:
-            if not isinstance(RN_or_ercs, ReactionNetwork):
-                raise TypeError(f"Expected ReactionNetwork or list of ERCs, got {type(RN_or_ercs)}")
-            self.RN = RN_or_ercs
-            self.ercs = ERC.ERCs(self.RN)
-        
+        self.RN = RN
+        if ercs is None:
+            ercs= ERC.ERCs(RN)
+        self.ercs = ercs
         self.graph = None
         self.build_hierarchy_graph()
 
@@ -515,7 +501,92 @@ class ERC_Hierarchy:
         
         # Should not happen if ERCs were built correctly, but handle gracefully
         return None
+    def plot_hierarchy(self, figsize=(10,10), title="ERC Hierarchy"):
+        """
+        Plot the ERC hierarchy.
+        
+        Parameters
+        ----------
+        figsize : tuple, optional
+            Figure size (width, height)
+        title : str, optional
+            Plot title
+            
+        Returns
+        -------
+        networkx.DiGraph
+            The hierarchy graph
+        """
+        if self.graph is None:
+            raise ValueError("Hierarchy graph not built")
+            
+        fig = plt.figure(figsize=figsize)
+        ax = fig.add_subplot(111)
 
+        levels = ERC.get_node_levels(self.graph)  # Keep this as utility
+        pos = {}
+        level_nodes = defaultdict(list)
+
+        for node, level in levels.items():
+            level_nodes[level].append(node)
+
+        # Position nodes by level
+        for level, nodes in level_nodes.items():
+            n_nodes = len(nodes)
+            nodes.sort(key=lambda n: len(nx.ancestors(self.graph, n)), reverse=True)
+            for i, node in enumerate(nodes):
+                x = (i - (n_nodes-1)/2) * 2.0
+                y = level * 2.0
+                pos[node] = (x, y)
+
+        # Draw graph components
+        nodes = nx.draw_networkx_nodes(self.graph, pos,
+                                     node_color='lightblue',
+                                     node_size=1000)
+        nx.draw_networkx_edges(self.graph, pos,
+                             edge_color='gray',
+                             arrows=True,
+                             arrowsize=20)
+        nx.draw_networkx_labels(self.graph, pos,
+                              font_size=12,
+                              font_weight='bold')
+
+        # Add hover functionality using self.ercs and self.RN
+        annot = ax.annotate("",
+                           xy=(0,0), xytext=(20,20),
+                           textcoords="offset points",
+                           bbox=dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9),
+                           ha='center',
+                           visible=False)
+
+        def update_annot(ind):
+            node = list(self.graph.nodes())[ind["ind"][0]]
+            erc = next((e for e in self.ercs if e.label == node), None)
+            if erc:
+                closure_text = f"{species_list_to_names(erc.get_closure(self.RN))}"
+            else:
+                closure_text = "Hover data not available"
+            pos_node = pos.get(node, (0,0))
+            annot.xy = pos_node
+            annot.set_text(closure_text)
+
+        def hover(event):
+            if event.inaxes == ax:
+                cont, ind = nodes.contains(event)
+                annot.set_visible(cont)
+                if cont:
+                    try:
+                        update_annot(ind)
+                        fig.canvas.draw_idle()
+                    except Exception:
+                        pass
+
+        fig.canvas.mpl_connect("motion_notify_event", hover)
+
+        plt.title(title)
+        plt.axis('off')
+        plt.show()
+        return self.graph
 
 __all__ = [
     'ERC',

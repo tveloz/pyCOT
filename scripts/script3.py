@@ -30,10 +30,11 @@ file_path = 'Txt/Farm.txt'
 
 # file_path = 'networks/testing/Farm.txt'  # Input file
 # file_path = 'networks/testing/Farm_milk_and_dung.txt'  # Input file
-# file_path = 'networks/testing/Farm.txt'
-# file_path = 'networks/RandomAlife/RN_Ns_20_Norg_4_id_12.txt'
-# file_path = 'networks/RandomAlife/RN_Ns_40_Norg_12_id_358.txt'
+file_path = 'networks/testing/Farm.txt'
+#file_path = 'networks/RandomAlife/RN_Ns_20_Norg_4_id_12.txt'
+#file_path = 'networks/RandomAlife/RN_Ns_40_Norg_17_id_564.txt'
 # file_path = 'networks/Navarino/RN_IN_05.txt'
+file_path = 'networks/Marine_Ecosystem/Las_Cruces_251021.txt'
 
 rn = read_txt(file_path) 
 
@@ -67,8 +68,9 @@ for org in all_organizations:
         sset = set()  # fallback por seguridad
     all_organizations_sets.append(sset)
 orgs_sets = sorted(all_organizations_sets, key=len)
-print("\nOrganizations:\n", all_organizations_sets)
-
+print("\nOrganizations:\n")
+for org in all_organizations_sets:
+    print(org)
 # ========================================
 # 4. SELECTED ORGANIZATION
 # ========================================  

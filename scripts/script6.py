@@ -65,9 +65,9 @@ rate = 'mak'
 grid_shape = (2, 2)
 # spec_vector = [[0.3], [0.5], [1.0], [1.0], [1.0]] # Fig1a  # [[0.1]] * len(reactions) 
 # spec_vector = [[1.], [0.5], [0.1], [1.0], [3.0]] # Fig1b
-spec_vector = [[3.], [0.05], [6.0], [0.05], [2.0]] # Fig1c
+spec_vector = [[3.], [0.5], [0.5], [0.5], [0.1]] # Fig1c
 
-D_dict = {"l": 0., "s1": 0.5, "s2": 0.9}
+D_dict = {"l": 2, "s1": 0.3, "s2": 0.3}  # Diffusion coefficients for each species
 x0_dict = {
     "l": np.array([[0.5, 0.5], [0.5, 0.5]]),
     "s1": np.array([[0.5, 0.5], [0.5, 0.5]]),
@@ -77,7 +77,7 @@ x0_dict = {
 # Las filas deben sumar 1
 connectivity_matrix = np.array([
     [0.5, 0, 0.5, 0.],
-    [0., 1, 0., 0.],
+    [0., 0.5, 0.5, 0.],
     [0., 0., 0.5, 0.5],
     [0.2, 0., 0., 0.8]
 ]) 

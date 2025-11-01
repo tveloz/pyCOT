@@ -18,10 +18,11 @@ from pyCOT.simulations import *
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ========================================
-# file_path = 'pyCOT/networks/testing/autopoietic.txt'  
 # Alternative examples:
 file_path = 'Txt/autopoietic.txt'  
-# file_path = 'networks/Riverland_model/Scenario1_baseline_only_reactions.txt'  # Autopoietic network
+file_path = 'networks/testing/Lotka_Volterra.txt'  
+
+#file_path = 'networks/Riverland_model/Scenario1_baseline_only_reactions.txt'  # Autopoietic network
 # file_path = 'Txt/2019fig1.txt'
 # file_path = 'Txt/2019fig2.txt'
 # file_path = 'Txt/non_connected_example.txt' 
@@ -38,28 +39,28 @@ rn = read_txt(file_path)  # Create ReactionNetwork object from file
 # ###################################################################################
 # # Example 1: ODE simulation with one kinetic equation for all reactions
 # ###################################################################################
-rate_list = "mak"  # Kinetics for all reactions ("mak": mass action kinetics, "mmk": Michaelis-Menten kinetics, "hill": Hill kinetics)
-time_series, flux_vector = simulation(rn, rate=rate_list)
-
-print("ODE Time Series:")
-print(time_series)
-plot_series_ode(time_series)
-# ###################################################################################
-# # Example 2: ODE simulation with one kinetic equation for all reactions and specific parameters
-# ###################################################################################
-# x0 = [0, 1, 0]  # Initial concentrations
-# rate_list = 'mak'  # Kinetics for all reactions
-# spec_vector = [[0.7], [0.5], [1.0], [1.0], [1.0]]  # Parameters for each reaction
-
-# # Run simulation
-# time_series, flux_vector = simulation(
-#     rn, rate=rate_list, spec_vector=spec_vector, 
-#     x0=x0, t_span=(0, 50), n_steps=200
-# )
+# rate_list = "mak"  # Kinetics for all reactions ("mak": mass action kinetics, "mmk": Michaelis-Menten kinetics, "hill": Hill kinetics)
+# time_series, flux_vector = simulation(rn, rate=rate_list)
 
 # print("ODE Time Series:")
 # print(time_series)
-# plot_series_ode(time_series, filename="time_series_plot.png")
+# plot_series_ode(time_series)
+# ###################################################################################
+# # Example 2: ODE simulation with one kinetic equation for all reactions and specific parameters
+# ###################################################################################
+x0 = [2, 3, 0]  # Initial concentrations
+rate_list = 'mak'  # Kinetics for all reactions
+spec_vector = [[0.5], [0.8], [0.1]]  # Parameters for each reaction
+
+# # Run simulation
+time_series, flux_vector = simulation(
+    rn, rate=rate_list, spec_vector=spec_vector, 
+    x0=x0, t_span=(0, 100), n_steps=500
+)
+
+# print("ODE Time Series:")
+print(time_series)
+plot_series_ode(time_series, filename="time_series_plot.png")
 # ##################################################################################
 # # Example 3: ODE simulation using a mix of 'mak' and 'mmk' kinetics
 # ##################################################################################
