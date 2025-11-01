@@ -48,7 +48,7 @@ rn = read_txt(file_path)  # Create ReactionNetwork object from file
 # ###################################################################################
 # # Example 2: ODE simulation with one kinetic equation for all reactions and specific parameters
 # ###################################################################################
-x0 = [2, 3, 0]  # Initial concentrations
+x0 = [2, 3]  # Initial concentrations
 rate_list = 'mak'  # Kinetics for all reactions
 spec_vector = [[0.5], [0.8], [0.1]]  # Parameters for each reaction
 
