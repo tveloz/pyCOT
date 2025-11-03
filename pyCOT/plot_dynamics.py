@@ -3969,29 +3969,48 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
     results = []
 
     n_windows = len(window_sizes)
-    n_cols = 3
+    n_cols = 4
     n_rows = math.ceil(n_windows / n_cols)
 
+    # ==================================================================
     # SUBPLOTS DE HISTOGRAMAS
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(12, 4 * n_rows), constrained_layout=True)
     axes = axes.flatten()
 
+    # --- SIMULACIÓN ---
     time_series, flux_series = simulation(
         rn, rate=rate_list, spec_vector=spec_vector, x0=x0,
         t_span=t_span, n_steps=n_steps
     )
 
-    # Analizar cada tamaño de ventana
+    # --- ANALIZAR CADA TAMAÑO DE VENTANA ---
     for i, window_size in enumerate(window_sizes):
+
+        # Caso especial: ventana de tamaño 1 → copia directa
         if window_size == 1:
-            # Copia directa sin cambios
+            time_window = time_series.copy()
             flux_window = flux_series.copy()
-            print("flux_window (window_size=1) =\n", flux_window) 
-        # Suma movil para ventanas mayores a 1
+
+            # print(f"\n🔹 window_size = {window_size}")
+            # print("time_window =\n", time_window)
+            # print("flux_window =\n", flux_window)
+
+        # Ventanas mayores a 1 → suma móvil
         else:
-            # Solo las columnas numéricas de flujo
+            # --- TIME SERIES ---
+            time_numeric = time_series.drop(columns=['Time']).copy()
+            time_rolling = (
+                time_numeric
+                .rolling(window=window_size, min_periods=window_size)
+                .sum()
+                .dropna()
+                .reset_index(drop=True)
+            )
+            time_adjusted = time_series['Time'].iloc[window_size - 1:].reset_index(drop=True)
+            time_window = pd.concat([time_adjusted, time_rolling], axis=1)
+
+            # --- FLUX SERIES ---
             flux_numeric = flux_series.drop(columns=['Time']).copy()
-            # Suma móvil
             flux_rolling = (
                 flux_numeric
                 .rolling(window=window_size, min_periods=window_size)
@@ -3999,25 +4018,26 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
                 .dropna()
                 .reset_index(drop=True)
             )
+            flux_adjusted = flux_series['Time'].iloc[window_size - 1:].reset_index(drop=True)
+            flux_window = pd.concat([flux_adjusted, flux_rolling], axis=1)
 
-            # Ajustar tiempos para alinear con el resultado de la ventana (borde derecho)
-            time_adjusted = flux_series['Time'].iloc[window_size - 1:].reset_index(drop=True)
-            flux_window = pd.concat([time_adjusted, flux_rolling], axis=1)
-            # flux_window = flux_window.round(6) # Normalizar o limitar decimales
-            print(f"flux_window (window_size={window_size}) =\n", flux_window)
+            # # --- IMPRIMIR RESULTADOS ---
+            # print(f"\n🔹 window_size = {window_size}")
+            # print("time_window =\n", time_window)
+            # print("flux_window =\n", flux_window) 
 
-        # Clasificar y graficar histogramas
+        # Clasificar y graficar histogramas de tipos de proceso
         _, _, _, process_frequencies = plot_process_types_histogram(
             flux_window, S,
-            title=f"Ventana {window_size} pasos, tamaño de flux: {flux_window.shape[0]}",
+            title=f"Window={window_size}, n_steps={flux_window.shape[0]}",
             save_figure=False,
             ax=axes[i],
             show_fig=False
         ) 
-
         # Guardar todos los subplots en una sola imagen 
         plt.savefig(os.path.join(save_path, "histogramas_subplots.png"), dpi=300, bbox_inches="tight") 
 
+        # ==================================================================
         # Calcular proporciones
         cognitive_control = process_frequencies.get("Cognitive Control", 0)
         stationary_mode = process_frequencies.get("Stationary Mode", 0)
@@ -4044,6 +4064,7 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
         axes[j].axis('off')
     plt.show()
 
+    # ==================================================================
     # RESUMEN GLOBAL
     results_df = pd.DataFrame(results)
     max_row = results_df.select_dtypes(include=[np.number]).max()
@@ -4059,6 +4080,7 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
     print("Resumen Global:")
     print(results_df)
 
+    # ==================================================================
     # GRÁFICO GLOBAL DE PROPORCIONES 
     results_numeric = results_df[results_df["Ventana"].apply(lambda x: isinstance(x, (int, float)))]
     plt.figure(figsize=(8, 5))
@@ -4079,15 +4101,43 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
     plt.savefig(os.path.join(save_path, "proportions_plots.png"), dpi=150, bbox_inches="tight")
     plt.show()
 
-    # SIMULACIÓN FINAL CON MÁXIMA PROPORCIÓN DE COGNITIVE DOMAIN
-    times_window_max, flux_window_max = simulation(
-        rn, rate=rate_list, spec_vector=spec_vector, x0=x0,
-        t_span=t_span, n_steps=int(max_row_n_steps)
-    )
+    # ==================================================================
+    # # # SIMULACIÓN FINAL CON MÁXIMA PROPORCIÓN DE COGNITIVE DOMAIN  
+    window_size = max_window_total   
 
-    # Gráficos combinados
+    # --- TIME SERIES ---
+    time_numeric = time_series.drop(columns=['Time']).copy()
+    time_rolling = (
+        time_numeric
+        .rolling(window=window_size, min_periods=window_size)
+        .sum()
+        .dropna()
+        .reset_index(drop=True)
+    )
+    time_adjusted = time_series['Time'].iloc[window_size - 1:].reset_index(drop=True)
+    time_window_max = pd.concat([time_adjusted, time_rolling], axis=1)
+
+    # --- FLUX SERIES ---
+    flux_numeric = flux_series.drop(columns=['Time']).copy()
+    flux_rolling = (
+        flux_numeric
+        .rolling(window=window_size, min_periods=window_size)
+        .sum()
+        .dropna()
+        .reset_index(drop=True)
+    )
+    flux_adjusted = flux_series['Time'].iloc[window_size - 1:].reset_index(drop=True)
+    flux_window_max = pd.concat([flux_adjusted, flux_rolling], axis=1)
+
+    # --- RESULTADOS ---
+    print(f"Ventana máxima (window_size={window_size})")
+    print("time_window_max =\n", time_window_max)
+    print("flux_window_max =\n", flux_window_max)
+
+    # ==================================================================
+    # Gráficos combinados: series de tiempo, flujos e histograma
     fig, axes = plt.subplots(1, 3, figsize=(18, 4))
-    plot_series_with_domain_intervals(times_window_max, flux_window_max, S,
+    plot_series_with_domain_intervals(time_window_max, flux_window_max, S,
                                       title=f"Serie de Tiempo - Ventana {max_window_total} pasos", save_figure=False, ax=axes[0])
     plot_flux_with_domain_intervals(flux_window_max, S,
                                     title=f"Flujos - Ventana {max_window_total} pasos", save_figure=False, ax=axes[1])
