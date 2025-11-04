@@ -374,7 +374,7 @@ def flux_vector(rn, rn_dict, rate, result, time_points, spec_vector, additional_
 
 # Function to simulate the reaction network
 def simulation(rn, rate='mak', spec_vector=None, x0=None, t_span=(0, 200),
-               n_steps=200, additional_laws=None, method='LSODA', rtol=1e-8, atol=1e-10, verbose=False):
+               n_steps=200, additional_laws=None, method='LSODA', rtol=1e-8, atol=1e-10):
     
     species = [specie.name for specie in rn.species()]
     reactions = [reaction.name() for reaction in rn.reactions()]
@@ -425,7 +425,7 @@ def simulation(rn, rate='mak', spec_vector=None, x0=None, t_span=(0, 200),
     species_idx = {s: i for i, s in enumerate(species)}
     
     # Función de velocidades CON RESTRICCIÓN DE NO-NEGATIVIDAD
-    def rates_fn_constrained(t, x, verbose=False):
+    def rates_fn_constrained(t, x):
         # Asegurar que las concentraciones no sean negativas
         x_constrained = np.maximum(x, 0)
         dxdt = np.zeros_like(x_constrained)
@@ -457,10 +457,9 @@ def simulation(rn, rate='mak', spec_vector=None, x0=None, t_span=(0, 200),
         return dxdt
     
     # Imprimir ecuaciones y expresiones
-    if verbose:
-        print_differential_equations(rn, rn_dict)
-        print_velocity_expressions(rn, rn_dict, rate, additional_laws)
-            
+    print_differential_equations(rn, rn_dict)
+    print_velocity_expressions(rn, rn_dict, rate, additional_laws)
+    
     # Puntos de tiempo
     time_points = np.linspace(t_span[0], t_span[1], n_steps)
     

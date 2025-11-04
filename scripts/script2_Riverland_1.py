@@ -103,7 +103,20 @@ rn = read_txt(network_file)
 
 S = rn.stoichiometry_matrix()
 
-
+# Print the reactions in the network
+print("Loaded extended reaction network:")
+print("R1: => W_V                    (seasonal water inflow)")
+print("R2: W_V + V => V + V_W        (water processing by V)")
+print("R3: W_V + V_n => V_n + V_W    (water processing with V needs)")
+print("R4: W_V => W_R                (water transfer)")
+print("R5: W_R + R => R + R_W        (water processing by R)")
+print("R6: W_R + R_n => R_n + R_W    (water processing with R needs)")
+print("R7: V_W + V_n => V            (satisfaction of V)")
+print("R8: V => V_n                  (V need generation)")
+print("R9: R_n + R_W => R            (satisfaction of R)")
+print("R10: R => R_n                 (R need generation)")
+print("R11: V_W + V_W =>             (V water degradation)")
+print("R12: R_W + R_W =>             (R water degradation)")
 
 # ========================================
 # 3. SIMULATION PARAMETERS WITH SYMMETRY
