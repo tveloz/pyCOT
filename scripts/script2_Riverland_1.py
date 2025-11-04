@@ -134,10 +134,10 @@ rate_list = [
    'mak',   # R17: 2R_n=> (mass action degradation)
    ]
 #Water Inflow parameters
-A_values = [3, 6]   # Amplitudes for 3 seasons
-T_values = [100, 100]    # Durations (not equal)
+A_values = 2   # Amplitudes for 3 seasons
+#T_values = [100, 100]    # Durations (not equal)
 w = 0.05                     # Frequency of internal oscillation within each season
-water_inflow = [A_values, T_values, w]           # R1
+water_inflow = [A_values, w]           # R1
 #Other reaction params
 water_processing_params = [0.5, 1]     
 satisfaction_params = [1, 1]        
@@ -168,10 +168,8 @@ birth_rate,                   # R16: [k] - R birth (SAME as R12)
 death_rate,                 # R17: [k] - R_n death (SAME as R12)
 ]
 # Time span and steps - optimized to see oscillations clearly
-t_span = (0, 750)   # Short time span to see oscillations
-n_steps = 3000     # High resolution
 # Dictionary of additional kinetic laws
-additional_laws = {
+additional_laws = {     
     'cosine': rate_cosine,
     'saturated': rate_saturated
 }
@@ -179,6 +177,9 @@ additional_laws = {
 # ========================================
 # 4. RUN SIMULATION
 # ========================================  
+t_span=(0,10000)
+n_steps=2000
+
 time_series, flux_vector = simulation(
     rn, 
     rate=rate_list, 
@@ -189,131 +190,149 @@ time_series, flux_vector = simulation(
     additional_laws=additional_laws
 )
 
-print("time_series0=\n",time_series)
-print("flux_vector0=\n",flux_vector)
-plot_series_ode(time_series, filename="Riverland_scenario1_extended_network_time_series.png", show_fig=True)
+print("ODE Time Series:")
+print(time_series)
+plot_series_ode(time_series, filename="time_series_plot.png",show_fig=True)
 
 # ========================================
-# 5. PLOTS WITH COGNITIVE DOMAIN INTERVALS
+# 4. ANALYSIS: Process Type Proportions Over Time
 # ========================================
+results_df = analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_span=t_span, n_steps=n_steps,
+    window_sizes=list(range(1,601,50)), save_path="./visualizations/process_classification/")
+# print("ODE Time Series:")
+# print(time_series)
+# plot_series_ode(time_series, filename="time_series_plot.png",show_fig=True)
 
-# We need to use a custom simulation function since pyCOT doesn't pass time to rate functions
-def custom_simulation_with_time(rn, rate_list, spec_vector, x0, t_span, n_steps, additional_laws):
-    """Custom simulation that properly handles time-dependent kinetics"""
+# # ========================================
+# # 4. ANALYSIS: Process Type Proportions Over Time
+# # ========================================
+# results_df = analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_span=(0, tf), n_steps=n+1,
+#     window_sizes=list(range(1,601,50)), save_path="./visualizations/process_classification/")
+# print("time_series0=\n",time_series)
+# print("flux_vector0=\n",flux_vector)
+# plot_series_ode(time_series, filename="Riverland_scenario1_extended_network_time_series.png", show_fig=True)
+
+# # ========================================
+# # 5. PLOTS WITH COGNITIVE DOMAIN INTERVALS
+# # ========================================
+
+# # We need to use a custom simulation function since pyCOT doesn't pass time to rate functions
+# def custom_simulation_with_time(rn, rate_list, spec_vector, x0, t_span, n_steps, additional_laws):
+#     """Custom simulation that properly handles time-dependent kinetics"""
     
-    species = [specie.name for specie in rn.species()]
-    reactions = [reaction.name() for reaction in rn.reactions()]
-    species_idx = {s: i for i, s in enumerate(species)}
+#     species = [specie.name for specie in rn.species()]
+#     reactions = [reaction.name() for reaction in rn.reactions()]
+#     species_idx = {s: i for i, s in enumerate(species)}
     
-    # Build reaction dictionary
-    rn_dict = {}
-    reactants_vectors = rn.reactants_matrix().T
-    products_vectors = rn.products_matrix().T
-    for i in range(len(reactions)):
-        reactants = [(species[j], reactants_vectors[i][j]) for j in range(len(species)) if reactants_vectors[i][j] > 0]
-        products = [(species[j], products_vectors[i][j]) for j in range(len(species)) if products_vectors[i][j] > 0]
-        rn_dict[reactions[i]] = (reactants, products)
+#     # Build reaction dictionary
+#     rn_dict = {}
+#     reactants_vectors = rn.reactants_matrix().T
+#     products_vectors = rn.products_matrix().T
+#     for i in range(len(reactions)):
+#         reactants = [(species[j], reactants_vectors[i][j]) for j in range(len(species)) if reactants_vectors[i][j] > 0]
+#         products = [(species[j], products_vectors[i][j]) for j in range(len(species)) if products_vectors[i][j] > 0]
+#         rn_dict[reactions[i]] = (reactants, products)
     
-    # Rate laws dictionary
-    rate_laws = {
-        'mak': lambda reactants, concentrations, species_idx, spec_vector, t=None: 
-               spec_vector[0] * np.prod([concentrations[species_idx[sp]] ** coef for sp, coef in reactants]),
-        'cosine': rate_cosine,
-        'saturated': rate_saturated
-    }
+#     # Rate laws dictionary
+#     rate_laws = {
+#         'mak': lambda reactants, concentrations, species_idx, spec_vector, t=None: 
+#                spec_vector[0] * np.prod([concentrations[species_idx[sp]] ** coef for sp, coef in reactants]),
+#         'cosine': rate_cosine,
+#         'saturated': rate_saturated
+#     }
     
-    # Add additional laws
-    if additional_laws:
-        rate_laws.update(additional_laws)
+#     # Add additional laws
+#     if additional_laws:
+#         rate_laws.update(additional_laws)
     
-    # ODE function with proper time handling
-    def ode_system(t, x):
-        x = np.maximum(x, 0)  # Ensure non-negative concentrations
-        dxdt = np.zeros_like(x)
+#     # ODE function with proper time handling
+#     def ode_system(t, x):
+#         x = np.maximum(x, 0)  # Ensure non-negative concentrations
+#         dxdt = np.zeros_like(x)
         
-        for i, reaction in enumerate(reactions):
-            kinetic = rate_list[i]
-            reactants = rn_dict[reaction][0]
-            products = rn_dict[reaction][1]
-            params = spec_vector[i]
+#         for i, reaction in enumerate(reactions):
+#             kinetic = rate_list[i]
+#             reactants = rn_dict[reaction][0]
+#             products = rn_dict[reaction][1]
+#             params = spec_vector[i]
             
-            # Call rate function with time parameter for time-dependent kinetics
-            if kinetic == 'cosine':
-                rate_value = rate_laws[kinetic](reactants, x, species_idx, params, t=t)
-            else:
-                rate_value = rate_laws[kinetic](reactants, x, species_idx, params)
+#             # Call rate function with time parameter for time-dependent kinetics
+#             if kinetic == 'cosine':
+#                 rate_value = rate_laws[kinetic](reactants, x, species_idx, params, t=t)
+#             else:
+#                 rate_value = rate_laws[kinetic](reactants, x, species_idx, params)
             
-            # Apply stoichiometry
-            for sp, coef in reactants:
-                dxdt[species_idx[sp]] -= coef * rate_value
-            for sp, coef in products:
-                dxdt[species_idx[sp]] += coef * rate_value
+#             # Apply stoichiometry
+#             for sp, coef in reactants:
+#                 dxdt[species_idx[sp]] -= coef * rate_value
+#             for sp, coef in products:
+#                 dxdt[species_idx[sp]] += coef * rate_value
         
-        return dxdt
+#         return dxdt
     
-    # Solve ODE
-    from scipy.integrate import solve_ivp
-    t_eval = np.linspace(t_span[0], t_span[1], n_steps)
-    sol = solve_ivp(ode_system, t_span, x0, t_eval=t_eval, method='LSODA', rtol=1e-8, atol=1e-10)
+#     # Solve ODE
+#     from scipy.integrate import solve_ivp
+#     t_eval = np.linspace(t_span[0], t_span[1], n_steps)
+#     sol = solve_ivp(ode_system, t_span, x0, t_eval=t_eval, method='LSODA', rtol=1e-8, atol=1e-10)
     
-    # Create time series DataFrame
-    time_series_data = {"Time": sol.t}
-    for i, sp in enumerate(species):
-        time_series_data[sp] = sol.y[i]
-    time_series_df = pd.DataFrame(time_series_data)
+#     # Create time series DataFrame
+#     time_series_data = {"Time": sol.t}
+#     for i, sp in enumerate(species):
+#         time_series_data[sp] = sol.y[i]
+#     time_series_df = pd.DataFrame(time_series_data)
     
-    # Create flux vector DataFrame (simplified)
-    flux_data = {"Time": sol.t}
-    for i in range(len(reactions)):
-        flux_data[f"Flux_r{i+1}"] = np.zeros_like(sol.t)  # Placeholder
-    flux_vector_df = pd.DataFrame(flux_data)
+#     # Create flux vector DataFrame (simplified)
+#     flux_data = {"Time": sol.t}
+#     for i in range(len(reactions)):
+#         flux_data[f"Flux_r{i+1}"] = np.zeros_like(sol.t)  # Placeholder
+#     flux_vector_df = pd.DataFrame(flux_data)
     
-    return time_series_df, flux_vector_df
+#     return time_series_df, flux_vector_df
 
-# Run custom simulation with time-dependent rate handling
-time_series, flux_vector = custom_simulation_with_time(
-    rn, 
-    rate_list, 
-    spec_vector, 
-    x0, 
-    t_span, 
-    n_steps,
-    additional_laws
-)
+# # Run custom simulation with time-dependent rate handling
+# time_series, flux_vector = custom_simulation_with_time(
+#     rn, 
+#     rate_list, 
+#     spec_vector, 
+#     x0, 
+#     t_span, 
+#     n_steps,
+#     additional_laws
+# )
 
-# ========================================
-# 6. DISPLAY RESULTS
-# ========================================
-print("\nSimulation completed successfully!")
-print("\nTime Series Shape:", time_series.shape)
-print("Species order: W_V, V, V_W, V_n, W_R, R, R_W, R_n")
+# # ========================================
+# # 6. DISPLAY RESULTS
+# # ========================================
+# print("\nSimulation completed successfully!")
+# print("\nTime Series Shape:", time_series.shape)
+# print("Species order: W_V, V, V_W, V_n, W_R, R, R_W, R_n")
 
-print("\nFinal concentrations:")
-final_concentrations = time_series.iloc[-1]
-species_names = ['W_V', 'V', 'V_W', 'V_n', 'W_R', 'R', 'R_W', 'R_n']
-for i, species in enumerate(species_names):
-    print(f"{species}: {final_concentrations.iloc[i]:.4f}")
+# print("\nFinal concentrations:")
+# final_concentrations = time_series.iloc[-1]
+# species_names = ['W_V', 'V', 'V_W', 'V_n', 'W_R', 'R', 'R_W', 'R_n']
+# for i, species in enumerate(species_names):
+#     print(f"{species}: {final_concentrations.iloc[i]:.4f}")
 
-# Check oscillation in W_V (first 100 time points)
-print(f"\nW_V oscillation check (first 10 values): {time_series.iloc[:10, 0].values}")
+# # Check oscillation in W_V (first 100 time points)
+# print(f"\nW_V oscillation check (first 10 values): {time_series.iloc[:10, 0].values}")
 
 
-abstract_time_series = abstraction_ordinary(time_series, threshold=0.05)
+# abstract_time_series = abstraction_ordinary(time_series, threshold=0.05)
 
-#plot_abstraction_size(abstract_time_series)
+# #plot_abstraction_size(abstract_time_series)
 
-#plot_abstraction_sets(abstract_time_series)
+# #plot_abstraction_sets(abstract_time_series)
 
-#plot_abstraction_graph_movie_html(abstract_time_series, filename="abstraction_graph_movie_html.html", interval=400, title="Abstraction Graph - Time")
+# #plot_abstraction_graph_movie_html(abstract_time_series, filename="abstraction_graph_movie_html.html", interval=400, title="Abstraction Graph - Time")
 
-# ========================================
-# 8. PRINT RESULTS
-# ======================================== 
-print("\nFinal concentrations:")
-final_concentrations = time_series.iloc[-1]
-species_names = ['W_V']
-for i, species in enumerate(species_names):
-    print(f"{species}: {final_concentrations.iloc[i]:.4f}")
+# # ========================================
+# # 8. PRINT RESULTS
+# # ======================================== 
+# print("\nFinal concentrations:")
+# final_concentrations = time_series.iloc[-1]
+# species_names = ['W_V']
+# for i, species in enumerate(species_names):
+#     print(f"{species}: {final_concentrations.iloc[i]:.4f}")
 
-# Check oscillation in W_V (first 100 time points)
-print(f"\nW_V oscillation check (first 10 values): {time_series.iloc[:3].values}")
+# # Check oscillation in W_V (first 100 time points)
+# print(f"\nW_V oscillation check (first 10 values): {time_series.iloc[:3].values}")

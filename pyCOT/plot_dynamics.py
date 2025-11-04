@@ -3969,7 +3969,7 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
     results = []
 
     n_windows = len(window_sizes)
-    n_cols = 4
+    n_cols = 8
     n_rows = math.ceil(n_windows / n_cols)
 
     # ==================================================================

@@ -187,7 +187,9 @@ def update_rate_laws(rate_list, additional_laws=None):
     rate_laws = {
         'mak': rate_mak,
         'mmk': rate_mmk,
-        'hill': rate_hill
+        'hill': rate_hill,
+        'cosine': rate_cosine,
+        'saturated': rate_saturated
     }
 
     # Añadir cinéticas adicionales si se entregan
