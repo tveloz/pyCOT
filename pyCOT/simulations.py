@@ -201,6 +201,7 @@ def update_rate_laws(rate_list, additional_laws=None):
 
     return rate_laws 
 
+
 # Function to generate a random vector of size n
 def generate_random_vector(n, seed=None, min_value=0.1, max_value=1.0):
     rng = np.random.default_rng(seed)             # Generator with optional seed
