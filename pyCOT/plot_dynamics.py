@@ -3141,8 +3141,10 @@ def animate_series_PDE(simulation_data, species_names,t_span):
 ######################################################################################
 ######################################################################################
 ######################################################################################
+
+
 # Función para clasificar un vector de proceso v en categorías base y extendidas
-def classify_process(v, S, v_prev=None, tol=1e-3):
+def classify_process_mode(v, S, tol=1e-3):
     """
     Clasifica un vector de proceso v con respecto a la matriz estequiométrica S.
 
@@ -3152,15 +3154,15 @@ def classify_process(v, S, v_prev=None, tol=1e-3):
     - Challenge: El proceso consume al menos una especie (al menos un Sv < 0).
     - Cognitive Domain: El proceso mantiene o aumenta todas las especies (Sv >= 0) y utiliza todas las reacciones de la red (v > 0).
     
-    Categorías extendidas (requieren un proceso previo 'v_prev'):
-    - Counteraction: Un proceso 'v' que, combinado con un 'Challenge' previo 'v_prev', resulta en un no-consumo neto (S(v + v_prev) >= 0).
-    - Solution: Un proceso 'v' del espacio 'Challenge' que sirve como solución para un 'Problem' previo 'v_prev' (S(v+v_prev) >= 0).
-    - Cognitive Control: Un proceso 'v' del 'Cognitive Domain' que sirve como solución para un 'Problem' previo 'v_prev' (S(v+v_prev) >= 0, v > 0).
+    Categorías extendidas (requieren un proceso previo 'v_pert'):
+    - Counteraction: Un proceso 'v' que, combinado con un 'Challenge' previo 'v_pert', resulta en un no-consumo neto (S(v + v_pert) >= 0).
+    - Solution: Un proceso 'v' del espacio 'Challenge' que sirve como solución para un 'Problem' previo 'v_pert' (S(v+v_pert) >= 0).
+    - Cognitive Control: Un proceso 'v' del 'Cognitive Domain' que sirve como solución para un 'Problem' previo 'v_pert' (S(v+v_pert) >= 0, v > 0).
 
     Args:
         v (np.ndarray): El vector de proceso a clasificar. Debe ser un array de NumPy que representa los flujos.
         S (np.ndarray): La matriz estequiométrica, donde las filas son especies y las columnas son reacciones.
-        v_prev (np.ndarray, optional): Un vector de proceso previo, utilizado para clasificar
+        v_pert (np.ndarray, optional): Un vector de proceso previo, utilizado para clasificar
                                      'Counteraction' y 'Cognitive Control'. Por defecto es None.
         tol (float): Tolerancia para comparaciones numéricas con cero para manejar la imprecisión de punto flotante. Por defecto es 1e-8.
         
@@ -3170,14 +3172,12 @@ def classify_process(v, S, v_prev=None, tol=1e-3):
                    Un proceso puede pertenecer a múltiples categorías.
     
     Raises:
-        TypeError: Si 'v', 'S', o 'v_prev' no son arrays de NumPy.
+        TypeError: Si 'v', 'S', o 'v_pert' no son arrays de NumPy.
     """
     
     # Validaciones de tipo para los inputs
     if not isinstance(v, np.ndarray) or not isinstance(S, np.ndarray):
         raise TypeError("Los inputs 'v' y 'S' deben ser arrays de NumPy.")
-    if v_prev is not None and not isinstance(v_prev, np.ndarray):
-        raise TypeError("El input 'v_prev', si se proporciona, debe ser un array de NumPy.")
 
     # Calcular el cambio neto en las concentraciones de las especies (Sv)
     # print("DEBUG: S.shape =", np.shape(S), "v.shape =", np.shape(v))
@@ -3185,54 +3185,133 @@ def classify_process(v, S, v_prev=None, tol=1e-3):
     classifications = []
 
     # --- Propiedades fundamentales de Sv y v (calculadas una vez para eficiencia) ---
-    is_stationary_mode = np.all((-tol <= Sv) & (Sv <= tol))         # p.all(np.abs(Sv) < tol)
-    all_Sv_non_negative = np.all(Sv >= -tol) and np.any(Sv > tol)   # np.all(Sv >= -tol) 
-    has_net_consumption = np.any(Sv < -tol)                      # (np.any(Sv < 0) and np.any((0 <= Sv) & (Sv <= tol))) #
-    all_Sv_non_positive = np.all(Sv <= tol) and np.any(Sv <= -tol) # np.all(Sv <= tol) 
-    all_Sv_negative = np.all(Sv < -tol) and np.all(Sv < -tol)       # Todos los Sv < 0 (nueva condición para Challenge)
-    all_reactions_active = np.all(v > tol) 
-
-    # --- Clasificaciones Base (basadas solo en 'v' y 'S') --- 
-    if is_stationary_mode:
-        classifications = ["Stationary Mode"]
-    elif all_Sv_non_negative and all_reactions_active:
-        classifications = ["Cognitive Control"]        
-    elif has_net_consumption and all_Sv_non_positive:
-        classifications = ["Problem"]
-    elif has_net_consumption:
+    is_stationary = np.all((-tol <= Sv) & (Sv <= tol))         # p.all(np.abs(Sv) < tol)
+    is_overproduced = np.all(Sv >= -tol) and np.any(Sv > tol)     # np.all(Sv >= -tol) 
+    is_challenge = np.any(Sv < -tol) and np.any(Sv > tol)           # (np.any(Sv < 0) and np.any((0 <= Sv) & (Sv <= tol))) #
+    is_problem = np.all(Sv <= tol) and np.any(Sv <= -tol)           # np.all(Sv <= tol) 
+    #all_Sv_negative = np.all(Sv < -tol) and np.all(Sv < -tol)       # Todos los Sv < 0 (nueva condición para Challenge)
+    is_complete = np.all(v > tol) 
+    
+    
+    # --- Clasificaciones de Modo y Completitud (basadas solo en 'v' y 'S') --- 
+    if is_stationary:
+        classifications = ["Stationary"]
+        
+    elif is_overproduced:
+        classifications = ["Overproduction"]
+    elif is_challenge:
         classifications = ["Challenge"]
-    elif all_Sv_non_negative:
-        classifications = ["Overproduction Mode"]  
-    elif all_Sv_negative:
-        classifications = ["Not Feasible"] 
+    elif is_problem:
+        classifications = ["Problem"]
     else:
         classifications = ["Other"]
+    if is_complete:
+        classifications.append("Complete Process")
+    else:
+        classifications.append("Incomplete Process")
+    return classifications
 
-    # --- Clasificaciones Extendidas (requieren 'v_prev' para el contexto) ---
-    if v_prev is not None:
-        Sv_prev = S @ v_prev
-        is_v_prev_a_challenge = np.any(Sv_prev < -tol) # np.any(Sv < -tol)
-        is_v_prev_a_problem = is_v_prev_a_challenge and (np.all(Sv_prev <= 0) and np.any(Sv_prev <= -tol)) #np.any(Sv < -tol) and (np.all(Sv <= 0) and np.any(Sv <= -tol))
+def is_cognitive_domain(v, S, tol=1e-3):
+    v_class=classify_process_mode(v, S, tol=tol) 
+    if (v_class[0]== "Stationary" or v_class[0]== "Overproduction") and v_class[1]== "Complete Process":
+        return True 
+    else:
+        print(f"v_class: {v_class}")
+        return False
+def classify_response_to_disturbance(v, S, v_pert=None, x_pert=None, tol=1e-3, verbose=False):
+    if v_pert is not None and not isinstance(v_pert, np.ndarray):
+        raise TypeError("El input 'v_pert', si se proporciona, debe ser un array de NumPy.")
+    #chequear que v_pert tiene la misma dimension que S
+    if v_pert is not None and v_pert.shape[0] != S.shape[1]:
+        raise ValueError("El input 'v_pert' debe tener la misma dimensión que el número de reacciones en 'S'.")
+    if x_pert is not None and not isinstance(x_pert, np.ndarray):
+        raise TypeError("El input 'x_pert', si se proporciona, debe ser un array de NumPy.")
+    # Función auxiliar para verificar si un proceso es completo
+    if x_pert is not None and x_pert.shape[0] != S.shape[0]:
+        raise ValueError("El input 'x_pert' debe tener la misma dimensión que el número de especies en 'S'.")
 
-        Sv_combined = S @ (v + v_prev)
+    v_mode=classify_process_mode(v, S, tol=tol)
+    if v_pert is None and x_pert is None:
+        if verbose:
+            print("Null disturbance")
+        return v_mode
 
-        # 6. Counteraction (Contramedida) → solo si fue Challenge pero no Problem
-        if is_v_prev_a_challenge and not is_v_prev_a_problem and "Challenge":
-            if np.all(Sv_combined >= -tol):
-                classifications = ["Counteraction"]
-
-        # 7. Solution (Solución extendida)
-        elif is_v_prev_a_problem and "Overproduction Mode" in classifications:
-            if np.all(Sv_combined >= -tol):
-                classifications = ["Solution"]
-
-        # 8. Cognitive Control (Control Cognitivo)
-        elif is_v_prev_a_problem and "Cognitive Control" in classifications:
-            if np.any(Sv_combined >= -tol):
-                classifications = ["Control"]
-
-    # Devolver una lista de clasificaciones únicas y ordenadas para una salida consistente.
-    return sorted(list(set(classifications)))
+    elif v_pert is not None and x_pert is None:
+        if verbose:
+            print("Process disturbance")
+        v_pert_class=classify_process_mode(v_pert, S, tol=tol)
+        v_cognitive_domain=is_cognitive_domain(v, S, tol=tol)
+        v_combined = (v + v_pert)
+        v_combined_class=classify_process_mode(v_combined, S, tol=tol)
+        v_combined_cognitive_domain=is_cognitive_domain(v_combined, S, tol=tol)
+        # Cognitive Control Situations
+        #Cognitive Domain controla Challenge
+        if v_cognitive_domain:
+            if verbose:
+                print("In Cognitive Domain")
+            if v_pert_class[0]=="Challenge":
+               if v_combined_cognitive_domain:
+                   return ["Cognitive Controls Challenge"]
+               else:
+                   return ["Cognitive Breakdown by Challenge"]
+        #Cognitive Domain controla Problem
+            if v_pert_class[0]=="Problem": 
+                if v_combined_cognitive_domain:
+                    return ["Cognitive Controls Problem"]
+                else:
+                    return ["Cognitive Breakdown by Problem"]
+        #Cognitive Domain se sostiene por proceso automantenido o sobreproducido
+            if (v_pert_class[0]=="Stationary" or v_pert_class[0]=="Overproduction"): 
+                if v_combined_cognitive_domain:
+                    return ["Cognitive Domain Sustained"]
+            else:
+                if verbose:
+                    print("Check Cognitive Breakdown by Glitch!!"+ str(v_mode)+" + "+ str(v_pert_class)+" =>"+ str(v_combined_class))
+                    return ["Cognitive Breakdown by Glitch"]
+        else:
+            if verbose:
+                print("Out of Cognitive Domain")
+                print(f"v_mode: {v_mode}, v_pert_class: {v_pert_class}, v_combined_class: {v_combined_class}")
+                print(f"v_combined_cognitive_domain: {v_combined_cognitive_domain}")
+            if v_combined_cognitive_domain:
+                return ["Cognitive Domain Recovered"]
+            else:
+                return ["Cognitive Breakdown Sustained"]
+    elif v_pert is None and x_pert is not None:
+        # State Disturbance and response result
+        x_next= x_pert + S @ v
+        if v_cognitive_domain:
+            if np.any(x_pert < -tol) and np.any(x_pert > tol):
+                if verbose:
+                    print("State disturbance is a challenge")
+                if np.all(x_next >= -tol):
+                        return ["Cognitive Controls Challenge"]
+                else:
+                    if np.any(x_next < -tol):
+                        return ["Cognitive Breakdown by Challenge"]
+            elif np.all(x_pert <= -tol) and np.any(x_pert < tol):
+                if verbose:
+                    print("State disturbance is a problem")
+                if np.all(x_next >= -tol):
+                        return ["Cognitive Controls Problem"]
+                else:
+                    if np.any(x_next < -tol):
+                        return ["Cognitive Breakdown by Problem"]
+            else:
+                if verbose:
+                    print("State disturbance is resources incoming")
+                if np.all(x_next >= -tol):
+                    return ["Cognitive Domain Sustained"]
+                else:
+                    return ["Cognitive Breakdown by Glitch"]
+        else:
+            if verbose:
+                print("Out of Cognitive Domain")
+                print(f"v_mode: {v_combined_cognitive_domain} x_next: {x_next}")
+            if np.all(x_next >= -tol):
+                return ["Cognitive Domain Recovered"]
+            else:
+                return ["Cognitive Breakdown Sustained"] 
 
 #####################################################################################
 # Función para graficar el histograma de tipos de proceso y guardar en Excel
