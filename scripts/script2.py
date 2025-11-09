@@ -30,6 +30,7 @@ file_path = 'Txt/BZ_cycle.txt'
 # file_path = 'Txt/Farm.txt' 
 # file_path = 'Txt/SEIR.txt' 
 # file_path = 'Txt/2010Veloz_Ex_4.txt'
+file_path = 'networks/Riverland_model/cause_driven_conflict_gov.txt'
 
 rn = read_txt(file_path)  # Create ReactionNetwork object from file
 

@@ -766,28 +766,31 @@ def get_reaction_components(reaction, species):
         print(f"Error al obtener componentes de la reacción {reaction.name()}: {e}")
         print(f"Atributos disponibles: {dir(reaction)}")
         raise
-
-def simulate_metapopulation_dynamics(rn, rate='mak', grid_shape=None, D_dict=None, 
+def simulate_metapopulation_dynamics(rn, rate='mak', num_patches=None, D_dict=None, 
                                     x0_dict=None, spec_vector=None, t_span=(0, 20), 
                                     n_steps=500, connectivity_matrix=None, additional_laws=None):
     """
     Simula la dinámica de metapoblaciones con reacciones locales y dispersión entre parches.
+    Implementación vectorial: las poblaciones se tratan como elementos de un vector.
     
     Parámetros:
     - rn: Objeto ReactionNetwork con especies y reacciones.
     - rate: Lista de leyes cinéticas para cada reacción ('mak', 'mmk', 'hill' o adicionales).
-    - grid_shape: Tupla (filas, columnas) definiendo la disposición de parches (o None para 1D).
+    - num_patches: Número de parches/poblaciones (e.g., 3 para tres poblaciones).
     - D_dict: Diccionario con tasas de dispersión global por especie (default: aleatorio).
-    - x0_dict: Diccionario con condiciones iniciales por especie y parche (default: aleatorio).
+    - x0_dict: Diccionario con condiciones iniciales como vectores 1D de longitud num_patches
+               para cada especie (e.g., {"species1": np.array([0.5, 1.0, 0.3])}).
     - spec_vector: Lista de parámetros para cada reacción (default: aleatorio).
     - t_span: Tupla con el intervalo de tiempo de simulación (default: (0, 20)).
     - n_steps: Número de pasos temporales (default: 500).
-    - connectivity_matrix: Matriz de conectividad o probabilidad de dispersión. Las filas deben sumar 1 (default: aleatorio).
+    - connectivity_matrix: Matriz de conectividad (num_patches × num_patches).
+                           Las filas deben sumar 1 (default: aleatorio).
     - additional_laws: Diccionario con leyes cinéticas adicionales (default: None).
     
     Retorna:
-    - time_series_df: DataFrame con series temporales de concentraciones por especie y parche.
-    - flux_vector_df: DataFrame con flujos de reacción por parche.
+    - t: Array de tiempos de forma (n_steps,)
+    - X_out: Diccionario con arrays de concentraciones de forma (n_steps, num_patches) para cada especie
+    - flux_out: Diccionario con arrays de flujos de forma (n_steps, num_patches) para cada reacción
     """
     np.random.seed(seed=42)  # Para reproducibilidad
     species = [specie.name for specie in rn.species()]
@@ -795,73 +798,59 @@ def simulate_metapopulation_dynamics(rn, rate='mak', grid_shape=None, D_dict=Non
     
     rate = validate_rate_list(rate, len(reactions))
     
-    # Configurar la forma de los parches
-    if grid_shape is None:
-        grid_shape = (2, 2)  # Cuadrícula 2x2 por defecto
-    rows, cols = grid_shape
-    num_patches = rows * cols
+    # Configurar número de parches
+    if num_patches is None:
+        num_patches = 3  # Default: 3 poblaciones
     
     # Tasas de dispersión por especie
     if D_dict is None:
         D_dict = {sp: np.round(np.random.uniform(0.01, 0.2), 3) for sp in species}
     
-    # Condiciones iniciales
+    # Condiciones iniciales (vectores 1D)
     if x0_dict is None:
-        x0_dict = {sp: np.round(np.random.uniform(0, 2.0, size=(rows, cols)), 2) for sp in species}
+        x0_dict = {sp: np.round(np.random.uniform(0, 2.0, size=num_patches), 2) for sp in species}
+    else:
+        # Validar que x0_dict contiene vectores de la longitud correcta
+        for sp in species:
+            if sp not in x0_dict:
+                raise ValueError(f"Falta condición inicial para la especie '{sp}'")
+            if len(x0_dict[sp]) != num_patches:
+                raise ValueError(f"La condición inicial para '{sp}' debe tener longitud {num_patches}")
     
     # Matriz de conectividad o probabilidad de dispersión
     if connectivity_matrix is None:
         # Generar matriz aleatoria con dos decimales
         connectivity_matrix = np.random.uniform(0, 1, size=(num_patches, num_patches))
-        connectivity_matrix = np.round(connectivity_matrix, 2)  # Redondear a dos decimales
+        connectivity_matrix = np.round(connectivity_matrix, 2)
         
         # Asegurar que las filas sumen 1
         row_sums = np.sum(connectivity_matrix, axis=1, keepdims=True)
         connectivity_matrix = connectivity_matrix / row_sums
-        connectivity_matrix = np.round(connectivity_matrix, 2)  # Redondear nuevamente
+        connectivity_matrix = np.round(connectivity_matrix, 2)
         
-        # Ajustar para compensar errores de redondeo y asegurar suma exacta de 1
+        # Ajustar para compensar errores de redondeo
         for i in range(num_patches):
             current_sum = np.sum(connectivity_matrix[i])
             if current_sum != 1.0:
-                # Encontrar el elemento más grande para ajustar la diferencia
                 diff = 1.0 - current_sum
                 max_idx = np.argmax(connectivity_matrix[i])
                 connectivity_matrix[i, max_idx] += diff
                 connectivity_matrix[i, max_idx] = np.round(connectivity_matrix[i, max_idx], 2)
         
-        # Asegurar diagonal cero
-        np.fill_diagonal(connectivity_matrix, 0)
         
-        # Re-normalizar después de poner ceros en la diagonal
-        for i in range(num_patches):
-            row_sum = np.sum(connectivity_matrix[i])
-            if row_sum > 0:
-                connectivity_matrix[i] = connectivity_matrix[i] / row_sum
-                connectivity_matrix[i] = np.round(connectivity_matrix[i], 2)
-                
-                # Ajuste final para suma exacta
-                current_sum = np.sum(connectivity_matrix[i])
-                if current_sum != 1.0:
-                    diff = 1.0 - current_sum
-                    non_zero_indices = np.where(connectivity_matrix[i] > 0)[0]
-                    if len(non_zero_indices) > 0:
-                        adjust_idx = non_zero_indices[0]
-                        connectivity_matrix[i, adjust_idx] += diff
-                        connectivity_matrix[i, adjust_idx] = np.round(connectivity_matrix[i, adjust_idx], 2)
     else:
         # Validar connectivity_matrix
         if connectivity_matrix.shape != (num_patches, num_patches):
-            raise ValueError(f"\nThe connectivity matrix must be shaped like {(num_patches, num_patches)}")
+            raise ValueError(f"La matriz de conectividad debe tener forma ({num_patches}, {num_patches})")
         if not np.allclose(np.sum(connectivity_matrix, axis=1), 1.0, atol=1e-6):
+            print("Advertencia: Normalizando la matriz de conectividad para que las filas sumen 1")
             connectivity_matrix = connectivity_matrix / np.sum(connectivity_matrix, axis=1, keepdims=True)
             connectivity_matrix = np.round(connectivity_matrix, 2)
-            np.fill_diagonal(connectivity_matrix, 0)
-
+    
     # Imprimir matriz final
-    print("\nConnectivity or probability matrix:\n", connectivity_matrix)
-    # print(f"\nRow sums: {np.sum(connectivity_matrix, axis=1)}")
-
+    print("\nMatriz de conectividad o probabilidad:\n", connectivity_matrix)
+    print(f"Sumas por fila: {np.sum(connectivity_matrix, axis=1)}")
+    
     # Parámetros de reacción
     if spec_vector is None:
         spec_vector = []
@@ -883,70 +872,73 @@ def simulate_metapopulation_dynamics(rn, rate='mak', grid_shape=None, D_dict=Non
                 raise ValueError(f"Ley cinética desconocida: {kinetic}")
             spec_vector.append(params.tolist())
     
-    # Aplanar el estado inicial
-    def flatten_state(x0_dict):
-        return np.concatenate([x0_dict[sp].flatten() for sp in species])
+    # Aplanar el estado inicial (concatenar vectores de todas las especies)
+    def flatten_state(x_dict):
+        return np.concatenate([x_dict[sp] for sp in species])
     
-    # Reconstruir el estado
+    # Reconstruir el estado (deshacer el flatten)
     def reshape_state(x):
-        return {sp: x[i*num_patches:(i+1)*num_patches].reshape((rows, cols)) for i, sp in enumerate(species)}
+        return {sp: x[i*num_patches:(i+1)*num_patches] for i, sp in enumerate(species)}
     
     x0 = flatten_state(x0_dict)
     
-    # Término de reacciones locales 
+    # Término de reacciones locales
     def reaction_dynamics(Xdict, rate, spec_vector):
-        dxdt_dict = {sp: np.zeros((rows, cols)) for sp in species}
-        flux_dict = {r: np.zeros((rows, cols)) for r in reactions}
+        dxdt_dict = {sp: np.zeros(num_patches) for sp in species}
+        flux_dict = {r: np.zeros(num_patches) for r in reactions}
         
-        for i in range(rows):
-            for j in range(cols):
-                local_x = [Xdict[sp][i, j] for sp in species]
-                for r_idx, reaction in enumerate(rn.reactions()):
-                    # Obtener reactantes, productos y estequiometría
-                    reactants, products, stoichiometry = get_reaction_components(reaction, species)
-                    
-                    # Calcular tasa de reacción según la ley cinética
-                    v_r = 0
-                    if rate[r_idx] == 'mak':
-                        k = spec_vector[r_idx][0]
-                        v_r = k
-                        if reactants:  # Reacciones con reactantes
-                            for sp_idx, stoich in reactants:
-                                v_r *= local_x[sp_idx] ** abs(stoich)
-                    elif rate[r_idx] == 'mmk':
-                        Vmax, Km = spec_vector[r_idx]
-                        sp_idx = reactants[0][0] if reactants else 0
-                        v_r = Vmax * local_x[sp_idx] / (Km + local_x[sp_idx]) if reactants else 0
-                    elif rate[r_idx] == 'hill':
-                        Vmax, Kd, n = spec_vector[r_idx]
-                        sp_idx = reactants[0][0] if reactants else 0
-                        v_r = Vmax * (local_x[sp_idx] ** n) / (Kd ** n + local_x[sp_idx] ** n) if reactants else 0
-                    elif rate[r_idx] in (additional_laws or {}):
-                        v_r = additional_laws[rate[r_idx]](local_x, spec_vector[r_idx])
-                    
-                    flux_dict[reaction.name()][i, j] = v_r
-                    for sp_idx, stoich in enumerate(stoichiometry):
-                        if stoich != 0:
-                            dxdt_dict[species[sp_idx]][i, j] += stoich * v_r # Estoquiometría por tasa de reacción
+        # Para cada parche
+        for patch_idx in range(num_patches):
+            local_x = [Xdict[sp][patch_idx] for sp in species]
+            
+            # Para cada reacción
+            for r_idx, reaction in enumerate(rn.reactions()):
+                # Obtener reactantes, productos y estequiometría
+                reactants, products, stoichiometry = get_reaction_components(reaction, species)
+                
+                # Calcular tasa de reacción según la ley cinética
+                v_r = 0
+                if rate[r_idx] == 'mak':
+                    k = spec_vector[r_idx][0]
+                    v_r = k
+                    if reactants:  # Reacciones con reactantes
+                        for sp_idx, stoich in reactants:
+                            v_r *= local_x[sp_idx] ** abs(stoich)
+                elif rate[r_idx] == 'mmk':
+                    Vmax, Km = spec_vector[r_idx]
+                    sp_idx = reactants[0][0] if reactants else 0
+                    v_r = Vmax * local_x[sp_idx] / (Km + local_x[sp_idx]) if reactants else 0
+                elif rate[r_idx] == 'hill':
+                    Vmax, Kd, n = spec_vector[r_idx]
+                    sp_idx = reactants[0][0] if reactants else 0
+                    v_r = Vmax * (local_x[sp_idx] ** n) / (Kd ** n + local_x[sp_idx] ** n) if reactants else 0
+                elif rate[r_idx] in (additional_laws or {}):
+                    v_r = additional_laws[rate[r_idx]](local_x, spec_vector[r_idx])
+                
+                flux_dict[reaction.name()][patch_idx] = v_r
+                for sp_idx, stoich in enumerate(stoichiometry):
+                    if stoich != 0:
+                        dxdt_dict[species[sp_idx]][patch_idx] += stoich * v_r
         
         return dxdt_dict, flux_dict
     
     # Término de dispersión
     def dispersal_term(Xdict):
-        dxdt_dict = {sp: np.zeros((rows, cols)) for sp in species}
+        dxdt_dict = {sp: np.zeros(num_patches) for sp in species}
+        
         for sp in species:
-            D = D_dict.get(sp, 0.0) # Tasa de dispersión para la especie
-            X = Xdict[sp]           # Concentraciones de la especie
-            for i in range(rows):
-                for j in range(cols):
-                    p_idx = i * cols + j
-                    dxdt = 0
-                    for k in range(num_patches):
-                        dxdt += D * connectivity_matrix[k, p_idx] * Xdict[sp].flatten()[k]          # Entrante
-                        dxdt -= D * connectivity_matrix[p_idx, k] * X[p_idx // cols, p_idx % cols]  # Saliente 
-                        # p_idx // cols: fila correspondiente en la cuadrícula original. 
-                        # p_idx % cols: columna correspondiente en la cuadrícula original.
-                    dxdt_dict[sp][i, j] = dxdt
+            D = D_dict.get(sp, 0.0)  # Tasa de dispersión para la especie
+            X = Xdict[sp]  # Vector de concentraciones de la especie
+            
+            for i in range(num_patches):
+                dxdt = 0
+                for j in range(num_patches):
+                    # Flujo entrante desde parche j hacia parche i
+                    dxdt += D * connectivity_matrix[j, i] * X[j]
+                    # Flujo saliente desde parche i hacia parche j
+                    dxdt -= D * connectivity_matrix[i, j] * X[i]
+                dxdt_dict[sp][i] = dxdt
+        
         return dxdt_dict
     
     # Sistema ODE combinado
@@ -960,16 +952,16 @@ def simulate_metapopulation_dynamics(rn, rate='mak', grid_shape=None, D_dict=Non
     # Integración de ODEs
     t_eval = np.linspace(t_span[0], t_span[1], n_steps)
     sol = solve_ivp(combined_ode, t_span, x0, t_eval=t_eval, method='RK45', rtol=1e-6)
-
+    
     # Formatear salida
-    X_out = {sp: np.zeros((n_steps, rows, cols)) for sp in species}
+    X_out = {sp: np.zeros((n_steps, num_patches)) for sp in species}
     for i, xt in enumerate(sol.y.T):
         xt_dict = reshape_state(xt)
         for sp in species:
             X_out[sp][i] = xt_dict[sp]
-  
+    
     # Calcular series temporales de flujos
-    flux_out = {r: np.zeros((n_steps, rows, cols)) for r in reactions}
+    flux_out = {r: np.zeros((n_steps, num_patches)) for r in reactions}
     
     for time_idx, t_val in enumerate(sol.t):
         x_val = sol.y[:, time_idx]
@@ -979,7 +971,8 @@ def simulate_metapopulation_dynamics(rn, rate='mak', grid_shape=None, D_dict=Non
         for r in reactions:
             flux_out[r][time_idx] = flux_dict[r]
     
-    return sol.t, X_out, flux_out    
+    return sol.t, X_out, flux_out
+
 ###################################################################################
 
 ###################################################################################

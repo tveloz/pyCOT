@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import pyCOT modules
 from pyCOT.io.functions import read_txt 
-from pyCOT.simulations import simulate_discrete_random
+from pyCOT.simulations import *
 from pyCOT.plot_dynamics import plot_series_ode, plot_abstraction_size, plot_abstraction_sets, plot_abstraction_graph_movie_html
 from pyCOT.abstractions import abstraction_ordinary
 
@@ -19,16 +19,16 @@ from pyCOT.abstractions import abstraction_ordinary
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ========================================
 # # Network file path
-file_path = 'Txt/Farm.txt'   
+file_path = 'networks/Conflict_Theory/cause_driven_conflict_gov.txt'   
 rn = read_txt(file_path)     
 
 # ========================================
 # 3. Discrete Random Simulation
 # ========================================
 # # Parameters  of the network
-x01 = [14.0,  13.0,     5.0,   70.0,   5.0,    3.0,    3.0,     9.0,          10.0,        6.0,    10.0,    2.0,     12.0,     2.0]
-
-ts, vs = simulate_discrete_random(rn, S=rn.stoichiometry_matrix(), x=x01, n_iter=31)
+#x01 = [14.0,  13.0,     5.0,   70.0,   5.0,    3.0,    3.0,     9.0,          10.0,        6.0,    10.0,    2.0,     12.0,     2.0]
+ts, vs = simulation(rn, rate="mak")
+#ts, vs = simulate_discrete_random(rn, S=rn.stoichiometry_matrix(), x=x01, n_iter=31)
 
 # plot_series_ode(ts)
 

@@ -302,8 +302,8 @@ function highlightFilter(filter) {
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": "green", "font": {"color": "black", "size": 14}, "id": "K_SR", "label": "K_SR", "shape": "dot", "size": 20}, {"color": "green", "font": {"color": "black", "size": 14}, "id": "S", "label": "S", "shape": "dot", "size": 20}, {"color": "lightgray", "font": {"color": "black", "size": 14}, "id": "R0", "label": "R0", "shape": "box", "size": 10}, {"color": "lightgray", "font": {"color": "black", "size": 14}, "id": "R4b", "label": "R4b", "shape": "box", "size": 10}]);
-                  edges = new vis.DataSet([{"arrows": "to", "color": "green", "font_color": "green", "from": "R0", "to": "S"}, {"arrows": "to", "color": "red", "font_color": "red", "from": "S", "label": "2", "to": "R4b"}, {"arrows": "to", "color": "red", "font_color": "red", "from": "K_SR", "to": "R4b"}, {"arrows": "to", "color": "green", "font_color": "green", "from": "R4b", "label": "2", "smooth": null, "to": "K_SR"}]);
+                  nodes = new vis.DataSet([{"color": "green", "font": {"color": "black", "size": 14}, "id": "B_p", "label": "B_p", "shape": "dot", "size": 20}, {"color": "green", "font": {"color": "black", "size": 14}, "id": "iG_B", "label": "iG_B", "shape": "dot", "size": 20}, {"color": "lightgray", "font": {"color": "black", "size": 14}, "id": "r4", "label": "r4", "shape": "box", "size": 10}, {"color": "lightgray", "font": {"color": "black", "size": 14}, "id": "r20", "label": "r20", "shape": "box", "size": 10}]);
+                  edges = new vis.DataSet([{"arrows": "to", "color": "red", "font_color": "red", "from": "B_p", "label": "2", "to": "r4"}, {"arrows": "to", "color": "green", "font_color": "green", "from": "r4", "label": "2", "smooth": null, "to": "B_p"}, {"arrows": "to", "color": "green", "font_color": "green", "from": "r4", "to": "iG_B"}, {"arrows": "to", "color": "red", "font_color": "red", "from": "iG_B", "to": "r20"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

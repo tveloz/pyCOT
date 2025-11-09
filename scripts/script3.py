@@ -35,6 +35,9 @@ file_path = 'networks/testing/Farm.txt'
 #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_17_id_564.txt'
 # file_path = 'networks/Navarino/RN_IN_05.txt'
 file_path = 'networks/Marine_Ecosystem/Las_Cruces_251021.txt'
+file_path = 'networks/Riverland_model/cause_driven_conflict.txt'
+
+
 
 rn = read_txt(file_path) 
 
@@ -104,15 +107,15 @@ else: # Si hay organizaciones, proceder con el análisis de la organización sel
     # 6. VISUALIZATION
     # ========================================
     # Visualize the hierarchy of all semi-organizations, highlighting the selected organization and other organizations
-    hierarchy_visualize_html(all_semi_organizations_sets,
-        lst_color_subsets=[ 
-            ("cyan", all_semi_organizations_sets),  # All semi-organizations in yellow
-            ("green", org_n),       # Organization selected in green 
-            ("yellow", other_orgs)  # Other organizations in yellow
-        ])
-
+    # hierarchy_visualize_html(all_semi_organizations_sets,
+    #     lst_color_subsets=[ 
+    #         ("cyan", all_semi_organizations_sets),  # All semi-organizations in yellow
+    #         ("green", org_n),       # Organization selected in green 
+    #         ("yellow", other_orgs)  # Other organizations in yellow
+    #     ])
+    hierarchy_visualize_html(all_organizations_sets)
     # Visualize the reaction network in HTML format with the selected organization highlighted in green
-    rn_visualize_html(rn, lst_color_spcs=[("green", org_n[0] )], filename="rn1.html")
+    # rn_visualize_html(rn, lst_color_spcs=[("green", org_n[0] )], filename="rn1.html")
 
     # Visualize the subnetwork in HTML format of the selected organization
-    rn_visualize_html(rn_sub, global_species_color="green", filename="rn2.html")
+    #rn_visualize_html(rn_sub, global_species_color="green", filename="rn2.html")

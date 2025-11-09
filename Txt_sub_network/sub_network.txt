@@ -1,2 +1,2 @@
-R0:	=>S;
-R4b:	2S+K_SR=>2K_SR;
+r4:	2B_p=>iG_B+2B_p;
+r20:	iG_B=>;
