@@ -1,4 +1,18 @@
-# Script 8: Simulation with Process Classification and Flux Combination Histogram
+#!/usr/bin/env python3
+"""
+Script 8 (REFACTORED): Simulation with Process Classification and Flux Combination Histogram
+
+This script demonstrates:
+1. Loading a reaction network from a text file
+2. Running ODE simulations
+3. Analyzing process type proportions over multiple time scales
+4. Visualizing cognitive domain dynamics
+
+UPDATES:
+- Now uses refactored plot_dynamics.py and process_analysis.py
+- Cleaner separation between analysis and visualization
+- All classification logic uses process_analysis module
+"""
 
 # ========================================
 # 1. LIBRARY LOADING AND CONFIGURATION
@@ -11,11 +25,17 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pyCOT.io.functions import read_txt
 from pyCOT.simulations import *
-from pyCOT.plot_dynamics import *
+from pyCOT.plot_dynamics import *      # Updated: uses refactored version
+from pyCOT.process_analysis import *   # New: explicit import of analysis functions
 
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ========================================
+print("="*60)
+print("LOADING REACTION NETWORK")
+print("="*60)
+
+# Choose one of the following reaction networks:
 # file_path = 'Txt/autopoietic.txt'  
 # file_path = 'Txt/autopoietic_d.txt'  
 file_path = 'Txt/Lotka_Volterra.txt'
@@ -24,44 +44,233 @@ file_path = 'Txt/Lotka_Volterra.txt'
 rn = read_txt(file_path)
 
 species = [specie.name for specie in rn.species()]
-print("\nSpecies Set =",species)
+print(f"\n📊 Species Set = {species}")
 
 reactions = [reaction.name() for reaction in rn.reactions()]
-print("Reactions Set =",reactions,"\n")
+print(f"⚗️  Reactions Set = {reactions}\n")
 
 S = rn.stoichiometry_matrix()
-print("Stoichiometry Matrix S =\n", S)
-print("Shape of S =", S.shape)
+print("Stoichiometry Matrix S =")
+print(S)
+print(f"Shape of S = {S.shape}")
+print()
 
 # ========================================      
-# 3. SIMULATIONS
+# 3. INITIAL CONDITIONS & PARAMETERS
 # ========================================
-# # Autopoietic system
+print("="*60)
+print("SIMULATION PARAMETERS")
+print("="*60)
+
+# ---- Autopoietic system ----
 # x0 = [2, 2, 2] 
-# rate_list = 'mak'  # Kinetics for all reactions
-# spec_vector = [[.7], [.5], [1],[1], [1]]
+# rate_list = 'mak'  # Mass-action kinetics for all reactions
+# spec_vector = [[.7], [.5], [1], [1], [1]]
 
-# # Autopoietic_d system
+# ---- Autopoietic_d system ----
 # x0 = [2, 2, 2, 0.1] 
-# rate_list = 'mak'  # Kinetics for all reactions
-# spec_vector = [[.7], [.5],[1],[1], [1],[0.55],[0.55], [0.55]] # Sv=[-0.8,0.5,-1]#  Se estabiliza en 3 concentraciones distintas
+# rate_list = 'mak'
+# spec_vector = [[.7], [.5], [1], [1], [1], [0.55], [0.55], [0.55]]
+# # Note: Sv=[-0.8, 0.5, -1], stabilizes at 3 different concentrations
 
-# Lotka-Volterra system
+# ---- Lotka-Volterra system ----
 x0 = [2, 3] 
-rate_list = 'mak'  # Kinetics for all reactions
+rate_list = 'mak'  # Mass-action kinetics
 spec_vector = [[.5], [.8], [0.1]]
 
-tf=200
-n=2000
+# ---- Simulation time parameters ----
+tf = 200        # Final time
+n = 2000        # Number of steps
 
-time_series, flux_vector = simulation(rn, rate=rate_list, spec_vector=spec_vector, x0=x0, t_span=(0, tf), n_steps=n+1)
-
-print("ODE Time Series:")
-print(time_series)
-plot_series_ode(time_series, filename="time_series_plot.png",show_fig=True)
+print(f"Initial conditions: x0 = {x0}")
+print(f"Time span: t ∈ [0, {tf}]")
+print(f"Number of steps: {n+1}")
+print(f"Kinetics: {rate_list}")
+print()
 
 # ========================================
-# 4. ANALYSIS: Process Type Proportions Over Time
+# 4. RUN SIMULATION
 # ========================================
-results_df = analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_span=(0, tf), n_steps=n+1,
-    window_sizes=list(range(1,601,50)), save_path="./visualizations/process_classification/")
+print("="*60)
+print("RUNNING SIMULATION")
+print("="*60)
+
+time_series, flux_vector = simulation(
+    rn, 
+    rate=rate_list, 
+    spec_vector=spec_vector, 
+    x0=x0, 
+    t_span=(0, tf), 
+    n_steps=n+1
+)
+
+print("✓ Simulation completed successfully!")
+print(f"\nTime series shape: {time_series.shape}")
+print(f"Flux vector shape: {flux_vector.shape}")
+print("\nTime Series (first 5 rows):")
+print(time_series.head())
+print("\nFlux Vector (first 5 rows):")
+print(flux_vector.head())
+print()
+
+# ========================================
+# 5. BASIC VISUALIZATION
+# ========================================
+print("="*60)
+print("BASIC VISUALIZATION")
+print("="*60)
+
+print("Generating time series plot...")
+plot_series_ode(
+    time_series, 
+    filename="time_series_plot.png",
+    show_fig=True
+)
+print("✓ Time series plot generated")
+print()
+
+# ========================================
+# 6. OPTIONAL: QUICK PROCESS CLASSIFICATION CHECK
+# ========================================
+print("="*60)
+print("QUICK CLASSIFICATION CHECK")
+print("="*60)
+
+# Classify a few sample processes to verify the system
+print("Classifying first 5 flux vectors...")
+sample_classifications = classify_process_series(flux_vector.head(5), S)
+for i, cls in enumerate(sample_classifications):
+    print(f"  Step {i}: {cls}")
+print()
+
+# Check cognitive domain representation
+all_classifications = classify_process_series(flux_vector, S)
+cd_count = sum(1 for c in all_classifications if 'Cognitive Control' in c[0])
+sm_count = sum(1 for c in all_classifications if 'Stationary Mode' in c[0])
+pb_count = sum(1 for c in all_classifications if 'Problem' in c[0])
+
+print(f"Overall classification summary (n={len(all_classifications)}):")
+print(f"  Cognitive Control: {cd_count:4d} ({100*cd_count/len(all_classifications):5.1f}%)")
+print(f"  Stationary Mode:   {sm_count:4d} ({100*sm_count/len(all_classifications):5.1f}%)")
+print(f"  Problem:           {pb_count:4d} ({100*pb_count/len(all_classifications):5.1f}%)")
+print()
+
+# ========================================
+# 7. MULTI-SCALE ANALYSIS: Process Type Proportions Over Time
+# ========================================
+print("="*60)
+print("MULTI-SCALE TEMPORAL ANALYSIS")
+print("="*60)
+print("Analyzing process proportions across different time scales...")
+print("This will generate:")
+print("  1. Histograms for each window size")
+print("  2. Global proportion trends plot")
+print("  3. Combined plots for optimal window")
+print()
+
+# Define window sizes to analyze
+# These represent different temporal aggregation scales
+window_sizes = list(range(1, 601, 50))  # [1, 51, 101, 151, ..., 551]
+print(f"Window sizes to analyze: {len(window_sizes)} scales")
+print(f"  Min window: {min(window_sizes)} steps")
+print(f"  Max window: {max(window_sizes)} steps")
+print()
+
+# Run the comprehensive analysis
+results_df = analyze_process_proportions_over_time(
+    rn=rn,
+    S=S,
+    rate_list=rate_list,
+    spec_vector=spec_vector,
+    x0=x0,
+    t_span=(0, tf),
+    n_steps=n+1,
+    window_sizes=window_sizes,
+    save_path="./visualizations/process_classification/"
+)
+
+print("\n" + "="*60)
+print("ANALYSIS RESULTS")
+print("="*60)
+print(results_df)
+print()
+
+# ========================================
+# 8. SUMMARY AND INSIGHTS
+# ========================================
+print("="*60)
+print("SUMMARY")
+print("="*60)
+
+# Find optimal window
+max_idx = results_df["Proporción Total"].idxmax()
+optimal_window = results_df.loc[max_idx, "Ventana"]
+max_proportion = results_df.loc[max_idx, "Proporción Total"]
+optimal_steps = results_df.loc[max_idx, "Número de pasos"]
+
+print(f"\n🎯 Optimal Window Size: {optimal_window} steps")
+print(f"   Maximum Cognitive Domain proportion: {100*max_proportion:.2f}%")
+print(f"   Effective time steps: {int(optimal_steps)}")
+print()
+
+# Show breakdown at optimal window
+if optimal_window != "Máximo":
+    optimal_row = results_df.loc[max_idx]
+    print(f"Breakdown at optimal window ({optimal_window} steps):")
+    print(f"  Cognitive Control: {100*optimal_row['Proporción CC']:.2f}%")
+    print(f"  Stationary Mode:   {100*optimal_row['Proporción SM']:.2f}%")
+    print(f"  Problem:           {100*optimal_row['Proporción PB']:.2f}%")
+    print()
+
+print("📁 All visualizations saved to: ./visualizations/process_classification/")
+print("   - histogramas_subplots.png    (All window histograms)")
+print("   - proportions_plots.png       (Proportion trends)")
+print("   - combined_plots.png          (Optimal window analysis)")
+print()
+
+print("="*60)
+print("✅ SCRIPT COMPLETED SUCCESSFULLY")
+print("="*60)
+
+# ========================================
+# 9. OPTIONAL: ADDITIONAL ANALYSIS WITH NEW TOOLS
+# ========================================
+# You can now use the new process_analysis functions directly:
+
+# Example 1: Rescale to a specific window
+if False:  # Set to True to run
+    print("\n" + "="*60)
+    print("ADDITIONAL ANALYSIS: Rescaled Time Series")
+    print("="*60)
+    
+    rescaled_flux = rescale_process_time_series(flux_vector, window_size=100)
+    print(f"Original flux length: {len(flux_vector)}")
+    print(f"Rescaled flux length: {len(rescaled_flux)}")
+    print(rescaled_flux.head())
+
+# Example 2: Export classified processes
+if False:  # Set to True to run
+    print("\n" + "="*60)
+    print("EXPORTING CLASSIFIED PROCESSES")
+    print("="*60)
+    
+    export_classified_processes(
+        flux_vector,
+        S,
+        filepath="./results/classified_processes.xlsx",
+        format='excel',
+        include_Sv=True,
+        separate_sheets=True
+    )
+    print("✓ Exported to ./results/classified_processes.xlsx")
+
+# Example 3: Cone analysis
+if False:  # Set to True to run
+    print("\n" + "="*60)
+    print("CONE STRUCTURE ANALYSIS")
+    print("="*60)
+    
+    cone_result = analyze_cone(S, grid_max=5, grid_res=15, classify=True)
+    print(f"Nullspace dimension: {len(cone_result['nullspace_vectors'])}")
+    print(f"Feasible points: {cone_result['feasible_points'].shape[0]}")
+    print(f"Classification breakdown: {cone_result['classification_counts']}")

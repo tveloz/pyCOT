@@ -1,7 +1,7 @@
 [
     {
         "network_name": "RN_Ns_20_Norg_4_id_12",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_4_id_12.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_4_id_12.txt",
         "num_species": 20,
         "num_reactions": 42,
         "num_semi_orgs": 6,
@@ -31,7 +31,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_4_id_13",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_4_id_13.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_4_id_13.txt",
         "num_species": 20,
         "num_reactions": 40,
         "num_semi_orgs": 9,
@@ -61,7 +61,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_4_id_14",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_4_id_14.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_4_id_14.txt",
         "num_species": 20,
         "num_reactions": 34,
         "num_semi_orgs": 11,
@@ -91,7 +91,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_4_id_16",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_4_id_16.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_4_id_16.txt",
         "num_species": 20,
         "num_reactions": 42,
         "num_semi_orgs": 6,
@@ -121,7 +121,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_4_id_17",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_4_id_17.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_4_id_17.txt",
         "num_species": 20,
         "num_reactions": 40,
         "num_semi_orgs": 5,
@@ -151,7 +151,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_4_id_18",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_4_id_18.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_4_id_18.txt",
         "num_species": 20,
         "num_reactions": 40,
         "num_semi_orgs": 7,
@@ -181,7 +181,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_4_id_19",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_4_id_19.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_4_id_19.txt",
         "num_species": 20,
         "num_reactions": 36,
         "num_semi_orgs": 19,
@@ -211,7 +211,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_4_id_21",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_4_id_21.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_4_id_21.txt",
         "num_species": 19,
         "num_reactions": 36,
         "num_semi_orgs": 16,
@@ -241,7 +241,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_5_id_20",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_5_id_20.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_5_id_20.txt",
         "num_species": 20,
         "num_reactions": 42,
         "num_semi_orgs": 5,
@@ -271,7 +271,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_5_id_3",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_5_id_3.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_5_id_3.txt",
         "num_species": 20,
         "num_reactions": 40,
         "num_semi_orgs": 5,
@@ -301,7 +301,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_5_id_7",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_5_id_7.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_5_id_7.txt",
         "num_species": 20,
         "num_reactions": 36,
         "num_semi_orgs": 5,
@@ -331,7 +331,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_10",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_10.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_10.txt",
         "num_species": 20,
         "num_reactions": 36,
         "num_semi_orgs": 25,
@@ -361,7 +361,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_132",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_132.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_132.txt",
         "num_species": 20,
         "num_reactions": 40,
         "num_semi_orgs": 19,
@@ -391,7 +391,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_135",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_135.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_135.txt",
         "num_species": 20,
         "num_reactions": 40,
         "num_semi_orgs": 7,
@@ -421,7 +421,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_136",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_136.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_136.txt",
         "num_species": 20,
         "num_reactions": 29,
         "num_semi_orgs": 10,
@@ -451,7 +451,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_137",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_137.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_137.txt",
         "num_species": 20,
         "num_reactions": 35,
         "num_semi_orgs": 7,
@@ -481,7 +481,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_139",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_139.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_139.txt",
         "num_species": 20,
         "num_reactions": 35,
         "num_semi_orgs": 11,
@@ -511,7 +511,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_141",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_141.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_141.txt",
         "num_species": 20,
         "num_reactions": 30,
         "num_semi_orgs": 13,
@@ -541,7 +541,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_142",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_142.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_142.txt",
         "num_species": 20,
         "num_reactions": 34,
         "num_semi_orgs": 6,
@@ -571,7 +571,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_145",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_145.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_145.txt",
         "num_species": 20,
         "num_reactions": 30,
         "num_semi_orgs": 6,
@@ -601,7 +601,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_146",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_146.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_146.txt",
         "num_species": 20,
         "num_reactions": 31,
         "num_semi_orgs": 13,
@@ -631,7 +631,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_147",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_147.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_147.txt",
         "num_species": 20,
         "num_reactions": 31,
         "num_semi_orgs": 12,
@@ -661,7 +661,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_148",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_148.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_148.txt",
         "num_species": 20,
         "num_reactions": 33,
         "num_semi_orgs": 9,
@@ -691,7 +691,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_150",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_150.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_150.txt",
         "num_species": 20,
         "num_reactions": 28,
         "num_semi_orgs": 10,
@@ -721,7 +721,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_153",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_153.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_153.txt",
         "num_species": 20,
         "num_reactions": 31,
         "num_semi_orgs": 11,
@@ -751,7 +751,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_154",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_154.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_154.txt",
         "num_species": 20,
         "num_reactions": 32,
         "num_semi_orgs": 11,
@@ -781,7 +781,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_155",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_155.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_155.txt",
         "num_species": 20,
         "num_reactions": 33,
         "num_semi_orgs": 16,
@@ -811,7 +811,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_157",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_157.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_157.txt",
         "num_species": 20,
         "num_reactions": 36,
         "num_semi_orgs": 6,
@@ -841,7 +841,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_159",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_159.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_159.txt",
         "num_species": 19,
         "num_reactions": 30,
         "num_semi_orgs": 7,
@@ -871,7 +871,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_161",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_161.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_161.txt",
         "num_species": 20,
         "num_reactions": 34,
         "num_semi_orgs": 17,
@@ -901,7 +901,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_162",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_162.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_162.txt",
         "num_species": 20,
         "num_reactions": 32,
         "num_semi_orgs": 23,
@@ -931,7 +931,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_164",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_164.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_164.txt",
         "num_species": 19,
         "num_reactions": 34,
         "num_semi_orgs": 8,
@@ -961,7 +961,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_166",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_166.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_166.txt",
         "num_species": 20,
         "num_reactions": 34,
         "num_semi_orgs": 6,
@@ -991,7 +991,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_6_id_9",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_6_id_9.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_6_id_9.txt",
         "num_species": 20,
         "num_reactions": 34,
         "num_semi_orgs": 17,
@@ -1021,7 +1021,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_7_id_133",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_7_id_133.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_7_id_133.txt",
         "num_species": 20,
         "num_reactions": 40,
         "num_semi_orgs": 48,
@@ -1051,7 +1051,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_7_id_134",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_7_id_134.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_7_id_134.txt",
         "num_species": 20,
         "num_reactions": 38,
         "num_semi_orgs": 14,
@@ -1081,7 +1081,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_7_id_143",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_7_id_143.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_7_id_143.txt",
         "num_species": 20,
         "num_reactions": 32,
         "num_semi_orgs": 17,
@@ -1111,7 +1111,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_7_id_144",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_7_id_144.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_7_id_144.txt",
         "num_species": 20,
         "num_reactions": 32,
         "num_semi_orgs": 15,
@@ -1141,7 +1141,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_7_id_156",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_7_id_156.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_7_id_156.txt",
         "num_species": 20,
         "num_reactions": 38,
         "num_semi_orgs": 9,
@@ -1171,7 +1171,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_7_id_158",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_7_id_158.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_7_id_158.txt",
         "num_species": 20,
         "num_reactions": 35,
         "num_semi_orgs": 18,
@@ -1201,7 +1201,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_7_id_160",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_7_id_160.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_7_id_160.txt",
         "num_species": 20,
         "num_reactions": 30,
         "num_semi_orgs": 14,
@@ -1231,7 +1231,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_8_id_138",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_8_id_138.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_8_id_138.txt",
         "num_species": 20,
         "num_reactions": 30,
         "num_semi_orgs": 12,
@@ -1261,7 +1261,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_8_id_140",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_8_id_140.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_8_id_140.txt",
         "num_species": 20,
         "num_reactions": 39,
         "num_semi_orgs": 9,
@@ -1291,7 +1291,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_8_id_149",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_8_id_149.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_8_id_149.txt",
         "num_species": 20,
         "num_reactions": 32,
         "num_semi_orgs": 35,
@@ -1321,7 +1321,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_8_id_15",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_8_id_15.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_8_id_15.txt",
         "num_species": 20,
         "num_reactions": 38,
         "num_semi_orgs": 14,
@@ -1351,7 +1351,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_8_id_151",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_8_id_151.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_8_id_151.txt",
         "num_species": 20,
         "num_reactions": 32,
         "num_semi_orgs": 13,
@@ -1381,7 +1381,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_8_id_152",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_8_id_152.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_8_id_152.txt",
         "num_species": 20,
         "num_reactions": 29,
         "num_semi_orgs": 13,
@@ -1411,7 +1411,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_8_id_163",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_8_id_163.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_8_id_163.txt",
         "num_species": 20,
         "num_reactions": 33,
         "num_semi_orgs": 17,
@@ -1441,7 +1441,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_8_id_165",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_8_id_165.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_8_id_165.txt",
         "num_species": 20,
         "num_reactions": 33,
         "num_semi_orgs": 13,
@@ -1471,7 +1471,7 @@
     },
     {
         "network_name": "RN_Ns_20_Norg_9_id_4",
-        "file_path": "networks/RandomAlife/Ns20\\RN_Ns_20_Norg_9_id_4.txt",
+        "file_path": "networks/RandomAlife/Ns20;RN_Ns_20_Norg_9_id_4.txt",
         "num_species": 20,
         "num_reactions": 36,
         "num_semi_orgs": 14,

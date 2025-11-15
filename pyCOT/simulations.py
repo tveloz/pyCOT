@@ -943,6 +943,7 @@ def simulate_metapopulation_dynamics(rn, rate='mak', num_patches=None, D_dict=No
     
     # Sistema ODE combinado
     def combined_ode(t, x):
+        x = np.maximum(x, 0)
         Xdict = reshape_state(x)
         dxdt_reac, _ = reaction_dynamics(Xdict, rate, spec_vector)
         dxdt_disperse = dispersal_term(Xdict)
@@ -951,7 +952,7 @@ def simulate_metapopulation_dynamics(rn, rate='mak', num_patches=None, D_dict=No
     
     # Integración de ODEs
     t_eval = np.linspace(t_span[0], t_span[1], n_steps)
-    sol = solve_ivp(combined_ode, t_span, x0, t_eval=t_eval, method='RK45', rtol=1e-6)
+    sol = solve_ivp(combined_ode, t_span, x0, t_eval=t_eval, method='LSODA', rtol=1e-8, atol=1e-10)
     
     # Formatear salida
     X_out = {sp: np.zeros((n_steps, num_patches)) for sp in species}

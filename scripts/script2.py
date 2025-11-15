@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import pyCOT modules
 from pyCOT.io.functions import read_txt 
-from pyCOT.plot_dynamics import plot_series_ode
+from pyCOT.plot_dynamics_old import plot_series_ode
 from pyCOT.simulations import *
 
 # ========================================
@@ -30,7 +30,7 @@ file_path = 'Txt/BZ_cycle.txt'
 # file_path = 'Txt/Farm.txt' 
 # file_path = 'Txt/SEIR.txt' 
 # file_path = 'Txt/2010Veloz_Ex_4.txt'
-file_path = 'networks/Riverland_model/cause_driven_conflict_gov.txt'
+file_path = 'networks/Conflict_Theory/cause_driven_conflict_gov.txt'
 
 rn = read_txt(file_path)  # Create ReactionNetwork object from file
 
