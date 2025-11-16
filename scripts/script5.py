@@ -19,7 +19,8 @@ from pyCOT.abstractions import abstraction_ordinary
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ========================================
 # # Network file path
-file_path = 'networks/Conflict_Theory/cause_driven_conflict_gov.txt'   
+file_path = 'Txt/autopoietic.txt'
+# file_path = 'networks/Conflict_Theory/cause_driven_conflict_gov.txt'   
 rn = read_txt(file_path)     
 
 # ========================================

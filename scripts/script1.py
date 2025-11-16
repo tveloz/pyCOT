@@ -16,11 +16,11 @@ from pyCOT.rn_visualize import rn_visualize_html, rn_visualize_png_in_out
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ======================================== 
 # file_path = 'Txt/Farm.txt' 
-# file_path = 'Txt/autopoietic.txt'  # Change this path according to the desired file
-file_path = 'Txt/autopoietic1.txt'
+file_path = 'Txt/autopoietic.txt'  # Change this path according to the desired file
+# file_path = 'Txt/autopoietic1.txt'
 # file_path = 'Txt/SEIR.txt' 
 # file_path = 'Txt/2007Dittrich-Speroni_E.coli.txt'
-file_path = 'networks/testing/Lotka_Volterra.txt'  
+# file_path = 'networks/testing/Lotka_Volterra.txt'  
 rn = read_txt(file_path)  # Creates the variable rn containing an object of ReactionNetwork class
 
 rn_comments = rn.reaction_comments
@@ -135,5 +135,5 @@ for r in reactions:
 # ========================================
 # 8. VISUALIZATION OF THE REACTION NETWORK
 # ========================================  
-#rn_visualize_html(rn, filename="reaction_network.html") 
-rn_visualize_png_in_out(rn, filename="rn_visualize_png_in_out") 
+rn_visualize_html(rn, filename="reaction_network.html") 
+# rn_visualize_png_in_out(rn, filename="rn_visualize_png_in_out") 

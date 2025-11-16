@@ -226,7 +226,7 @@ def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None,
     
     n_species = len(species_names)
     
-    # Manejo de Ã­ndices de tiempo
+    # Manejo de índices de tiempo
     if time_indices is None:
         time_indices = np.linspace(0, len(t)-1, 5, dtype=int)
     elif isinstance(time_indices, int):
@@ -237,7 +237,7 @@ def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None,
     time_indices = np.array(time_indices, dtype=int)
     n_times = len(time_indices)
     
-    # Min y max global para escala de colores comÃºn
+    # Min y max global para escala de colores común
     global_vmin = min([X[species][time_indices].min() for species in species_names])
     global_vmax = max([X[species][time_indices].max() for species in species_names])
     
@@ -249,7 +249,7 @@ def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None,
     gs = fig.add_gridspec(n_species, n_times, width_ratios=width_ratios, 
                          hspace=0.4, wspace=0.3, right=0.85)  # Dejar espacio a la derecha para la barra
     
-    # Lista para almacenar todas las imÃ¡genes (necesario para la barra de color)
+    # Lista para almacenar todas las imágenes (necesario para la barra de color)
     all_imgs = []
     
     for i, species in enumerate(species_names):
@@ -262,7 +262,7 @@ def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None,
             img = ax.imshow(heat_data, cmap=cmap, vmin=global_vmin, vmax=global_vmax, origin='upper', aspect='auto')
             all_imgs.append(img)  # Guardar referencia para la barra de color
             
-            # TÃ­tulo de tiempos (solo en la primera fila)
+            # Título de tiempos (solo en la primera fila)
             if i == 0:
                 ax.set_title(f"t = {t[time_idx]:.1f}", fontweight='bold', pad=15)
             
@@ -283,7 +283,7 @@ def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None,
             ax.set_yticks(np.arange(rows))
             ax.grid(False)
             
-            # InteracciÃ³n con cursor
+            # Interacción con cursor
             cursor = mplcursors.cursor(img, hover=False)
             
             def make_callback(data_matrix):
@@ -299,7 +299,7 @@ def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None,
     cbar_ax = fig.add_axes([0.87, 0.15, 0.02, 0.7])  # [left, bottom, width, height]
     fig.colorbar(all_imgs[0], cax=cbar_ax, label=bar_label)
     
-    # TÃ­tulo general
+    # Título general
     plt.suptitle(main_title, fontsize=16, fontweight='bold', y=0.98)
     
     plt.tight_layout()
@@ -319,7 +319,7 @@ def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None,
     
     plt.show()
 
-# FunciÃ³n para animar los mapas de calor con controles interactivos
+# Función para animar los mapas de calor con controles interactivos
 def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_title="Heatmaps for All Species", slider_label="Time", bar_label="Concentration"):
     """
     Animate the evolution of multiple species in heatmaps arranged by columns.
@@ -345,16 +345,16 @@ def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_tit
         species_names = list(X.keys())
     n_species = len(species_names)
     
-    # Calcular nÃºmero de filas y columnas (mÃ¡ximo 5 columnas)
+    # Calcular número de filas y columnas (máximo 5 columnas)
     max_cols = 5
     n_cols = min(n_species, max_cols)
-    n_rows = (n_species + n_cols - 1) // n_cols  # DivisiÃ³n entera hacia arriba
+    n_rows = (n_species + n_cols - 1) // n_cols  # División entera hacia arriba
 
     # Min/max global para todas las especies
     vmin = min(np.min(X[sp]) for sp in species_names)
     vmax = max(np.max(X[sp]) for sp in species_names)
 
-    # Figura y ejes (disposiciÃ³n por columnas)
+    # Figura y ejes (disposición por columnas)
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(4*n_cols, 4*n_rows))
     
     # Si hay solo una fila o columna, convertir axes a array 2D para consistencia
@@ -384,7 +384,7 @@ def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_tit
         ax.set_yticks(np.arange(rows))
         ims.append((im, data, ax))
 
-    # Ocultar ejes vacÃ­os si el nÃºmero de especies no llena completamente la cuadrÃ­cula
+    # Ocultar ejes vacíos si el número de especies no llena completamente la cuadrícula
     total_cells = n_rows * n_cols
     if total_cells > n_species:
         for i in range(n_species, total_cells):
@@ -392,7 +392,7 @@ def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_tit
             col_idx = i % n_cols
             axes[row_idx, col_idx].axis('off')
 
-    # Un Ãºnico colorbar global
+    # Un único colorbar global
     cbar_ax = fig.add_axes([0.92, 0.25, 0.02, 0.6])  # [left, bottom, width, height]
     fig.colorbar(ims[0][0], cax=cbar_ax, label=bar_label)
 
@@ -433,7 +433,7 @@ def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_tit
             current_val = slider.val
             next_val = current_val + (t[1] - t[0])
             if next_val > t[-1]:
-                playing[0] = False  # Detener la animaciÃ³n al llegar al final
+                playing[0] = False  # Detener la animación al llegar al final
             else:
                 slider.set_val(next_val)
 
@@ -446,29 +446,29 @@ def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_tit
 ########################################################################################
 
 def plot_species_dynamics_MP(t, time_series, species, num_patches=4, separate_plots=False, 
-                         filename='dynamics.png', title='DinÃ¡micas de Especies en Cada Parche', 
+                         filename='dynamics.png', title='Dinámicas de Especies en Cada Parche', 
                          figsize=(12, 8)):
     """
     Grafica las series temporales de las concentraciones de especies en cada parche.
     
-    ParÃ¡metros:
+    Parámetros:
     - t: Arreglo de tiempos (numpy array).
     - time_series: DataFrame con las concentraciones, columnas en formato (especie, parche).
     - species: Lista de nombres de las especies (ej. ['l', 's1', 's2']).
-    - num_patches: NÃºmero de parches (default: 4).
-    - separate_plots: Si True, crea un subgrÃ¡fico por especie; si False, grafica todo en una figura (default: False).
-    - filename: Nombre del archivo para guardar el grÃ¡fico (default: 'dynamics.png').
-    - title: TÃ­tulo del grÃ¡fico (default: 'DinÃ¡micas de Especies en Cada Parche').
+    - num_patches: Número de parches (default: 4).
+    - separate_plots: Si True, crea un subgráfico por especie; si False, grafica todo en una figura (default: False).
+    - filename: Nombre del archivo para guardar el gráfico (default: 'dynamics.png').
+    - title: Título del gráfico (default: 'Dinámicas de Especies en Cada Parche').
     - figsize: Tupla con el tamaÃ±o de la figura (default: (12, 8)).
     """
     if separate_plots:
-        # Crear subgrÃ¡ficos para cada especie
+        # Crear subgráficos para cada especie
         fig, axs = plt.subplots(len(species), 1, figsize=(figsize[0], figsize[1] * len(species) / 2), sharex=True)
         for i, sp in enumerate(species):
             for p in range(num_patches):
                 axs[i].plot(t, time_series[(sp, p)], label=f'Parche {p}')
-            axs[i].set_title(f'ConcentraciÃ³n de {sp}')
-            axs[i].set_ylabel('ConcentraciÃ³n')
+            axs[i].set_title(f'Concentración de {sp}')
+            axs[i].set_ylabel('Concentración')
             axs[i].legend()
             axs[i].grid(True)
         axs[-1].set_xlabel('Tiempo')
@@ -480,7 +480,7 @@ def plot_species_dynamics_MP(t, time_series, species, num_patches=4, separate_pl
             for p in range(num_patches):
                 plt.plot(t, time_series[(sp, p)], label=f'{sp}, Parche {p}')
         plt.xlabel('Tiempo')
-        plt.ylabel('ConcentraciÃ³n')
+        plt.ylabel('Concentración')
         plt.title(title)
         plt.legend()
         plt.grid(True)
@@ -489,20 +489,20 @@ def plot_species_dynamics_MP(t, time_series, species, num_patches=4, separate_pl
     plt.savefig(filename)
     plt.show()
 
-# FunciÃ³n para graficar mapas de calor 2D para cada especie en mÃºltiples tiempos
+# Función para graficar mapas de calor 2D para cada especie en múltiples tiempos
 def plot_heatmaps_for_species_2d(time_series, species, t, patch_shape=(2, 2), time_indices=None, 
                                 filename_prefix='heatmap_2d', figsize=(5, 4)):
     """
-    Grafica mapas de calor 2D para cada especie en una cuadrÃ­cula de parches en mÃºltiples puntos temporales.
+    Grafica mapas de calor 2D para cada especie en una cuadrícula de parches en múltiples puntos temporales.
     
-    ParÃ¡metros:
+    Parámetros:
     - time_series: DataFrame con las concentraciones, columnas en formato (especie, parche).
     - species: Lista de nombres de las especies (ej. ['l', 's1', 's2']).
     - t: Arreglo de tiempos (numpy array).
-    - patch_shape: Tupla (filas, columnas) de la cuadrÃ­cula de parches (default: (2, 2)).
-    - time_indices: Lista de Ã­ndices de tiempo a graficar (default: None, usa 3 tiempos equiespaciados).
+    - patch_shape: Tupla (filas, columnas) de la cuadrícula de parches (default: (2, 2)).
+    - time_indices: Lista de índices de tiempo a graficar (default: None, usa 3 tiempos equiespaciados).
     - filename_prefix: Prefijo para los nombres de los archivos guardados (default: 'heatmap_2d').
-    - figsize: Tupla con el tamaÃ±o base de cada subgrÃ¡fico (default: (5, 4)).
+    - figsize: Tupla con el tamaÃ±o base de cada subgráfico (default: (5, 4)).
     """
     rows, cols = patch_shape
     num_patches = rows * cols
@@ -515,7 +515,7 @@ def plot_heatmaps_for_species_2d(time_series, species, t, patch_shape=(2, 2), ti
     
     # Crear una figura por especie
     for sp in species:
-        # Obtener los valores mÃ­nimo y mÃ¡ximo para la especie en los tiempos seleccionados
+        # Obtener los valores mínimo y máximo para la especie en los tiempos seleccionados
         vmin = np.min([time_series[(sp, p)].iloc[time_indices] for p in range(num_patches)])
         vmax = np.max([time_series[(sp, p)].iloc[time_indices] for p in range(num_patches)])
         
@@ -540,12 +540,12 @@ def plot_heatmaps_for_species_2d(time_series, species, t, patch_shape=(2, 2), ti
             ax.set_xticks(np.arange(cols))
             ax.set_yticks(np.arange(rows))
             
-            # AÃ±adir valores numÃ©ricos
+            # AÃ±adir valores numéricos
             for r in range(rows):
                 for c in range(cols):
                     ax.text(c, r, f'{conc_data[r, c]:.2f}', ha='center', va='center', color='white')
             
-            # AÃ±adir interacciÃ³n con mplcursors
+            # AÃ±adir interacción con mplcursors
             cursor = mplcursors.cursor(img, hover=False)
             
             def make_callback(data):
@@ -557,18 +557,18 @@ def plot_heatmaps_for_species_2d(time_series, species, t, patch_shape=(2, 2), ti
             
             cursor.connect("add", make_callback(conc_data))
         
-        # AÃ±adir barra de color comÃºn
+        # AÃ±adir barra de color común
         fig.colorbar(imgs[0], cax=cbar_ax)
         plt.suptitle(f"Especie {sp}", fontsize=16)
         plt.tight_layout()
         plt.savefig(f"{filename_prefix}_{sp}.png")
         plt.show()
 
-# FunciÃ³n para animar mapas de calor 2D
+# Función para animar mapas de calor 2D
 def animate_diffusion_heatmaps_for_species_2d(time_series, species_name, t, patch_shape=(2, 2), 
                                              filename=None, figsize=(6, 5)):
     """
-    Anima mapas de calor 2D para una especie en una cuadrÃ­cula de parches con controles interactivos.
+    Anima mapas de calor 2D para una especie en una cuadrícula de parches con controles interactivos.
     """
     rows, cols = patch_shape
     num_patches = rows * cols
@@ -576,11 +576,11 @@ def animate_diffusion_heatmaps_for_species_2d(time_series, species_name, t, patc
     # Redondear tiempos a dos decimales
     t = np.round(t, 2)
     
-    # Extraer datos para la especie especÃ­fica y reorganizar en (time, rows, cols)
+    # Extraer datos para la especie específica y reorganizar en (time, rows, cols)
     data = np.array([time_series[(species_name, p)] for p in range(num_patches)]).T.reshape(-1, rows, cols)
     n_time, _, _ = data.shape
     
-    # Calcular valores mÃ­nimo y mÃ¡ximo para la escala de color
+    # Calcular valores mínimo y máximo para la escala de color
     vmin = np.min(data)
     vmax = np.max(data)
     
@@ -596,7 +596,7 @@ def animate_diffusion_heatmaps_for_species_2d(time_series, species_name, t, patc
     ax.set_xticks(np.arange(cols))
     ax.set_yticks(np.arange(rows))
     
-    # AÃ±adir valores numÃ©ricos en cada celda
+    # AÃ±adir valores numéricos en cada celda
     texts = []
     for r in range(rows):
         for c in range(cols):
@@ -616,13 +616,13 @@ def animate_diffusion_heatmaps_for_species_2d(time_series, species_name, t, patc
     btn_play = Button(ax_play, 'Play')
     btn_pause = Button(ax_pause, 'Pause')
     
-    playing = [False]  # Estado mutable para la animaciÃ³n
+    playing = [False]  # Estado mutable para la animación
     
     def update(val):
         idx = np.argmin(np.abs(t - val))
         im.set_data(data[idx])
         ax.set_title(f"Especie {species_name} (t = {t[idx]:.2f})")
-        # Actualizar valores numÃ©ricos
+        # Actualizar valores numéricos
         for r in range(rows):
             for c in range(cols):
                 texts[r * cols + c].set_text(f'{data[idx, r, c]:.2f}')
@@ -651,7 +651,7 @@ def animate_diffusion_heatmaps_for_species_2d(time_series, species_name, t, patc
     update(t[0])  # Inicializa el primer frame
     
     if filename:
-        # Guardar la animaciÃ³n como MP4 (requiere ffmpeg)
+        # Guardar la animación como MP4 (requiere ffmpeg)
         ani.save(filename, writer='ffmpeg', fps=50)
     
     plt.show()
@@ -1691,7 +1691,7 @@ def plot_abstraction_graph_movie_3last_nodes(abstract_time_series,
 
     # Create a function for drawing each frame
     def update_frame(i):
-        ax.clear()     # Limpia el eje para la nueva iteraciÃ³n
+        ax.clear()     # Limpia el eje para la nueva iteración
         ax.axis("off") # Desactiva el borde y las marcas del eje
 
         # Draw the nodes
@@ -1719,12 +1719,12 @@ def plot_abstraction_graph_movie_3last_nodes(abstract_time_series,
         nx.draw_networkx_edges(G, pos, width=[w / 2 for w in edge_weights], alpha=0.9, ax=ax)
 
         # Draw the current node as a larger, fully opaque red node, except for the last frame
-        if i < len(abstractions)-1:  # Evita el Ãºltimo frame
+        if i < len(abstractions)-1:  # Evita el último frame
             current_node = tuple(current_abstraction)
             nx.draw_networkx_nodes(G, pos, nodelist=[current_node], node_size=500, node_color='red', ax=ax)
         
         # Add labels for nodes 
-        label_pos = {node: (x, y + 10) for node, (x, y) in pos.items()}  # Ajusta '10' segÃºn el desplazamiento deseado        
+        label_pos = {node: (x, y + 10) for node, (x, y) in pos.items()}  # Ajusta '10' según el desplazamiento deseado        
         nx.draw_networkx_labels(
             G, label_pos, labels=nx.get_node_attributes(G, 'label'), 
             font_size=8, font_color="black", ax=ax, 
@@ -1732,9 +1732,9 @@ def plot_abstraction_graph_movie_3last_nodes(abstract_time_series,
         )
         
         # Title
-        if i < len(abstractions) - 1:  # Para todos los frames excepto el Ãºltimo
+        if i < len(abstractions) - 1:  # Para todos los frames excepto el último
             ax.set_title(f"{title} {i}", fontsize=15)
-        else:  # Para el Ãºltimo frame
+        else:  # Para el último frame
             j=len(abstractions)-2
             ax.set_title(f"{title} {j}", fontsize=15)
 
@@ -1780,40 +1780,40 @@ def get_plot_abstraction_graph_movie_html(abstract_time_series,
         The filename of the generated HTML file.
     """
     abstractions = abstract_time_series["Abstraction"]                           # Obtiene la columna "Abstraction" del DataFrame 'abstract_time_series'.
-    abstractions = pd.concat([abstractions, pd.Series([abstractions.iloc[-1]])], ignore_index=True)  # AÃ±ade el Ãºltimo valor de la columna al final, para garantizar que se considere la transiciÃ³n final.
+    abstractions = pd.concat([abstractions, pd.Series([abstractions.iloc[-1]])], ignore_index=True)  # AÃ±ade el último valor de la columna al final, para garantizar que se considere la transición final.
     times = abstract_time_series["Time"]                                         # Obtiene la columna "Time" del DataFrame 'abstract_time_series'.
-    unique_abstractions = abstractions.apply(tuple).drop_duplicates(keep='last') # Convierte los elementos de 'abstractions' a tuplas y elimina duplicados, manteniendo el Ãºltimo.
-    last_three_unique = unique_abstractions.tail(3)                              # Selecciona las tres Ãºltimas abstracciones Ãºnicas.
-    nodes = abstractions.apply(tuple).value_counts(sort=False)                   # Cuenta las ocurrencias de cada tupla Ãºnica en 'abstractions'.
+    unique_abstractions = abstractions.apply(tuple).drop_duplicates(keep='last') # Convierte los elementos de 'abstractions' a tuplas y elimina duplicados, manteniendo el último.
+    last_three_unique = unique_abstractions.tail(3)                              # Selecciona las tres últimas abstracciones únicas.
+    nodes = abstractions.apply(tuple).value_counts(sort=False)                   # Cuenta las ocurrencias de cada tupla única en 'abstractions'.
 
     # Create unique labels for nodes
-    node_labels = {node: f"S{idx + 1}" for idx, node in enumerate(nodes.keys())}  # Crea etiquetas Ãºnicas para los nodos, como "S1", "S2", etc.
+    node_labels = {node: f"S{idx + 1}" for idx, node in enumerate(nodes.keys())}  # Crea etiquetas únicas para los nodos, como "S1", "S2", etc.
 
     # Compute transition frequencies
     transitions = [(tuple(abstractions[i]), tuple(abstractions[i + 1])) for i in range(len(abstractions) - 1)]  # Crea las transiciones entre los elementos consecutivos de 'abstractions'.
-    transitions_freq = pd.Series(transitions).value_counts()  # Cuenta la frecuencia de cada transiciÃ³n.
+    transitions_freq = pd.Series(transitions).value_counts()  # Cuenta la frecuencia de cada transición.
 
     # Create the graph
-    G = nx.DiGraph()  # Crea un grafo dirigido vacÃ­o.
+    G = nx.DiGraph()  # Crea un grafo dirigido vacío.
 
     for node, freq in nodes.items():                          # Itera sobre los nodos y sus frecuencias.
         nodee = ', '.join(node)                               # Convierte la tupla del nodo en una cadena de texto.
         color = colour_first_nodes                            # Define el color de los nodos iniciales.
         label = f"{node_labels[node]} ({freq})"               # Etiqueta del nodo con su frecuencia.
-        hover_info = f"[{nodee}]"                             # InformaciÃ³n detallada para el hover.
+        hover_info = f"[{nodee}]"                             # Información detallada para el hover.
         G.add_node(node, size=1, color=color, label=label, hovertext=hover_info)  # AÃ±ade el nodo al grafo con atributos adicionales.
 
     for (source, target), weight in transitions_freq.items(): # Itera sobre las transiciones y sus frecuencias.
         G.add_edge(source, target, weight=weight)             # AÃ±ade las transiciones como aristas con su peso (frecuencia).
 
     # Primero necesitas asignar niveles a los nodos basado en el tamaÃ±o del conjunto
-    # En la funciÃ³n get_plot_abstraction_graph_movie_html, alrededor de lÃ­nea 1554:
+    # En la función get_plot_abstraction_graph_movie_html, alrededor de línea 1554:
 
     # Crear el subset_key correctamente para multipartite_layout
     subset_key = {}
     max_size = 0
 
-    # Primero encontrar el tamaÃ±o mÃ¡ximo entre todos los nodos
+    # Primero encontrar el tamaÃ±o máximo entre todos los nodos
     for node in G.nodes:
         if isinstance(node, (tuple, list, set)):
             node_size = len(node)
@@ -1821,11 +1821,11 @@ def get_plot_abstraction_graph_movie_html(abstract_time_series,
         else:
             max_size = max(max_size, 1)
 
-    # Asignar niveles (conjuntos mÃ¡s grandes nivel mÃ¡s alto)
+    # Asignar niveles (conjuntos más grandes nivel más alto)
     for node in G.nodes:
         if isinstance(node, (tuple, list, set)):
             node_size = len(node)
-            level = node_size  # Conjuntos mÃ¡s grandes = nivel mÃ¡s alto
+            level = node_size  # Conjuntos más grandes = nivel más alto
         else:
             level = 1  # Nodos individuales
         
@@ -1837,33 +1837,33 @@ def get_plot_abstraction_graph_movie_html(abstract_time_series,
     # Usar el layout multipartita
     pos = nx.multipartite_layout(G, subset_key=subset_key, align='vertical')  # Cambiar a vertical
 
-    # INVERTIR LAS COORDENADAS para que los conjuntos grandes estÃ©n arriba
+    # INVERTIR LAS COORDENADAS para que los conjuntos grandes estén arriba
     for node in pos:
         x, y = pos[node]
-        # Intercambiar X e Y para orientaciÃ³n vertical
-        # e invertir Y para que niveles mÃ¡s altos estÃ©n arriba
-        pos[node] = (-y, x)  # Intercambiar y ajustar orientaciÃ³n
+        # Intercambiar X e Y para orientación vertical
+        # e invertir Y para que niveles más altos estén arriba
+        pos[node] = (-y, x)  # Intercambiar y ajustar orientación
 
-    # Ajustar espaciado para mejor visualizaciÃ³n
+    # Ajustar espaciado para mejor visualización
     for node in pos:
         x, y = pos[node]
-        pos[node] = (x * 1.2, y * 1.5)  # Aumentar separaciÃ³n
+        pos[node] = (x * 1.2, y * 1.5)  # Aumentar separación
     # # pos = nx.planar_layout(G) # pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot") # Calcula las posiciones de los nodos utilizando Graphviz.
-    # pos = {node: (x, -y) for node, (x, y) in pos.items()}     # Invierte la coordenada y para ajustar la visualizaciÃ³n.
+    # pos = {node: (x, -y) for node, (x, y) in pos.items()}     # Invierte la coordenada y para ajustar la visualización.
 
-    frames = []                                               # Lista para almacenar los frames de la animaciÃ³n.
-    sliders_steps = []                                        # Lista para los pasos del control deslizante de la animaciÃ³n.
+    frames = []                                               # Lista para almacenar los frames de la animación.
+    sliders_steps = []                                        # Lista para los pasos del control deslizante de la animación.
     
-    for i in range(len(abstractions)-1):                      # Itera sobre las abstracciones (menos el Ãºltimo valor).
+    for i in range(len(abstractions)-1):                      # Itera sobre las abstracciones (menos el último valor).
         node_sizes = [G.nodes[node]["size"] * first_node_size for node in G.nodes]  # Define el tamaÃ±o de los nodos.
         node_colors = [G.nodes[node]["color"] for node in G.nodes]                  # Define el color de los nodos.
 
         # Destacar los nodos actuales y ajustar tamaÃ±os progresivamente
         for offset, size_factor in enumerate(last_adjust_sizes[::-1]):  # Ajustes de tamaÃ±o
-            # Calcular el Ã­ndice mÃ¡ximo de los nodos a graficar
-            max_nodes_to_plot = i + 1  # NÃºmero de nodos a graficar en funciÃ³n del tiempo `i`
+            # Calcular el índice máximo de los nodos a graficar
+            max_nodes_to_plot = i + 1  # Número de nodos a graficar en función del tiempo `i`
             
-            # Verificar que el nodo actual estÃ© dentro del rango permitido
+            # Verificar que el nodo actual esté dentro del rango permitido
             if offset < max_nodes_to_plot:
                 current_node = tuple(abstractions.iloc[i - offset])  # Obtener el nodo actual
                 
@@ -1871,7 +1871,7 @@ def get_plot_abstraction_graph_movie_html(abstract_time_series,
                 if current_node in G.nodes:
                     index = list(G.nodes).index(current_node)  # Ãndice del nodo
                     
-                    # CondiciÃ³n para tres nodos consecutivos diferentes
+                    # Condición para tres nodos consecutivos diferentes
                     if offset >= 2:  # Verificar si hay al menos tres nodos consecutivos
                         prev_node_1 = tuple(abstractions.iloc[i - offset + 1])
                         prev_node_2 = tuple(abstractions.iloc[i - offset + 2])
@@ -1884,11 +1884,11 @@ def get_plot_abstraction_graph_movie_html(abstract_time_series,
                         ):
                             node_sizes[index] = last_node_size * size_factor
                         else:
-                            # Ajustar tamaÃ±o al mÃ¡ximo existente
+                            # Ajustar tamaÃ±o al máximo existente
                             max_size = max(node_sizes[index], last_node_size * size_factor)
                             node_sizes[index] = max_size
                     else:
-                        # Ajustar tamaÃ±o al mÃ¡ximo existente
+                        # Ajustar tamaÃ±o al máximo existente
                         max_size = max(node_sizes[index], last_node_size * size_factor)
                         node_sizes[index] = max_size
                     
@@ -1919,25 +1919,25 @@ def get_plot_abstraction_graph_movie_html(abstract_time_series,
                 arrowcolor="gray"
             ))
 
-        frames.append(go.Frame(                                  # AÃ±ade un nuevo frame para la animaciÃ³n.
+        frames.append(go.Frame(                                  # AÃ±ade un nuevo frame para la animación.
             data=[
                 go.Scatter(x=[pos[node][0] for node in G.nodes], # Posiciones x de los nodos.
                         y=[pos[node][1] for node in G.nodes],    # Posiciones y de los nodos.
-                        mode='markers+text',                     # Modo de visualizaciÃ³n de los nodos.
+                        mode='markers+text',                     # Modo de visualización de los nodos.
                         marker=dict(size=node_sizes, color=node_colors, opacity=1), # TamaÃ±o y color de los nodos.
                         text=[G.nodes[node]["label"] for node in G.nodes],          # Etiquetas de los nodos.
-                        textposition="bottom center"),           # PosiciÃ³n del texto.
+                        textposition="bottom center"),           # Posición del texto.
                 go.Scatter(x=edge_x, y=edge_y,                   # Coordenadas de las aristas.
-                        mode='lines',                            # Modo de visualizaciÃ³n de las aristas.
+                        mode='lines',                            # Modo de visualización de las aristas.
                         line=dict(width=1, color='gray'))        # Estilo de las aristas.
             ],
-            layout=dict(annotations=annotations),                # AÃ±ade las anotaciones a la visualizaciÃ³n.
-            name=f"Frame {i}"                                    # Nombre del frame para la animaciÃ³n.
+            layout=dict(annotations=annotations),                # AÃ±ade las anotaciones a la visualización.
+            name=f"Frame {i}"                                    # Nombre del frame para la animación.
         ))
-        sliders_steps.append(dict(                               # AÃ±ade un paso al control deslizante de la animaciÃ³n.
+        sliders_steps.append(dict(                               # AÃ±ade un paso al control deslizante de la animación.
             args=[[f"Frame {i}"], dict(frame=dict(duration=0, redraw=True), mode="immediate")],  # Define el paso.
             label=f"{i}",                                        # Etiqueta del paso.
-            method="animate"                                     # Define el mÃ©todo de animaciÃ³n.
+            method="animate"                                     # Define el método de animación.
         ))
 
     legend_text = "<br>".join([f"{node_labels[node]}= [{', '.join(node)}]" for node in G.nodes])  # Genera el texto de la leyenda con etiquetas de nodos (S1, S2, ...) y sus elementos.
@@ -1947,63 +1947,63 @@ def get_plot_abstraction_graph_movie_html(abstract_time_series,
             go.Scatter(
                 x=[pos[node][0] for node in G.nodes],  # Coordenadas X de los nodos.
                 y=[pos[node][1] for node in G.nodes],  # Coordenadas Y de los nodos.
-                mode='markers+text',                   # Modo de visualizaciÃ³n: muestra puntos (markers) y texto (text).
-                marker=dict(size=node_sizes, color=node_colors, opacity=1),  # ConfiguraciÃ³n de los nodos: tamaÃ±o, color, y opacidad.
+                mode='markers+text',                   # Modo de visualización: muestra puntos (markers) y texto (text).
+                marker=dict(size=node_sizes, color=node_colors, opacity=1),  # Configuración de los nodos: tamaÃ±o, color, y opacidad.
                 text=[G.nodes[node]["label"] for node in G.nodes],  # Etiquetas que se muestran en cada nodo.
-                textposition="bottom center",          # PosiciÃ³n del texto respecto al nodo (debajo y centrado).
+                textposition="bottom center",          # Posición del texto respecto al nodo (debajo y centrado).
                 hovertext=[G.nodes[node]["hovertext"] for node in G.nodes],  # Texto que aparece al pasar el mouse sobre un nodo.
                 hoverinfo="text",                      # Especifica que se muestra el texto de hover al interactuar.
-                name=legend_text                       # Asocia el texto de la leyenda con el grÃ¡fico.
+                name=legend_text                       # Asocia el texto de la leyenda con el gráfico.
             )
         ],
         layout=go.Layout(
-            title=title,                      # TÃ­tulo del grÃ¡fico.
-            updatemenus=[                     # ConfiguraciÃ³n de los botones de control (play y pause).
+            title=title,                      # Título del gráfico.
+            updatemenus=[                     # Configuración de los botones de control (play y pause).
                 dict(
                     type="buttons",           # Define un grupo de botones.
-                    showactive=False,         # Desactiva el resaltado del botÃ³n seleccionado.
+                    showactive=False,         # Desactiva el resaltado del botón seleccionado.
                     buttons=[
                         dict(
-                            label="Play",     # Etiqueta del botÃ³n "Play".
-                            method="animate", # MÃ©todo que activa la animaciÃ³n.
-                            args=[None, dict(frame=dict(duration=interval, redraw=True), fromcurrent=True)]  # ConfiguraciÃ³n de la animaciÃ³n.
+                            label="Play",     # Etiqueta del botón "Play".
+                            method="animate", # Método que activa la animación.
+                            args=[None, dict(frame=dict(duration=interval, redraw=True), fromcurrent=True)]  # Configuración de la animación.
                         ),
                         dict(
-                            label="Pause",    # Etiqueta del botÃ³n "Pause".
-                            method="animate", # MÃ©todo que pausa la animaciÃ³n.
-                            args=[[None], dict(frame=dict(duration=0, redraw=False), mode="immediate")]  # ConfiguraciÃ³n de pausa.
+                            label="Pause",    # Etiqueta del botón "Pause".
+                            method="animate", # Método que pausa la animación.
+                            args=[[None], dict(frame=dict(duration=0, redraw=False), mode="immediate")]  # Configuración de pausa.
                         )
                     ]
                 )
             ],
-            sliders=[{  # ConfiguraciÃ³n del control deslizante para avanzar manualmente entre los cuadros de la animaciÃ³n.
+            sliders=[{  # Configuración del control deslizante para avanzar manualmente entre los cuadros de la animación.
                 'steps': sliders_steps,   # Pasos del deslizador.
                 'currentvalue': {
                     'prefix': "Time: ",   # Prefijo que aparece junto al valor actual del deslizador.
                     'font': {'size': 16}, # TamaÃ±o de fuente del prefijo.
                     'visible': True,      # Muestra el valor actual.
                 },
-                'x': 0.1,   # PosiciÃ³n horizontal del deslizador.
-                'len': 0.9, # Longitud del deslizador en proporciÃ³n al grÃ¡fico.
+                'x': 0.1,   # Posición horizontal del deslizador.
+                'len': 0.9, # Longitud del deslizador en proporción al gráfico.
             }],
-            xaxis=dict(showgrid=False, zeroline=False, visible=False),  # Oculta la cuadrÃ­cula y el eje X.
-            yaxis=dict(showgrid=False, zeroline=False, visible=False),  # Oculta la cuadrÃ­cula y el eje Y.
-            plot_bgcolor='rgba(0,0,0,0)', # Fondo transparente del grÃ¡fico.
-            width=1400,                   # Ancho del grÃ¡fico.
-            height=800,                   # Altura del grÃ¡fico.
+            xaxis=dict(showgrid=False, zeroline=False, visible=False),  # Oculta la cuadrícula y el eje X.
+            yaxis=dict(showgrid=False, zeroline=False, visible=False),  # Oculta la cuadrícula y el eje Y.
+            plot_bgcolor='rgba(0,0,0,0)', # Fondo transparente del gráfico.
+            width=1400,                   # Ancho del gráfico.
+            height=800,                   # Altura del gráfico.
             annotations=annotations,      # Anotaciones adicionales para destacar elementos.
-            showlegend=showlegend,        # Habilita la visualizaciÃ³n de la leyenda.
+            showlegend=showlegend,        # Habilita la visualización de la leyenda.
             legend=dict( 
-                title=dict(text="Node Legend", font=dict(family="Arial", size=14, color="darkblue")),  # TÃ­tulo de la leyenda.
+                title=dict(text="Node Legend", font=dict(family="Arial", size=14, color="darkblue")),  # Título de la leyenda.
                 bgcolor="white",  # Fondo blanco.
                 bordercolor="white",                               # Borde blanco.
                 borderwidth=2,                                     # Grosor del borde.
                 font=dict(family="Arial", size=12, color="black"), # Fuente de los elementos.
-                x=1,                                               # PosiciÃ³n horizontal a la derecha.
-                y=1.0                                              # PosiciÃ³n vertical en la parte superior.
+                x=1,                                               # Posición horizontal a la derecha.
+                y=1.0                                              # Posición vertical en la parte superior.
             )
         ),
-        frames=frames  # Cuadros de la animaciÃ³n.
+        frames=frames  # Cuadros de la animación.
     )
 
     fig.write_html(filename)
@@ -2011,7 +2011,7 @@ def get_plot_abstraction_graph_movie_html(abstract_time_series,
 
 
 ############################################################################################## 
-# FunciÃ³n para generar una pelÃ­cula animada de un grafo de abstracciÃ³n y guardarla como archivo HTML.
+# Función para generar una película animada de un grafo de abstracción y guardarla como archivo HTML.
 def plot_abstraction_graph_movie_html(
                 abstract_time_series, 
                 first_node_size=25, colour_first_nodes="lightcyan",
@@ -2091,7 +2091,7 @@ def plot_abstraction_graph_movie_html(
     return abs_path  # Return the absolute path for reference
 
 ##############################################################################################    
-# PelÃ­culas animadas de grÃ¡ficos de abstracciÃ³n y semiorganizaciones
+# Películas animadas de gráficos de abstracción y semiorganizaciones
 ##############################################################################################
 # Function to generate a Hasse diagram of the set of species in a reaction network.
 def plot_abstraction_graph_movie_html0(abstract_time_series, interval=400, title="Abstraction Graph - Time", 
@@ -2193,7 +2193,7 @@ def plot_abstraction_graph_movie_html0(abstract_time_series, interval=400, title
     return filename
 
 ##############################################################################################
-# # PelÃ­culas animadas de grÃ¡ficos de abstracciÃ³n y semiorganizaciones
+# # Películas animadas de gráficos de abstracción y semiorganizaciones
 ##############################################################################################
 # Function to generate a Hasse diagram of the set of species in a reaction network.
 def plot_hasse_diagram(species_set, node_size=25, color_node='cyan', arrowcolor='black', bgcolor_legend="white", bordercolor_legend="white", name_legend="Legend:", title="Hasse diagram"):
@@ -2268,7 +2268,7 @@ def plot_hasse_diagram(species_set, node_size=25, color_node='cyan', arrowcolor=
     hovertexts = []
     for nodo, (x, y) in posiciones.items():
         x_coords.append(x)
-        y_coords.append(y)  # Sin invertir Y, el vacÃ­o queda abajo
+        y_coords.append(y)  # Sin invertir Y, el vacío queda abajo
         labels.append(etiquetas[nodo])
         hovertexts.append(f"{[', '.join(nodo) if nodo else 'âˆ…']}")
 
@@ -2321,7 +2321,7 @@ def plot_hasse_diagram(species_set, node_size=25, color_node='cyan', arrowcolor=
         annotations=annotations
     )
     
-    # Agregar la leyenda como anotaciÃ³n
+    # Agregar la leyenda como anotación
     fig.add_annotation(
         x=1.05, y=1, xref="paper", yref="paper",
         text=f"<b>{name_legend}</b><br>{leyenda_texto}",
@@ -2451,7 +2451,7 @@ def get_film_semiorganizations_abstractions_html(abstract_time_series, input_dat
         hover_info = f"[{nodee}]"
         G.add_node(node, size=1, color=color, label=label, hovertext=hover_info)
 
-    # Graficar nodos de intersecciÃ³n entre nodes_0 y set_of_sets2
+    # Graficar nodos de intersección entre nodes_0 y set_of_sets2
     intersection_nodes = set(nodes_0.keys()).intersection(set_of_sets2.keys())
     for node in intersection_nodes:
         freq_nodes_0 = nodes_0[node]
@@ -2469,7 +2469,7 @@ def get_film_semiorganizations_abstractions_html(abstract_time_series, input_dat
     # pos = {node: (x, -y) for node, (x, y) in pos.items()}
 
 
-    # Usar disposiciÃ³n con Graphviz y ajustar con un desplazamiento# pos = nx.shell_layout(G)
+    # Usar disposición con Graphviz y ajustar con un desplazamiento# pos = nx.shell_layout(G)
     pos = nx.planar_layout(G) # pos = graphviz_layout(G, prog="dot")
     # # pos = nx.drawing.nx_agraph.graphviz_layout(G, prog="dot")
     offset_x, offset_y = 10, 10
@@ -2537,25 +2537,25 @@ def get_film_semiorganizations_abstractions_html(abstract_time_series, input_dat
                 arrowcolor="gray"
             ))
 
-        frames.append(go.Frame(                                  # AÃ±ade un nuevo frame para la animaciÃ³n.
+        frames.append(go.Frame(                                  # AÃ±ade un nuevo frame para la animación.
             data=[
                 go.Scatter(x=[pos[node][0] for node in G.nodes], # Posiciones x de los nodos.
                         y=[pos[node][1] for node in G.nodes],    # Posiciones y de los nodos.
-                        mode='markers+text',                     # Modo de visualizaciÃ³n de los nodos.
+                        mode='markers+text',                     # Modo de visualización de los nodos.
                         marker=dict(size=node_sizes, color=node_colors, opacity=1), # TamaÃ±o y color de los nodos.
                         text=[G.nodes[node]["label"] for node in G.nodes],          # Etiquetas de los nodos.
-                        textposition="bottom center"),           # PosiciÃ³n del texto.
+                        textposition="bottom center"),           # Posición del texto.
                 go.Scatter(x=edge_x, y=edge_y,                   # Coordenadas de las aristas.
-                        mode='lines',                            # Modo de visualizaciÃ³n de las aristas.
+                        mode='lines',                            # Modo de visualización de las aristas.
                         line=dict(width=1, color='gray'))        # Estilo de las aristas.
             ],
-            layout=dict(annotations=annotations),                # AÃ±ade las anotaciones a la visualizaciÃ³n.
-            name=f"Frame {i}"                                    # Nombre del frame para la animaciÃ³n.
+            layout=dict(annotations=annotations),                # AÃ±ade las anotaciones a la visualización.
+            name=f"Frame {i}"                                    # Nombre del frame para la animación.
         ))
-        sliders_steps.append(dict(                               # AÃ±ade un paso al control deslizante de la animaciÃ³n.
+        sliders_steps.append(dict(                               # AÃ±ade un paso al control deslizante de la animación.
             args=[[f"Frame {i}"], dict(frame=dict(duration=0, redraw=True), mode="immediate")],  # Define el paso.
             label=f"{i}",                                        # Etiqueta del paso.
-            method="animate"                                     # Define el mÃ©todo de animaciÃ³n.
+            method="animate"                                     # Define el método de animación.
         ))
 
     legend_text = "<br>".join([f"{node_labels[node]}= [{', '.join(node)}]" for node in G.nodes])  # Genera el texto de la leyenda con etiquetas de nodos (S1, S2, ...) y sus elementos.
@@ -2566,63 +2566,63 @@ def get_film_semiorganizations_abstractions_html(abstract_time_series, input_dat
             go.Scatter(
                 x=[pos[node][0] for node in G.nodes],  # Coordenadas X de los nodos.
                 y=[pos[node][1] for node in G.nodes],  # Coordenadas Y de los nodos.
-                mode='markers+text',                   # Modo de visualizaciÃ³n: muestra puntos (markers) y texto (text).
-                marker=dict(size=node_sizes, color=node_colors, opacity=1),  # ConfiguraciÃ³n de los nodos: tamaÃ±o, color, y opacidad.
+                mode='markers+text',                   # Modo de visualización: muestra puntos (markers) y texto (text).
+                marker=dict(size=node_sizes, color=node_colors, opacity=1),  # Configuración de los nodos: tamaÃ±o, color, y opacidad.
                 text=[G.nodes[node]["label"] for node in G.nodes],  # Etiquetas que se muestran en cada nodo.
-                textposition="bottom center",          # PosiciÃ³n del texto respecto al nodo (debajo y centrado).
+                textposition="bottom center",          # Posición del texto respecto al nodo (debajo y centrado).
                 hovertext=[G.nodes[node]["hovertext"] for node in G.nodes],  # Texto que aparece al pasar el mouse sobre un nodo.
                 hoverinfo="text",                      # Especifica que se muestra el texto de hover al interactuar.
-                name=legend_text                       # Asocia el texto de la leyenda con el grÃ¡fico.
+                name=legend_text                       # Asocia el texto de la leyenda con el gráfico.
             )
         ],
         layout=go.Layout(
-            title=title,                      # TÃ­tulo del grÃ¡fico.
-            updatemenus=[                     # ConfiguraciÃ³n de los botones de control (play y pause).
+            title=title,                      # Título del gráfico.
+            updatemenus=[                     # Configuración de los botones de control (play y pause).
                 dict(
                     type="buttons",           # Define un grupo de botones.
-                    showactive=False,         # Desactiva el resaltado del botÃ³n seleccionado.
+                    showactive=False,         # Desactiva el resaltado del botón seleccionado.
                     buttons=[
                         dict(
-                            label="Play",     # Etiqueta del botÃ³n "Play".
-                            method="animate", # MÃ©todo que activa la animaciÃ³n.
-                            args=[None, dict(frame=dict(duration=interval, redraw=True), fromcurrent=True)]  # ConfiguraciÃ³n de la animaciÃ³n.
+                            label="Play",     # Etiqueta del botón "Play".
+                            method="animate", # Método que activa la animación.
+                            args=[None, dict(frame=dict(duration=interval, redraw=True), fromcurrent=True)]  # Configuración de la animación.
                         ),
                         dict(
-                            label="Pause",    # Etiqueta del botÃ³n "Pause".
-                            method="animate", # MÃ©todo que pausa la animaciÃ³n.
-                            args=[[None], dict(frame=dict(duration=0, redraw=False), mode="immediate")]  # ConfiguraciÃ³n de pausa.
+                            label="Pause",    # Etiqueta del botón "Pause".
+                            method="animate", # Método que pausa la animación.
+                            args=[[None], dict(frame=dict(duration=0, redraw=False), mode="immediate")]  # Configuración de pausa.
                         )
                     ]
                 )
             ],
-            sliders=[{  # ConfiguraciÃ³n del control deslizante para avanzar manualmente entre los cuadros de la animaciÃ³n.
+            sliders=[{  # Configuración del control deslizante para avanzar manualmente entre los cuadros de la animación.
                 'steps': sliders_steps,   # Pasos del deslizador.
                 'currentvalue': {
                     'prefix': "Time: ",   # Prefijo que aparece junto al valor actual del deslizador.
                     'font': {'size': 16}, # TamaÃ±o de fuente del prefijo.
                     'visible': True,      # Muestra el valor actual.
                 },
-                'x': 0.1,   # PosiciÃ³n horizontal del deslizador.
-                'len': 0.9, # Longitud del deslizador en proporciÃ³n al grÃ¡fico.
+                'x': 0.1,   # Posición horizontal del deslizador.
+                'len': 0.9, # Longitud del deslizador en proporción al gráfico.
             }],
-            xaxis=dict(showgrid=False, zeroline=False, visible=False),  # Oculta la cuadrÃ­cula y el eje X.
-            yaxis=dict(showgrid=False, zeroline=False, visible=False),  # Oculta la cuadrÃ­cula y el eje Y.
-            plot_bgcolor='rgba(0,0,0,0)', # Fondo transparente del grÃ¡fico.
-            width=1400,                   # Ancho del grÃ¡fico.
-            height=800,                   # Altura del grÃ¡fico.
+            xaxis=dict(showgrid=False, zeroline=False, visible=False),  # Oculta la cuadrícula y el eje X.
+            yaxis=dict(showgrid=False, zeroline=False, visible=False),  # Oculta la cuadrícula y el eje Y.
+            plot_bgcolor='rgba(0,0,0,0)', # Fondo transparente del gráfico.
+            width=1400,                   # Ancho del gráfico.
+            height=800,                   # Altura del gráfico.
             annotations=annotations,      # Anotaciones adicionales para destacar elementos.
-            showlegend=showlegend,        # Habilita la visualizaciÃ³n de la leyenda.
+            showlegend=showlegend,        # Habilita la visualización de la leyenda.
             legend=dict( 
-                title=dict(text="Node Legend", font=dict(family="Arial", size=14, color="darkblue")),  # TÃ­tulo de la leyenda.
+                title=dict(text="Node Legend", font=dict(family="Arial", size=14, color="darkblue")),  # Título de la leyenda.
                 bgcolor="white",  # Fondo blanco.
                 bordercolor="white",                               # Borde blanco.
                 borderwidth=2,                                     # Grosor del borde.
                 font=dict(family="Arial", size=12, color="black"), # Fuente de los elementos.
-                x=1,                                               # PosiciÃ³n horizontal a la derecha.
-                y=1.0                                              # PosiciÃ³n vertical en la parte superior.
+                x=1,                                               # Posición horizontal a la derecha.
+                y=1.0                                              # Posición vertical en la parte superior.
             )
         ),
-        frames=frames  # Cuadros de la animaciÃ³n.
+        frames=frames  # Cuadros de la animación.
     )
 
     fig.write_html(filename)
@@ -3011,6 +3011,190 @@ def plot_all_species_3d(results, species_names=None):
         plt.tight_layout()
         plt.show()
 
+###############################################################################################
+# Vector-based Metapopulation Plots 
+def plot_vector_metapopulation_series_concentration(
+    t,
+    X_dict,
+    species_pairs,
+    num_patches,
+    cols=None,
+    xlabel="Time", 
+    ylabel="Concentration",
+    legend="Population",
+    title="Metapopulation Vector Dynamics",
+    save_path="metapopulation_concentration_timeseries_vector.png",
+    show=True
+):
+    n_pairs = len(species_pairs)
+
+    # --------------------------------------------------
+    # Cálculo automático de columnas y filas (cuadrícula óptima)
+    # --------------------------------------------------
+    if cols is None:
+        cols = math.ceil(math.sqrt(n_pairs))     # columnas lo más cuadradas posible
+        rows = math.ceil(n_pairs / cols)
+    # --------------------------------------------------
+
+    fig, axes = plt.subplots(
+        rows,
+        cols,
+        figsize=(5 * cols, 4 * rows),
+        sharex=True
+    )
+
+    axes = np.atleast_2d(axes)
+
+    idx_plot = 0
+    for r in range(rows):
+        for c in range(cols):
+
+            if idx_plot >= n_pairs:
+                axes[r, c].axis("off")
+                continue
+
+            species_list = species_pairs[idx_plot]
+            ax = axes[r, c]
+
+            for patch_idx in range(num_patches):
+                for k, sp in enumerate(species_list):
+                    linestyle = '-' if k % 2 == 0 else '--'
+
+                    ax.plot(
+                        t,
+                        X_dict[sp][:, patch_idx],
+                        label=f"{sp} ({legend} {patch_idx+1})",
+                        linestyle=linestyle
+                    )
+
+            ax.set_title(f"Fig {idx_plot+1}")
+            ax.set_ylabel(ylabel)
+            ax.grid(True)
+            ax.legend(fontsize=8)
+
+            idx_plot += 1
+
+    # Etiqueta X solo en la última fila
+    for c in range(cols):
+        axes[-1, c].set_xlabel(xlabel)
+
+    fig.suptitle(title, fontsize=14)
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+
+    out_dir = "./visualizations/plot_MP_vector_series/"
+    os.makedirs(out_dir, exist_ok=True)
+    filepath = os.path.join(out_dir, save_path)
+
+    if save_path is not None:
+        plt.savefig(filepath, dpi=150)
+
+    if show:
+        plt.show()
+    else:
+        plt.close()
+
+    return fig
+
+def plot_vector_metapopulation_series_flux(
+    t,
+    F_dict,
+    flux_pairs,
+    num_patches,
+    cols=None,
+    xlabel="Time", 
+    ylabel="Flux",
+    legend="Patch",
+    title="Metapopulation Flux Dynamics",
+    save_path="metapopulation_flux_timeseries_vector.png",
+    show=True
+):
+    """
+    Grafica series de tiempo de flujos en metapoblaciones por vectores.
+    
+    Parámetros
+    ----------
+    t : array
+        Vector de tiempo.
+    F_dict : dict
+        Diccionario {reaction_name : array(n_steps, num_patches)}.
+    flux_pairs : list of lists or tuples
+        Grupos de reacciones a graficar en cada subplot.
+    num_patches : int
+        Número de parches o subpoblaciones.
+    cols : int o None
+        Si None, se calcula automáticamente.
+    """
+
+    n_pairs = len(flux_pairs)
+
+    # --------------------------------------------------
+    # Calcular automáticamente número de filas y columnas
+    # --------------------------------------------------
+    if cols is None:
+        cols = math.ceil(math.sqrt(n_pairs))
+    rows = math.ceil(n_pairs / cols)
+
+    fig, axes = plt.subplots(
+        rows,
+        cols,
+        figsize=(5 * cols, 4 * rows),
+        sharex=True
+    )
+
+    axes = np.atleast_2d(axes)
+
+    idx_plot = 0
+
+    for r in range(rows):
+        for c in range(cols):
+
+            if idx_plot >= n_pairs:
+                axes[r, c].axis("off")
+                continue
+
+            flux_list = flux_pairs[idx_plot]
+            ax = axes[r, c]
+
+            for patch_idx in range(num_patches):
+
+                for k, rxn in enumerate(flux_list):
+                    linestyle = '-' if k % 2 == 0 else '--'
+
+                    ax.plot(
+                        t,
+                        F_dict[rxn][:, patch_idx],
+                        label=f"{rxn} ({legend} {patch_idx+1})",
+                        linestyle=linestyle
+                    )
+
+            ax.set_title(f"Fig {idx_plot+1}")
+            ax.set_ylabel(ylabel)
+            ax.grid(True)
+            ax.legend(fontsize=8)
+
+            idx_plot += 1
+
+    # Etiqueta X solo en la última fila
+    for c in range(cols):
+        axes[-1, c].set_xlabel(xlabel)
+
+    fig.suptitle(title, fontsize=14)
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+
+    out_dir = "./visualizations/plot_MP_vector_series_flux/"
+    os.makedirs(out_dir, exist_ok=True)
+    filepath = os.path.join(out_dir, save_path)
+
+    if save_path is not None:
+        plt.savefig(filepath, dpi=150)
+
+    if show:
+        plt.show()
+    else:
+        plt.close()
+
+    return fig
+
 #############################################################################################
 # PDE Plots and Animations
 def plot_series_PDE(simulation_data, species_names, t_span, time_points=None):
@@ -3050,39 +3234,39 @@ def create_animation(simulation_data, species_idx, species_name, interval=100):
     im = ax.imshow(simulation_data[0, :, :, species_idx], cmap='viridis', origin='lower')
     cbar = fig.colorbar(im, ax=ax)  # Barra de colores
 
-    # FunciÃ³n de actualizaciÃ³n para la animaciÃ³n
+    # Función de actualización para la animación
     def update(frame):
         im.set_array(simulation_data[frame, :, :, species_idx]) # Actualizar la imagen
-        ax.set_title(f"{species_name} - Time: {frame}")         # Actualizar el tÃ­tulo
+        ax.set_title(f"{species_name} - Time: {frame}")         # Actualizar el título
         slider.set_val(frame)                # Sincroniza el deslizador con el frame actual
-        slider.valtext.set_text(f"{frame}")  # Muestra el nÃºmero en el deslizador
+        slider.valtext.set_text(f"{frame}")  # Muestra el número en el deslizador
         return im,
 
-    # FunciÃ³n de actualizaciÃ³n para el deslizador
+    # Función de actualización para el deslizador
     def slider_update(val):
         frame = int(slider.val)
         update(frame)
         plt.draw()
 
-    # Conectar el deslizador con la funciÃ³n de actualizaciÃ³n
+    # Conectar el deslizador con la función de actualización
     slider.on_changed(slider_update)
     
-    # Crear la animaciÃ³n
+    # Crear la animación
     ani = animation.FuncAnimation(fig, update, frames=simulation_data.shape[0], interval=interval)
 
     plt.show()
     return ani
 
-# Suponiendo que la funciÃ³n simulate_pde_rd ya estÃ¡ definida
+# Suponiendo que la función simulate_pde_rd ya está definida
 def create_species_animation(RN, result, interval=50, save=False):
     """
-    Genera una animaciÃ³n para cada especie en la simulaciÃ³n y opcionalmente la guarda como archivo .mp4.
+    Genera una animación para cada especie en la simulación y opcionalmente la guarda como archivo .mp4.
     
-    ParÃ¡metros:
-    - RN: Red de reacciÃ³n con nombres de especies en RN.SpStr
-    - result: Array de la simulaciÃ³n con forma (n_steps, grid_x, grid_y, n_species)
+    Parámetros:
+    - RN: Red de reacción con nombres de especies en RN.SpStr
+    - result: Array de la simulación con forma (n_steps, grid_x, grid_y, n_species)
     - interval: Tiempo en milisegundos entre cuadros
-    - save: Si es True, guarda la animaciÃ³n en formato MP4
+    - save: Si es True, guarda la animación en formato MP4
     """
     n_steps, grid_x, grid_y, n_species = result.shape
     t_values = np.linspace(0, 100, n_steps)
@@ -3090,7 +3274,7 @@ def create_species_animation(RN, result, interval=50, save=False):
     for i in range(n_species):
         fig, ax = plt.subplots()
         im = ax.imshow(result[0, :, :, i], cmap='viridis', animated=True, vmin=result[:, :, :, i].min(), vmax=result[:, :, :, i].max())
-        ax.set_title(f"EvoluciÃ³n de {RN.SpStr[i]}")
+        ax.set_title(f"Evolución de {RN.SpStr[i]}")
         
         def update(frame):
             im.set_array(result[frame, :, :, i])
@@ -3105,7 +3289,7 @@ def create_species_animation(RN, result, interval=50, save=False):
         
         plt.close(fig)
 
-# FunciÃ³n para animar la evoluciÃ³n de las concentraciones de especies en una simulaciÃ³n PDE
+# Función para animar la evolución de las concentraciones de especies en una simulación PDE
 def animate_series_PDE(simulation_data, species_names,t_span):
     n_species = simulation_data.shape[-1]
     n_time = t_span[1] 
@@ -3118,7 +3302,7 @@ def animate_series_PDE(simulation_data, species_names,t_span):
     
     ims = []
     
-    # Obtener valores mÃ­nimo y mÃ¡ximo para normalizar la escala de color
+    # Obtener valores mínimo y máximo para normalizar la escala de color
     vmin, vmax = np.min(simulation_data), np.max(simulation_data)
     
     for s, ax in enumerate(axes):
@@ -3130,7 +3314,7 @@ def animate_series_PDE(simulation_data, species_names,t_span):
         ax.set_xticks(np.arange(simulation_data.shape[2]))
         ax.set_yticks(np.arange(simulation_data.shape[1]))
 
-    # Agregar una Ãºnica barra de colores a la derecha
+    # Agregar una única barra de colores a la derecha
     cbar = fig.colorbar(ims[0], ax=axes, orientation='vertical', fraction=0.02, pad=0.04)
     
     # Crear slider para el tiempo
@@ -3153,9 +3337,18 @@ def animate_series_PDE(simulation_data, species_names,t_span):
 ######################################################################################
 ######################################################################################
 ######################################################################################
+# Mapa de colores para las categorías de procesos
+color_map = {
+    "Stationary Mode": "cyan", 
+    "Overproduction Mode": "blue",
+    "Cognitive Control": "green",
+    "Challenge": "orange",
+    "Problem": "red",        
+    "Other": "grey",
+    "None": "black"
+}   
 
-
-# FunciÃ³n para clasificar un vector de proceso v en categorÃ­as base y extendidas
+# # Función para clasificar un vector de proceso v en categorías base y extendidas
 def plot_process_types_histogram(flux_vector, S, 
                                 xlabel="Tipo de Proceso", ylabel="Frecuencia",
                                 title="Histograma de Tipos de Proceso", 
@@ -3165,55 +3358,42 @@ def plot_process_types_histogram(flux_vector, S,
                                 ax=None, show_fig=False):
     """
     Clasifica, grafica histograma, guarda resultados en Excel y
-    retorna tambiÃ©n las frecuencias (conteos) de cada tipo de proceso.
+    retorna también las frecuencias (conteos) de cada tipo de proceso.
     """
     if isinstance(flux_vector, np.ndarray):
         flux_vector = pd.DataFrame(flux_vector, columns=[f"v{i+1}" for i in range(flux_vector.shape[1])])
         flux_vector.insert(0, "Time", range(len(flux_vector)))
     elif not isinstance(flux_vector, pd.DataFrame):
-        raise TypeError("flux_vector debe ser un DataFrame o un ndarray de NumPy.")    
+        raise TypeError("flux_vector must be a DataFrame or a NumPy ndarray.")    
     if not isinstance(S, np.ndarray):
-        raise TypeError("S debe ser un array de NumPy.")    
+        raise TypeError("S must be a NumPy array.")    
 
-    # --- Clasificar ---
-    flux_values = flux_vector.iloc[:, 1:]  # quitar columna Time
+    # --- Classify ---
+    flux_values = flux_vector.iloc[:, 1:] # remove Time column
     process_types = []
-    for _, row in flux_values.iterrows():
-        v = row.to_numpy()
-        cat = classify_process_mode(v, S)
-        cat_str = ",".join(cat) if cat else "None"
-        process_types.append(cat_str)
-
-    # Calcular S*v
+    for _, row in flux_values.iterrows(): # Iterate over each row of the DataFrame
+        v = row.to_numpy()                # Convert the row to a NumPy array
+        cat = classify_process_mode(v, S) # Classify the process mode
+        cat_str = ",".join([cat[0]]) if cat else "None" # Join categories into a string
+        process_types.append(cat_str)     # Append to the list
+    
+    # Calculate S*v 
     Sv_matrix = flux_values.apply(lambda v: S @ v.to_numpy(), axis=1)
     Sv_expanded = pd.DataFrame(Sv_matrix.tolist(), 
                                columns=[f"S*v_{i+1}" for i in range(S.shape[0])],
                                index=flux_vector.index)
-
     classified_df = pd.concat([flux_vector, Sv_expanded], axis=1)
     classified_df["Process_Type"] = process_types
+    # print("Procesos clasificados:\n",classified_df)
 
-    # --- Contar ---
-    process_counts = Counter(process_types)
-    category_order = ["Stationary Mode", "Cognitive Control", "Problem", "Challenge",
-                      "Overproduction Mode", "Not Feasible", "Other", "None"]
+    # --- Count ---
+    process_counts = Counter(process_types) 
+    category_order = color_map.keys()
     labels = [cat for cat in category_order if cat in process_counts]
     counts = [process_counts[cat] for cat in labels]
-
-    # Colores 
-    color_map = { 
-        "Stationary Mode": "cyan",
-        "Cognitive Control": "green",
-        "Problem": "red",
-        "Challenge": "orange",
-        "Overproduction Mode": "blue",
-        "Not Feasible": "yellow",
-        "Other": "grey",
-        "None": "black"        
-    }
     colors = [color_map.get(label, "grey") for label in labels]
 
-    # --- Graficar ---
+    # --- Plot ---
     if ax is None:
         fig, ax = plt.subplots(figsize=(10, 6))
     else:
@@ -3231,7 +3411,7 @@ def plot_process_types_histogram(flux_vector, S,
     ax.tick_params(axis="x", rotation=30)
     ax.grid(axis='y', linestyle='--', alpha=0.7)
 
-    # --- Guardar en Excel ---
+    # --- Save to Excel ---
     out_dir = "./visualizations/process_classification"
     os.makedirs(out_dir, exist_ok=True)
     filepath_excel = os.path.join(out_dir, excel_filename)
@@ -3241,43 +3421,44 @@ def plot_process_types_histogram(flux_vector, S,
         for category, group in classified_df.groupby("Process_Type", sort=False):
             group.to_excel(writer, sheet_name=category[:31], index=False)
     
-    print(f"Procesos clasificados guardados en: {filepath_excel}")
+    print(f"Saved classified processes in: {filepath_excel}")
 
     # --- Guardar figura ---
     if save_figure:
         filepath_fig = os.path.join(out_dir, filename)
         fig.savefig(filepath_fig, dpi=300, bbox_inches="tight")
-        print(f"Histograma guardado en: {filepath_fig}")
+        print(f"Histogram saved in: {filepath_fig}")
 
     if show_fig:
         plt.show()
 
-    # --- Retornar tambiÃ©n las frecuencias ---
-    process_frequencies = dict(process_counts)  # convertir Counter â†’ dict
+    # --- Retornar también las frecuencias ---
+    process_frequencies = dict(process_counts)  # convertir Counter → dict
 
-    return fig, ax, classified_df, process_frequencies
-
-
+    return fig, ax, classified_df, process_frequencies 
 
 #####################################################################################
-# FunciÃ³n para graficar el cono y la regiÃ³n factible en 3D
+# Función para graficar el cono y la región factible en 3D
 def plot_cone_and_region(S,
-    # NOTE: This function uses analyze_cone() from process_analysis for cone construction 
                          grid_max=None, grid_res=5,
                          axis_names=None, show=True,
                          extra_vector=None, 
                          extra_vector_labels=None,
                          extra_vector_colors=None):   
+    # NOTE: This function uses analyze_cone() from process_analysis for cone construction 
     """
     Genera proyecciones 3D del cono definido por vectores en null_vectors
-    y la regiÃ³n factible Sv > 0 para una matriz estequiomÃ©trica S.
+    y la región factible Sv > 0 para una matriz estequiométrica S.
     Los puntos factibles se clasifican con classify_process_mode() y se pintan
-    con diferentes colores segÃºn su categorÃ­a.
-    AdemÃ¡s guarda en un archivo Excel los puntos factibles (v), S*v y
-    Process_Type en una hoja principal, y en hojas separadas por categorÃ­a.
+    con diferentes colores según su categoría.
+    Además guarda en un archivo Excel los puntos factibles (v), S*v y
+    Process_Type en una hoja principal, y en hojas separadas por categoría.
     """
-    n = S.shape[1]
-    m = S.shape[0]
+    m = S.shape[0] # number of species
+    n = S.shape[1] # number of reactions
+    
+    species_names = S.species # Species
+
     if axis_names is None:
         axis_names = [f"v{i+1}" for i in range(n)]
     
@@ -3307,10 +3488,10 @@ def plot_cone_and_region(S,
     
     null_vectors = cone_data['nullspace_vectors']
     points_pos = cone_data['feasible_points']
-    classifications = cone_data.get('classifications', [])
+    classifications = cone_data.get('classifications', []) # may be empty
     grid_max = cone_data['grid_max']
     
-    print(f"Vectores del espacio nulo = {null_vectors}")
+    print(f"Null space vectors:\n {null_vectors}")
     
     # ---- Export classified processes to Excel ----
     if points_pos.shape[0] > 0:
@@ -3318,10 +3499,25 @@ def plot_cone_and_region(S,
         df_points = pd.DataFrame(points_pos, columns=axis_names)
         df_Sv = pd.DataFrame(Sv, columns=[f"S*v=x{i+1}" for i in range(m)])
         df_class = pd.DataFrame({"Process_Type": classifications})
-        
+
         # Combine all data
         df_all = pd.concat([df_points, df_Sv, df_class], axis=1)
         
+        positive_species_list = []
+        for idx, row in df_Sv.iterrows(): # Each row of Sv
+            # Indices where Sv > 0
+            pos_idx = np.where(row.values > 0)[0]
+            # obtain corresponding species names
+            if len(pos_idx) > 0:
+                # Species with positive values
+                pos_species = [species_names[i] for i in pos_idx]
+            else:
+                pos_species = []
+            
+            positive_species_list.append(pos_species)
+
+        df_all["Abstractions"] = positive_species_list
+
         # Save to Excel with multiple sheets
         excel_path = os.path.join(out_dir, "classified_processes.xlsx")
         with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
@@ -3333,23 +3529,23 @@ def plot_cone_and_region(S,
                 safe_name = str(category)[:31]  # Excel limits sheet names to 31 characters
                 group.to_excel(writer, sheet_name=safe_name, index=False)
         
-        print(f"Vectores de procesos guardados en: {excel_path}")
+        print(f"Process vectors saved in: {excel_path}")
     else:
-        print("No se encontraron puntos factibles Sv>0.")
+        print("No feasible points were found Sv>0.")
 
-    # ---- 3. Proyecciones 3D ----
+    # ---- 3. 3D projections ----
     saved_files = []
     for (i, j, k) in itertools.combinations(range(n), 3):
         fig = plt.figure(figsize=(7,6))
         ax = fig.add_subplot(111, projection='3d')
 
-        # Cono (Sv=0)
+        # Cone (Sv=0)
         if len(null_vectors) == 0:
             ax.scatter([0], [0], [0], color='lightblue', s=50, label="Sv=0 (origen)")
         elif len(null_vectors) == 1:
             v1 = null_vectors[0]
             ax.quiver(0, 0, 0, *(v1[[i,j,k]]), color='black', linewidth=2, 
-                      arrow_length_ratio=0.1, label="Stationary mode 1")
+                      arrow_length_ratio=0.1, label="Stationary Mode 1")
         else:
             v1, v2 = null_vectors[:2] 
             tri = np.array([[0,0,0], v1[[i,j,k]], v2[[i,j,k]]])
@@ -3360,21 +3556,12 @@ def plot_cone_and_region(S,
                      ['purple'] * (len(null_vectors) - 2)
             for idx, v in enumerate(null_vectors):
                 ax.quiver(0, 0, 0, *(v[[i,j,k]]), color=colors[idx], linewidth=2, 
-                          arrow_length_ratio=0.1, label=f"Stationary mode {idx+1}")
+                          arrow_length_ratio=0.1, label=f"Stationary Mode {idx+1}")
 
-        # RegiÃ³n factible Sv>0 clasificada
+        # Feasible region Sv>0 classified
         if points_pos.shape[0] > 0:
             proj_pos = points_pos[:, [i, j, k]]
-            color_map = {
-                "Stationary Mode": "cyan",
-                "Cognitive Control": "green",
-                "Problem": "red",
-                "Challenge": "orange",
-                "Overproduction Mode": "blue",
-                "Not Feasible": "yellow",
-                "Other": "grey",
-                "None": "black"
-            }
+         
             categories = [c.split(",")[0] if c else "None" for c in classifications]
 
             for cat in sorted(set(categories)):
@@ -3401,7 +3588,7 @@ def plot_cone_and_region(S,
         ax.set_xlabel(axis_names[i])
         ax.set_ylabel(axis_names[j])
         ax.set_zlabel(axis_names[k])
-        ax.set_title(f"ProyecciÃ³n 3D ({axis_names[i]}, {axis_names[j]}, {axis_names[k]})")
+        ax.set_title(f"Proyección 3D ({axis_names[i]}, {axis_names[j]}, {axis_names[k]})")
         ax.legend(loc='center left', bbox_to_anchor=(1.05, 0.5))
 
         filename = os.path.join(out_dir, f"Cone_and_region_{i+1}_{j+1}_{k+1}.png")
@@ -3412,12 +3599,11 @@ def plot_cone_and_region(S,
         else:
             plt.close(fig)
 
-    print(f"Se guardaron {len(saved_files)} imÃ¡genes en: {out_dir}")
+    print(f"Se guardaron {len(saved_files)} imágenes en: {out_dir}")
     return saved_files, points_pos
 
-#####################################################################################
-# Funciones para graficar series de tiempo con intervalos de Cognitive Control
-# FunciÃ³n para graficar series de tiempo con intervalos de Cognitive Domain, Stationary Mode, Problem y Challenge
+##################################################################################### 
+# Función para graficar series de tiempo con intervalos de Cognitive Domain, Stationary Mode, Problem y Challenge
 def plot_series_with_domain_intervals(time_series, flux_vector, S,
                                       title="Serie de Tiempo de Concentraciones",
                                       save_figure=False,
@@ -3431,7 +3617,7 @@ def plot_series_with_domain_intervals(time_series, flux_vector, S,
 
     # Using get_intervals_by_category from process_analysis
 
-    # MÃ¡scaras
+    # Máscaras
     is_cd = np.array(["Cognitive Control" in cat for cat in process_types])
     is_sm = np.array(["Stationary Mode" in cat for cat in process_types])
     is_pb = np.array(["Problem" in cat for cat in process_types])
@@ -3476,8 +3662,7 @@ def plot_series_with_domain_intervals(time_series, flux_vector, S,
 
     return fig, ax
 
-
-# FunciÃ³n para graficar flujos con intervalos de Cognitive Domain, Stationary Mode, Problem y Challenge
+# Función para graficar flujos con intervalos de Cognitive Domain, Stationary Mode, Problem y Challenge
 def plot_flux_with_domain_intervals(flux_vector, S,
                                     title="Serie de Tiempo de Flujos",
                                     save_figure=False,
@@ -3492,7 +3677,7 @@ def plot_flux_with_domain_intervals(flux_vector, S,
 
     # Using get_intervals_by_category from process_analysis
 
-    # MÃ¡scaras
+    # Máscaras
     is_cd = np.array(["Cognitive Control" in cat for cat in process_types])
     is_sm = np.array(["Stationary Mode" in cat for cat in process_types])
     is_pb = np.array(["Problem" in cat for cat in process_types])
@@ -3525,7 +3710,7 @@ def plot_flux_with_domain_intervals(flux_vector, S,
     #     ax.axvline(x=t_start, color="orange", linestyle="--", alpha=0.8)
     #     ax.axvline(x=t_end, color="orange", linestyle="--", alpha=0.8)
 
-    # EstadÃ­sticas
+    # Estadísticas
     def print_stats(name, intervals):
         if len(intervals) == 0:
             print(f"No se detectaron intervalos de {name}.")
@@ -3552,7 +3737,7 @@ def plot_flux_with_domain_intervals(flux_vector, S,
         plt.show()
 
     return fig, ax
-
+#############################################################################################################
 
 
 
@@ -3567,7 +3752,7 @@ def plot_flux_with_domain_intervals(flux_vector, S,
 
 
 #############################################################################################################
-# FunciÃ³n para sumar vectores de flux1 y flux2, clasificar y graficar histograma
+# Función para sumar vectores de flux1 y flux2, clasificar y graficar histograma
 def histogram_flux_sum(S, flux1, flux2, 
                        title="Histograma de Tipos de Proceso (Suma Flux1 + Flux2)", 
                        filename="histograma_sum.png", csv_filename="sum_flux_data.csv",
@@ -3576,20 +3761,20 @@ def histogram_flux_sum(S, flux1, flux2,
     """
     Suma cada vector de flux1 con cada vector de flux2, clasifica los vectores resultantes,
     genera un histograma de tipos de proceso y guarda los resultados en archivos CSV y Excel.
-    - CSV: Incluye v_f1, v_f2, v_combined, S*v y Process_Type en el orden automÃ¡tico.
+    - CSV: Incluye v_f1, v_f2, v_combined, S*v y Process_Type en el orden automático.
     - Excel: Incluye solo v_combined, S*v y Process_Type, con hojas por Process_Type.
 
     Parameters:
-    - S: Matriz de transformaciÃ³n (numpy array).
-    - flux1: DataFrame o NumPy array con columnas Flux_r* y opcionalmente Time (por ejemplo, vectores de desafÃ­o).
+    - S: Matriz de transformación (numpy array).
+    - flux1: DataFrame o NumPy array con columnas Flux_r* y opcionalmente Time (por ejemplo, vectores de desafío).
     - flux2: DataFrame o NumPy array con columnas Flux_r* y opcionalmente Time (por ejemplo, vectores de control cognitivo).
-    - title: TÃ­tulo del histograma.
+    - title: Título del histograma.
     - filename: Nombre del archivo para guardar el histograma.
     - csv_filename: Nombre del archivo CSV para guardar todos los datos.
     - excel_filename: Nombre del archivo Excel para guardar v_combined, S*v y Process_Type.
     - save_figure: Booleano para guardar la figura.
     - show_fig: Booleano para mostrar la figura.
-    - max_combinations: LÃ­mite opcional para el nÃºmero de combinaciones a generar (default: None).
+    - max_combinations: Límite opcional para el número de combinaciones a generar (default: None).
 
     Returns:
     - fig, ax, combined_df: Objetos de la figura, ejes de Matplotlib y DataFrame con los vectores sumados.
@@ -3608,11 +3793,11 @@ def histogram_flux_sum(S, flux1, flux2,
     print(f"Se encontraron {len(flux1)} vectores en flux1.")
     print(f"Se encontraron {len(flux2)} vectores en flux2.")
 
-    # Verificar que ambos DataFrames no estÃ©n vacÃ­os
+    # Verificar que ambos DataFrames no estén vacíos
     if flux1.empty or flux2.empty:
-        raise ValueError("Uno o ambos DataFrames (flux1 o flux2) estÃ¡n vacÃ­os.")
+        raise ValueError("Uno o ambos DataFrames (flux1 o flux2) están vacíos.")
 
-    # Verificar si las columnas 'Time' estÃ¡n presentes
+    # Verificar si las columnas 'Time' están presentes
     has_time_f1 = 'Time' in flux1.columns
     has_time_f2 = 'Time' in flux2.columns
     print(f"flux1 tiene columna 'Time': {has_time_f1}")
@@ -3644,7 +3829,7 @@ def histogram_flux_sum(S, flux1, flux2,
             # Agregar v_f2
             for i, val in enumerate(v_f2):
                 row_data[f'Flux2_r{i+1}'] = val
-            # Agregar Time si estÃ¡ presente
+            # Agregar Time si está presente
             if has_time_f1 or has_time_f2:
                 row_data['Time'] = time_value
             flux_data.append(row_data)
@@ -3664,11 +3849,11 @@ def histogram_flux_sum(S, flux1, flux2,
     Sv_values = []
     for _, row in flux_values.iterrows():
         v = row.to_numpy()
-        # Usar la lÃ³gica de classify_process
+        # Usar la lógica de classify_process
         Sv = S @ v
         Sv_values.append(Sv) 
         if np.all((0 < Sv) & (Sv <= 1e-8)):
-            category = "Stationary mode"
+            category = "Stationary Mode"
         elif np.all(Sv > 0) and np.any(Sv > 1e-8):
             category = "Cognitive Control"
         elif np.any(Sv < 0) and np.any(Sv > 0):
@@ -3679,6 +3864,9 @@ def histogram_flux_sum(S, flux1, flux2,
             category = "Other"
         process_types.append(category)
 
+    # # Tipo de procesos
+    # process_types = classify_process_mode(flux_vector,S)
+
     # Calcular S*v
     Sv_expanded = pd.DataFrame(Sv_values, 
                                columns=[f"S*v_{i+1}" for i in range(S.shape[0])],
@@ -3688,7 +3876,7 @@ def histogram_flux_sum(S, flux1, flux2,
     combined_df = pd.concat([flux_vector, Sv_expanded], axis=1)
     combined_df["Process_Type"] = process_types
 
-    # Determinar automÃ¡ticamente el orden de las columnas para CSV
+    # Determinar automáticamente el orden de las columnas para CSV
     csv_columns = []
     if has_time_f1 or has_time_f2:
         csv_columns.append('Time')
@@ -3713,22 +3901,22 @@ def histogram_flux_sum(S, flux1, flux2,
     # print("Excel columns=\n", excel_df.columns)
 
     # Contar frecuencias para el histograma
-    process_counts = Counter(process_types)
-    category_order = ["Stationary mode", "Cognitive Control", "Problem", "Challenge", "Other"]
+    process_counts = Counter(process_types) 
+    category_order = color_map.keys()
     labels = [cat for cat in category_order if cat in process_counts]
     counts = [process_counts[cat] for cat in labels]
 
-    # Colores para el histograma 
-    color_map = { 
-        "Stationary mode": "cyan",
-        "Cognitive Control": "green",
-        "Problem": "red",
-        "Challenge": "orange",
-        "Overproduction Mode": "blue",
-        "Not Feasible": "yellow",
-        "Other": "grey",
-        "None": "black"        
-    }
+    # # Colores para el histograma 
+    # color_map = { 
+    #     "Stationary mode": "cyan",
+    #     "Cognitive Control": "green",
+    #     "Problem": "red",
+    #     "Challenge": "orange",
+    #     "Overproduction Mode": "blue",
+    #     "Not Feasible": "yellow",
+    #     "Other": "grey",
+    #     "None": "black"        
+    # }
     colors = [color_map.get(label, "grey") for label in labels]
 
     # Graficar
@@ -3761,7 +3949,7 @@ def histogram_flux_sum(S, flux1, flux2,
 
         # Guardar archivos CSV separados por Process_Type en la subcarpeta
         for category, group in csv_df.groupby("Process_Type"):
-            # Asegurar que el nombre del archivo sea vÃ¡lido (reemplazar espacios y limitar longitud)
+            # Asegurar que el nombre del archivo sea válido (reemplazar espacios y limitar longitud)
             safe_category = category[:31].replace(' ', '_').replace('/', '_').replace('\\', '_')
             category_filepath = os.path.join(out_dir_sub, f"{csv_filename[:-4]}_{safe_category}.csv")
             group.to_csv(category_filepath, index=False)
@@ -3775,7 +3963,7 @@ def histogram_flux_sum(S, flux1, flux2,
         print("No se pudo guardar el archivo CSV. Por favor, verifica el espacio en disco o la validez del nombre del archivo.")
     except Exception as e:
         warnings.warn(f"Error inesperado al guardar el archivo CSV: {e}")
-        print("No se pudo guardar el archivo CSV. OcurriÃ³ un error inesperado.")
+        print("No se pudo guardar el archivo CSV. Ocurrió un error inesperado.")
 
     # Guardar en Excel
     filepath_excel = os.path.join(out_dir, excel_filename)
@@ -3814,34 +4002,36 @@ from matplotlib.gridspec import GridSpec
 import matplotlib.pyplot as plt
 
 
-def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_span=(0, 200), n_steps=1001,
+def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_span=(0, 200), n_steps=1001, n_cols = 4,
     window_sizes=[1, 2, 3, 4, 5], save_path="./visualizations/process_classification/"
 ):
     """
-    Analiza la evoluciÃ³n de 'Cognitive Control' + 'Stationary Mode'
-    en distintas ventanas de pasos de simulaciÃ³n, mostrando:
+    Analiza la evolución de 'Cognitive Control' + 'Stationary Mode'
+    en distintas ventanas de pasos de simulación, mostrando:
       - Subplots con histogramas de tipos de procesos.
-      - GrÃ¡fico global de proporciones.
-      - GrÃ¡ficos combinados de la simulaciÃ³n con mÃ¡xima proporciÃ³n total.
+      - Gráfico global de proporciones.
+      - Gráficos combinados de la simulación con máxima proporción total.
 
-    ParÃ¡metros
+    Parámetros
     ----------
     rn : ReactionNetwork
         Objeto de red de reacciones.
     S : np.ndarray
-        Matriz estequiomÃ©trica del sistema.
+        Matriz estequiométrica del sistema.
     rate_list : list
-        Lista de tasas de reacciÃ³n.
+        Lista de tasas de reacción.
     spec_vector : list o np.ndarray
         Vector de especies.
     x0 : np.ndarray
         Condiciones iniciales del sistema.
     t_span : tuple, opcional
-        Intervalo temporal de la simulaciÃ³n (por defecto (0, 200)).
+        Intervalo temporal de la simulación (por defecto (0, 200)).
     n_steps : int, opcional
-        NÃºmero de pasos en la simulaciÃ³n (por defecto 1001).
+        Número de pasos en la simulación (por defecto 1001).
+    n_cols : int, opcional
+        Número de columnas en los subplots de histogramas.
     window_sizes : list, opcional
-        Lista con los tamaÃ±os de ventana (nÃºmero de pasos) para analizar.
+        Lista con los tamaÃ±os de ventana (número de pasos) para analizar.
     save_path : str, opcional
         Ruta base para guardar los resultados y figuras.
 
@@ -3849,13 +4039,13 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
     -------
     results_df : pd.DataFrame
         DataFrame con las proporciones de cada tipo de proceso por ventana
-        y la ventana correspondiente al mÃ¡ximo 'Cognitive Domain'.
+        y la ventana correspondiente al máximo 'Cognitive Domain'.
     """
     os.makedirs(save_path, exist_ok=True)
     results = []
 
     n_windows = len(window_sizes)
-    n_cols = 8
+    # n_cols = 8
     n_rows = math.ceil(n_windows / n_cols)
 
     # ==================================================================
@@ -3863,13 +4053,13 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(12, 4 * n_rows), constrained_layout=True)
     axes = axes.flatten()
 
-    # --- SIMULACIÃ“N ---
+    # --- SIMULACIÓN ---
     time_series, flux_series = simulation(
         rn, rate=rate_list, spec_vector=spec_vector, x0=x0,
         t_span=t_span, n_steps=n_steps
     )
 
-    # --- ANALIZAR CADA TAMAÃ‘O DE VENTANA ---
+    # --- ANALIZAR CADA TAMAÑO DE VENTANA ---
     for i, window_size in enumerate(window_sizes):
 
         # Caso especial: ventana de tamaÃ±o 1 â†’ copia directa
@@ -3881,7 +4071,7 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
             # print("time_window =\n", time_window)
             # print("flux_window =\n", flux_window)
 
-        # Ventanas mayores a 1 â†’ suma mÃ³vil
+        # Ventanas mayores a 1 â†’ suma móvil
         else:
             # --- TIME SERIES ---
             time_numeric = time_series.drop(columns=['Time']).copy()
@@ -3934,18 +4124,18 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
         # Almacenar resultados
         results.append({
             "Ventana": window_size,
-            "NÃºmero de pasos": int(n),
+            "Número de pasos": int(n),
             "CC": cognitive_control,
             "SM": stationary_mode,
             "PB": problem,
             "Total CD": total_cognitive_domain,
-            "ProporciÃ³n CC": cognitive_control / n,
-            "ProporciÃ³n SM": stationary_mode / n,
-            "ProporciÃ³n PB": problem / n,
-            "ProporciÃ³n Total": total_cognitive_domain / n
+            "Proporción CC": cognitive_control / n,
+            "Proporción SM": stationary_mode / n,
+            "Proporción PB": problem / n,
+            "Proporción Total": total_cognitive_domain / n
         })
 
-    # Ocultar subplots vacÃ­os
+    # Ocultar subplots vacíos
     for j in range(n_windows, n_rows * n_cols):
         axes[j].axis('off')
     plt.show()
@@ -3954,41 +4144,41 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
     # RESUMEN GLOBAL
     results_df = pd.DataFrame(results)
     max_row = results_df.select_dtypes(include=[np.number]).max()
-    max_row["Ventana"] = "MÃ¡ximo"
+    max_row["Ventana"] = "Máximo"
     results_df = pd.concat([results_df, pd.DataFrame([max_row])], ignore_index=True)
 
-    idx_max = results_df["ProporciÃ³n Total"].idxmax()
-    max_row_total = results_df.loc[idx_max, "ProporciÃ³n Total"]
-    max_row_n_steps = results_df.loc[idx_max, "NÃºmero de pasos"]
+    idx_max = results_df["Proporción Total"].idxmax()
+    max_row_total = results_df.loc[idx_max, "Proporción Total"]
+    max_row_n_steps = results_df.loc[idx_max, "Número de pasos"]
     max_window_total = results_df.loc[idx_max, "Ventana"]
 
-    print(f"\nMÃ¡ximo ProporciÃ³n Total Cognitive Domain: {max_row_total:.4f} (Ventana = {max_window_total}, n={int(max_row_n_steps)})\n")
+    print(f"\nMáximo Proporción Total Cognitive Domain: {max_row_total:.4f} (Ventana = {max_window_total}, n={int(max_row_n_steps)})\n")
     print("Resumen Global:")
     print(results_df)
 
     # ==================================================================
-    # GRÃFICO GLOBAL DE PROPORCIONES 
+    # GRÁFICO GLOBAL DE PROPORCIONES 
     results_numeric = results_df[results_df["Ventana"].apply(lambda x: isinstance(x, (int, float)))]
     plt.figure(figsize=(8, 5))
-    plt.plot(results_numeric["Ventana"], 100 * results_numeric["ProporciÃ³n PB"],
+    plt.plot(results_numeric["Ventana"], 100 * results_numeric["Proporción PB"],
             marker='o', linestyle='-', color='red', label="Problem")    
-    plt.plot(results_numeric["Ventana"], 100 * results_numeric["ProporciÃ³n CC"],
+    plt.plot(results_numeric["Ventana"], 100 * results_numeric["Proporción CC"],
             marker='o', linestyle='-', color='green', label="Cognitive Control")
-    plt.plot(results_numeric["Ventana"], 100 * results_numeric["ProporciÃ³n SM"],
+    plt.plot(results_numeric["Ventana"], 100 * results_numeric["Proporción SM"],
             marker='o', linestyle='-', color='cyan', label="Stationary Mode")
-    plt.plot(results_numeric["Ventana"], 100 * results_numeric["ProporciÃ³n Total"],
+    plt.plot(results_numeric["Ventana"], 100 * results_numeric["Proporción Total"],
             marker='o', linestyle='-', color='purple', label="Total Cognitive Domain")
-    plt.plot(max_window_total, 100 * max_row_total, 'yo', label="MÃ¡ximo Total", markersize=10)
-    plt.xlabel("TamaÃ±o de ventana (pasos)")
+    plt.plot(max_window_total, 100 * max_row_total, 'yo', label="Máximo Total", markersize=10)
+    plt.xlabel("Tamaño de ventana (pasos)")
     plt.ylabel("Porcentaje (%)")
-    plt.title("Cognitive Domain vs tamaÃ±o de ventana")
+    plt.title("Cognitive Domain vs tamaño de ventana")
     plt.grid(alpha=0.3)
     plt.legend()
     plt.savefig(os.path.join(save_path, "proportions_plots.png"), dpi=150, bbox_inches="tight")
     plt.show()
 
     # ==================================================================
-    # # # SIMULACIÃ“N FINAL CON MÃXIMA PROPORCIÃ“N DE COGNITIVE DOMAIN  
+    # # # SIMULACIÓN FINAL CON MÁXIMA PROPORCIÓN DE COGNITIVE DOMAIN  
     window_size = max_window_total   
 
     # --- TIME SERIES ---
@@ -4016,12 +4206,12 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
     flux_window_max = pd.concat([flux_adjusted, flux_rolling], axis=1)
 
     # --- RESULTADOS ---
-    print(f"Ventana mÃ¡xima (window_size={window_size})")
+    print(f"Ventana máxima (window_size={window_size})")
     print("time_window_max =\n", time_window_max)
     print("flux_window_max =\n", flux_window_max)
 
     # ==================================================================
-    # GrÃ¡ficos combinados: series de tiempo, flujos e histograma
+    # Gráficos combinados: series de tiempo, flujos e histograma
     fig, axes = plt.subplots(1, 3, figsize=(18, 4))
     plot_series_with_domain_intervals(time_window_max, flux_window_max, S,
                                       title=f"Serie de Tiempo - Ventana {max_window_total} pasos", save_figure=False, ax=axes[0])
@@ -4029,6 +4219,8 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
                                     title=f"Flujos - Ventana {max_window_total} pasos", save_figure=False, ax=axes[1])
     plot_process_types_histogram(flux_window_max, S,
                                  title=f"Histograma de Tipos de Procesos (n={int(max_row_n_steps)})", save_figure=False, ax=axes[2])
+    # Título general
+    fig.suptitle(f"Resumen de Análisis — Ventana Óptima de {max_window_total} pasos", fontsize=18)    
     plt.tight_layout()
     plt.savefig(os.path.join(save_path, "combined_plots.png"), dpi=150, bbox_inches="tight")
     plt.show()
