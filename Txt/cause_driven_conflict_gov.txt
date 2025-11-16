@@ -1,0 +1,29 @@
+r1: A_p + G_A => A_p + G_A+ iG_A ;
+r2: B_p + G_B => B_p + G_B+ iG_B ;
+r3: A_v + D_A => A_v + D_A+ iD_A;
+r4: B_v + D_B => B_v + D_B+ iD_B ;
+r5: A_v + A_p + iD_A => A_v + A_v + iD_A;
+r6: B_v + B_p + iD_B => B_v + B_v + iD_B;
+r7: A_v + A_p + iG_A => A_p + A_p + iG_A;
+r8: B_v + B_p + iG_B => B_p + B_p + iG_B;
+# Violence and idea of hate is satistfied by violent action 
+r9: A_v + G_B + iD_A => A_v + D_B ;
+r10: B_v + G_A + iD_B => B_v + D_A ;
+# Peace and idea of reconstruction is satisfied by peaceful action
+r11: A_p + D_A + iG_A=> A_p + G_A;
+r12: B_p + D_B => B_p + G_B;
+r13: iG_A + iG_A =>;
+r14: iG_B + iG_B =>;
+r15: iD_A + iD_A =>;
+r16: iD_B + iD_B =>;
+#To discuss: Peaceful B witnessing damage develops grievance perception without being violent themselves
+r17: B_p + D_B => B_v + D_B + iD_B; 
+r18: B_p + iD_B => B_v; 
+# Grievance perception converts peaceful to violent
+r19: A_p + D_A => A_v + D_A + iD_A; 
+r20: A_p + iD_A => A_v ;
+# To discuss: Government cannot act without peaceful people accepting the reparation first 
+r21: Gov_A + iD_A + iD_A + D_A => Gov_A + G_A;
+r22: Gov_A + G_A => Gov_A + G_A + iG_A;
+r23: Gov_B + iD_B + iD_B + D_B => Gov_B + G_B;
+r24: Gov_B + G_B => Gov_B + G_B + iG_B; 

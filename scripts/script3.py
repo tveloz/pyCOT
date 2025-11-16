@@ -30,12 +30,12 @@ file_path = 'Txt/Farm.txt'
 
 # file_path = 'networks/testing/Farm.txt'  # Input file
 # file_path = 'networks/testing/Farm_milk_and_dung.txt'  # Input file
-file_path = 'networks/testing/Farm.txt'
+# file_path = 'networks/testing/Farm.txt'
 #file_path = 'networks/RandomAlife/RN_Ns_20_Norg_4_id_12.txt'
 #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_17_id_564.txt'
 # file_path = 'networks/Navarino/RN_IN_05.txt'
-file_path = 'networks/Marine_Ecosystem/Las_Cruces_251021.txt'
-file_path = 'networks/Riverland_model/cause_driven_conflict.txt'
+# file_path = 'networks/Marine_Ecosystem/Las_Cruces_251021.txt'
+# file_path = 'networks/Riverland_model/cause_driven_conflict.txt'
 
 
 
