@@ -340,10 +340,10 @@ def hierarchy_get_visualization_html(
     Set_of_sets.sort(key=lambda x: len(x))
     
     # Create set names based on their level
-    Set_names = [f"S{i+1}" for i in range(len(Set_of_sets))]
+    Set_names = [f"X{i+1}" for i in range(len(Set_of_sets))]
     
     # Create a dictionary of labels for the nodes
-    labels = {f"S{i+1}": f"{', '.join(sorted(s))}" for i, s in enumerate(Set_of_sets)}
+    labels = {f"X{i+1}": f"{', '.join(sorted(s))}" for i, s in enumerate(Set_of_sets)}
 
     # Create set labels to display when hovering over nodes
     cursor_labels = [

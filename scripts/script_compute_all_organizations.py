@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import pyCOT modules
 
-from pyCOT.plot_dynamics import plot_series_ode
+from pyCOT.plot_dynamics_old import plot_series_ode
 # Import required modules
 from pyCOT.Persistent_Modules import compute_all_organizations  # Our new function
 import numpy as np
@@ -28,7 +28,7 @@ from pyCOT.io.functions import read_txt
 # Import the reaction network library and persistent modules
 from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy
 from pyCOT.ERC_Synergy_Complementarity import build_erc_sorn
-from pyCOT.Persistent_Modules import (
+from pyCOT.Persistent_Modules_Generator import (
     compute_persistent_modules,
     build_irreducible_generators,
     IrreducibleGenerator, 

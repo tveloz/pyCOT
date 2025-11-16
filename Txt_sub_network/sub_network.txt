@@ -1,2 +1,8 @@
-r4:	2B_p=>iG_B+2B_p;
-r20:	iG_B=>;
+r1:	G+R=>V+R;
+r2:	V=>2G;
+r3:	V=>N+V;
+r4:	N+R=>N+V;
+r5:	N+G=>N+R;
+r6:	2G=>;
+r7:	2N=>;
+r8:	2V=>;

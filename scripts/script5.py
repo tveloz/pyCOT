@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import pyCOT modules
 from pyCOT.io.functions import read_txt 
 from pyCOT.simulations import *
-from pyCOT.plot_dynamics_old import plot_series_ode, plot_abstraction_size, plot_abstraction_sets, plot_abstraction_graph_movie_html
+from pyCOT.plot_dynamics import plot_series_ode, plot_abstraction_size, plot_abstraction_sets, plot_abstraction_graph_movie_html
 from pyCOT.abstractions import abstraction_ordinary
 
 # ========================================

@@ -35,7 +35,8 @@ file_path = 'networks/testing/Farm.txt'
 #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_17_id_564.txt'
 # file_path = 'networks/Navarino/RN_IN_05.txt'
 file_path = 'networks/Marine_Ecosystem/Las_Cruces_251021.txt'
-file_path = 'networks/Riverland_model/cause_driven_conflict.txt'
+file_path = 'networks/Conflict_Theory/cause_driven_conflict.txt'
+file_path = 'networks/Conflict_Theory/conflict_toy_model0.txt'
 
 
 

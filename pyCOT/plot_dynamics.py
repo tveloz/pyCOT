@@ -20,7 +20,7 @@ from scipy.optimize import linprog
 from scipy.spatial import ConvexHull
 import networkx as nx
 import plotly.graph_objects as go
-
+import matplotlib.gridspec 
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -38,7 +38,7 @@ from pyCOT.process_analysis import *
 def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", 
                    title="Time Series of Concentrations", filename="time_series_plot.png",
                    show_grid=True, save_figure=True,
-                   ax=None, show_fig=False):
+                   ax=None, show_fig=False, color_dict=None):
     if 'Time' not in time_series.columns:
         raise ValueError("The DataFrame must include a 'Time' column for time values.")
 
@@ -47,8 +47,13 @@ def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration",
     else:
         fig = ax.get_figure()
 
-    for species in time_series.columns:
-        if species != 'Time':
+    species_list = [col for col in time_series.columns if col != 'Time']
+    
+    for species in species_list:
+        if color_dict and species in color_dict:
+            ax.plot(time_series['Time'], time_series[species], 
+                   label=species, color=color_dict[species])
+        else:
             ax.plot(time_series['Time'], time_series[species], label=species)
 
     ax.set_xlabel(xlabel)
@@ -56,6 +61,12 @@ def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration",
     ax.set_title(title)
     ax.grid(show_grid)
     ax.legend()
+    
+    if save_figure:
+        plt.savefig(filename, dpi=300, bbox_inches='tight')
+    
+    if show_fig:
+        plt.show()
 
     if save_figure:
         os.makedirs("visualizations/plot_series_ode", exist_ok=True)
@@ -3799,6 +3810,7 @@ import os
 import math
 import pandas as pd
 import numpy as np
+from matplotlib.gridspec import GridSpec
 import matplotlib.pyplot as plt
 
 
@@ -4022,3 +4034,108 @@ def analyze_process_proportions_over_time(rn, S, rate_list, spec_vector, x0, t_s
     plt.show()
 
     return results_df
+# ================================================================
+# CREATE RESCALED (NEW TIMESCALE) PROCESS SERIES FROM THE SIMULATION
+# ================================================================
+
+def generate_rescaled_process_series(flux_vector, window_size=1):
+    df = pd.DataFrame(flux_vector)
+
+    # If there's a time column already, use it
+    if "Time" not in df.columns:
+        df.insert(0, "Time", np.arange(len(df)))
+
+    # Ensure Time is the first column (optional)
+    df = df[["Time"] + [c for c in df.columns if c != "Time"]]
+
+    return rescale_process_time_series(df, window_size=window_size)
+
+# ================================================================
+# PLOT CLASSIFICATION PANEL (LIKE YOUR SKETCH)
+# ================================================================
+
+def plot_process_classes_over_time(times, classifications):
+    """
+    Makes a single plot with:
+    - x-axis = time
+    - y-axis = process categories
+    - red points = incomplete processes
+    - blue points = complete processes
+    """
+    # --- canonical order of categories for y-axis ---
+    main_modes = [
+        "Problem",
+        "Challenge", 
+        "Stationary Mode",
+        "Overproduction Mode",
+        "Other"
+    ]
+
+    # maps process classification to category
+    def primary_class(cat_list):
+        # first element is always the "main mode" in your system
+        main = cat_list[0]
+        if main not in main_modes:
+            return "Other"
+        return main
+
+    # check complete vs incomplete
+    def completeness(cat_list):
+        return "Complete" if "Complete Process" in cat_list else "Incomplete"
+
+    # Create the plot
+    fig, ax = plt.subplots(figsize=(14, 8))
+    
+    # Separate complete and incomplete processes
+    complete_times = []
+    complete_categories = []
+    incomplete_times = []
+    incomplete_categories = []
+    
+    for t, cat in zip(times, classifications):
+        category = primary_class(cat)
+        comp_status = completeness(cat)
+        
+        if comp_status == "Complete":
+            complete_times.append(t)
+            complete_categories.append(category)
+        else:
+            incomplete_times.append(t)
+            incomplete_categories.append(category)
+    
+    # Map categories to y-axis positions
+    category_to_y = {mode: i for i, mode in enumerate(main_modes)}
+    
+    # Plot incomplete processes (red)
+    if incomplete_times:
+        incomplete_y = [category_to_y[cat] for cat in incomplete_categories]
+        ax.scatter(incomplete_times, incomplete_y, color='red', s=50, 
+                  alpha=0.7, label='Incomplete', edgecolors='darkred', linewidth=0.5)
+    
+    # Plot complete processes (blue)  
+    if complete_times:
+        complete_y = [category_to_y[cat] for cat in complete_categories]
+        ax.scatter(complete_times, complete_y, color='blue', s=50, 
+                  alpha=0.7, label='Complete', edgecolors='darkblue', linewidth=0.5)
+    
+    # Format the plot
+    ax.set_yticks(range(len(main_modes)))
+    ax.set_yticklabels(main_modes)
+    ax.set_ylabel('Process Type')
+    ax.set_xlabel('Time')
+    ax.set_title('Process Classification Over Time\n(Red = Incomplete, Blue = Complete)')
+    
+    # Add grid for better readability
+    ax.grid(True, alpha=0.3, axis='both')
+    ax.legend()
+    
+    # Set nicer y limits with some padding
+    ax.set_ylim(-0.5, len(main_modes) - 0.5)
+    
+    # Format x-axis if there are time values
+    if times.any():
+        tmin, tmax = min(times), max(times)
+        ax.set_xlim(tmin - 0.1*(tmax-tmin), tmax + 0.1*(tmax-tmin))
+    
+    plt.tight_layout()
+    plt.show()

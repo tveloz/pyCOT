@@ -85,11 +85,6 @@ def classify_process_mode(v, S, tol=1e-3):
     else:
         classifications.append("Incomplete Process")
     
-    # Special case: Cognitive Control = Overproduction + Complete
-    if is_overproduced and is_complete:
-        # Replace "Overproduction Mode" with "Cognitive Control"
-        classifications[0] = "Cognitive Control"
-    
     return classifications
 
 
@@ -110,7 +105,7 @@ def is_cognitive_domain(v, S, tol=1e-3):
         bool: True si el proceso está en el dominio cognitivo, False en caso contrario.
     """
     v_class = classify_process_mode(v, S, tol=tol) 
-    if (v_class[0] == "Stationary Mode" or v_class[0] == "Overproduction Mode" or v_class[0] == "Cognitive Control") and v_class[1] == "Complete Process":
+    if (v_class[0] == "Stationary Mode" or v_class[0] == "Overproduction Mode") and v_class[1] == "Complete Process":
         return True 
     else:
         return False
