@@ -9,17 +9,17 @@ import numpy as np
 
 from pyCOT.io.functions import read_txt
 from pyCOT.simulations import *
-from pyCOT.plot_dynamics_old import * 
+from pyCOT.plot_dynamics import * 
 
-################################################################################################# 
-# Ejemplo de uso  
-file_path = 'Txt/Farm.txt'  
-rn = read_txt(file_path)
+# ################################################################################################# 
+# # Ejemplo de uso  
+# file_path = 'Txt/autopoietic.txt'  
+# rn = read_txt(file_path)
 
-species = [s.name for s in rn.species()]
-print("Especies:", species)
-reactions = [r.name() for r in rn.reactions()]
-print("Reacciones:", reactions) 
+# species = [s.name for s in rn.species()]
+# print("Especies:", species)
+# reactions = [r.name() for r in rn.reactions()]
+# print("Reacciones:", reactions) 
 
 # ##########################################################################
 # # Diffusion dynamics in 2D
@@ -42,7 +42,8 @@ print("Reacciones:", reactions)
 # ##########################################################################
 # rate = 'mak'
 # grid_shape = (3, 3)
-# t_MP, X_MP, flux_MP = simulate_metapopulation_dynamics(rn, rate, grid_shape = grid_shape, t_span=(0,10))
+# # t_MP, X_MP, flux_MP = simulate_metapopulation_dynamics(rn, rate, grid_shape = grid_shape, t_span=(0,10))
+# t_MP, X_MP, flux_MP = simulate_metapopulation_dynamics(rn, rate, num_patches=3, t_span=(0,10))
 
 # # Visualization  
 # plot_diffusion_time_series_2D(time=t_MP,concentration_data=X_MP, grid_shape=grid_shape, xlabel='Tiempo', ylabel='Concentración', main_title='Serie de tiempo de las Concentraciones de Metapoblaciones', legend_title='Especies', cell_prefix='G')
@@ -57,15 +58,7 @@ print("Reacciones:", reactions)
 ##########################################################################
 # EJEMPLO: Metapopulation dynamics with custom parameters for autopoietic (VECTOR-BASED)
 ##########################################################################
-file_path = 'networks/Conflict_Theory/cause_driven_conflict_gov.txt'
-rn = read_txt(file_path)
-species = [s.name for s in rn.species()]
-print("Especies:", species)
-reactions = [r.name() for r in rn.reactions()]
-print("Reacciones:", reactions)
-
-num_patches = 2  # Número de poblaciones/parches
-
+# file_path = 'networks/Conflict_Theory/cause_driven_conflict_gov.txt'
 # Parámetros de reacciones (uno por cada reacción)
 # spec_vector = [[0.3], [0.5], [1.0], [1.0], [1.0]] # Fig1a  
 # spec_vector = [[1.], [0.5], [0.1], [1.0], [3.0]] # Fig1b
@@ -88,7 +81,7 @@ num_patches = 2  # Número de poblaciones/parches
 #     [0.0, 1.0, 0.0],
 #     [0.3, 0.3, 0.4],
 # ]) 
-import numpy as np
+# import numpy as np
 
 # === Reaction rate constants (spec_vector corresponds to r1–r24)
 # Fast reactions: social contagion and emotional responses
@@ -120,6 +113,16 @@ import numpy as np
 #     "mmk",
 #     "mak"
 # ]
+
+# EJEMPLO: Metapopulation dynamics with custom parameters for autopoietic (VECTOR-BASED)
+file_path = 'Txt/cause_driven_conflict_gov.txt'
+rn = read_txt(file_path)
+species = [s.name for s in rn.species()]
+print("Especies:", species)
+reactions = [r.name() for r in rn.reactions()]
+print("Reacciones:", reactions)
+
+# === Specification vector for each reaction
 spec_vector = [
     [0.01],  # r1  A_p + G_A => A_p + G_A + iG_A   (peace spreading idea of good)
     [0.01],  # r2  B_p + G_B => B_p + G_B + iG_B
@@ -182,13 +185,13 @@ connectivity_matrix = np.array([
     [0, 1],  # From B’s location
 ])
 
+# num_patches = 2  # Número de poblaciones/parches
 num_patches = connectivity_matrix.shape[0]
-
 
 # Simulation of metapopulation dynamics (vector-based)
 t_MP, X_MP, flux_MP = simulate_metapopulation_dynamics(
     rn, 
-    #rate=rates, 
+    # rate=rates, 
     num_patches=num_patches,  # Usar num_patches en lugar de grid_shape
     D_dict=D_dict, 
     x0_dict=x0_dict, 
@@ -198,77 +201,44 @@ t_MP, X_MP, flux_MP = simulate_metapopulation_dynamics(
     connectivity_matrix=connectivity_matrix
 ) 
 
-# Visualization
-# Nota: Las funciones de visualización originales están diseñadas para datos en formato 2D (grid)
-# Para visualizar datos vectoriales, necesitarás crear nuevas funciones de graficación o
-# adaptar las existentes. A continuación se muestra un ejemplo simple usando matplotlib:
-# print("species list")
-# for sp in species:
-#     print(sp)
+# Visualization of metapopulation dynamics (vector-based)
+species_pairs = [
+    ('A_p', 'A_v', 'G_A', 'D_A'),
+    ('iG_A', 'iD_A'),
+    ('B_p', 'B_v'),
+    ('G_B', 'D_B'),
+    # ('iG_B', 'iD_B'),
+    # ('Gov_A', 'Gov_B')
+]
+# species_to_plot_num = ['A_p', 'G_A', 'iG_A', 'B_p', 'G_B', 'iG_B']
+# species_to_plot_den = ['A_v', 'D_A', 'iD_A', 'B_v', 'D_B', 'iD_B']
+# species_pairs = list(zip(species_to_plot_num, species_to_plot_den))
 
-import matplotlib.pyplot as plt
+plot_vector_metapopulation_series_concentration(
+    t_MP,
+    X_MP,
+    species_pairs,
+    num_patches,
+    xlabel="Tiempo",
+    ylabel="Concentración",
+    legend="Población",
+    title="Series de Tiempo de Concentraciones de Metapoblaciones",
+    save_path="metapopulation_concentration_timeseries_vector.png",
+    show=True
+)
 
-print(flux_MP["r7"])
+flux_pairs = [
+    ("r1", "r2"),
+    ("r3", "r4"),
+    ("r5", "r6"),
+    ("r7", "r8"),
+    ("r9", "r10"),
+    ("r11", "r12"),
+]
 
-
-species_to_plot_num = ['A_p', 'G_A', 'iG_A', 'B_p', 'G_B', 'iG_B']
-species_to_plot_den = ['A_v', 'D_A', 'iD_A', 'B_v', 'D_B', 'iD_B']
-
-# Graficar concentraciones para cada par de especies
-fig, axes = plt.subplots(len(species_to_plot_num), 1, figsize=(10, 4 * len(species_to_plot_num)), sharex=True)
-if len(species_to_plot_num) == 1:
-    axes = [axes]
-
-for idx, sp_up in enumerate(species_to_plot_num):
-    sp_down = species_to_plot_den[idx]
-
-    for patch_idx in range(num_patches):
-        # Plot numerator species
-        axes[idx].plot(
-            t_MP,
-            X_MP[sp_up][:, patch_idx],
-            label=f'{sp_up} (Población {patch_idx+1})',
-            linestyle='-'
-        )
-
-        # Plot denominator species
-        axes[idx].plot(
-            t_MP,
-            X_MP[sp_down][:, patch_idx],
-            label=f'{sp_down} (Población {patch_idx+1})',
-            linestyle='--'
-        )
-
-    axes[idx].set_ylabel(f'{sp_up} y {sp_down}')
-    axes[idx].legend()
-    axes[idx].grid(True)
-
-axes[-1].set_xlabel('Tiempo')
-fig.suptitle('Series de Tiempo de Concentraciones de Metapoblaciones', fontsize=14)
-plt.tight_layout(rect=[0, 0, 1, 0.97])
-plt.savefig('metapopulation_concentration_timeseries_vector.png', dpi=150)
-plt.show()
-
-
-#Graficar flujos para cada reacción
-# fig, axes = plt.subplots(len(reactions), 1, figsize=(10, 4*len(reactions)), sharex=True)
-# if len(reactions) == 1:
-#     axes = [axes]
-
-# for idx, rxn in enumerate(reactions):
-#     for patch_idx in range(num_patches):
-#         axes[idx].plot(t_MP, flux_MP[rxn][:, patch_idx], label=f'Población {patch_idx+1}')
-#     axes[idx].set_ylabel(f'{rxn}')
-#     axes[idx].legend()
-#     axes[idx].grid(True)
-
-# axes[-1].set_xlabel('Tiempo')
-# fig.suptitle('Series de Tiempo de Flujos de Metapoblaciones', fontsize=14)
-# plt.tight_layout()
-# plt.savefig('metapopulation_flux_timeseries_vector.png', dpi=150)
-# plt.show()
-
-print("\n✓ Simulación completada exitosamente")
-print(f"✓ Forma de salida de concentraciones: {X_MP[species[0]].shape} = (n_steps, num_patches)")
-print(f"✓ Forma de salida de flujos: {flux_MP[reactions[0]].shape} = (n_steps, num_patches)")
-
+plot_vector_metapopulation_series_flux(
+    t_MP,
+    flux_MP,
+    flux_pairs,
+    num_patches=2
+)

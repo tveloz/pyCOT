@@ -12,14 +12,15 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import pyCOT modules
 from pyCOT.io.functions import read_txt 
-from pyCOT.plot_dynamics_old import plot_series_ode
+from pyCOT.plot_dynamics import plot_series_ode
 from pyCOT.simulations import *
 
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ========================================
 # Alternative examples:
-file_path = 'Txt/BZ_cycle.txt'  
+file_path = 'Txt/autopoietic.txt'  # Autopoietic network
+# file_path = 'Txt/BZ_cycle.txt'  
 #file_path = 'networks/testing/Lotka_Volterra.txt'  
 
 #file_path = 'networks/Riverland_model/Scenario1_baseline_only_reactions.txt'  # Autopoietic network
@@ -30,7 +31,7 @@ file_path = 'Txt/BZ_cycle.txt'
 # file_path = 'Txt/Farm.txt' 
 # file_path = 'Txt/SEIR.txt' 
 # file_path = 'Txt/2010Veloz_Ex_4.txt'
-file_path = 'networks/Conflict_Theory/cause_driven_conflict_gov.txt'
+# file_path = 'networks/Conflict_Theory/cause_driven_conflict_gov.txt'
 
 rn = read_txt(file_path)  # Create ReactionNetwork object from file
 
@@ -45,7 +46,7 @@ time_series, flux_vector = simulation(rn, rate=rate_list)
 
 print("ODE Time Series:")
 print(time_series)
-plot_series_ode(time_series)
+plot_series_ode(time_series,show_fig=True)
 # ###################################################################################
 # # Example 2: ODE simulation with one kinetic equation for all reactions and specific parameters
 # ###################################################################################

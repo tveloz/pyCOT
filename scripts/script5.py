@@ -12,14 +12,15 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import pyCOT modules
 from pyCOT.io.functions import read_txt 
 from pyCOT.simulations import *
-from pyCOT.plot_dynamics_old import plot_series_ode, plot_abstraction_size, plot_abstraction_sets, plot_abstraction_graph_movie_html
+from pyCOT.plot_dynamics import plot_series_ode, plot_abstraction_size, plot_abstraction_sets, plot_abstraction_graph_movie_html
 from pyCOT.abstractions import abstraction_ordinary
 
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ========================================
 # # Network file path
-file_path = 'networks/Conflict_Theory/cause_driven_conflict_gov.txt'   
+file_path = 'Txt/autopoietic.txt'
+# file_path = 'networks/Conflict_Theory/cause_driven_conflict_gov.txt'   
 rn = read_txt(file_path)     
 
 # ========================================

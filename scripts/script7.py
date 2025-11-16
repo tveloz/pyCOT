@@ -108,9 +108,9 @@ print("✓ Simulation completed successfully!")
 print(f"\nTime series shape: {time_series.shape}")
 print(f"Flux vector shape: {flux_vector.shape}")
 print("\nTime Series (first 5 rows):")
-print(time_series.head())
+print(time_series) #.head())
 print("\nFlux Vector (first 5 rows):")
-print(flux_vector.head())
+print(flux_vector) #.head())
 print()
 
 # ========================================
