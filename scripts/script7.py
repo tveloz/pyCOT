@@ -145,12 +145,12 @@ print()
 
 # Check cognitive domain representation
 all_classifications = classify_process_series(flux_vector, S)
-cd_count = sum(1 for c in all_classifications if 'Cognitive Control' in c[0])
+cd_count = sum(1 for c in all_classifications if 'Cognitive Domain' in c[0])
 sm_count = sum(1 for c in all_classifications if 'Stationary Mode' in c[0])
 pb_count = sum(1 for c in all_classifications if 'Problem' in c[0])
 
 print(f"Overall classification summary (n={len(all_classifications)}):")
-print(f"  Cognitive Control: {cd_count:4d} ({100*cd_count/len(all_classifications):5.1f}%)")
+print(f"  Cognitive Domain: {cd_count:4d} ({100*cd_count/len(all_classifications):5.1f}%)")
 print(f"  Stationary Mode:   {sm_count:4d} ({100*sm_count/len(all_classifications):5.1f}%)")
 print(f"  Problem:           {pb_count:4d} ({100*pb_count/len(all_classifications):5.1f}%)")
 print()
@@ -217,7 +217,7 @@ print()
 if optimal_window != "Máximo":
     optimal_row = results_df.loc[max_idx]
     print(f"Breakdown at optimal window ({optimal_window} steps):")
-    print(f"  Cognitive Control: {100*optimal_row['Proporción CC']:.2f}%")
+    print(f"  Cognitive Domain: {100*optimal_row['Proporción CC']:.2f}%")
     print(f"  Stationary Mode:   {100*optimal_row['Proporción SM']:.2f}%")
     print(f"  Problem:           {100*optimal_row['Proporción PB']:.2f}%")
     print()

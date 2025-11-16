@@ -34,14 +34,8 @@ file_path = 'Txt/Farm.txt'
 #file_path = 'networks/RandomAlife/RN_Ns_20_Norg_4_id_12.txt'
 #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_17_id_564.txt'
 # file_path = 'networks/Navarino/RN_IN_05.txt'
-<<<<<<< HEAD
-file_path = 'networks/Marine_Ecosystem/Las_Cruces_251021.txt'
-file_path = 'networks/Conflict_Theory/cause_driven_conflict.txt'
-file_path = 'networks/Conflict_Theory/conflict_toy_model0.txt'
-=======
 # file_path = 'networks/Marine_Ecosystem/Las_Cruces_251021.txt'
 # file_path = 'networks/Riverland_model/cause_driven_conflict.txt'
->>>>>>> 449d48993a1f70c6dae2ea1af5f7589c8fe494d0
 
 
 

@@ -3341,7 +3341,7 @@ def animate_series_PDE(simulation_data, species_names,t_span):
 color_map = {
     "Stationary Mode": "cyan", 
     "Overproduction Mode": "blue",
-    "Cognitive Control": "green",
+    "Cognitive Domain": "green",
     "Challenge": "orange",
     "Problem": "red",        
     "Other": "grey",
@@ -3618,13 +3618,13 @@ def plot_series_with_domain_intervals(time_series, flux_vector, S,
     # Using get_intervals_by_category from process_analysis
 
     # Máscaras
-    is_cd = np.array(["Cognitive Control" in cat for cat in process_types])
+    is_cd = np.array(["Cognitive Domain" in cat for cat in process_types])
     is_sm = np.array(["Stationary Mode" in cat for cat in process_types])
     is_pb = np.array(["Problem" in cat for cat in process_types])
     # is_ch = np.array(["Challenge" in cat for cat in process_types])
 
     # Intervalos
-    cd_intervals = get_intervals_by_category(times, process_types, "Cognitive Control")
+    cd_intervals = get_intervals_by_category(times, process_types, "Cognitive Domain")
     sm_intervals = get_intervals_by_category(times, process_types, "Stationary Mode")
     pb_intervals = get_intervals_by_category(times, process_types, "Problem")
     # ch_intervals = get_intervals(is_ch, times)
@@ -3651,7 +3651,7 @@ def plot_series_with_domain_intervals(time_series, flux_vector, S,
     #     ax.axvline(x=t_end, color="orange", linestyle="--", alpha=0.8)
 
     # Leyenda
-    ax.plot([], [], color="green", linestyle="--", label="Cognitive Control")
+    ax.plot([], [], color="green", linestyle="--", label="Cognitive Domain")
     ax.plot([], [], color="cyan", linestyle="--", label="Stationary Mode")
     ax.plot([], [], color="red", linestyle="--", label="Problem")
     # ax.plot([], [], color="orange", linestyle="--", label="Challenge")
@@ -3678,13 +3678,13 @@ def plot_flux_with_domain_intervals(flux_vector, S,
     # Using get_intervals_by_category from process_analysis
 
     # Máscaras
-    is_cd = np.array(["Cognitive Control" in cat for cat in process_types])
+    is_cd = np.array(["Cognitive Domain" in cat for cat in process_types])
     is_sm = np.array(["Stationary Mode" in cat for cat in process_types])
     is_pb = np.array(["Problem" in cat for cat in process_types])
     # is_ch = np.array(["Challenge" in cat for cat in process_types])
 
     # Intervalos
-    cd_intervals = get_intervals_by_category(times, process_types, "Cognitive Control")
+    cd_intervals = get_intervals_by_category(times, process_types, "Cognitive Domain")
     sm_intervals = get_intervals_by_category(times, process_types, "Stationary Mode")
     pb_intervals = get_intervals_by_category(times, process_types, "Problem")
     # ch_intervals = get_intervals(is_ch, times)
@@ -3721,13 +3721,13 @@ def plot_flux_with_domain_intervals(flux_vector, S,
         print(f"  T_max = {max(durations):.4f}")
         print(f"  T_avg = {np.mean(durations):.4f}")
 
-    print_stats("Cognitive Control", cd_intervals)
+    print_stats("Cognitive Domain", cd_intervals)
     print_stats("Stationary Mode", sm_intervals)
     print_stats("Problem", pb_intervals)
     # print_stats("Challenge", ch_intervals)
 
     # Leyenda
-    ax.plot([], [], color="green", linestyle="--", label="Cognitive Control")
+    ax.plot([], [], color="green", linestyle="--", label="Cognitive Domain")
     ax.plot([], [], color="cyan", linestyle="--", label="Stationary Mode")
     ax.plot([], [], color="red", linestyle="--", label="Problem")
     # ax.plot([], [], color="orange", linestyle="--", label="Challenge")
