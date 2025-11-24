@@ -526,6 +526,18 @@ def rn_get_string(rn):
             products = "∅"  # Empty set symbol for outflow reactions
             
         print(f"  - {reaction.name()}: {support} => {products}")
+    def rn_get_reaction_string(rn,reaction):
+        support = " + ".join([f"{edge.coefficient}*{edge.species_name}" if edge.coefficient != 1 else edge.species_name 
+                                for edge in reaction.support_edges()])
+        products = " + ".join([f"{edge.coefficient}*{edge.species_name}" if edge.coefficient != 1 else edge.species_name 
+                                for edge in reaction.products_edges()])
+        
+        if not support:
+            support = "∅"  # Empty set symbol for inflow reactions
+        if not products:
+            products = "∅"  # Empty set symbol for outflow reactions
+            
+        print(f"  - {reaction.name()}: {support} => {products}")
 
 ##################################################################
 # # Plot a bipartite metabolic network graph from a ReactionNetwork object

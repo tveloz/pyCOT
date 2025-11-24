@@ -1,14 +1,15 @@
 """
-Process Analysis Library for Reaction Networks
+Process Analysis Library for Reaction Networks (Extended)
 
-This module provides analysis functions for classifying processes, analyzing cones,
-and processing time series of reaction network dynamics.
+This module extends process_analysis.py with semantic-aware analysis and 
+process decomposition capabilities.
 
 Main components:
 1. Process Classification - classify process vectors based on stoichiometric effects
 2. Time Series Processing - rescaling and batch classification
 3. Cone Analysis - nullspace, feasible regions, and comprehensive cone analysis
 4. Utilities - helper functions for interval extraction and data export
+5. Semantic Process Analysis - semantic-aware classification and decomposition (NEW)
 """
 
 import numpy as np
@@ -23,54 +24,95 @@ import os
 # 1. PROCESS CLASSIFICATION
 ######################################################################################
 
-def classify_process_mode(v, S, tol=1e-3):
+def classify_process_mode(v, S, species_subset=None, species_list=None, tol=1e-3):
     """
     Clasifica un vector de proceso v con respecto a la matriz estequiométrica S.
+    
+    La clasificación puede hacerse sobre todas las especies o sobre un subconjunto específico.
+    Esto permite analizar cómo un proceso afecta diferentes grupos semánticos de especies.
 
     Categorías base:
     - Stationary Mode: El proceso no produce cambios netos en las concentraciones (Sv=0).
     - Problem: El proceso consume especies pero no produce ninguna (Sv <= 0 y al menos un Sv < 0).
-    - Challenge: El proceso consume al menos una especie (al menos un Sv < 0).
-    - Cognitive Domain: El proceso mantiene o aumenta todas las especies (Sv >= 0) y utiliza todas las reacciones de la red (v > 0).
+    - Challenge: El proceso consume al menos una especie (al menos un Sv < 0) y produce al menos una (Sv > 0).
+    - Overproduction Mode: El proceso produce especies sin consumir (Sv >= 0 y al menos un Sv > 0).
     
-    Categorías extendidas (requieren un proceso previo 'v_pert'):
-    - Counteraction: Un proceso 'v' que, combinado con un 'Challenge' previo 'v_pert', resulta en un no-consumo neto (S(v + v_pert) >= 0).
-    - Solution: Un proceso 'v' del espacio 'Challenge' que sirve como solución para un 'Problem' previo 'v_pert' (S(v+v_pert) >= 0).
-    - Cognitive Control: Un proceso 'v' del 'Cognitive Domain' que sirve como solución para un 'Problem' previo 'v_pert' (S(v+v_pert) >= 0, v > 0).
-
     Args:
-        v (np.ndarray): El vector de proceso a clasificar. Debe ser un array de NumPy que representa los flujos.
-        S (np.ndarray): La matriz estequiométrica, donde las filas son especies y las columnas son reacciones.
-        tol (float): Tolerancia para comparaciones numéricas con cero para manejar la imprecisión de punto flotante. Por defecto es 1e-3.
+        v (np.ndarray): El vector de proceso a clasificar.
+        S (np.ndarray): La matriz estequiométrica.
+        species_subset (list, optional): Subconjunto de especies a considerar.
+            Puede ser:
+            - Lista de nombres de especies (strings): ['A_v', 'B_v', 'D_A']
+            - Lista de índices (integers): [0, 1, 4]
+            Si es None, considera todas las especies.
+        species_list (list, optional): Lista completa de nombres de especies.
+            Requerido si species_subset contiene nombres (strings).
+        tol (float): Tolerancia para comparaciones numéricas.
         
     Returns:
-        list[str]: Una lista ordenada de las categorías a las que pertenece el proceso v.
-                   Si no coincide con ninguna categoría específica, se clasifica como "Other".
-                   Un proceso puede pertenecer a múltiples categorías.
-    
-    Raises:
-        TypeError: Si 'v' o 'S' no son arrays de NumPy.
+        list[str]: Una lista de las categorías a las que pertenece el proceso v
+                   con respecto al subconjunto de especies especificado.
+                   
+    Example:
+        >>> # Clasificar sobre todas las especies
+        >>> classify_process_mode(v, S)
+        ['Challenge', 'Incomplete Process']
+        
+        >>> # Clasificar usando nombres de especies
+        >>> classify_process_mode(v, S, 
+        ...                      species_subset=['A_v', 'B_v', 'D_A'],
+        ...                      species_list=species)
+        ['Overproduction Mode', 'Incomplete Process']
+        
+        >>> # Clasificar usando índices (backend/performance)
+        >>> classify_process_mode(v, S, species_subset=[0, 1, 4])
+        ['Overproduction Mode', 'Incomplete Process']
     """
     
-    # Validaciones de tipo para los inputs
     if not isinstance(v, np.ndarray) or not isinstance(S, np.ndarray):
         raise TypeError("Los inputs 'v' y 'S' deben ser arrays de NumPy.")
 
-    # Calcular el cambio neto en las concentraciones de las especies (Sv)
+    # Compute full stoichiometric effect
     Sv = S @ v
+    
+    # Convert species_subset to indices if needed
+    if species_subset is not None:
+        if len(species_subset) == 0:
+            raise ValueError("species_subset no puede estar vacío")
+        
+        # Check if species_subset contains strings (species names)
+        if isinstance(species_subset[0], str):
+            if species_list is None:
+                raise ValueError("species_list es requerido cuando species_subset contiene nombres de especies")
+            
+            # Convert names to indices
+            species_indices = {name: idx for idx, name in enumerate(species_list)}
+            
+            # Validate that all species exist
+            for name in species_subset:
+                if name not in species_indices:
+                    raise ValueError(f"Especie '{name}' no encontrada en species_list")
+            
+            species_subset_indices = [species_indices[name] for name in species_subset]
+        else:
+            # Already indices
+            species_subset_indices = species_subset
+        
+        Sv_relevant = Sv[species_subset_indices]
+    else:
+        Sv_relevant = Sv
+    
     classifications = []
 
-    # --- Propiedades fundamentales de Sv y v (calculadas una vez para eficiencia) ---
-    is_stationary = np.all((-tol <= Sv) & (Sv <= tol))
-    is_overproduced = np.all(Sv >= -tol) and np.any(Sv > tol)
-    is_challenge = np.any(Sv < -tol) and np.any(Sv > tol)
-    is_problem = np.all(Sv <= tol) and np.any(Sv <= -tol)
+    # Classify based on relevant species only
+    is_stationary = np.all((-tol <= Sv_relevant) & (Sv_relevant <= tol))
+    is_overproduced = np.all(Sv_relevant >= -tol) and np.any(Sv_relevant > tol)
+    is_challenge = np.any(Sv_relevant < -tol) and np.any(Sv_relevant > tol)
+    is_problem = np.all(Sv_relevant <= tol) and np.any(Sv_relevant <= -tol)
     is_complete = np.all(v > tol) 
     
-    # --- Clasificaciones de Modo y Completitud (basadas solo en 'v' y 'S') --- 
     if is_stationary:
         classifications = ["Stationary Mode"]
-        
     elif is_overproduced:
         classifications = ["Overproduction Mode"]
     elif is_challenge:
@@ -88,7 +130,7 @@ def classify_process_mode(v, S, tol=1e-3):
     return classifications
 
 
-def is_cognitive_domain(v, S, tol=1e-3):
+def is_cognitive_domain(v, S, species_subset=None, species_list=None, tol=1e-3):
     """
     Verifica si un proceso v está en el dominio cognitivo.
     
@@ -97,622 +139,332 @@ def is_cognitive_domain(v, S, tol=1e-3):
     - Es un proceso completo (v > 0 para todas las reacciones)
     
     Args:
-        v (np.ndarray): El vector de proceso a verificar.
-        S (np.ndarray): La matriz estequiométrica.
-        tol (float): Tolerancia para comparaciones numéricas.
-        
-    Returns:
-        bool: True si el proceso está en el dominio cognitivo, False en caso contrario.
+        v: Proceso a verificar
+        S: Matriz estequiométrica
+        species_subset: Opcional, subconjunto de especies (nombres o índices)
+        species_list: Opcional, lista de nombres de especies (requerido si species_subset usa nombres)
+        tol: Tolerancia
     """
-    v_class = classify_process_mode(v, S, tol=tol) 
+    v_class = classify_process_mode(v, S, species_subset=species_subset, species_list=species_list, tol=tol) 
     if (v_class[0] == "Stationary Mode" or v_class[0] == "Overproduction Mode") and v_class[1] == "Complete Process":
         return True 
     else:
         return False
 
 
-def classify_response_to_disturbance(v, S, v_pert=None, x_pert=None, tol=1e-3, verbose=False):
+######################################################################################
+# 5. SEMANTIC PROCESS ANALYSIS
+######################################################################################
+
+def decompose_process(v, S=None, tol=1e-3):
     """
-    Clasifica la respuesta de un proceso a una perturbación.
-    
-    Analiza cómo un proceso v responde a una perturbación, que puede ser:
-    - v_pert: Una perturbación en el espacio de procesos
-    - x_pert: Una perturbación en el espacio de estados
+    Decompose a process vector into single reaction components.
     
     Args:
-        v (np.ndarray): El vector de proceso de respuesta.
-        S (np.ndarray): La matriz estequiométrica.
-        v_pert (np.ndarray, optional): Perturbación en el espacio de procesos.
-        x_pert (np.ndarray, optional): Perturbación en el espacio de estados.
-        tol (float): Tolerancia para comparaciones numéricas.
-        verbose (bool): Si True, imprime información de debug.
+        v: Process vector
+        S: Stoichiometric matrix (optional, only used if Sv_component needed)
+        tol: Tolerance for considering reaction active
         
     Returns:
-        list[str]: Clasificación de la respuesta a la perturbación.
-        
-    Raises:
-        TypeError: Si los tipos de entrada no son correctos.
-        ValueError: Si las dimensiones no coinciden.
+        List of dicts, each containing:
+            'reaction_idx': int
+            'rate': float
+            'Sv_component': array (if S provided)
     """
-    if v_pert is not None and not isinstance(v_pert, np.ndarray):
-        raise TypeError("El input 'v_pert', si se proporciona, debe ser un array de NumPy.")
+    if not isinstance(v, np.ndarray):
+        raise TypeError("v must be numpy array")
     
-    if v_pert is not None and v_pert.shape[0] != S.shape[1]:
-        raise ValueError("El input 'v_pert' debe tener la misma dimensión que el número de reacciones en 'S'.")
+    components = []
+    active_reactions = np.where(np.abs(v) > tol)[0]
     
-    if x_pert is not None and not isinstance(x_pert, np.ndarray):
-        raise TypeError("El input 'x_pert', si se proporciona, debe ser un array de NumPy.")
-    
-    if x_pert is not None and x_pert.shape[0] != S.shape[0]:
-        raise ValueError("El input 'x_pert' debe tener la misma dimensión que el número de especies en 'S'.")
-
-    v_mode = classify_process_mode(v, S, tol=tol)
-    
-    if v_pert is None and x_pert is None:
-        if verbose:
-            print("Null disturbance")
-        return v_mode
-
-    elif v_pert is not None and x_pert is None:
-        if verbose:
-            print("Process disturbance")
-        v_pert_class = classify_process_mode(v_pert, S, tol=tol)
-        v_cognitive_domain = is_cognitive_domain(v, S, tol=tol)
-        v_combined = (v + v_pert)
-        v_combined_class = classify_process_mode(v_combined, S, tol=tol)
-        v_combined_cognitive_domain = is_cognitive_domain(v_combined, S, tol=tol)
+    for reaction_idx in active_reactions:
+        rate = v[reaction_idx]
+        component = {
+            'reaction_idx': int(reaction_idx),
+            'rate': float(rate)
+        }
         
-        # Cognitive Control Situations
-        if v_cognitive_domain:
-            if verbose:
-                print("In Cognitive Domain")
-            # Cognitive Domain controla Challenge
-            if v_pert_class[0] == "Challenge":
-                if v_combined_cognitive_domain:
-                    return ["Cognitive Controls Challenge"]
-                else:
-                    return ["Cognitive Breakdown by Challenge"]
-            # Cognitive Domain controla Problem
-            if v_pert_class[0] == "Problem": 
-                if v_combined_cognitive_domain:
-                    return ["Cognitive Controls Problem"]
-                else:
-                    return ["Cognitive Breakdown by Problem"]
-            # Cognitive Domain se sostiene por proceso automantenido o sobreproducido
-            if (v_pert_class[0] == "Stationary Mode" or v_pert_class[0] == "Overproduction Mode"): 
-                if v_combined_cognitive_domain:
-                    return ["Cognitive Domain Sustained"]
-            else:
-                if verbose:
-                    print("Check Cognitive Breakdown by Glitch!!" + str(v_mode) + " + " + str(v_pert_class) + " =>" + str(v_combined_class))
-                    return ["Cognitive Breakdown by Glitch"]
+        if S is not None:
+            component['Sv_component'] = S[:, reaction_idx] * rate
+        
+        components.append(component)
+    
+    return components
+
+
+def compute_semantic_impact(Sv, semantic_partition, tol=1e-3):
+    """
+    Compute net effect on each semantic category.
+    
+    Args:
+        Sv: Net stoichiometric effect (S @ v)
+        semantic_partition: SemanticPartition object
+        tol: Tolerance
+        
+    Returns:
+        Dict mapping category to net effect
+    """
+    net_effects = {}
+    
+    for category in semantic_partition.categories:
+        indices = semantic_partition.category_indices[category]
+        net_effect = np.sum(Sv[indices])
+        net_effects[category] = net_effect
+    
+    return net_effects
+
+
+def classify_semantic_relation(Sv, semantic_partition, tol=1e-3):
+    """
+    Classify the semantic relation of a process.
+    
+    Args:
+        Sv: Net stoichiometric effect
+        semantic_partition: SemanticPartition object
+        tol: Tolerance
+        
+    Returns:
+        Dict with keys:
+            'type': relation type
+            'source': source category
+            'target': target category
+            'net_effects': dict of net effects per category
+            'interpretation': human-readable string
+    """
+    net_effects = compute_semantic_impact(Sv, semantic_partition, tol)
+    
+    depleting_categories = [cat for cat, net in net_effects.items() if net < -tol]
+    amplifying_categories = [cat for cat, net in net_effects.items() if net > tol]
+    
+    n_depleting = len(depleting_categories)
+    n_amplifying = len(amplifying_categories)
+    
+    # Determine relation type
+    if n_depleting == 0 and n_amplifying == 0:
+        relation_type = 'PROCESS_BALANCES'
+        source = None
+        target = None
+        interpretation = "Balanced process (steady state)"
+    
+    elif n_depleting == 0 and n_amplifying > 0:
+        if n_amplifying == 1:
+            relation_type = 'PROCESS_AMPLIFIES'
+            source = amplifying_categories[0]
+            target = amplifying_categories[0]
+            interpretation = f"Amplifies {amplifying_categories[0]}"
         else:
-            if verbose:
-                print("Out of Cognitive Domain")
-                print(f"v_mode: {v_mode}, v_pert_class: {v_pert_class}, v_combined_class: {v_combined_class}")
-                print(f"v_combined_cognitive_domain: {v_combined_cognitive_domain}")
-            if v_combined_cognitive_domain:
-                return ["Cognitive Domain Recovered"]
-            else:
-                return ["Cognitive Breakdown Sustained"]
+            relation_type = 'PROCESS_AMPLIFIES_MULTIPLE'
+            source = amplifying_categories
+            target = amplifying_categories
+            interpretation = f"Amplifies {amplifying_categories}"
+    
+    elif n_depleting > 0 and n_amplifying == 0:
+        if n_depleting == 1:
+            relation_type = 'PROCESS_DEPLETES'
+            source = depleting_categories[0]
+            target = None
+            interpretation = f"Depletes {depleting_categories[0]}"
+        else:
+            relation_type = 'PROCESS_DEPLETES_MULTIPLE'
+            source = depleting_categories
+            target = None
+            interpretation = f"Depletes {depleting_categories}"
+    
+    elif n_depleting == 1 and n_amplifying == 1:
+        relation_type = 'PROCESS_GENERATES'
+        source = depleting_categories[0]
+        target = amplifying_categories[0]
+        interpretation = f"Generates {amplifying_categories[0]} from {depleting_categories[0]}"
+    
+    else:
+        relation_type = 'PROCESS_TRANSFORMS'
+        source = depleting_categories
+        target = amplifying_categories
+        interpretation = f"Transforms {depleting_categories} into {amplifying_categories}"
+    
+    return {
+        'type': relation_type,
+        'source': source,
+        'target': target,
+        'net_effects': net_effects,
+        'interpretation': interpretation
+    }
+
+
+def analyze_process_semantic(v, S, semantic_partition, species_subset=None, species_list=None, tol=1e-3):
+    """
+    Analyze a process with both mode and semantic classifications.
+    
+    Args:
+        v: Process vector
+        S: Stoichiometric matrix
+        semantic_partition: SemanticPartition object
+        species_subset: Optional, subset of species (names or indices) for mode classification
+        species_list: Optional, list of species names (required if species_subset uses names)
+        tol: Tolerance
+        
+    Returns:
+        Dict with:
+            'Sv': net stoichiometric effect
+            'mode': process mode classification
+            'relation': semantic relation classification
+    """
+    Sv = S @ v
+    mode = classify_process_mode(v, S, species_subset=species_subset, species_list=species_list, tol=tol)
+    relation = classify_semantic_relation(Sv, semantic_partition, tol)
+    
+    return {
+        'Sv': Sv,
+        'mode': mode[0],
+        'relation': relation
+    }
+
+
+def random_decompose_process(v, n, strategy='mixed', seed=None):
+    """
+    Randomly decompose a process into n sub-processes.
+    
+    Supports two decomposition strategies:
+    - 'coordinate': Assign each active reaction entirely to one part
+    - 'value': Split each active reaction's value across multiple parts
+    - 'mixed': Randomly choose strategy per reaction
+    
+    Args:
+        v: Process vector
+        n: Number of parts (must be >= 1)
+        strategy: Decomposition strategy
+        seed: Random seed for reproducibility
+        
+    Returns:
+        List of n process vectors [v1, v2, ..., vn] where sum(vi) = v
+    """
+    if seed is not None:
+        np.random.seed(seed)
+    
+    if not isinstance(v, np.ndarray):
+        raise TypeError("v must be numpy array")
+    
+    active_reactions = np.where(v > 1e-10)[0]
+    k = len(active_reactions)
+    
+    if n < 1:
+        raise ValueError("n must be at least 1")
+    
+    if n > k:
+        raise ValueError(f"n={n} cannot exceed number of active reactions k={k}")
+    
+    # Initialize n empty process vectors
+    parts = [np.zeros_like(v) for _ in range(n)]
+    
+    for reaction_idx in active_reactions:
+        rate = v[reaction_idx]
+        
+        # Decide strategy for this reaction
+        if strategy == 'coordinate':
+            # Assign entire reaction to one random part
+            part_idx = np.random.randint(0, n)
+            parts[part_idx][reaction_idx] = rate
+            
+        elif strategy == 'value':
+            # Split value across all n parts using Dirichlet
+            alphas = np.ones(n)
+            fractions = np.random.dirichlet(alphas)
+            for i in range(n):
+                parts[i][reaction_idx] = rate * fractions[i]
                 
-    elif v_pert is None and x_pert is not None:
-        # State Disturbance and response result
-        v_cognitive_domain = is_cognitive_domain(v, S, tol=tol)
-        x_next = x_pert + S @ v
-        
-        if v_cognitive_domain:
-            if np.any(x_pert < -tol) and np.any(x_pert > tol):
-                if verbose:
-                    print("State disturbance is a challenge")
-                if np.all(x_next >= -tol):
-                    return ["Cognitive Controls Challenge"]
-                else:
-                    if np.any(x_next < -tol):
-                        return ["Cognitive Breakdown by Challenge"]
-            elif np.all(x_pert <= -tol) and np.any(x_pert < tol):
-                if verbose:
-                    print("State disturbance is a problem")
-                if np.all(x_next >= -tol):
-                    return ["Cognitive Controls Problem"]
-                else:
-                    if np.any(x_next < -tol):
-                        return ["Cognitive Breakdown by Problem"]
+        elif strategy == 'mixed':
+            # Random choice: coordinate or value split
+            if np.random.random() < 0.5:
+                # Coordinate assignment
+                part_idx = np.random.randint(0, n)
+                parts[part_idx][reaction_idx] = rate
             else:
-                if verbose:
-                    print("State disturbance is resources incoming")
-                if np.all(x_next >= -tol):
-                    return ["Cognitive Domain Sustained"]
-                else:
-                    return ["Cognitive Breakdown by Glitch"]
+                # Value split
+                alphas = np.ones(n)
+                fractions = np.random.dirichlet(alphas)
+                for i in range(n):
+                    parts[i][reaction_idx] = rate * fractions[i]
         else:
-            if verbose:
-                print("Out of Cognitive Domain")
-                print(f"v_mode: {v_cognitive_domain} x_next: {x_next}")
-            if np.all(x_next >= -tol):
-                return ["Cognitive Domain Recovered"]
-            else:
-                return ["Cognitive Breakdown Sustained"]
+            raise ValueError(f"Unknown strategy: {strategy}")
+    
+    return parts
 
 
-######################################################################################
-# 2. TIME SERIES PROCESSING
-######################################################################################
-
-def rescale_process_time_series(process_series, window_size=1):
+def analyze_decomposition_statistics(decompositions, S, semantic_partition=None, species_subset=None, species_list=None, tol=1e-3):
     """
-    Rescales a process time series by aggregating consecutive vectors using a rolling sum.
+    Analyze statistical properties of process decompositions.
     
-    This function performs a sliding window sum over process vectors, creating a new 
-    time series where each point represents the sum of 'window_size' consecutive processes.
-    
-    Parameters:
-    -----------
-    process_series : pd.DataFrame
-        DataFrame containing:
-        - 'Time' column: timestamps for each process
-        - Process columns: vector components (e.g., 'Flux_r1', 'Flux_r2', ...)
-    
-    window_size : int, default=1
-        Number of consecutive processes to sum together.
-        - window_size=1: Returns copy of original (no rescaling)
-        - window_size>1: Applies rolling sum
-    
-    Returns:
-    --------
-    pd.DataFrame
-        Rescaled time series with:
-        - Length: len(process_series) - window_size + 1
-        - 'Time' column: adjusted to last time in each window
-        - Process columns: rolling sum of original vectors
-    
-    Examples:
-    ---------
-    >>> # Original time series (5 steps)
-    >>> process_series = pd.DataFrame({
-    ...     'Time': [0, 1, 2, 3, 4],
-    ...     'Flux_r1': [1, 2, 3, 4, 5],
-    ...     'Flux_r2': [0.5, 1.0, 1.5, 2.0, 2.5]
-    ... })
-    >>> 
-    >>> # Rescale with window_size=3
-    >>> rescaled = rescale_process_time_series(process_series, window_size=3)
-    >>> # Result has 3 rows: times [2, 3, 4]
-    >>> # Flux_r1: [6, 9, 12] = [1+2+3, 2+3+4, 3+4+5]
-    """
-    if not isinstance(process_series, pd.DataFrame):
-        raise TypeError("process_series debe ser un DataFrame de pandas.")
-    
-    if 'Time' not in process_series.columns:
-        raise ValueError("El DataFrame debe contener una columna 'Time'.")
-    
-    if window_size == 1:
-        # No rescaling needed
-        return process_series.copy()
-    
-    # Separate time and process data
-    time_col = process_series['Time']
-    process_numeric = process_series.drop(columns=['Time']).copy()
-    
-    # Apply rolling sum
-    process_rolling = (
-        process_numeric
-        .rolling(window=window_size, min_periods=window_size)
-        .sum()
-        .dropna()
-        .reset_index(drop=True)
-    )
-    
-    # Adjust time to the last time in each window
-    time_adjusted = time_col.iloc[window_size - 1:].reset_index(drop=True)
-    
-    # Combine time and rescaled processes
-    rescaled_series = pd.concat([time_adjusted, process_rolling], axis=1)
-    
-    return rescaled_series
-
-
-def classify_process_series(process_series, S, tol=1e-3):
-    """
-    Clasifica todos los procesos en una serie temporal.
-    
-    Esta función aplica classify_process_mode a cada vector de proceso en la serie,
-    proporcionando una clasificación batch eficiente.
-    
-    Parameters:
-    -----------
-    process_series : pd.DataFrame
-        DataFrame con columna 'Time' y columnas de proceso.
-    S : np.ndarray
-        Matriz estequiométrica.
-    tol : float, default=1e-3
-        Tolerancia para clasificación.
+    Args:
+        decompositions: List of decomposition results, each is list of process vectors
+        S: Stoichiometric matrix
+        semantic_partition: Optional SemanticPartition object
+        species_subset: Optional list of species (names or indices) to focus classification on
+        species_list: Optional list of species names (required if species_subset uses names)
+        tol: Tolerance
         
     Returns:
-    --------
-    list[list[str]]
-        Lista de clasificaciones, una por cada paso temporal.
+        Dict with:
+            'mode_distribution': Counter of process modes
+            'relation_distribution': Counter of semantic relations (if semantic_partition provided)
+            'all_parts': list of all part analyses
     """
-    if not isinstance(process_series, pd.DataFrame):
-        raise TypeError("process_series debe ser un DataFrame de pandas.")
+    mode_counts = Counter()
+    relation_counts = Counter()
+    all_parts = []
     
-    if not isinstance(S, np.ndarray):
-        raise TypeError("S debe ser un array de NumPy.")
+    for decomposition in decompositions:
+        for part in decomposition:
+            # Skip zero vectors
+            if np.all(np.abs(part) < tol):
+                continue
+            
+            # Analyze mode (with optional species subset)
+            mode = classify_process_mode(part, S, species_subset=species_subset, species_list=species_list, tol=tol)
+            mode_counts[mode[0]] += 1
+            
+            part_analysis = {
+                'v': part,
+                'mode': mode[0]
+            }
+            
+            # Analyze semantic relation if partition provided
+            if semantic_partition is not None:
+                Sv = S @ part
+                relation = classify_semantic_relation(Sv, semantic_partition, tol)
+                relation_counts[relation['type']] += 1
+                part_analysis['relation'] = relation['type']
+                part_analysis['relation_full'] = relation
+            
+            all_parts.append(part_analysis)
     
-    # Extract process vectors (exclude Time column)
-    if 'Time' in process_series.columns:
-        process_values = process_series.drop(columns=['Time'])
-    else:
-        process_values = process_series
-    
-    # Classify each process
-    classifications = []
-    for _, row in process_values.iterrows():
-        v = row.to_numpy()
-        cat = classify_process_mode(v, S, tol=tol)
-        classifications.append(cat)
-    
-    return classifications
-
-
-######################################################################################
-# 3. CONE ANALYSIS
-######################################################################################
-
-def compute_nullspace_vectors(S):
-    """
-    Calcula los vectores del espacio nulo de la matriz estequiométrica S.
-    
-    El espacio nulo consiste en todos los vectores v tales que Sv = 0,
-    representando modos estacionarios del sistema.
-    
-    Parameters:
-    -----------
-    S : np.ndarray
-        Matriz estequiométrica (especies × reacciones).
-        
-    Returns:
-    --------
-    list[np.ndarray]
-        Lista de vectores base del espacio nulo.
-    """
-    if not isinstance(S, np.ndarray):
-        raise TypeError("S debe ser un array de NumPy.")
-    
-    S_sym = sp.Matrix(S)
-    null_basis = S_sym.nullspace()
-    null_vectors = [np.array(v, dtype=float).flatten() for v in null_basis]
-    
-    return null_vectors
-
-
-def compute_feasible_region(S, grid_max=None, grid_res=5, auto_scale=True):
-    """
-    Calcula la región factible donde Sv >= 0 (región de no-consumo).
-    
-    Genera una cuadrícula de puntos en el espacio de procesos y filtra
-    aquellos que satisfacen Sv >= 0 para todas las especies.
-    
-    Parameters:
-    -----------
-    S : np.ndarray
-        Matriz estequiométrica (especies × reacciones).
-    grid_max : float, optional
-        Valor máximo para la cuadrícula. Si None, se calcula automáticamente.
-    grid_res : int, default=5
-        Resolución de la cuadrícula (puntos por dimensión).
-    auto_scale : bool, default=True
-        Si True, ajusta grid_max basándose en los vectores del espacio nulo.
-        
-    Returns:
-    --------
-    np.ndarray
-        Array de puntos factibles (shape: n_points × n_reactions).
-    """
-    if not isinstance(S, np.ndarray):
-        raise TypeError("S debe ser un array de NumPy.")
-    
-    n = S.shape[1]  # Number of reactions
-    
-    # Auto-scale grid_max if needed
-    if grid_max is None or auto_scale:
-        null_vectors = compute_nullspace_vectors(S)
-        if null_vectors:
-            base_max = np.max([np.max(np.abs(v)) for v in null_vectors])
-        else:
-            base_max = 1.0
-        
-        if grid_max is None:
-            grid_max = base_max
-        else:
-            grid_max = max(grid_max, base_max)
-    
-    # Generate grid
-    grid = np.linspace(0, grid_max, grid_res)
-    V = np.array(np.meshgrid(*([grid] * n))).T.reshape(-1, n)
-    
-    # Filter feasible points (Sv >= 0)
-    mask = np.all(S @ V.T >= -1e-10, axis=0)
-    feasible_points = V[mask]
-    
-    return feasible_points
-
-
-def classify_feasible_points(points, S, tol=1e-3):
-    """
-    Clasifica cada punto en la región factible.
-    
-    Parameters:
-    -----------
-    points : np.ndarray
-        Array de vectores de proceso (shape: n_points × n_reactions).
-    S : np.ndarray
-        Matriz estequiométrica.
-    tol : float, default=1e-3
-        Tolerancia para clasificación.
-        
-    Returns:
-    --------
-    list[str]
-        Lista de clasificaciones (una por punto).
-    """
-    if not isinstance(points, np.ndarray) or not isinstance(S, np.ndarray):
-        raise TypeError("points y S deben ser arrays de NumPy.")
-    
-    classifications = []
-    for v in points:
-        cat = classify_process_mode(v, S, tol=tol)
-        cat_str = ",".join(cat) if cat else "None"
-        classifications.append(cat_str)
-    
-    return classifications
-
-
-def analyze_cone(S, grid_max=None, grid_res=5, classify=True, tol=1e-3):
-    """
-    Análisis completo del cono definido por la matriz estequiométrica S.
-    
-    Combina el cálculo del espacio nulo, la región factible, y opcionalmente
-    la clasificación de procesos en una sola función conveniente.
-    
-    Parameters:
-    -----------
-    S : np.ndarray
-        Matriz estequiométrica (especies × reacciones).
-    grid_max : float, optional
-        Valor máximo para la cuadrícula.
-    grid_res : int, default=5
-        Resolución de la cuadrícula.
-    classify : bool, default=True
-        Si True, clasifica los puntos factibles.
-    tol : float, default=1e-3
-        Tolerancia para clasificación.
-        
-    Returns:
-    --------
-    dict
-        Diccionario con claves:
-        - 'nullspace_vectors': List[np.ndarray] - vectores del espacio nulo
-        - 'feasible_points': np.ndarray - puntos factibles
-        - 'Sv_values': np.ndarray - valores de S @ v para cada punto
-        - 'grid_max': float - valor máximo usado
-        - 'classifications': List[str] - clasificaciones (si classify=True)
-        - 'classification_counts': dict - conteo por categoría (si classify=True)
-    """
-    if not isinstance(S, np.ndarray):
-        raise TypeError("S debe ser un array de NumPy.")
-    
-    # Compute nullspace
-    nullspace_vectors = compute_nullspace_vectors(S)
-    
-    # Compute feasible region
-    feasible_points = compute_feasible_region(S, grid_max=grid_max, grid_res=grid_res, auto_scale=True)
-    
-    # Compute Sv for each point
-    if feasible_points.shape[0] > 0:
-        Sv_values = (S @ feasible_points.T).T
-    else:
-        Sv_values = np.array([])
-    
-    # Determine actual grid_max used
-    if grid_max is None:
-        if nullspace_vectors:
-            grid_max = np.max([np.max(np.abs(v)) for v in nullspace_vectors])
-        else:
-            grid_max = 1.0
-    
-    # Build result dictionary
     result = {
-        'nullspace_vectors': nullspace_vectors,
-        'feasible_points': feasible_points,
-        'Sv_values': Sv_values,
-        'grid_max': grid_max
+        'mode_distribution': dict(mode_counts),
+        'all_parts': all_parts,
+        'n_parts': len(all_parts)
     }
     
-    # Classify if requested
-    if classify and feasible_points.shape[0] > 0:
-        classifications = classify_feasible_points(feasible_points, S, tol=tol)
-        result['classifications'] = classifications
-        
-        # Count classifications
-        classification_counts = Counter(classifications)
-        result['classification_counts'] = dict(classification_counts)
+    if semantic_partition is not None:
+        result['relation_distribution'] = dict(relation_counts)
     
     return result
 
 
 ######################################################################################
-# 4. UTILITIES
-######################################################################################
-
-def get_intervals_by_category(times, classifications, category):
-    """
-    Extrae intervalos temporales donde los procesos pertenecen a una categoría específica.
-    
-    Esta función identifica períodos continuos donde los procesos están clasificados
-    en la categoría dada, útil para visualización y análisis de dinámicas.
-    
-    Parameters:
-    -----------
-    times : np.ndarray or pd.Series
-        Timestamps para cada proceso.
-    classifications : list[list[str]] or list[str]
-        Clasificaciones para cada proceso. Puede ser:
-        - List[List[str]]: clasificaciones múltiples por proceso
-        - List[str]: clasificación única (string con categorías separadas por comas)
-    category : str
-        Categoría a buscar (e.g., "Cognitive Control", "Problem").
-        
-    Returns:
-    --------
-    list[tuple]
-        Lista de intervalos (start_time, end_time) donde se encuentra la categoría.
-        
-    Examples:
-    ---------
-    >>> times = np.array([0, 1, 2, 3, 4, 5])
-    >>> classifications = [["Problem"], ["Problem"], ["Cognitive Control"], 
-    ...                    ["Cognitive Control"], ["Problem"], ["Problem"]]
-    >>> intervals = get_intervals_by_category(times, classifications, "Cognitive Control")
-    >>> # Returns: [(2, 4)]
-    """
-    if isinstance(times, pd.Series):
-        times = times.to_numpy()
-    
-    # Create mask for category presence
-    mask = np.array([category in cat if isinstance(cat, list) else category in cat 
-                     for cat in classifications])
-    
-    # Extract intervals
-    intervals = []
-    in_interval = False
-    start = None
-    
-    for t, flag in zip(times, mask):
-        if flag and not in_interval:
-            in_interval = True
-            start = t
-        elif not flag and in_interval:
-            in_interval = False
-            intervals.append((start, t))
-    
-    # Close last interval if still open
-    if in_interval:
-        intervals.append((start, times[-1]))
-    
-    return intervals
-
-
-def export_classified_processes(process_data, S, filepath, 
-                                format='excel', 
-                                include_Sv=True,
-                                separate_sheets=True):
-    """
-    Exporta procesos clasificados a Excel o CSV.
-    
-    Parameters:
-    -----------
-    process_data : pd.DataFrame
-        DataFrame con vectores de proceso (puede incluir columna 'Time').
-    S : np.ndarray
-        Matriz estequiométrica para calcular Sv.
-    filepath : str
-        Ruta del archivo de salida.
-    format : str, default='excel'
-        Formato de salida: 'excel' o 'csv'.
-    include_Sv : bool, default=True
-        Si True, incluye columnas S*v.
-    separate_sheets : bool, default=True
-        Si True (solo Excel), crea hojas separadas por categoría.
-        
-    Returns:
-    --------
-    str
-        Ruta del archivo guardado.
-    """
-    if not isinstance(process_data, pd.DataFrame):
-        raise TypeError("process_data debe ser un DataFrame.")
-    
-    if not isinstance(S, np.ndarray):
-        raise TypeError("S debe ser un array de NumPy.")
-    
-    # Extract process vectors
-    if 'Time' in process_data.columns:
-        process_values = process_data.drop(columns=['Time'])
-    else:
-        process_values = process_data
-    
-    # Classify processes
-    process_types = []
-    for _, row in process_values.iterrows():
-        v = row.to_numpy()
-        cat = classify_process_mode(v, S)
-        cat_str = ",".join(cat) if cat else "None"
-        process_types.append(cat_str)
-    
-    # Create output DataFrame
-    output_df = process_data.copy()
-    
-    # Add Sv columns if requested
-    if include_Sv:
-        Sv_matrix = process_values.apply(lambda v: S @ v.to_numpy(), axis=1)
-        Sv_expanded = pd.DataFrame(Sv_matrix.tolist(),
-                                   columns=[f"S*v_{i+1}" for i in range(S.shape[0])],
-                                   index=process_data.index)
-        output_df = pd.concat([output_df, Sv_expanded], axis=1)
-    
-    # Add classification column
-    output_df["Process_Type"] = process_types
-    
-    # Create output directory if needed
-    os.makedirs(os.path.dirname(filepath) if os.path.dirname(filepath) else '.', exist_ok=True)
-    
-    # Export based on format
-    if format.lower() == 'excel':
-        with pd.ExcelWriter(filepath, engine="openpyxl") as writer:
-            # Main sheet with all data
-            output_df.to_excel(writer, sheet_name="All_Processes", index=False)
-            
-            # Separate sheets by category if requested
-            if separate_sheets:
-                for category, group in output_df.groupby("Process_Type", sort=False):
-                    # Excel sheet names limited to 31 characters
-                    sheet_name = category[:31]
-                    group.to_excel(writer, sheet_name=sheet_name, index=False)
-        
-        print(f"Procesos clasificados guardados en: {filepath}")
-    
-    elif format.lower() == 'csv':
-        output_df.to_csv(filepath, index=False)
-        print(f"Procesos clasificados guardados en: {filepath}")
-    
-    else:
-        raise ValueError(f"Formato no soportado: {format}. Use 'excel' o 'csv'.")
-    
-    return filepath
-
-
-######################################################################################
-# SUMMARY
+# EXPORTS
 ######################################################################################
 
 __all__ = [
     # Process Classification
     'classify_process_mode',
     'is_cognitive_domain',
-    'classify_response_to_disturbance',
     
-    # Time Series Processing
-    'rescale_process_time_series',
-    'classify_process_series',
+    # Semantic Analysis
+    'decompose_process',
+    'compute_semantic_impact',
+    'classify_semantic_relation',
+    'analyze_process_semantic',
     
-    # Cone Analysis
-    'compute_nullspace_vectors',
-    'compute_feasible_region',
-    'classify_feasible_points',
-    'analyze_cone',
-    
-    # Utilities
-    'get_intervals_by_category',
-    'export_classified_processes'
+    # Decomposition
+    'random_decompose_process',
+    'analyze_decomposition_statistics'
 ]

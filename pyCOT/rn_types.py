@@ -108,7 +108,7 @@ class Reaction:
     def __str__(self) -> str:
         support_str = " + ".join([edge.print_term() for edge in self.support_edges()])
         products_str = " + ".join([edge.print_term() for edge in self.products_edges()])
-        return f"Reaction {self.name()} (rate = {self.node.rate}): {support_str} -> {products_str}"
+        return f"Reaction {self.name()} (rate = {self.node.rate}): {support_str} => {products_str}"
     
 
 

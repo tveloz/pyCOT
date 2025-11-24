@@ -1,8 +1,4 @@
-r1:	G+R=>V+R;
-r2:	V=>2G;
-r3:	V=>N+V;
-r4:	N+R=>N+V;
-r5:	N+G=>N+R;
-r6:	2G=>;
-r7:	2N=>;
-r8:	2V=>;
+r3:	A_v+D_A=>A_v+D_A+iD_A;
+r4:	D_B+B_v=>D_B+B_v+iD_B;
+r15:	2iD_A=>;
+r16:	2iD_B=>;

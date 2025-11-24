@@ -35,7 +35,8 @@ file_path = 'Txt/Farm.txt'
 #file_path = 'networks/RandomAlife/RN_Ns_40_Norg_17_id_564.txt'
 # file_path = 'networks/Navarino/RN_IN_05.txt'
 # file_path = 'networks/Marine_Ecosystem/Las_Cruces_251021.txt'
-# file_path = 'networks/Riverland_model/cause_driven_conflict.txt'
+file_path = 'networks/Conflict_Theory/conflict_toy_model0.txt'
+file_path = 'networks/Conflict_Theory/cause_driven_conflict_gov.txt'
 
 
 
@@ -61,6 +62,8 @@ print("\nSemi-organizations:\n", all_semi_organizations_sets)
 
 # === Organizations ===
 all_organizations = results['elementary_organizations']
+# === Organizations ===
+all_organizations = results['elementary_organizations']
 all_organizations_sets = []
 for org in all_organizations:
     if hasattr(org, "combined_closure"):  # Es un Organization
@@ -70,38 +73,74 @@ for org in all_organizations:
     else:
         sset = set()  # fallback por seguridad
     all_organizations_sets.append(sset)
-orgs_sets = sorted(all_organizations_sets, key=len)
-print("\nOrganizations:\n")
-for org in all_organizations_sets:
+
+# ========================================
+# FILTER: Keep only orgs with both A and B groups active
+# ========================================
+def has_both_groups(org_set):
+    """
+    Check if organization contains at least one species from group A 
+    (A_p or A_v) AND at least one from group B (B_p or B_v)
+    """
+    has_A = any(sp in org_set for sp in ['A_p', 'A_v'])
+    has_B = any(sp in org_set for sp in ['B_p', 'B_v'])
+    return has_A and has_B
+
+# Filter organizations
+filtered_orgs_sets = [org for org in all_organizations_sets if has_both_groups(org)]
+filtered_orgs_sets = sorted(filtered_orgs_sets, key=len)
+
+print(f"\nTotal organizations: {len(all_organizations_sets)}")
+print(f"Organizations with both A and B groups: {len(filtered_orgs_sets)}")
+print("\nFiltered Organizations (both groups active):\n")
+for org in filtered_orgs_sets:
     print(org)
+
+# Use filtered list for subsequent analysis
+orgs_sets = filtered_orgs_sets
+hierarchy_visualize_html(filtered_orgs_sets)
+# all_organizations_sets = []
+# for org in all_organizations:
+#     if hasattr(org, "combined_closure"):  # Es un Organization
+#         sset = set(sp.name for sp in org.combined_closure)
+#     elif hasattr(org, "closure_species"):  # Es un ElementarySO
+#         sset = set(sp.name for sp in org.closure_species)
+#     else:
+#         sset = set()  # fallback por seguridad
+#     all_organizations_sets.append(sset)
+# orgs_sets = sorted(all_organizations_sets, key=len)
+# print("\nOrganizations:\n")
+# for org in all_organizations_sets:
+#     print(org)
 # ========================================
 # 4. SELECTED ORGANIZATION
 # ========================================  
 # Verificar si hay organizaciones antes de procesar
-if not orgs_sets:
-    print("\nNo organizations were found in the network.")
-    # print("The only organization is the empty set ∅.")
-    
-    # Visualización básica de la red principal aunque no haya organizaciones
-    rn_visualize_html(rn, filename="rn1.html")
-    
-else: # Si hay organizaciones, proceder con el análisis de la organización seleccionada con el índice n
-    n = 1                       # Index of the organization to analyze
-    org_n = [orgs_sets[n]]       # Organization with index n
-    print(f"\norg_{n} =", org_n) 
 
-    other_orgs = [s for s in orgs_sets if s != org_n[0]] # Set of other organizations, excluding the selected organization
-    print("\nother_orgs =", other_orgs)
+# if not orgs_sets:
+#     print("\nNo organizations were found in the network.")
+#     # print("The only organization is the empty set ∅.")
+    
+#     # Visualización básica de la red principal aunque no haya organizaciones
+#     rn_visualize_html(rn, filename="rn1.html")
+    
+# else: # Si hay organizaciones, proceder con el análisis de la organización seleccionada con el índice n
+#     n = 1                       # Index of the organization to analyze
+#     org_n = [orgs_sets[n]]       # Organization with index n
+#     print(f"\norg_{n} =", org_n) 
 
-    # ========================================
-    # 5. CREATE SUBNETWORK FOR THE SELECTED ORGANIZATION
-    # ======================================== 
-    output_file = "sub_network.txt"
-    reactions_subnet = rn.sub_reaction_network(org_n[0]).stoichiometry_matrix().reactions
-    print("Triggered Reactions =", reactions_subnet)
-    generate_subnetwork_txt(org_n[0], reactions_subnet, rn, file_name=output_file)
-    sub_file_path = f"Txt_sub_network/{output_file}"
-    rn_sub = read_txt(sub_file_path)
+#     other_orgs = [s for s in orgs_sets if s != org_n[0]] # Set of other organizations, excluding the selected organization
+#     print("\nother_orgs =", other_orgs)
+
+#     # ========================================
+#     # 5. CREATE SUBNETWORK FOR THE SELECTED ORGANIZATION
+#     # ======================================== 
+#     output_file = "sub_network.txt"
+#     reactions_subnet = rn.sub_reaction_network(org_n[0]).stoichiometry_matrix().reactions
+#     print("Triggered Reactions =", reactions_subnet)
+#     generate_subnetwork_txt(org_n[0], reactions_subnet, rn, file_name=output_file)
+#     sub_file_path = f"Txt_sub_network/{output_file}"
+#     rn_sub = read_txt(sub_file_path)
 
     # ========================================
     # 6. VISUALIZATION
@@ -113,7 +152,7 @@ else: # Si hay organizaciones, proceder con el análisis de la organización sel
     #         ("green", org_n),       # Organization selected in green 
     #         ("yellow", other_orgs)  # Other organizations in yellow
     #     ])
-    hierarchy_visualize_html(all_organizations_sets)
+    #hierarchy_visualize_html(all_organizations_sets)
     # Visualize the reaction network in HTML format with the selected organization highlighted in green
     # rn_visualize_html(rn, lst_color_spcs=[("green", org_n[0] )], filename="rn1.html")
 
