@@ -15,6 +15,7 @@ Part of the Challenge-Centered Semantic Pipeline (refactored architecture)
 
 
 import numpy as np
+import pandas as pd
 from typing import List, Dict, Tuple, Optional, Union, Callable
 from dataclasses import dataclass, field
 from collections import Counter
@@ -129,10 +130,10 @@ def classify_process_mode(
     Classify operational mode of a process (context-dependent).
     
     Process modes based on stoichiometric effect Sv:
-    - Stationary Mode: Sv ≈ 0 (balanced production/consumption)
-    - Overproduction Mode: Sv ≥ 0 with some > 0 (net production)
+    - Stationary Mode: Sv â‰ˆ 0 (balanced production/consumption)
+    - Overproduction Mode: Sv â‰¥ 0 with some > 0 (net production)
     - Challenge Mode: Sv has mixed signs (some up, some down)
-    - Problem Mode: Sv ≤ 0 with some < 0 (net consumption)
+    - Problem Mode: Sv â‰¤ 0 with some < 0 (net consumption)
     
     Context-dependency: Classification is relative to species_subset if provided,
     allowing category-specific analysis (e.g., "overproduction for peace category").
@@ -232,22 +233,22 @@ def is_cognitive_domain(
     return is_maintaining and is_complete
 def classify_response_to_disturbance(v, S, v_pert=None, x_pert=None, tol=1e-3, verbose=False):
     """
-    Clasifica la respuesta de un proceso a una perturbación.
+    Clasifica la respuesta de un proceso a una perturbaciÃ³n.
     
-    Analiza cómo un proceso v responde a una perturbación, que puede ser:
-    - v_pert: Una perturbación en el espacio de procesos
-    - x_pert: Una perturbación en el espacio de estados
+    Analiza cÃ³mo un proceso v responde a una perturbaciÃ³n, que puede ser:
+    - v_pert: Una perturbaciÃ³n en el espacio de procesos
+    - x_pert: Una perturbaciÃ³n en el espacio de estados
     
     Args:
         v (np.ndarray): El vector de proceso de respuesta.
-        S (np.ndarray): La matriz estequiométrica.
-        v_pert (np.ndarray, optional): Perturbación en el espacio de procesos.
-        x_pert (np.ndarray, optional): Perturbación en el espacio de estados.
-        tol (float): Tolerancia para comparaciones numéricas.
-        verbose (bool): Si True, imprime información de debug.
+        S (np.ndarray): La matriz estequiomÃ©trica.
+        v_pert (np.ndarray, optional): PerturbaciÃ³n en el espacio de procesos.
+        x_pert (np.ndarray, optional): PerturbaciÃ³n en el espacio de estados.
+        tol (float): Tolerancia para comparaciones numÃ©ricas.
+        verbose (bool): Si True, imprime informaciÃ³n de debug.
         
     Returns:
-        list[str]: Clasificación de la respuesta a la perturbación.
+        list[str]: ClasificaciÃ³n de la respuesta a la perturbaciÃ³n.
         
     Raises:
         TypeError: Si los tipos de entrada no son correctos.
@@ -257,13 +258,13 @@ def classify_response_to_disturbance(v, S, v_pert=None, x_pert=None, tol=1e-3, v
         raise TypeError("El input 'v_pert', si se proporciona, debe ser un array de NumPy.")
     
     if v_pert is not None and v_pert.shape[0] != S.shape[1]:
-        raise ValueError("El input 'v_pert' debe tener la misma dimensión que el número de reacciones en 'S'.")
+        raise ValueError("El input 'v_pert' debe tener la misma dimensiÃ³n que el nÃºmero de reacciones en 'S'.")
     
     if x_pert is not None and not isinstance(x_pert, np.ndarray):
         raise TypeError("El input 'x_pert', si se proporciona, debe ser un array de NumPy.")
     
     if x_pert is not None and x_pert.shape[0] != S.shape[0]:
-        raise ValueError("El input 'x_pert' debe tener la misma dimensión que el número de especies en 'S'.")
+        raise ValueError("El input 'x_pert' debe tener la misma dimensiÃ³n que el nÃºmero de especies en 'S'.")
 
     v_mode = classify_process_mode(v, S, tol=tol)
     
@@ -1113,6 +1114,161 @@ def _detect_threshold_sign_change(
 
 
 ######################################################################################
+# UTILITY FUNCTIONS FOR VISUALIZATION
+######################################################################################
+
+def get_intervals_by_category(
+    times: np.ndarray,
+    process_types: List[str],
+    target_category: str
+) -> List[Tuple[float, float]]:
+    """
+    Extract time intervals where process type matches target category.
+    
+    Args:
+        times: Array of time values
+        process_types: List of process type strings for each time point
+        target_category: Category to find intervals for
+        
+    Returns:
+        List of (start_time, end_time) tuples
+    """
+    intervals = []
+    in_interval = False
+    start_time = None
+    
+    for i, ptype in enumerate(process_types):
+        if target_category in ptype:
+            if not in_interval:
+                # Start new interval
+                start_time = times[i]
+                in_interval = True
+        else:
+            if in_interval:
+                # End current interval
+                intervals.append((start_time, times[i-1] if i > 0 else start_time))
+                in_interval = False
+    
+    # Close final interval if still open
+    if in_interval and start_time is not None:
+        intervals.append((start_time, times[-1]))
+    
+    return intervals
+
+
+def analyze_cone(
+    S: np.ndarray,
+    grid_max: Optional[float] = None,
+    grid_res: int = 20,
+    classify: bool = True,
+    tol: float = 1e-6
+) -> Dict:
+    """
+    Analyze the cone of feasible process vectors.
+    
+    Samples the process cone to find feasible vectors, computes nullspace,
+    and optionally classifies each point.
+    
+    Args:
+        S: Stoichiometric matrix (n_species x n_reactions)
+        grid_max: Maximum value for grid sampling (auto-computed if None)
+        grid_res: Resolution of grid sampling
+        classify: Whether to classify each point
+        tol: Tolerance for numerical operations
+        
+    Returns:
+        Dictionary with:
+            - feasible_points: List of feasible process vectors
+            - nullspace_vectors: Basis for nullspace
+            - classifications: List of classifications (if classify=True)
+            - grid_max: Actual grid_max used
+    """
+    n_reactions = S.shape[1]
+    
+    # Auto-compute grid_max if not provided
+    if grid_max is None:
+        grid_max = 2.0  # Default reasonable value
+    
+    # Sample process vectors in positive orthant
+    # Simple uniform sampling
+    step = grid_max / grid_res
+    grid_1d = np.arange(0, grid_max + step, step)
+    
+    feasible_points = []
+    classifications = []
+    
+    # For computational efficiency, sample a subset rather than full grid
+    # Use random sampling in the positive orthant
+    n_samples = min(1000, grid_res ** min(n_reactions, 3))
+    
+    np.random.seed(42)  # For reproducibility
+    for _ in range(n_samples):
+        v = np.random.uniform(0, grid_max, n_reactions)
+        
+        # Check if non-negative (feasible in positive orthant)
+        if np.all(v >= -tol):
+            feasible_points.append(v)
+            
+            if classify:
+                mode, _ = classify_process_mode(v, S, tol=tol)
+                classifications.append(mode)
+    
+    # Compute nullspace of S
+    try:
+        _, _, Vt = np.linalg.svd(S)
+        rank = np.linalg.matrix_rank(S, tol=tol)
+        nullspace_vectors = Vt[rank:, :].T
+    except:
+        nullspace_vectors = np.array([])
+    
+    return {
+        'feasible_points': feasible_points,
+        'nullspace_vectors': nullspace_vectors,
+        'classifications': classifications if classify else [],
+        'grid_max': grid_max,
+        'n_samples': len(feasible_points)
+    }
+
+
+def rescale_process_time_series(
+    df: pd.DataFrame,
+    window_size: int = 1
+) -> pd.DataFrame:
+    """
+    Rescale/resample process time series by averaging over windows.
+    
+    Args:
+        df: DataFrame with Time column and process data
+        window_size: Size of rolling window for averaging
+        
+    Returns:
+        Resampled DataFrame
+    """
+    if window_size <= 1:
+        return df
+    
+    # Create windowed averages
+    numeric_cols = df.select_dtypes(include=[np.number]).columns
+    numeric_cols = [col for col in numeric_cols if col != 'Time']
+    
+    if len(numeric_cols) == 0:
+        return df
+    
+    # Compute rolling means
+    result_data = []
+    for i in range(0, len(df), window_size):
+        window_data = df.iloc[i:i+window_size]
+        
+        row_data = {'Time': window_data['Time'].iloc[0]}
+        for col in numeric_cols:
+            row_data[col] = window_data[col].mean()
+        
+        result_data.append(row_data)
+    
+    return pd.DataFrame(result_data)
+
+
+######################################################################################
 # EXPORTS
 ######################################################################################
 
@@ -1140,5 +1296,10 @@ __all__ = [
     'analyze_full_multiscale_robustness',   # Mode 3
     
     # Threshold detection
-    'detect_thresholds'
+    'detect_thresholds',
+    
+    # Utility functions for visualization
+    'get_intervals_by_category',
+    'analyze_cone',
+    'rescale_process_time_series'
 ]

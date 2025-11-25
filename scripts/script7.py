@@ -25,8 +25,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pyCOT.io.functions import read_txt
 from pyCOT.simulations import *
-from pyCOT.plot_dynamics import *      # Updated: uses refactored version
-from pyCOT.process_analysis import *   # New: explicit import of analysis functions
+from pyCOT.plot_dynamics import *
+from pyCOT.plot_process_analysis import *      # Updated: uses refactored version
+from pyCOT.process_analyzer import *   # New: explicit import of analysis functions
 
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT
@@ -129,34 +130,9 @@ plot_series_ode(
 print("✓ Time series plot generated")
 print()
 
-# ========================================
-# 6. OPTIONAL: QUICK PROCESS CLASSIFICATION CHECK
-# ========================================
-print("="*60)
-print("QUICK CLASSIFICATION CHECK")
-print("="*60)
-
-# Classify a few sample processes to verify the system
-print("Classifying first 5 flux vectors...")
-sample_classifications = classify_process_series(flux_vector.head(5), S)
-for i, cls in enumerate(sample_classifications):
-    print(f"  Step {i}: {cls}")
-print()
-
-# Check cognitive domain representation
-all_classifications = classify_process_series(flux_vector, S)
-cd_count = sum(1 for c in all_classifications if 'Cognitive Domain' in c[0])
-sm_count = sum(1 for c in all_classifications if 'Stationary Mode' in c[0])
-pb_count = sum(1 for c in all_classifications if 'Problem' in c[0])
-
-print(f"Overall classification summary (n={len(all_classifications)}):")
-print(f"  Cognitive Domain: {cd_count:4d} ({100*cd_count/len(all_classifications):5.1f}%)")
-print(f"  Stationary Mode:   {sm_count:4d} ({100*sm_count/len(all_classifications):5.1f}%)")
-print(f"  Problem:           {pb_count:4d} ({100*pb_count/len(all_classifications):5.1f}%)")
-print()
 
 # ========================================
-# 7. MULTI-SCALE ANALYSIS: Process Type Proportions Over Time
+# 6. MULTI-SCALE ANALYSIS: Process Type Proportions Over Time
 # ========================================
 print("="*60)
 print("MULTI-SCALE TEMPORAL ANALYSIS")
@@ -196,7 +172,7 @@ print(results_df)
 print()
 
 # ========================================
-# 8. SUMMARY AND INSIGHTS
+# 7. SUMMARY AND INSIGHTS
 # ========================================
 print("="*60)
 print("SUMMARY")
@@ -232,45 +208,3 @@ print("="*60)
 print("✅ SCRIPT COMPLETED SUCCESSFULLY")
 print("="*60)
 
-# ========================================
-# 9. OPTIONAL: ADDITIONAL ANALYSIS WITH NEW TOOLS
-# ========================================
-# You can now use the new process_analysis functions directly:
-
-# Example 1: Rescale to a specific window
-if False:  # Set to True to run
-    print("\n" + "="*60)
-    print("ADDITIONAL ANALYSIS: Rescaled Time Series")
-    print("="*60)
-    
-    rescaled_flux = rescale_process_time_series(flux_vector, window_size=100)
-    print(f"Original flux length: {len(flux_vector)}")
-    print(f"Rescaled flux length: {len(rescaled_flux)}")
-    print(rescaled_flux.head())
-
-# Example 2: Export classified processes
-if False:  # Set to True to run
-    print("\n" + "="*60)
-    print("EXPORTING CLASSIFIED PROCESSES")
-    print("="*60)
-    
-    export_classified_processes(
-        flux_vector,
-        S,
-        filepath="./results/classified_processes.xlsx",
-        format='excel',
-        include_Sv=True,
-        separate_sheets=True
-    )
-    print("✓ Exported to ./results/classified_processes.xlsx")
-
-# Example 3: Cone analysis
-if False:  # Set to True to run
-    print("\n" + "="*60)
-    print("CONE STRUCTURE ANALYSIS")
-    print("="*60)
-    
-    cone_result = analyze_cone(S, grid_max=5, grid_res=15, classify=True)
-    print(f"Nullspace dimension: {len(cone_result['nullspace_vectors'])}")
-    print(f"Feasible points: {cone_result['feasible_points'].shape[0]}")
-    print(f"Classification breakdown: {cone_result['classification_counts']}")
