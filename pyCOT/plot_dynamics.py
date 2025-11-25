@@ -29,7 +29,7 @@ sys.stdout.reconfigure(encoding='utf-8') # Reconfigures the standard output to u
 import tempfile                          # Provides utilities for creating temporary files and directories.
 
 from pyCOT.simulations import *
-from pyCOT.process_analysis import *
+
 
 ######################################################################################
 # Plots the time series of ODE concentrations and abstractions
