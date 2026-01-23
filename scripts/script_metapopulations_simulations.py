@@ -8,8 +8,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 
 from pyCOT.io.functions import read_txt
-from pyCOT.simulations import *
-from pyCOT.plot_dynamics_old import * 
+from pyCOT.simulations.metapopulation import *
+from pyCOT.plot_dynamics import * 
 
 ################################################################################################# 
 # Ejemplo de uso  

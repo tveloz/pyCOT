@@ -16,7 +16,7 @@ from pyCOT.io.functions import read_txt
 from pyCOT.plot_dynamics import plot_series_ode
 from pyCOT.simulations import *
 from pyCOT.plot_dynamics import *
-from pyCOT.abstractions import abstraction_ordinary
+from pyCOT.simulations.abstractions import abstraction_ordinary
 
 # ========================================
 # 2. CUSTOM KINETIC LAWS DEFINITION

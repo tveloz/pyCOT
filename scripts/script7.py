@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Script 8 (REFACTORED): Simulation with Process Classification and Flux Combination Histogram
+Script 7 (REFACTORED): Simulation with Process Classification and Flux Combination Histogram
 
 This script demonstrates:
 1. Loading a reaction network from a text file
@@ -24,7 +24,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pyCOT.io.functions import read_txt
-from pyCOT.simulations import *
+from pyCOT.simulations.ode import *
 from pyCOT.plot_dynamics import *
 from pyCOT.plot_process_analysis import *      # Updated: uses refactored version
 from pyCOT.process_analyzer import *   # New: explicit import of analysis functions

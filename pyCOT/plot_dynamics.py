@@ -10,7 +10,7 @@ import webbrowser
 
 from collections import Counter, defaultdict
 from itertools import combinations
-from matplotlib.colors import to_hex
+from matplotlib.colors import to_hex 
 from matplotlib.widgets import Slider, Button
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
@@ -28,7 +28,11 @@ import sys                               # Provides access to system-specific pa
 sys.stdout.reconfigure(encoding='utf-8') # Reconfigures the standard output to use UTF-8 encoding, ensuring proper handling of special characters.
 import tempfile                          # Provides utilities for creating temporary files and directories.
 
-from pyCOT.simulations import *
+from pyCOT.simulations.ode import *
+from pyCOT.simulations.metapopulation import *
+from pyCOT.simulations.spatial import *
+
+
 
 
 ######################################################################################
@@ -85,7 +89,7 @@ def plot_diffusion_time_series_2D(time, concentration_data, grid_shape, colors=N
                                  xlabel="Time", ylabel="Concentration", 
                                  main_title="Time Evolution of Concentration Profiles",
                                  legend_title="Species", cell_prefix='G',
-                                 save_figure=True, filename="diffusion_time_series_2D.png"):
+                                 save_figure=True, filename="diffusion_time_series_2D.png", show=True):
     """
     Plot 2D time series of concentration data from diffusion simulation and optionally save the figure.
     
@@ -184,14 +188,14 @@ def plot_diffusion_time_series_2D(time, concentration_data, grid_shape, colors=N
         # Save the figure with high quality
         plt.savefig(filepath, dpi=300, bbox_inches='tight')
         print(f"Figure saved as: {filepath}")
-    
-    plt.show()
+    if show:
+        plt.show()
 
 # Function to plot heatmaps for a given species at selected time points 
 def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None, 
                                 main_title="Evolution of Concentration Profiles", 
                                 cmap='viridis', figsize_multiplier=3, bar_label="Concentration",
-                                save_figure=True, filename="heatmaps_all_species_2D.png"):
+                                save_figure=True, filename="heatmaps_all_species_2D.png", show=True):
     """
     Plot heatmaps for all species at multiple time points in a single figure and optionally save the figure.
     
@@ -316,8 +320,8 @@ def plot_heatmaps_all_species_2D(t, X, species_names=None, time_indices=None,
         # Save the figure with high quality
         plt.savefig(filepath, dpi=300, bbox_inches='tight')
         print(f"Figure saved as: {filepath}")
-    
-    plt.show()
+    if show:
+        plt.show()
 
 # Función para animar los mapas de calor con controles interactivos
 def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_title="Heatmaps for All Species", slider_label="Time", bar_label="Concentration"):
@@ -3032,8 +3036,8 @@ def plot_vector_metapopulation_series_concentration(
     # Cálculo automático de columnas y filas (cuadrícula óptima)
     # --------------------------------------------------
     if cols is None:
-        cols = math.ceil(math.sqrt(n_pairs))     # columnas lo más cuadradas posible
-        rows = math.ceil(n_pairs / cols)
+        cols = int(np.ceil(np.sqrt(n_pairs)))     # columnas lo más cuadradas posible
+        rows = int(np.ceil(n_pairs / cols))
     # --------------------------------------------------
 
     fig, axes = plt.subplots(
@@ -3131,8 +3135,8 @@ def plot_vector_metapopulation_series_flux(
     # Calcular automáticamente número de filas y columnas
     # --------------------------------------------------
     if cols is None:
-        cols = math.ceil(math.sqrt(n_pairs))
-    rows = math.ceil(n_pairs / cols)
+        cols = int(np.ceil(np.sqrt(n_pairs)))
+    rows = int(np.ceil(n_pairs / cols))
 
     fig, axes = plt.subplots(
         rows,

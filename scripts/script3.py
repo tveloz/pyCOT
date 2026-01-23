@@ -37,7 +37,7 @@ file_path = 'Txt/Farm.txt'
 # file_path = 'networks/Marine_Ecosystem/Las_Cruces_251021.txt'
 file_path = 'networks/Conflict_Theory/conflict_toy_model0.txt'
 file_path = 'networks/Conflict_Theory/cause_driven_conflict_gov.txt'
-
+file_path = 'networks/Conflict_Theory/Resource_Scarcity_Toy_Model2.txt'
 
 
 rn = read_txt(file_path) 

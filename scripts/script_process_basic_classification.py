@@ -29,7 +29,7 @@ import matplotlib.patches as mpatches
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pyCOT.io.functions import read_txt
-from pyCOT.simulations import simulation
+from pyCOT.simulations.ode import simulation
 from pyCOT.process_analyzer import classify_process_mode, is_cognitive_domain, classify_response_to_disturbance
 from pyCOT.semantic_partition import *
 # Create output directory

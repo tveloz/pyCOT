@@ -6,6 +6,10 @@ from re import findall, compile
 from typing import Literal
 """RN_Rustworkx
 Reaction Network module for pyCOT."""
+# Add the root directory to the PYTHONPATH
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
 from rustworkx import PyDiGraph, InvalidNode

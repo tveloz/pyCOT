@@ -16,7 +16,7 @@ sys.stdout.reconfigure(encoding='utf-8')
     
 import tempfile
 
-from pyCOT.simulations import build_reaction_dict
+from pyCOT.simulations.core import build_reaction_dict
 
 ##################################################################
 # # Plot a reaction network in HTML:

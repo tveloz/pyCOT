@@ -28,7 +28,7 @@ import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pyCOT.io.functions import read_txt
-from pyCOT.simulations import simulation
+from pyCOT.simulations.ode import *
 from pyCOT.semantic_partition import define_semantic_categories
 from pyCOT.process_structure import (
     aggregate_processes,

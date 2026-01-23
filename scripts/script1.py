@@ -21,6 +21,7 @@ file_path = 'Txt/autopoietic.txt'  # Change this path according to the desired f
 # file_path = 'Txt/SEIR.txt' 
 # file_path = 'Txt/2007Dittrich-Speroni_E.coli.txt'
 # file_path = 'networks/testing/Lotka_Volterra.txt'  
+file_path = 'networks/Conflict_Theory/Resource_Scarcity_Toy_Model2.txt'
 rn = read_txt(file_path)  # Creates the variable rn containing an object of ReactionNetwork class
 
 rn_comments = rn.reaction_comments
@@ -110,13 +111,13 @@ print(rn.products_matrix())
 # 7. REACTANTS AND PRODUCTS OF EACH REACTION
 # ========================================
 # Print the reactants and products of a reaction
-print("-"*100)
-reaction = rn.get_reaction('R1')
-print(f"Reactants and products of {reaction.name()}")
-reactants = [edge.species_name for edge in reaction.support_edges()]
-print(reactants)
-products = [edge.species_name for edge in reaction.products_edges()]
-print(products)
+# print("-"*100)
+# reaction = rn.get_reaction('R1')
+# print(f"Reactants and products of {reaction.name()}")
+# reactants = [edge.species_name for edge in reaction.support_edges()]
+# print(reactants)
+# products = [edge.species_name for edge in reaction.products_edges()]
+# print(products)
 
 # Print reactants and products of all reactions
 print("-"*100)

@@ -28,7 +28,7 @@ from pyCOT.process_analyzer import (
     analyze_cone,
     rescale_process_time_series
 )
-from pyCOT.simulations import simulation
+from pyCOT.simulations import *
 
 # For heatmaps and advanced plots
 try:

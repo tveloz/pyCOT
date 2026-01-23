@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python scripts/script_process_multiscale_modes_test.py:*)",
+      "Bash(python3:*)",
+      "Bash(where:*)",
+      "Bash(C:UsershpAppDataLocalPythonbinpython.exe scripts/script_process_multiscale_modes_test.py)",
+      "Bash(py scripts/script_process_multiscale_modes_test.py:*)",
+      "Bash(py -c:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
