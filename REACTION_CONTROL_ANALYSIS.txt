@@ -1,0 +1,335 @@
+REACTION CONTROL MECHANISM ANALYSIS
+=====================================
+Analysis Date: 2026-01-27
+Script: script_two_budget_adaptive.py
+
+This document clarifies which reactions use mass action kinetics vs budget allocation,
+identifies implementation errors, and explains the steady state mechanism.
+
+=====================================
+ORIGINAL MODEL SPECIFICATION
+=====================================
+
+From Resource_Community_Insurgency_Loops_model3.txt, the reactions are specified as
+standard chemical reactions with mass action kinetics:
+
+r25: V + T => ;          (Trust destruction by violence)
+r26: Gov => ;            (Governance decay/corruption)
+r31: V => ;              (Violence decay)
+
+These reactions have NO indication of budget control - they are simple decay/interaction reactions.
+
+
+=====================================
+1. REACTION CLASSIFICATION
+=====================================
+
+CATEGORY A: PURE MASS ACTION (Autonomous Kinetics)
+---------------------------------------------------
+These reactions depend ONLY on reactant concentrations with rate = k × [reactants]
+
+r1:  SL => RL                               rate = k × SL
+r2:  SR_SL => SR_RL                         rate = k × SR_SL
+r3:  WR_SL => WR_RL                         rate = k × WR_SL
+r4:  RL => SL                               rate = k × RL
+r5:  SR_RL => SR_SL                         rate = k × SR_RL
+r6:  WR_RL => WR_SL                         rate = k × WR_RL
+r7:  AG_RL => AG_SL                         rate = k × AG_RL
+r9:  SR_RL => SR_SL + E                     rate = k × SR_RL
+r10: WR_RL => WR_SL + E                     rate = k × WR_RL
+r12: => Gov                                 rate = k (constant production)
+r13: SR_SL + RL => SR_RL + SL              rate = k × SR_SL × RL
+r14: WR_SL + RL => WR_RL + SL              rate = k × WR_SL × RL
+r17: AG_SL + RL => AG_RL + SL              rate = k × AG_SL × RL
+r20: SR_SL => WR_SL                        rate = k × SR_SL
+r26: Gov => ;                              rate = k × Gov         [DECAY - ALWAYS ACTIVE]
+r27: WR_SL => WR_SL + V                    rate = k × WR_SL
+r28: AG_SL + SR_RL => AG_RL + WR_SL + V    rate = k × AG_SL × SR_RL
+r31: V => ;                                rate = k × V           [DECAY - ALWAYS ACTIVE]
+r33: AG_SL + WR_RL => AG_RL + WR_SL        rate = k × AG_SL × WR_RL
+r34: AG_SL + SR_RL => AG_RL + WR_SL        rate = k × AG_SL × SR_RL
+r35: AG_SL + E => AG_RL                    rate = k × AG_SL × E (but E consumed)
+r36: AG_RL + Gov => AG_RL                  rate = k × AG_RL × Gov (but Gov consumed)
+
+
+CATEGORY B: BUDGET-CONTROLLED (Government Strategy)
+----------------------------------------------------
+These reactions require allocation of E (economy) or Gov (governance) budgets.
+The government decides how much to allocate based on strategy.
+
+r8:  Gov + SR_SL => SR_RL                  rate = k × Gov_alloc["r8"] × SR_SL
+r11: E => Gov                              rate = k × E_alloc["r11"]
+r18: E + WR_RL => SR_RL                    rate = k × E_alloc["r18"] × WR_RL
+r19: E + WR_SL => SR_SL                    rate = k × E_alloc["r19"] × WR_SL
+r21: E + Gov + AG_SL => WR_SL              rate = k × sqrt(E_alloc × Gov_alloc) × AG_SL
+r22: SR_RL + E => SR_RL + T                rate = k × SR_RL × E_alloc["r22"]
+r23: Gov + SR_RL => Gov + SR_RL + T        rate = k × Gov_alloc["r23"] × SR_RL
+r24: Gov + WR_RL => SR_RL                  rate = k × Gov_alloc["r24"] × WR_RL
+r29: AG_SL + Gov => WR_SL + V              rate = k × AG_SL × Gov_alloc["r29"]
+r30: AG_RL + Gov => AG_SL + V              rate = k × AG_RL × Gov_alloc["r30"]
+
+
+CATEGORY C: BUDGET-CONTROLLED (Armed Groups Strategy)
+------------------------------------------------------
+These reactions require allocation of V (violence) budgets.
+Armed groups decide how much violence to use for different purposes.
+
+r15: SR_RL + SL + V => RL + SR_SL          rate = k × SR_RL × SL × V_alloc["r15"]
+r16: WR_RL + SL + V => RL + WR_SL          rate = k × WR_RL × SL × V_alloc["r16"]
+r25: V + T => ;                            rate = k × V_alloc["r25"] × T  [**BUG - SEE BELOW**]
+r32: WR_SL + AG_SL + V => 2AG_SL           rate = k × WR_SL × AG_SL × V_alloc["r32"]
+
+
+=====================================
+2. CRITICAL IMPLEMENTATION ERROR
+=====================================
+
+**REACTION r25 IS INCORRECTLY IMPLEMENTED**
+
+Model Specification:
+    r25: V + T => ;
+
+Expected Implementation (pure mass action):
+    rate = k25 × V × T
+
+    This represents automatic trust destruction by violence - violence in the environment
+    naturally erodes trust without anyone directing it.
+
+Current INCORRECT Implementation (line 638-641):
+    elif reaction == "r25":
+        v_used = V_alloc.get("r25", 0)
+        rate *= v_used * state.get("T", 0)
+        consumption["V"] = rate
+
+    This treats r25 as budget-controlled, requiring armed groups to CHOOSE to allocate
+    violence to destroy trust. This is conceptually wrong and causes the steady state bug.
+
+Why This Is Wrong:
+    1. The model specification shows r25 as a simple bimolecular reaction like r13, r14
+    2. Trust destruction should be AUTOMATIC when violence exists, not strategic
+    3. This makes r25 inactive when armed groups allocate V=0 to it, even if V>0 exists
+    4. Similar decay reactions (r26, r31) are correctly implemented as pure mass action
+
+Correct Implementation Should Be:
+    elif reaction == "r25":
+        rate *= state.get("V", 0) * state.get("T", 0)
+        # No consumption tracking needed - V is a reactant, not consumed
+
+
+=====================================
+3. SATURATION MECHANISMS
+=====================================
+
+RATE LIMITER (lines 709-743):
+
+    Purpose: Prevent excessive resource consumption in a single timestep (conservation)
+
+    Mechanism:
+        max_consumption_fraction = 0.5  # Can consume max 50% per timestep
+
+        For each resource (E, Gov, V):
+            if requested_consumption > 0.5 × available_stock:
+                scale_factor = (0.5 × stock) / requested_consumption
+                scale_down_all_reactions_using_this_resource(scale_factor)
+
+    Effect: Provides saturation-like behavior without explicit saturation kinetics
+            Reactions slow down when resources become scarce
+            Prevents negative concentrations
+
+GEOMETRIC MEAN (r21 only):
+
+    Reaction: r21: E + Gov + AG_SL => WR_SL
+
+    Implementation:
+        combined_budget = sqrt(E_alloc["r21"] × Gov_alloc["r21"])
+        rate = k × combined_budget × AG_SL
+
+        E_consumption = rate × sqrt(E_alloc / Gov_alloc)
+        Gov_consumption = rate × sqrt(Gov_alloc / E_alloc)
+
+    Purpose: Requires BOTH E and Gov for reintegration
+             Using geometric mean prevents one resource from dominating
+
+
+=====================================
+4. ARMED GROUPS STRATEGY
+=====================================
+
+Violence Budget Allocation Weights:
+
+Strategy "recruitment":
+    V_weights = {"r15": 0.1, "r16": 0.1, "r25": 0.2, "r32": 0.6}
+    Focus: Use violence for recruitment (r32 gets 60%)
+
+Strategy "displacement":
+    V_weights = {"r15": 0.4, "r16": 0.4, "r25": 0.1, "r32": 0.1}
+    Focus: Use violence for displacement (r15+r16 get 80%)
+
+Strategy "balanced":
+    V_weights = {"r15": 0.25, "r16": 0.25, "r25": 0.25, "r32": 0.25}
+    All purposes equal
+
+Total Violence Available:
+    V_alloc[rxn] = V_weights[rxn] × total_V(t)
+
+
+=====================================
+5. WHY STEADY STATE OCCURS (Security Strategy)
+=====================================
+
+Observation: In security strategy, V, T, Gov become constant around t=5.0
+
+Previous Hypothesis (INCOMPLETE):
+    "AG_SL eliminated → dependent reactions inactive → frozen system"
+
+Refined Analysis With r25 Bug:
+
+Step 1: Security Strategy Allocations
+    Gov_weights = {
+        "r8": 0.1, "r21": 0.2, "r23": 0.1, "r24": 0.1,
+        "r29": 0.25, "r30": 0.25  # Heavy investment in violence generation
+    }
+    E_weights = {
+        "r11": 0.1, "r18": 0.1, "r19": 0.1,
+        "r21": 0.4,  # Heavy investment in reintegration
+        "r22": 0.3
+    }
+
+Step 2: AG_SL Elimination (confirmed at t=5.0)
+    - Heavy allocation to r21 (reintegration) with efficiency
+    - Heavy allocation to r29, r30 (counter-insurgency with violence generation)
+    - Leads to complete elimination: AG_SL = 0.0
+
+Step 3: Cascade Effects
+    When AG_SL = 0.0, these reactions become inactive (rate = 0):
+    - r17: AG_SL + RL => ... (rate = k × 0 × RL = 0)
+    - r21: ... + AG_SL => ... (rate ∝ AG_SL = 0)
+    - r28: AG_SL + SR_RL => ... + V (rate = 0) [Violence generation stops]
+    - r29: AG_SL + Gov => ... + V (rate = 0) [Violence generation stops]
+    - r32: ... + AG_SL + V => ... (rate = 0) [Recruitment stops]
+    - r33: AG_SL + WR_RL => ... (rate = 0)
+    - r34: AG_SL + SR_RL => ... (rate = 0)
+    - r35: AG_SL + E => ... (rate = 0)
+
+Step 4: Violence Dynamics With r25 Bug
+
+    Violence Generation (now mostly inactive):
+    ✓ r27: WR_SL => WR_SL + V  (still active but weak)
+    ✗ r28: requires AG_SL > 0  (INACTIVE)
+    ✗ r29: requires AG_SL > 0  (INACTIVE)
+    ✓ r30: AG_RL + Gov => ... + V  (still active, uses remaining AG_RL)
+
+    Violence Consumption:
+    ✓ r31: V => ;  (rate = k31 × V)  [Should be active!]
+    ✗ r25: V + T => ; (rate = V_alloc["r25"] × T)  [INCORRECTLY budget-controlled]
+    ✗ r15, r16, r32: All require allocation from V  [Armed groups control]
+
+    The Bug Effect:
+    - r31 should continuously decay violence: dV/dt -= k31 × V
+    - But if k31 is very small OR if r30 balances r31 exactly, V stabilizes
+    - r25 is INACTIVE because it's budget-controlled (should be automatic!)
+    - Armed groups may allocate V_alloc["r25"] = 0, stopping trust destruction
+
+Step 5: Trust Dynamics With r25 Bug
+
+    Trust Generation:
+    ✓ r22: SR_RL + E => SR_RL + T  (still active)
+    ✓ r23: Gov + SR_RL => Gov + SR_RL + T  (still active)
+
+    Trust Destruction:
+    ✗ r25: V + T => ;  (INCORRECTLY budget-controlled, likely inactive)
+
+    Result:
+    - Trust should be destroyed by ambient violence (r25: rate = k × V × T)
+    - But r25 is budget-controlled and likely gets low allocation
+    - Trust either grows or stabilizes at balance with weak r25 allocation
+
+Step 6: Governance Dynamics
+
+    Gov Generation:
+    ✓ r11: E => Gov  (still active)
+    ✓ r12: => Gov  (constant production)
+
+    Gov Consumption/Decay:
+    ✓ r8: Gov + SR_SL => SR_RL  (consumes Gov)
+    ✓ r21: E + Gov + AG_SL => ...  (but AG_SL=0, so inactive)
+    ✓ r24: Gov + WR_RL => SR_RL  (consumes Gov)
+    ✓ r26: Gov => ;  (rate = k26 × Gov)  [Pure decay - ALWAYS ACTIVE]
+    ✓ r29: AG_SL + Gov => ...  (but AG_SL=0, so inactive)
+    ✓ r30: AG_RL + Gov => ...  (still active, consumes Gov)
+    ✓ r36: AG_RL + Gov => AG_RL  (consumes Gov)
+
+    Why Gov Stabilizes:
+    - Production: r11 (E→Gov) + r12 (constant)
+    - Consumption: r8, r24, r26, r30, r36
+    - When AG_SL=0, major consumers (r29, r21) shut down
+    - Remaining production/consumption reach balance
+
+
+CONCLUSION: r25 Bug Explains Paradox
+=====================================
+
+The user's confusion is JUSTIFIED. The steady state mechanism is NOT just "reaction knockout"
+but a combination of:
+
+1. AG_SL elimination → most violence generation stops
+2. r25 BUG → trust destruction incorrectly requires budget allocation
+3. r31 weak decay → violence decays slowly but may balance with r27+r30
+4. r26 decay → governance decays but balanced by r11+r12 production
+
+The key insight: r31 and r26 ARE active (pure mass action), but their rates may be:
+    a) Very small (low kinetic constants k31, k26)
+    b) Balanced by production (dynamic equilibrium, not frozen state)
+    c) Below plotting resolution (appearing constant but actually evolving slowly)
+
+But r25 should ALSO be active and autonomous - this is the critical bug.
+
+
+=====================================
+6. RECOMMENDED FIX
+=====================================
+
+Change r25 from budget-controlled to pure mass action:
+
+BEFORE (line 638-641):
+    elif reaction == "r25":
+        v_used = V_alloc.get("r25", 0)
+        rate *= v_used * state.get("T", 0)
+        consumption["V"] = rate
+
+AFTER:
+    elif reaction == "r25":
+        rate *= state.get("V", 0) * state.get("T", 0)
+        # No consumption tracking - V is reactant consumed by stoichiometry
+
+Also update V_weights to remove r25:
+
+BEFORE:
+    V_weights = {"r15": 0.1, "r16": 0.1, "r25": 0.2, "r32": 0.6}
+
+AFTER (renormalize):
+    V_weights = {"r15": 0.125, "r16": 0.125, "r32": 0.75}
+    # Or adjust based on desired armed groups strategy
+
+
+=====================================
+7. VERIFICATION CHECKLIST
+=====================================
+
+To verify the fix works:
+
+1. Check r25, r26, r31 rates at steady state
+   - All three should have rate > 0 when V>0, Gov>0, T>0
+   - r25 should no longer depend on V_alloc
+
+2. Check if steady state is dynamic equilibrium
+   - Production rates should equal consumption rates
+   - Not all rates should be zero
+
+3. Compare security vs adaptive strategy
+   - Adaptive should show more Challenge/Problem modes (dynamic)
+   - Security may still show Stationary but through equilibrium, not shutdown
+
+4. Check trust dynamics
+   - Trust should be actively destroyed when violence exists
+   - T should not plateau if V > 0 (unless production balances destruction)

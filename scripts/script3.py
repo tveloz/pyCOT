@@ -38,6 +38,7 @@ file_path = 'Txt/Farm.txt'
 file_path = 'networks/Conflict_Theory/conflict_toy_model0.txt'
 file_path = 'networks/Conflict_Theory/cause_driven_conflict_gov.txt'
 file_path = 'networks/Conflict_Theory/Resource_Scarcity_Toy_Model2.txt'
+file_path = 'networks/Conflict_Theory/Resource_Community_Insurgency_Loops_model3.txt'  # Conflict model
 
 
 rn = read_txt(file_path) 
@@ -61,9 +62,9 @@ all_semi_organizations_sets = sorted(all_semi_organizations_sets, key=len) # Ord
 print("\nSemi-organizations:\n", all_semi_organizations_sets) 
 
 # === Organizations ===
-all_organizations = results['elementary_organizations']
+all_organizations = results['all_organizations']
 # === Organizations ===
-all_organizations = results['elementary_organizations']
+all_organizations = results['all_organizations']
 all_organizations_sets = []
 for org in all_organizations:
     if hasattr(org, "combined_closure"):  # Es un Organization
@@ -74,31 +75,11 @@ for org in all_organizations:
         sset = set()  # fallback por seguridad
     all_organizations_sets.append(sset)
 
-# ========================================
-# FILTER: Keep only orgs with both A and B groups active
-# ========================================
-def has_both_groups(org_set):
-    """
-    Check if organization contains at least one species from group A 
-    (A_p or A_v) AND at least one from group B (B_p or B_v)
-    """
-    has_A = any(sp in org_set for sp in ['A_p', 'A_v'])
-    has_B = any(sp in org_set for sp in ['B_p', 'B_v'])
-    return has_A and has_B
 
-# Filter organizations
-filtered_orgs_sets = [org for org in all_organizations_sets if has_both_groups(org)]
-filtered_orgs_sets = sorted(filtered_orgs_sets, key=len)
 
-print(f"\nTotal organizations: {len(all_organizations_sets)}")
-print(f"Organizations with both A and B groups: {len(filtered_orgs_sets)}")
-print("\nFiltered Organizations (both groups active):\n")
-for org in filtered_orgs_sets:
-    print(org)
 
 # Use filtered list for subsequent analysis
-orgs_sets = filtered_orgs_sets
-hierarchy_visualize_html(filtered_orgs_sets)
+hierarchy_visualize_html(all_organizations_sets)
 # all_organizations_sets = []
 # for org in all_organizations:
 #     if hasattr(org, "combined_closure"):  # Es un Organization

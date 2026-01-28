@@ -88,8 +88,8 @@
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([]);
-                  edges = new vis.DataSet([]);
+                  nodes = new vis.DataSet([{"color": "cyan", "font": {"size": 14}, "id": "X1", "label": "X1", "shape": "dot", "size": 20, "title": "Gov"}, {"color": "cyan", "font": {"size": 14}, "id": "X2", "label": "X2", "shape": "dot", "size": 20, "title": "Gov, RL, SL"}, {"color": "cyan", "font": {"size": 14}, "id": "X3", "label": "X3", "shape": "dot", "size": 20, "title": "E, Gov, SR_RL, SR_SL, T, V, WR_RL, WR_SL"}, {"color": "cyan", "font": {"size": 14}, "id": "X4", "label": "X4", "shape": "dot", "size": 20, "title": "AG_RL, AG_SL, E, Gov, SR_RL, SR_SL, T, V, WR_RL, WR_SL"}, {"color": "cyan", "font": {"size": 14}, "id": "X5", "label": "X5", "shape": "dot", "size": 20, "title": "E, Gov, RL, SL, SR_RL, SR_SL, T, V, WR_RL, WR_SL"}, {"color": "cyan", "font": {"size": 14}, "id": "X6", "label": "X6", "shape": "dot", "size": 20, "title": "AG_RL, AG_SL, E, Gov, RL, SL, SR_RL, SR_SL, T, V, WR_RL, WR_SL"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "X1", "to": "X2"}, {"arrows": "to", "from": "X1", "to": "X3"}, {"arrows": "to", "from": "X2", "to": "X5"}, {"arrows": "to", "from": "X3", "to": "X4"}, {"arrows": "to", "from": "X3", "to": "X5"}, {"arrows": "to", "from": "X4", "to": "X6"}, {"arrows": "to", "from": "X5", "to": "X6"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

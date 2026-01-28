@@ -11,9 +11,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import pyCOT modules
 
-from pyCOT.plot_dynamics_old import plot_series_ode
+from pyCOT.plot_dynamics import plot_series_ode
 # Import required modules
-from pyCOT.Persistent_Modules import compute_all_organizations  # Our new function
+from pyCOT.Persistent_Modules_Generator import compute_all_organizations  # Organization computation
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -24,17 +24,14 @@ import json
 from pathlib import Path
 from pyCOT.rn_rustworkx import ReactionNetwork
 from pyCOT.io.functions import read_txt
+from pyCOT.rn_visualize import hierarchy_visualize_html, rn_visualize_html
 
 # Import the reaction network library and persistent modules
 from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy
 from pyCOT.ERC_Synergy_Complementarity import build_erc_sorn
 from pyCOT.Persistent_Modules_Generator import (
-    compute_persistent_modules,
-    build_irreducible_generators,
-    IrreducibleGenerator, 
     ElementarySO,
-    identify_p_ercs,
-    analyze_generator_statistics,
+    Organization,
     compute_elementary_sos
 )
 
@@ -44,8 +41,9 @@ from pyCOT.Persistent_Modules_Generator import (
 print("Loading reaction network...")
 
 # Load a reaction network
-file_path = 'networks/testing/Farm.txt'
-file_path = 'networks/Navarino/RN_IN_05.txt'
+#file_path = 'networks/testing/Farm.txt'
+#file_path = 'networks/Navarino/RN_IN_05.txt'
+file_path = 'networks/Conflict_Theory/Resource_Community_Insurgency_Loops_model3.txt'
 RN = read_txt(file_path)
 
 # Verify we got a proper ReactionNetwork object
@@ -60,30 +58,39 @@ print("="*60)
 
 # Run the main computation
 try:
-    result = compute_all_organizations(
-        RN, 
-        max_module_size=10,
-        max_generator_size=8,
+    results = compute_all_organizations(
+        RN,
+        max_generator_size=15,
+        max_organization_size=20,
         verbose=True
     )
-    
-    elementary_sos, elementary_organizations, all_organizations, all_semi_organizations, statistics, computation_data = result
-    
+
+    # Extract results from dictionary
+    elementary_sos = results['elementary_sos']
+    elementary_organizations = results['elementary_organizations']
+    all_organizations = results['all_organizations']
+    statistics = results['statistics']
+
     print("\n" + "="*60)
     print("RESULTS SUMMARY")
     print("="*60)
-    
+
     print(f"Elementary semi-organizations: {len(elementary_sos)}")
     print(f"Elementary organizations: {len(elementary_organizations)}")
     print(f"Total organizations: {len(all_organizations)}")
-    
+
     if all_organizations:
-        print(f"\nFirst few organizations:")
-        for i, org in enumerate(all_organizations[:3]):
-            species_count = len(org.closure_species)
-            erc_count = len(org.constituent_ercs)
-            print(f"  Organization {i+1}: {species_count} species, {erc_count} ERCs")
-    
+        print(f"\nOrganizations found:")
+        for i, org in enumerate(all_organizations):
+            # Handle both elementary (closure_species) and non-elementary (combined_closure)
+            if hasattr(org, 'combined_closure'):
+                species_names = [sp.name for sp in org.combined_closure]
+                org_type = "non-elementary"
+            else:
+                species_names = [sp.name for sp in org.closure_species]
+                org_type = "elementary"
+            print(f"  Organization {i+1} [{org_type}]: {len(species_names)} species - {set(species_names)}")
+
     print("\n✅ Test completed successfully!")
     
 except Exception as e:

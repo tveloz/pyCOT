@@ -1,0 +1,103 @@
+================================================================================
+COMPREHENSIVE CONFLICT DYNAMICS ANALYSIS REPORT
+Adaptive Strategy Performance Across All Scenarios
+================================================================================
+
+
+================================================================================
+1. BEST STRATEGY BY BUDGET RENEWAL RATE
+================================================================================
+
+LOW CONFLICT:
+----------------------------------------
+
+Renewal Rate: 0.10
+  adaptive    : Score=  2.27, AG= 2.06, SR= 72.2, T= 62.5, Budget=  14.9 [*BEST*]
+  development : Score=  2.20, AG= 2.56, SR= 74.0, T= 63.2, Budget=  29.3
+  balanced    : Score=  2.14, AG= 2.09, SR= 68.2, T= 60.2, Budget=  11.2
+  security    : Score=  2.14, AG= 1.84, SR= 65.0, T= 60.5, Budget=   4.8
+
+Renewal Rate: 0.25
+  adaptive    : Score=  2.27, AG= 2.06, SR= 72.2, T= 62.5, Budget=  14.8 [*BEST*]
+  development : Score=  2.20, AG= 2.56, SR= 74.1, T= 63.3, Budget=  29.5
+  balanced    : Score=  2.14, AG= 2.09, SR= 68.2, T= 60.3, Budget=  11.2
+  security    : Score=  2.14, AG= 1.84, SR= 65.0, T= 60.5, Budget=   4.8
+
+Renewal Rate: 0.40
+  adaptive    : Score=  2.27, AG= 2.06, SR= 72.1, T= 62.5, Budget=  14.7 [*BEST*]
+  development : Score=  2.21, AG= 2.56, SR= 74.1, T= 63.5, Budget=  29.8
+  balanced    : Score=  2.14, AG= 2.09, SR= 68.1, T= 60.3, Budget=  11.1
+  security    : Score=  2.14, AG= 1.84, SR= 65.0, T= 60.5, Budget=   4.8
+
+MEDIUM CONFLICT:
+----------------------------------------
+
+Renewal Rate: 0.10
+  adaptive    : Score=  1.22, AG= 2.74, SR= 54.2, T= 34.8, Budget=  11.1 [*BEST*]
+  security    : Score=  1.16, AG= 2.71, SR= 50.0, T= 35.2, Budget=   6.3
+  balanced    : Score=  1.12, AG= 3.04, SR= 54.6, T= 32.5, Budget=  16.5
+  development : Score=  0.97, AG= 3.95, SR= 57.3, T= 32.1, Budget=  24.2
+
+Renewal Rate: 0.25
+  adaptive    : Score=  1.22, AG= 2.73, SR= 54.2, T= 34.8, Budget=  11.0 [*BEST*]
+  security    : Score=  1.16, AG= 2.70, SR= 50.0, T= 35.3, Budget=   6.3
+  balanced    : Score=  1.12, AG= 3.03, SR= 54.5, T= 32.7, Budget=  16.3
+  development : Score=  0.98, AG= 3.95, SR= 57.3, T= 32.2, Budget=  24.4
+
+Renewal Rate: 0.40
+  adaptive    : Score=  1.22, AG= 2.73, SR= 54.1, T= 34.9, Budget=  11.0 [*BEST*]
+  security    : Score=  1.16, AG= 2.70, SR= 50.0, T= 35.3, Budget=   6.3
+  balanced    : Score=  1.12, AG= 3.03, SR= 54.4, T= 32.8, Budget=  16.0
+  development : Score=  0.98, AG= 3.95, SR= 57.4, T= 32.3, Budget=  24.7
+
+SEVERE CONFLICT:
+----------------------------------------
+
+Renewal Rate: 0.10
+  adaptive    : Score= -0.06, AG= 5.27, SR= 38.3, T= 12.0, Budget=  15.5 [*BEST*]
+  security    : Score= -0.19, AG= 5.55, SR= 33.9, T= 12.6, Budget=  10.3
+  balanced    : Score= -0.40, AG= 6.85, SR= 37.4, T= 11.9, Budget=  16.2
+  development : Score= -0.64, AG= 8.13, SR= 37.7, T= 12.2, Budget=  16.8
+
+Renewal Rate: 0.25
+  adaptive    : Score= -0.04, AG= 5.15, SR= 38.2, T= 12.1, Budget=  15.3 [*BEST*]
+  security    : Score= -0.16, AG= 5.43, SR= 33.9, T= 12.7, Budget=  10.2
+  balanced    : Score= -0.38, AG= 6.77, SR= 37.4, T= 11.9, Budget=  16.5
+  development : Score= -0.64, AG= 8.13, SR= 37.7, T= 12.3, Budget=  17.1
+
+Renewal Rate: 0.40
+  adaptive    : Score= -0.01, AG= 5.04, SR= 38.1, T= 12.3, Budget=  15.1 [*BEST*]
+  security    : Score= -0.14, AG= 5.32, SR= 33.9, T= 12.8, Budget=  10.2
+  balanced    : Score= -0.36, AG= 6.68, SR= 37.5, T= 12.0, Budget=  16.7
+  development : Score= -0.64, AG= 8.12, SR= 37.8, T= 12.3, Budget=  17.4
+
+================================================================================
+2. OVERALL STRATEGY PERFORMANCE (ALL SCENARIOS)
+================================================================================
+
+Averaged across ALL scenarios, climates, renewals, and AG strategies:
+--------------------------------------------------------------------------------
+Strategy        AG (mean±std)        SR (mean±std)        T (mean±std)         Budget (mean±std)   
+--------------------------------------------------------------------------------
+development      4.88±3.18        56.4±14.9        35.9±21.0         23.7±  5.2
+security         3.32±2.02        49.6±12.7        36.2±19.5          7.1±  2.8
+balanced         3.96±2.69        53.4±12.6        34.9±19.8         14.6±  3.3
+adaptive        [*]  3.31±1.78        54.8±13.9        36.5±20.6         13.7±  3.3
+
+================================================================================
+3. WIN RATE ANALYSIS
+================================================================================
+
+Total scenario combinations tested: 45
+(3 scenarios × 5 climates × 3 renewals)
+
+Win counts (best strategy per combination):
+----------------------------------------
+  development    :  12 wins ( 26.7%)
+  security       :   0 wins (  0.0%)
+  balanced       :   0 wins (  0.0%)
+  adaptive       :  33 wins ( 73.3%)
+
+================================================================================
+END OF REPORT
+================================================================================

@@ -25,7 +25,7 @@ from pyCOT.io.functions import read_txt
 from pyCOT.rn_visualize import rn_visualize_html
 from pyCOT.Persistent_Modules_Generator import compute_all_organizations
 from pyCOT.simulations import simulation
-from pyCOT.abstractions import abstraction_ordinary
+from pyCOT.simulations.abstractions import abstraction_ordinary
 from pyCOT.ERC_Hierarchy import ERC_Hierarchy
 
 # ========================================
@@ -33,8 +33,9 @@ from pyCOT.ERC_Hierarchy import ERC_Hierarchy
 # ========================================
 # Network file path
 #file_path = 'networks/testing/Farm.txt'  # Specify the network file
-file_path = 'networks/Marine_Ecosystem/Las_Cruces_251021.txt'  # Specify the network file
+#file_path = 'networks/Marine_Ecosystem/Las_Cruces_251021.txt'  # Specify the network file
 #file_path = 'networks/testing/autopoietic.txt'  # Specify the network file
+file_path = 'networks/Conflict_Theory/Resource_Community_Insurgency_Loops_model1.txt'  # Conflict model
 
 
 # Simulation parameters

@@ -1,0 +1,62 @@
+CONFLICT ORGANIZATION ANALYSIS REPORT
+============================================================
+
+Total organizations: 6
+Conflict species considered: 5
+
+Conflict species:
+  - AG_RL
+  - AG_SL
+  - V
+  - WR_RL
+  - WR_SL
+
+ORGANIZATIONS BY CONFLICT LEVEL (sorted high to low):
+------------------------------------------------------------
+
+Organization 3 (Elementary):
+  Size: 10 species
+  Conflict level: 50.0% (5 conflict species)
+  Species: ['AG_RL', 'AG_SL', 'E', 'Gov', 'SR_RL', 'SR_SL', 'T', 'V', 'WR_RL', 'WR_SL']
+  Conflict species present: ['AG_RL', 'AG_SL', 'V', 'WR_RL', 'WR_SL']
+
+Organization 5 (Elementary):
+  Size: 12 species
+  Conflict level: 41.7% (5 conflict species)
+  Species: ['AG_RL', 'AG_SL', 'E', 'Gov', 'RL', 'SL', 'SR_RL', 'SR_SL', 'T', 'V', 'WR_RL', 'WR_SL']
+  Conflict species present: ['AG_RL', 'AG_SL', 'V', 'WR_RL', 'WR_SL']
+
+Organization 2 (Elementary):
+  Size: 8 species
+  Conflict level: 37.5% (3 conflict species)
+  Species: ['E', 'Gov', 'SR_RL', 'SR_SL', 'T', 'V', 'WR_RL', 'WR_SL']
+  Conflict species present: ['V', 'WR_RL', 'WR_SL']
+
+Organization 4 (Elementary):
+  Size: 10 species
+  Conflict level: 30.0% (3 conflict species)
+  Species: ['E', 'Gov', 'RL', 'SL', 'SR_RL', 'SR_SL', 'T', 'V', 'WR_RL', 'WR_SL']
+  Conflict species present: ['V', 'WR_RL', 'WR_SL']
+
+Organization 0 (Elementary):
+  Size: 1 species
+  Conflict level: 0.0% (0 conflict species)
+  Species: ['Gov']
+
+Organization 1 (Elementary):
+  Size: 3 species
+  Conflict level: 0.0% (0 conflict species)
+  Species: ['Gov', 'RL', 'SL']
+
+============================================================
+STATISTICS
+------------------------------------------------------------
+Organizations with conflict species: 4 (66.7%)
+Average conflict level: 26.5%
+
+CONFLICT SPECIES FREQUENCY:
+  WR_SL: 4 organizations (66.7%)
+  WR_RL: 4 organizations (66.7%)
+  V: 4 organizations (66.7%)
+  AG_RL: 2 organizations (33.3%)
+  AG_SL: 2 organizations (33.3%)

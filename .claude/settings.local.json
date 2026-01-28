@@ -6,7 +6,13 @@
       "Bash(where:*)",
       "Bash(C:UsershpAppDataLocalPythonbinpython.exe scripts/script_process_multiscale_modes_test.py)",
       "Bash(py scripts/script_process_multiscale_modes_test.py:*)",
-      "Bash(py -c:*)"
+      "Bash(py -c:*)",
+      "Bash(gh auth status:*)",
+      "Bash(git fetch:*)",
+      "Bash(git credential-manager:*)",
+      "Bash(git config:*)",
+      "Bash(python scripts/script_org_computation_pypeline1.py:*)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []

@@ -662,20 +662,34 @@ def build_non_elementary_organizations(elementary_sos, erc_sorn, max_size=5, ver
         print("No productive combinations found.")
         return []
     
-    # Build organizations of increasing size
+    # Build organizations of increasing size, tracking unique closures
     organizations = []
+    seen_closures = set()  # Track unique closures to avoid duplicates
+
+    # Pre-populate with elementary organization closures to avoid duplicating them
+    for eso in elementary_sos:
+        closure_signature = frozenset(sp.name for sp in eso.closure_species)
+        seen_closures.add(closure_signature)
+
     current_combinations = list(productive_combinations.keys())
-    
+
     # Start with size 2 (pairs)
     for (so1_id, so2_id) in current_combinations:
         so1 = next(so for so in elementary_sos if so.id == so1_id)
         so2 = next(so for so in elementary_sos if so.id == so2_id)
-        
+
         org = Organization([so1, so2], "productive_combination")
-        organizations.append(org)
-    
+
+        # Create a hashable closure signature (frozenset of species names)
+        closure_signature = frozenset(sp.name for sp in org.combined_closure)
+
+        # Only add if this closure is new (not in elementary or already seen)
+        if closure_signature not in seen_closures:
+            seen_closures.add(closure_signature)
+            organizations.append(org)
+
     if verbose:
-        print(f"Built {len(organizations)} size-2 organizations.")
+        print(f"Built {len(organizations)} unique size-2 organizations (from {len(current_combinations)} pairs).")
     
     # For larger sizes, we could implement hierarchical extension
     # For now, we focus on pairwise combinations
@@ -721,13 +735,16 @@ def compute_all_organizations(RN, max_generator_size=8, max_organization_size=5,
     hierarchy_time = time.time() - hierarchy_start
     if verbose:
         print(f"✅ Created hierarchy: {len(hierarchy.ercs)} ERCs in {hierarchy_time:.2f}s")
+    
+    # Step 2: Build ERC_SORN
     if verbose:
         print("\nStep 2: Building ERC_SORN...")
-        sorn_start = time.time()
-        erc_sorn = build_erc_sorn(hierarchy, RN)
-        sorn_time = time.time() - sorn_start
+    sorn_start = time.time()
+    erc_sorn = build_erc_sorn(hierarchy, RN)
+    sorn_time = time.time() - sorn_start
     if verbose:
         print(f"✅ Built SORN in {sorn_time:.2f}s")
+    
     # Step 3: Build irreducible generators
     if verbose:
         print("\nStep 3: Building irreducible generators...")
