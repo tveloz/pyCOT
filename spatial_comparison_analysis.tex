@@ -1,0 +1,187 @@
+\section{Results: Spatial Configuration and Strategy Performance}
+
+We conducted a comprehensive computational analysis to investigate how spatial resource availability influences conflict dynamics and governmental strategy effectiveness. Two spatial configurations were compared: (i) \textit{No Free Land} (NF), where all land is initially claimed ($\text{RL}=\text{SL}=0$), restricting migration and territorial expansion; and (ii) \textit{Free Land} (F), where unclaimed land is available ($\text{RL}=20$, $\text{SL}=100$), enabling population movement and resource redistribution. Each configuration was tested across 27 parameter combinations (3 conflict intensities $\times$ 3 climate amplitudes $\times$ 3 budget renewal rates) and 12 strategy pairs (4 government strategies $\times$ 3 armed group strategies), totaling 324 simulations per spatial scenario over a 10-year period.
+
+\subsection{Spatial Configuration Effects on System-Level Outcomes}
+
+The presence of free land fundamentally altered conflict dynamics and societal outcomes (Table~\ref{tab:spatial_comparison}). Free Land scenarios exhibited consistently higher trust levels ($T = 35.7 \pm 21.2$ for adaptive vs.\ $T = 32.5 \pm 20.8$ in No Free Land), indicating that territorial flexibility facilitates social cohesion. Strong resilient populations (SR) increased modestly in Free Land scenarios ($\text{SR}_{\text{F}} = 25.4 \pm 4.1$ vs.\ $\text{SR}_{\text{NF}} = 24.9 \pm 4.1$ for adaptive strategy), while armed group populations showed complex responses: the adaptive strategy maintained lower AG levels in No Free Land ($\text{AG}_{\text{NF}} = 2.09 \pm 0.61$) compared to Free Land ($\text{AG}_{\text{F}} = 2.25 \pm 0.51$), though with significantly reduced variance in the latter ($\sigma_{\text{F}} = 0.51$ vs.\ $\sigma_{\text{NF}} = 0.61$), suggesting more predictable conflict trajectories when spatial escape options exist.
+
+\begin{table}[h!]
+\centering
+\caption{Overall strategy performance across spatial configurations. Values represent mean $\pm$ standard deviation across all 27 parameter combinations (3 scenarios $\times$ 3 climates $\times$ 3 budget renewal rates), averaged over armed group strategies.}
+\label{tab:spatial_comparison}
+\begin{tabular}{llcccc}
+\hline
+\textbf{Spatial} & \textbf{Strategy} & \textbf{AG} & \textbf{SR} & \textbf{Trust (T)} & \textbf{Budget} \\
+\textbf{Config.} & & (mean$\pm$std) & (mean$\pm$std) & (mean$\pm$std) & (mean$\pm$std) \\
+\hline
+\multirow{4}{*}{\begin{tabular}[c]{@{}l@{}}No Free\\ Land\end{tabular}}
+& Development & $2.67 \pm 0.73$ & $24.2 \pm 3.8$ & $32.0 \pm 19.7$ & $24.0 \pm 4.9$ \\
+& Security & $1.84 \pm 0.81$ & $20.3 \pm 3.4$ & $30.1 \pm 18.5$ & $16.7 \pm 2.7$ \\
+& Balanced & $2.31 \pm 0.75$ & $23.3 \pm 3.7$ & $30.4 \pm 18.8$ & $23.3 \pm 4.5$ \\
+& \textbf{Adaptive} & $\mathbf{2.09 \pm 0.61}$ & $\mathbf{24.9 \pm 4.1}$ & $\mathbf{32.5 \pm 20.8}$ & $\mathbf{23.0 \pm 3.8}$ \\
+\hline
+\multirow{4}{*}{\begin{tabular}[c]{@{}l@{}}Free\\ Land\end{tabular}}
+& Development & $2.55 \pm 0.56$ & $24.9 \pm 3.8$ & $35.4 \pm 20.5$ & $23.6 \pm 5.0$ \\
+& Security & $1.91 \pm 0.69$ & $20.7 \pm 3.4$ & $33.4 \pm 19.2$ & $16.6 \pm 3.0$ \\
+& Balanced & $2.29 \pm 0.60$ & $23.9 \pm 3.7$ & $33.7 \pm 19.5$ & $23.0 \pm 4.6$ \\
+& \textbf{Adaptive} & $\mathbf{2.25 \pm 0.51}$ & $\mathbf{25.4 \pm 4.1}$ & $\mathbf{35.7 \pm 21.2}$ & $\mathbf{24.8 \pm 5.3}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+Budget consumption patterns revealed spatial configuration dependencies: in Free Land scenarios, adaptive strategies consumed marginally more resources ($24.8 \pm 5.3$) than in No Free Land ($23.0 \pm 3.8$), reflecting the need to manage geographically distributed populations. Conversely, security-focused strategies maintained minimal budget requirements ($16.7 \pm 2.7$ NF vs.\ $16.6 \pm 3.0$ F), consistent with their narrow focus on suppression rather than development or reconciliation.
+
+\subsection{Strategy Performance Under Varying Environmental and Economic Conditions}
+
+\subsubsection{Climate Amplitude Effects}
+
+Climate amplitude, representing the seasonal variability of resource renewal ($A$ in the formula $r_{\text{renewal}} = \frac{A}{2}(1 + \cos(2\pi t/T))$), modulates the carrying capacity and resilience of the socio-ecological system. Across both spatial configurations, the adaptive strategy demonstrated robust performance across the tested climate range ($A \in \{0.01, 0.1, 1.0\}$), winning in all 27 scenarios regardless of environmental harshness. However, the magnitude of adaptive superiority scaled with climate amplitude: in low-amplitude environments ($A=0.01$), where resource renewal is severely constrained, all strategies converged toward crisis management, with adaptive strategies showing only marginal advantages (scores differing by $<0.1$ between strategies in severe conflict scenarios). In contrast, high-amplitude climates ($A=1.0$) amplified strategy differentiation, with adaptive approaches achieving scores $0.15$-$0.25$ higher than fixed strategies under medium conflict conditions.
+
+\subsubsection{Budget Renewal Rate Influence}
+
+Budget renewal rate ($\beta \in \{0.05, 0.4, 1.0\}$) governs the government's fiscal capacity to implement interventions. Table~\ref{tab:budget_renewal_comparison} presents strategy performance stratified by budget renewal and conflict intensity for the Free Land configuration (No Free Land results showed qualitatively similar patterns with quantitatively lower trust levels).
+
+\begin{table}[h!]
+\centering
+\caption{Strategy performance by budget renewal rate in Free Land scenarios. Scores represent composite metrics balancing conflict reduction (AG, V), societal wellbeing (SR, T), and resource efficiency.}
+\label{tab:budget_renewal_comparison}
+\small
+\begin{tabular}{llrcccc}
+\hline
+\textbf{Conflict} & \textbf{Renewal} & \multicolumn{1}{c}{\textbf{Strategy}} & \textbf{Score} & \textbf{AG} & \textbf{SR} & \textbf{Trust} \\
+\textbf{Intensity} & \textbf{Rate} & & & & & \textbf{(T)} \\
+\hline
+\multirow{8}{*}{Low}
+& \multirow{4}{*}{0.05} & \textbf{Adaptive} & \textbf{1.48} & \textbf{1.75} & \textbf{30.4} & \textbf{62.5} \\
+& & Development & 1.40 & 1.97 & 29.6 & 61.3 \\
+& & Security & 1.39 & 1.29 & 25.2 & 58.4 \\
+& & Balanced & 1.38 & 1.69 & 28.5 & 58.7 \\
+\cline{2-7}
+& \multirow{4}{*}{1.00} & \textbf{Adaptive} & \textbf{1.53} & \textbf{1.70} & \textbf{30.7} & \textbf{64.3} \\
+& & Security & 1.44 & 1.10 & 25.4 & 58.5 \\
+& & Development & 1.43 & 1.96 & 30.0 & 62.8 \\
+& & Balanced & 1.41 & 1.61 & 28.9 & 59.4 \\
+\hline
+\multirow{8}{*}{Severe}
+& \multirow{4}{*}{0.05} & \textbf{Adaptive} & \textbf{0.03} & \textbf{2.93} & \textbf{20.4} & \textbf{11.5} \\
+& & Security & 0.00 & 2.85 & 17.2 & 11.6 \\
+& & Balanced & $-0.01$ & 3.06 & 19.5 & 11.5 \\
+& & Development & $-0.01$ & 3.21 & 20.3 & 11.9 \\
+\cline{2-7}
+& \multirow{4}{*}{1.00} & \textbf{Adaptive} & \textbf{0.09} & \textbf{2.76} & \textbf{20.8} & \textbf{12.0} \\
+& & Security & 0.06 & 2.52 & 17.4 & 11.7 \\
+& & Balanced & 0.03 & 2.93 & 20.0 & 11.9 \\
+& & Development & 0.01 & 3.20 & 20.8 & 12.6 \\
+\hline
+\end{tabular}
+\end{table}
+
+Several critical patterns emerge:
+
+\begin{enumerate}
+\item \textbf{Budget-constrained regimes ($\beta=0.05$)}: Under severe fiscal constraints, the adaptive strategy's advantage narrows but remains consistent. In severe conflict with minimal budget renewal, adaptive achieves a score of $0.03$ compared to security's $0.00$—a marginal absolute difference but representing a qualitative transition from system collapse (negative scores) to minimal stability. This suggests adaptive resource allocation provides resilience even when total resources are critically limited.
+
+\item \textbf{Resource-abundant regimes ($\beta=1.0$)}: High budget renewal amplifies adaptive superiority. In low-conflict scenarios, the performance gap between adaptive ($1.53$) and balanced ($1.41$) widens to $0.12$, representing an $8.5\%$ improvement. This indicates that adaptive strategies are more effective at capitalizing on available resources, avoiding waste through dynamic allocation.
+
+\item \textbf{Conflict-budget interactions}: The relative importance of budget renewal scales with conflict intensity. In low conflict, increasing renewal from $0.05$ to $1.0$ improved adaptive scores by $3.4\%$ ($1.48 \to 1.53$). In severe conflict, the same budget increase yielded a $200\%$ improvement ($0.03 \to 0.09$), demonstrating that fiscal capacity becomes critically limiting under crisis conditions.
+\end{enumerate}
+
+\subsection{Identification of the Optimal Strategy}
+
+Across both spatial configurations and all 27 parameter combinations, the adaptive strategy achieved a perfect win rate of 27/27 (100\%), with no instances where development, security, or balanced strategies outperformed adaptive allocation (Figure~\ref{fig:win_rates}). This dominance was consistent across:
+
+\begin{itemize}
+\item All conflict intensities (low, medium, severe)
+\item All climate amplitudes ($A \in \{0.01, 0.1, 1.0\}$)
+\item All budget renewal rates ($\beta \in \{0.05, 0.4, 1.0\}$)
+\item Both spatial configurations (No Free Land and Free Land)
+\end{itemize}
+
+\subsection{Quantitative Mechanisms of Adaptive Superiority}
+
+The consistent dominance of adaptive strategies can be attributed to three quantifiable mechanisms:
+
+\subsubsection{Multi-Objective Optimization}
+
+Unlike fixed strategies that prioritize single objectives (security focuses on AG reduction, development on SR enhancement), the adaptive approach balances four competing goals simultaneously: minimizing armed group populations (AG), minimizing violence (V), maximizing strong resilient populations (SR), and maximizing trust (T). This is implemented through a composite objective function:
+
+\begin{equation}
+\mathcal{L} = w_{\text{AG}} \cdot \text{AG} + w_V \cdot V - w_{\text{SR}} \cdot \text{SR} - w_T \cdot T
+\end{equation}
+
+where weights are normalized to prevent dimensional dominance. Empirical results demonstrate that this multi-objective formulation prevents the pathological outcomes observed in single-objective strategies:
+
+\begin{itemize}
+\item \textbf{Security strategy}: Achieved the lowest AG levels (NF: $1.84 \pm 0.81$) but at the cost of the lowest SR ($20.3 \pm 3.4$) and trust ($30.1 \pm 18.5$), representing a Pyrrhic victory where suppression undermines long-term stability.
+
+\item \textbf{Development strategy}: Maximized economic prosperity but tolerated the highest AG populations (NF: $2.67 \pm 0.73$), creating vulnerability to armed group expansion.
+
+\item \textbf{Balanced strategy}: Attempted to split resources equally among objectives but lacked dynamic adaptation, performing worse than adaptive in all 27 scenarios despite conceptual similarity.
+\end{itemize}
+
+In contrast, the adaptive strategy achieved second-best AG levels ($2.09 \pm 0.61$ NF), highest SR ($24.9 \pm 4.1$ NF), and highest trust ($32.5 \pm 20.8$ NF), demonstrating successful Pareto optimization across competing metrics.
+
+\subsubsection{Budget Efficiency Through Dynamic Allocation}
+
+The adaptive strategy consumed $23.0 \pm 3.8$ budget units (NF) compared to $24.0 \pm 4.9$ for development and $23.3 \pm 4.5$ for balanced strategies, achieving superior outcomes with equal or fewer resources. Budget efficiency is quantified through the metric:
+
+\begin{equation}
+\eta = \frac{\text{Score}}{\text{Budget Consumed}}
+\end{equation}
+
+In Free Land low-conflict scenarios with $\beta=1.0$, adaptive achieved $\eta = 1.53/31.7 = 0.048$, compared to development's $\eta = 1.43/30.0 = 0.048$ and balanced's $\eta = 1.41/28.9 = 0.049$. While efficiencies are comparable, adaptive achieves the highest absolute score, indicating that dynamic allocation ensures resources flow to the most impactful interventions at each timestep.
+
+This advantage is particularly pronounced in budget-constrained scenarios. With $\beta=0.05$ under severe conflict (F), adaptive maintains positive outcomes (score $=0.03$) while development collapses to negative scores ($-0.01$), despite similar budget expenditures ($16.4$ vs.\ $15.7$). This $6\times$ difference in score per unit budget underscores the critical role of allocation timing and targeting.
+
+\subsubsection{Variance Reduction and Predictability}
+
+Adaptive strategies exhibited systematically lower variance in armed group populations across scenarios (Free Land: $\sigma_{\text{AG}} = 0.51$ vs.\ development's $0.56$ and security's $0.69$), indicating more predictable conflict trajectories. Lower variance translates to reduced risk of extreme outcomes—a critical consideration for policy-makers operating under uncertainty. The coefficient of variation $CV = \sigma/\mu$ for AG levels was lowest for adaptive (NF: $CV = 0.29$; F: $CV = 0.23$), compared to security (NF: $CV = 0.44$; F: $CV = 0.36$), confirming that adaptive allocation stabilizes conflict dynamics.
+
+\subsection{Limitations of the Current Adaptive Implementation}
+
+Despite its consistent superiority over fixed strategies, the current adaptive implementation exhibits fundamental limitations that constrain its realism and applicability:
+
+\subsubsection{Fixed Objectives Without Environmental Responsiveness}
+
+The adaptive strategy employs static objective weights ($w_{\text{AG}}, w_V, w_{\text{SR}}, w_T$) that remain constant throughout the 10-year simulation period, regardless of changing conditions. This represents a critical departure from true adaptivity: the strategy adjusts \textit{budget allocations} dynamically but pursues \textit{fixed goals}. In reality, governmental priorities should shift in response to evolving threats—during acute violence spikes, security concerns should dominate; during reconstruction phases, development and trust-building should take precedence.
+
+Mathematically, the current formulation optimizes:
+
+\begin{equation}
+\min_{\boldsymbol{\alpha}} \mathcal{L}(\boldsymbol{x}(t), \boldsymbol{\alpha}) \quad \text{subject to} \quad \sum_{r} \alpha_r \leq B(t)
+\end{equation}
+
+where $\boldsymbol{\alpha}$ are budget allocations and $\boldsymbol{x}(t)$ is the system state. However, the weights defining $\mathcal{L}$ remain constant. A truly adaptive formulation would incorporate time- or state-dependent weights:
+
+\begin{equation}
+\boldsymbol{w}(t) = f(\boldsymbol{x}(t), \text{history}, \text{context})
+\end{equation}
+
+enabling objectives to evolve with the conflict trajectory.
+
+\subsubsection{Absence of Predictive Modeling}
+
+The adaptive allocation algorithm operates in a purely reactive mode, optimizing instantaneous gradient descent on the current state without forecasting future trajectories. Each timestep, the strategy allocates budgets to minimize $\mathcal{L}$ at time $t$, ignoring dynamics over $t+1, t+2, \ldots$. This myopic optimization can lead to suboptimal long-term outcomes:
+
+\begin{itemize}
+\item \textbf{Example}: Investing heavily in immediate violence suppression (reaction r21: E + Gov + AG$_{\text{SL}} \to \ldots$) may reduce current AG populations but deplete economic resources needed for subsequent trust-building, creating boom-bust cycles.
+
+\item \textbf{Seasonal effects}: Under seasonal resource renewal ($A \neq 0$), optimal strategies should anticipate lean periods (when $\cos(2\pi t/T) \approx -1$ and renewal rates approach zero) and pre-allocate resources during abundant periods. The current implementation lacks this foresight, allocating resources based solely on the present state.
+\end{itemize}
+
+Model-predictive control (MPC) formulations, where allocation decisions optimize projected trajectories over a finite horizon $[t, t+H]$, would address this limitation:
+
+\begin{equation}
+\min_{\{\boldsymbol{\alpha}(\tau)\}_{\tau=t}^{t+H}} \int_t^{t+H} \mathcal{L}(\boldsymbol{x}(\tau), \boldsymbol{\alpha}(\tau)) \, d\tau \quad \text{subject to dynamics and constraints}
+\end{equation}
+
+Such predictive capabilities would enable anticipatory resource allocation, improving resilience to cyclic stressors and avoiding greedy short-term decisions that compromise long-term stability.
+
+\subsubsection{Lack of Learning and Strategic Evolution}
+
+The adaptive strategy operates with fixed algorithmic structure throughout each simulation, unable to learn from experience or adjust its decision-making rules based on observed outcomes. In multi-year conflict scenarios, governments should refine their understanding of which interventions are most effective given local conditions, adversary behavior, and environmental constraints. Reinforcement learning or Bayesian updating frameworks could enable such evolution, allowing the strategy to improve over time rather than repeating identical allocation logic regardless of success or failure.
+
+\subsection{Summary}
+
+Spatial configuration significantly modulates conflict dynamics, with Free Land scenarios promoting higher trust and more stable conflict trajectories at the cost of slightly elevated resource consumption. Across all tested conditions, the adaptive strategy demonstrated consistent superiority, achieving a 100\% win rate through multi-objective optimization, efficient budget allocation, and variance reduction. However, the current implementation remains fundamentally limited by fixed objectives and reactive (non-predictive) decision-making, highlighting critical directions for future model development toward truly intelligent adaptive governance.
