@@ -1,0 +1,7 @@
+R0: srci (srci) + Cbp_P_CSK (Cbp_P_CSK) => srco (srco) + Cbp_P_CSK (Cbp_P_CSK);
+R1: srco (srco) => srca (srca);
+R2: srca (srca) + Cbp_P_CSK (Cbp_P_CSK) => srcc (srcc) + Cbp_P_CSK (Cbp_P_CSK);
+R3: srcc (srcc) => srci (srci);
+R4: CSK_cytoplasm (CSK_cytoplasm) + Cbp_P (Cbp_P) => Cbp_P_CSK (Cbp_P_CSK);
+R5: PTP (PTP) => PTP_pY789 (PTP_pY789);
+R6: Cbp (Cbp) => Cbp_P (Cbp_P);

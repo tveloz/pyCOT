@@ -1,0 +1,7 @@
+t1 : E1 => E2;
+t2 : E2 => E3;
+t3 : E1p => E2p;
+t4 : E2p => E3p;
+t5 : E1+E2p => E3;
+t6 : E1p+E2 => E3p;
+t7 : E3+E3p => Ef;

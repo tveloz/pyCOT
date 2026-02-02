@@ -1,0 +1,12 @@
+R0: s57 (Notch) + s60 (Gamma secretase) + s61 (DAPT) => s53 (NICD) + s58 (Notch TM) + s60 (Gamma secretase) + s61 (DAPT);
+R1: s53 (NICD) + s68 (RBP-jk) => s72 (Complex NICD-RBP);
+R2: s72 (Complex NICD-RBP) => s73 (Hes-1);
+R3: s81 (Shh) + s83 (Ptch1) => s85 (Complex Shh Ptch1);
+R4: s96 (EGF) + s98 (EGFR) + s101 (Erlotinib) => s100 (Complex EGF-EGFR) + s101 (Erlotinib);
+R5: s100 (Complex EGF-EGFR) => s73 (Hes-1);
+R6: s107 (Wnt) + s109 (Frzzl) => s111 (Complex Wnt-Frzzl);
+R7: s122 (Dishevelled) + s124 (FRAT-CK2) + s111 (Complex Wnt-Frzzl) => s135 (Complex Dishevelled-FRAT-CK2) + s111 (Complex Wnt-Frzzl);
+R8: s142 (GSK3B) + s144 (Beta-catenin) + s147 (6 bromoindirubin 3`oxime) + s135 (Complex Dishevelled-FRAT-CK2) => s146 (Complex GSK3B-Bcatenin) + s147 (6 bromoindirubin 3`oxime) + s135 (Complex Dishevelled-FRAT-CK2);
+R9: s144 (Beta-catenin) => s73 (Hes-1);
+R10: s88 (smo) + s85 (Complex Shh Ptch1) + s89 (SAG) => s88 (smo) + s85 (Complex Shh Ptch1) + s89 (SAG);
+R11: s88 (smo) + s89 (SAG) => s73 (Hes-1) + s89 (SAG);

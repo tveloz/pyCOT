@@ -1,0 +1,7 @@
+R0:  => X (Cytoplasmic Calcium);
+R1: X (Cytoplasmic Calcium) => ;
+R2: Y (Calcium in ER) + Z (IP3) => X (Cytoplasmic Calcium) + Z (IP3);
+R3: X (Cytoplasmic Calcium) => Y (Calcium in ER);
+R4: Y (Calcium in ER) => X (Cytoplasmic Calcium);
+R5: X (Cytoplasmic Calcium) => Z (IP3) + X (Cytoplasmic Calcium);
+R6: Z (IP3) => ;

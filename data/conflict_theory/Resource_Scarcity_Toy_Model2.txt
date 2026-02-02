@@ -1,0 +1,17 @@
+r1:  SR + R => E + SR;
+r2:  E + WR => SR;          # Economic strengthening
+r3:  E + DT => WR;          # Economic re-engagement
+r4:  T + WR => SR;          # Trust strengthening
+r5:  T + DT => WR;          # Trust re-engagement
+r6:  SR => WR;              # Degradation
+r7:  WR + V => DT;          # Giving up
+r8:  SR + 2E => T + SR + 2E;  # Trust generation
+r9:  V + T => ;             # Trust destruction
+r10: 2T => ;                # Trust decay
+r11: 2WR => 2WR + V;        # Weak tensions
+r12: DT + WR => DT + WR + V;  # Detached-weak conflict
+r13: 2DT => 2DT + V;        # Detached frustration
+r14: 2V => ;                # Violence decay
+r15: => R  ;                # Resource regen
+r16: 2R => ;                # Resource depletion
+r17: 2E =>                 # Economic decay

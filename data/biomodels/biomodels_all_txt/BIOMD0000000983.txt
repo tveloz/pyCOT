@@ -1,0 +1,10 @@
+R0: S_c (Susceptible_confined) => S_u (Susceptible_unconfined);
+R1: S_u (Susceptible_unconfined) => S_c (Susceptible_confined);
+R2: S_u (Susceptible_unconfined) + I_r (Infected_reported) + I_u (Infected_unreported) => E (Exposed) + I_r (Infected_reported) + I_u (Infected_unreported);
+R3: S_u (Susceptible_unconfined) + I_r (Infected_reported) + I_u (Infected_unreported) => Q (Quarantined) + I_r (Infected_reported) + I_u (Infected_unreported);
+R4: Q (Quarantined) => I_r (Infected_reported);
+R5: E (Exposed) => I_r (Infected_reported);
+R6: E (Exposed) => I_u (Infected_unreported);
+R7: I_r (Infected_reported) => R (Recovered);
+R8: I_u (Infected_unreported) => R (Recovered);
+R9: Q (Quarantined) => S_u (Susceptible_unconfined);

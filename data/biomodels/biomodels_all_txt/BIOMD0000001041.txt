@@ -1,0 +1,4 @@
+R0: CAR_T_cells (CAR_T_cells) => Normal_T_cells (Normal_T_cells) + CAR_T_cells (CAR_T_cells);
+R1: Normal_T_cells (Normal_T_cells) => CAR_T_cells (CAR_T_cells) + Normal_T_cells (Normal_T_cells);
+R2:  => Antigen_presenting_tumour_cells (Antigen-presenting_tumour_cells);
+R3: Antigen_presenting_tumour_cells (Antigen-presenting_tumour_cells) + CAR_T_cells (CAR_T_cells) => CAR_T_cells (CAR_T_cells);

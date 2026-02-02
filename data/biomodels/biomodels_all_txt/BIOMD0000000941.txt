@@ -1,0 +1,12 @@
+R0:  => cyclin_D_Cdk4_6 (cyclin D Cdk4-6);
+R1: 2cyclin_D_Cdk4_6 (cyclin D Cdk4-6) => cyclin_D_Cdk4_6 (cyclin D Cdk4-6);
+R2: E2F_total (E2F_total) + cyclin_D_Cdk4_6 (cyclin D Cdk4-6) + cyclin_E_Cdk2 (cyclin E Cdk2) => transcription_factor_E2F_active (transcription factor E2F active) + E2F_total (E2F_total) + cyclin_D_Cdk4_6 (cyclin D Cdk4-6) + cyclin_E_Cdk2 (cyclin E Cdk2);
+R3: transcription_factor_E2F_active (transcription factor E2F active) + cyclin_A_Cdk2 (cyclin A Cdk2) => cyclin_A_Cdk2 (cyclin A Cdk2);
+R4: transcription_factor_E2F_active (transcription factor E2F active) => cyclin_E_Cdk2 (cyclin E Cdk2) + transcription_factor_E2F_active (transcription factor E2F active);
+R5: cyclin_E_Cdk2 (cyclin E Cdk2) + cyclin_A_Cdk2 (cyclin A Cdk2) => cyclin_A_Cdk2 (cyclin A Cdk2);
+R6: transcription_factor_E2F_active (transcription factor E2F active) => cyclin_A_Cdk2 (cyclin A Cdk2) + transcription_factor_E2F_active (transcription factor E2F active);
+R7: cyclin_A_Cdk2 (cyclin A Cdk2) + Cdc20_active (Cdc20 active) => Cdc20_active (Cdc20 active);
+R8: cyclin_A_Cdk2 (cyclin A Cdk2) => cyclin_B_Cdk1 (cyclin B Cdk1) + cyclin_A_Cdk2 (cyclin A Cdk2);
+R9: cyclin_B_Cdk1 (cyclin B Cdk1) + Cdc20_active (Cdc20 active) => Cdc20_active (Cdc20 active);
+R10: cyclin_B_Cdk1 (cyclin B Cdk1) + Cdc20_total (Cdc20_total) => Cdc20_active (Cdc20 active) + cyclin_B_Cdk1 (cyclin B Cdk1) + Cdc20_total (Cdc20_total);
+R11: Cdc20_active (Cdc20 active) => ;

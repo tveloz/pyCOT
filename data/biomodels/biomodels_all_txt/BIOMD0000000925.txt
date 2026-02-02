@@ -1,0 +1,16 @@
+R0:  => Factor_Xa (Factor Xa);
+R1: Thrombin__IIa (Thrombin (IIa)) + Factor_V (Factor V) + Fibrinogen (Fibrinogen) + Factor_Xa (Factor Xa) + Prothrombin__II (Prothrombin (II)) + Prothrombinase__Va_Xa (Prothrombinase (Va_Xa)) => Factor_Va (Factor Va) + Thrombin__IIa (Thrombin (IIa)) + Factor_V (Factor V) + Fibrinogen (Fibrinogen) + Factor_Xa (Factor Xa) + Prothrombin__II (Prothrombin (II)) + Prothrombinase__Va_Xa (Prothrombinase (Va_Xa));
+R2: Factor_Xa (Factor Xa) => ;
+R3: Factor_Va (Factor Va) + APC (APC) => VInactive (VInactive) + APC (APC);
+R4: Factor_Xa (Factor Xa) + Factor_Va (Factor Va) + APC (APC) + Prothrombinase__Va_Xa (Prothrombinase (Va_Xa)) => Factor_Va (Factor Va) + APC (APC) + Prothrombinase__Va_Xa (Prothrombinase (Va_Xa));
+R5: Prothrombinase__Va_Xa (Prothrombinase (Va_Xa)) + Factor_Xa (Factor Xa) + Factor_Va (Factor Va) => Factor_Xa (Factor Xa) + Factor_Va (Factor Va);
+R6: Prothrombinase__Va_Xa (Prothrombinase (Va_Xa)) + APC (APC) => VInactive (VInactive) + APC (APC);
+R7: Prothrombin__II (Prothrombin (II)) + Xa_L (Xa_L) + Factor_V (Factor V) + Va_Xa_L (Va_Xa_L) + Thrombin__IIa (Thrombin (IIa)) => 2Thrombin__IIa (Thrombin (IIa)) + Xa_L (Xa_L) + Factor_V (Factor V) + Va_Xa_L (Va_Xa_L);
+R8: Protein_C (Protein C) => APC (APC);
+R9: APC (APC) => Inactive_protein_C (Inactive protein C);
+R10: Fibrinogen (Fibrinogen) => Fibrin (Fibrin);
+R11: Factor_V (Factor V) + Thrombin__IIa (Thrombin (IIa)) + Fibrinogen (Fibrinogen) + Factor_Xa (Factor Xa) + Prothrombinase__Va_Xa (Prothrombinase (Va_Xa)) => Thrombin__IIa (Thrombin (IIa)) + Fibrinogen (Fibrinogen) + Factor_Xa (Factor Xa) + Prothrombinase__Va_Xa (Prothrombinase (Va_Xa));
+R12: Thrombin__IIa (Thrombin (IIa)) => Inactive_Thrombin (Inactive Thrombin);
+R13: Va_Xa_L (Va_Xa_L) + Prothrombin__II (Prothrombin (II)) => Thrombin__IIa (Thrombin (IIa)) + Va_Xa_L (Va_Xa_L) + Prothrombin__II (Prothrombin (II));
+R14: Prothrombin__II (Prothrombin (II)) + Va_Xa_L (Va_Xa_L) => Va_Xa_L (Va_Xa_L);
+R15: Factor_Xa (Factor Xa) + Prothrombinase__Va_Xa (Prothrombinase (Va_Xa)) => Factor_Xi (Factor Xi) + Factor_Xa (Factor Xa) + Prothrombinase__Va_Xa (Prothrombinase (Va_Xa));

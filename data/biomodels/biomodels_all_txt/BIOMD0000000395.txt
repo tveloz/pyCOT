@@ -1,0 +1,12 @@
+R0: s140 (Complex_br_(Sap18/Su(fu)/_br_Cubitus_space_interruptus_space_repressor)) => s75 (Hedgehog target gene);
+R1: s158 (Complex_br_(CBP/Cubitus)) => s75 (Hedgehog target gene);
+R2: s7 (Hedgehog) + s1 (Patched) => s21 (Complex_br_(Patched/Hedgehog));
+R3: s69 (Complex_br_(Costal2/Fused/_br_Smoothened)) + s21 (Complex_br_(Patched/Hedgehog)) => s46 (Complex_br_(Costal2/Fused/_br_Smoothened)) + s21 (Complex_br_(Patched/Hedgehog));
+R4: s135 (Sap18) + s128 (Complex_br_(Cubitus_space_interruptus_space_repressor/Su(fu))) => s140 (Complex_br_(Sap18/Su(fu)/_br_Cubitus_space_interruptus_space_repressor));
+R5: s70 (Cubitus_space_interruptus) + s48 (Complex_br_(Costal2/Smoothened/_br_Fused)) => s70 (Cubitus_space_interruptus) + s48 (Complex_br_(Costal2/Smoothened/_br_Fused));
+R6: s148 (smoothened) + s150 (complex) + s157 (sag) => s159 (Complex_br_(Costal2/Fused/../microtubule)) + s157 (sag);
+R7: s46 (Complex_br_(Costal2/Fused/_br_Smoothened)) + s9 (ATP) + s21 (Complex_br_(Patched/Hedgehog)) => s48 (Complex_br_(Costal2/Smoothened/_br_Fused)) + s10 (ADP) + s21 (Complex_br_(Patched/Hedgehog));
+R8: s159 (Complex_br_(Costal2/Fused/../microtubule)) + s21 (Complex_br_(Patched/Hedgehog)) => s68 (Microtubule) + s160 (Complex_br_(Su(fu)/Fused/../_br_Smoothened)) + s21 (Complex_br_(Patched/Hedgehog));
+R9: s70 (Cubitus_space_interruptus) + s71 (CBP) => s158 (Complex_br_(CBP/Cubitus));
+R10: s161 (Complex_br_(Su(fu)/Cubitus)) => s70 (Cubitus_space_interruptus);
+R11: s160 (Complex_br_(Su(fu)/Fused/../_br_Smoothened)) => s161 (Complex_br_(Su(fu)/Cubitus)) + s69 (Complex_br_(Costal2/Fused/_br_Smoothened));

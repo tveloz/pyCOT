@@ -1,0 +1,11 @@
+R0:  => C (C);
+R1: C (C) + E (E) + P (P) => E (E) + P (P);
+R2: C (C) + P (P) => E (E) + C (C) + P (P);
+R3: B (B) + P (P) => E (E) + B (B) + P (P);
+R4: E (E) + C (C) => C (C);
+R5: E (E) => ;
+R6:  => B (B);
+R7: B (B) => ;
+R8: B (B) + E (E) => E (E);
+R9:  => P (P);
+R10: P (P) => ;

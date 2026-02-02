@@ -1,0 +1,11 @@
+R0:  => S_a (Susceptible Avian (S_a));
+R1: S_a (Susceptible Avian (S_a)) => I_a (Infected Avian (I_a));
+R2: I_a (Infected Avian (I_a)) => ;
+R3: I_a (Infected Avian (I_a)) => ;
+R4:  => S_h (Susceptible Human (S_h));
+R5: S_h (Susceptible Human (S_h)) + I_a (Infected Avian (I_a)) => I_h (Infected Human (I_h)) + I_a (Infected Avian (I_a));
+R6: S_h (Susceptible Human (S_h)) => ;
+R7: I_h (Infected Human (I_h)) => ;
+R8: I_h (Infected Human (I_h)) => ;
+R9: I_h (Infected Human (I_h)) => R_h (Recovered Human (R_h));
+R10: R_h (Recovered Human (R_h)) => ;

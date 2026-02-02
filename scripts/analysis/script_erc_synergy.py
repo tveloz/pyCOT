@@ -9,11 +9,11 @@ Can optionally generate a connected subnetwork for testing
 import time
 
 # Import the necessary modules
-from pyCOT.ERC_Hierarchy import (
+from pyCOT.analysis.ERC_Hierarchy import (
     ERC,
     ERC_Hierarchy
 )
-from pyCOT.ERC_Synergy_Complementarity import (
+from pyCOT.analysis.ERC_Synergy_Complementarity import (
     build_erc_sorn
 )
 from pyCOT.io.functions import read_txt

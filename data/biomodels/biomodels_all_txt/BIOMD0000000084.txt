@@ -1,0 +1,8 @@
+R0: R (R) => Rin (Rin);
+R1: Rin (Rin) => R (R);
+R2: x1 (x1) + R (R) => x1p (x1p) + R (R);
+R3: x1p (x1p) => x1 (x1);
+R4: x2 (x2) + x1p (x1p) => x2p (x2p) + x1p (x1p);
+R5: x2p (x2p) => x2 (x2);
+R6: x3 (x3) + x2p (x2p) => x3p (x3p) + x2p (x2p);
+R7: x3p (x3p) => x3 (x3);

@@ -1,0 +1,7 @@
+R0: 2Pstat_sol (Pstat_sol) => PstatDimer_sol (PstatDimer_sol);
+R1: Pstat_nuc (Pstat_nuc) + statPhosphatase_nuc (statPhosphatase_nuc) => stat_nuc (stat_nuc) + statPhosphatase_nuc (statPhosphatase_nuc);
+R2: stat_sol (stat_sol) + statKinase_sol (statKinase_sol) => Pstat_sol (Pstat_sol) + species_test (species_test) + statKinase_sol (statKinase_sol);
+R3: 2Pstat_nuc (Pstat_nuc) => PstatDimer_nuc (PstatDimer_nuc);
+R4: PstatDimer_sol (PstatDimer_sol) => PstatDimer_nuc (PstatDimer_nuc);
+R5: stat_sol (stat_sol) => stat_nuc (stat_nuc);
+R6: stat_sol (stat_sol) => stat_nuc (stat_nuc);

@@ -1,0 +1,6 @@
+R0:  => naive_Tcells (naive_Tcells);
+R1: naive_Tcells (naive_Tcells) + tumor_cells (tumor_cells) => tumor_cells (tumor_cells);
+R2: naive_Tcells (naive_Tcells) + tumor_cells (tumor_cells) => eff_Tcells (eff_Tcells) + naive_Tcells (naive_Tcells) + tumor_cells (tumor_cells);
+R3: eff_Tcells (eff_Tcells) + tumor_cells (tumor_cells) => tumor_cells (tumor_cells);
+R4:  => tumor_cells (tumor_cells);
+R5: tumor_cells (tumor_cells) + eff_Tcells (eff_Tcells) => eff_Tcells (eff_Tcells);

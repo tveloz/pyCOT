@@ -1,0 +1,14 @@
+R0: CAR1 (CAR1) => ACA (ACA) + CAR1 (CAR1);
+R1: ACA (ACA) + PKA (PKA) => PKA (PKA);
+R2: incAMP (incAMP) => PKA (PKA) + incAMP (incAMP);
+R3: PKA (PKA) => ;
+R4: CAR1 (CAR1) => ERK2 (ERK2) + CAR1 (CAR1);
+R5: ERK2 (ERK2) + PKA (PKA) => PKA (PKA);
+R6:  => REGA (REGA);
+R7: REGA (REGA) + ERK2 (ERK2) => ERK2 (ERK2);
+R8: ACA (ACA) => incAMP (incAMP) + ACA (ACA);
+R9: incAMP (incAMP) + REGA (REGA) => REGA (REGA);
+R10: ACA (ACA) => excAMP (excAMP) + ACA (ACA);
+R11: excAMP (excAMP) => ;
+R12: excAMP (excAMP) => CAR1 (CAR1) + excAMP (excAMP);
+R13: CAR1 (CAR1) => ;

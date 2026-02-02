@@ -1,0 +1,7 @@
+R0: M (ERK) + MEK (MEK) + MpT (ERK-PT) => MpY (ERK-PY) + MEK (MEK) + MpT (ERK-PT);
+R1: MpY (ERK-PY) + MEK (MEK) + M (ERK) + MpT (ERK-PT) => Mpp (ERK-PP) + MEK (MEK) + M (ERK) + MpT (ERK-PT);
+R2: M (ERK) + MEK (MEK) + MpY (ERK-PY) => MpT (ERK-PT) + MEK (MEK) + MpY (ERK-PY);
+R3: MpT (ERK-PT) + MEK (MEK) + M (ERK) + MpY (ERK-PY) => Mpp (ERK-PP) + MEK (MEK) + M (ERK) + MpY (ERK-PY);
+R4: Mpp (ERK-PP) + MKP3 (MKP3) + MpY (ERK-PY) + M (ERK) => MpT (ERK-PT) + MKP3 (MKP3) + MpY (ERK-PY) + M (ERK);
+R5: MpT (ERK-PT) + MKP3 (MKP3) + Mpp (ERK-PP) + MpY (ERK-PY) => M (ERK) + MKP3 (MKP3) + Mpp (ERK-PP) + MpY (ERK-PY);
+R6: MpY (ERK-PY) + MKP3 (MKP3) + Mpp (ERK-PP) + MpT (ERK-PT) => M (ERK) + MKP3 (MKP3) + Mpp (ERK-PP) + MpT (ERK-PT);

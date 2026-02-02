@@ -1,0 +1,8 @@
+R0: p53_act (p53_act) => MDM2cyt (MDM2cyt) + p53_act (p53_act);
+R1: MDM2cyt (MDM2cyt) => MDM2nuc (MDM2nuc);
+R2: MDM2cyt (MDM2cyt) => ;
+R3: MDM2nuc (MDM2nuc) => ;
+R4:  => p53_inact (p53_inact);
+R5: p53_inact (p53_inact) => p53_act (p53_act);
+R6: p53_inact (p53_inact) => ;
+R7: p53_act (p53_act) => ;

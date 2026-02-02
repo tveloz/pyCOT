@@ -1,0 +1,6 @@
+R0: CaS (CaS) + IP3 (IP3) + g (g) => CaI (CaI) + IP3 (IP3) + g (g);
+R1: CaI (CaI) => CaS (CaS);
+R2: CaI (CaI) => IP3 (IP3) + CaI (CaI);
+R3: IP3 (IP3) => ;
+R4: CaI (CaI) => g (g) + CaI (CaI);
+R5: g (g) + CaI (CaI) => CaI (CaI);

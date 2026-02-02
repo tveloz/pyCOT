@@ -14,9 +14,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import pyCOT modules
 from pyCOT.io.functions import read_txt, generate_subnetwork_txt
-from pyCOT.rn_visualize import rn_visualize_html, hierarchy_visualize_html
-from pyCOT.Persistent_Modules_Generator import compute_all_organizations
-from pyCOT.semantic_partition import (
+from pyCOT.visualization.rn_visualize import rn_visualize_html, hierarchy_visualize_html
+from pyCOT.analysis.Persistent_Modules_Generator import compute_all_organizations
+from pyCOT.core.semantic_partition import (
     define_semantic_categories,
     get_species_indices_for_category,
     get_categories_for_species,

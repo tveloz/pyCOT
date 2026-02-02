@@ -1,0 +1,13 @@
+R0:  => AcCoA (Acetyl-CoA);
+R1: AcCoA (Acetyl-CoA) => ;
+R2: HOAc (protonated acetate) => HOAc_E (acetate export);
+R3: AcCoA (Acetyl-CoA) + Pta (Phosphate acetyl transferase) => AcP (Acetyl phosphate) + Pta (Phosphate acetyl transferase);
+R4: AcP (Acetyl phosphate) => OAc (Acetate);
+R5: OAc (Acetate) + Acs (Acetyl-CoA synthase) => AcCoA (Acetyl-CoA) + Acs (Acetyl-CoA synthase);
+R6: OAc (Acetate) => HOAc (protonated acetate);
+R7: AcP (Acetyl phosphate) => LacI (lac repressor) + AcP (Acetyl phosphate);
+R8: AcP (Acetyl phosphate) => Acs (Acetyl-CoA synthase) + AcP (Acetyl phosphate);
+R9: LacI (lac repressor) => Pta (Phosphate acetyl transferase) + LacI (lac repressor);
+R10: LacI (lac repressor) => ;
+R11: Acs (Acetyl-CoA synthase) => ;
+R12: Pta (Phosphate acetyl transferase) => ;

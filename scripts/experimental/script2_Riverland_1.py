@@ -13,9 +13,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import pyCOT modules
 from pyCOT.io.functions import read_txt 
-from pyCOT.plot_dynamics import plot_series_ode
+from pyCOT.visualization.plot_dynamics import plot_series_ode
 from pyCOT.simulations import *
-from pyCOT.plot_dynamics import *
+from pyCOT.visualization.plot_dynamics import *
 from pyCOT.simulations.abstractions import abstraction_ordinary
 
 # ========================================

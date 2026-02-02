@@ -1,0 +1,15 @@
+R0: Ca_ER (Ca_ER) + IP3_Cyt (IP3_Cyt) => Ca_Cyt (Ca_Cyt) + IP3_Cyt (IP3_Cyt);
+R1: Ca_Cyt (Ca_Cyt) => Ca_ER (Ca_ER);
+R2: O_o (O_o) => Ca_Cyt (Ca_Cyt) + O_o (O_o);
+R3: Ca_Cyt (Ca_Cyt) => ;
+R4: Ca_Cyt (Ca_Cyt) => IP3_Cyt (IP3_Cyt) + Ca_Cyt (Ca_Cyt);
+R5: IP3_Cyt (IP3_Cyt) + Ca_Cyt (Ca_Cyt) => Ca_Cyt (Ca_Cyt);
+R6: S2 (S2) => S2a (S2a) + S2 (S2);
+R7: S2a (S2a) => ;
+R8: S2 (S2) => S4 (S4) + S2 (S2);
+R9: S4 (S4) => ;
+R10: Orai1 (Orai1) => Oc (Oc) + Orai1 (Orai1);
+R11: Oc (Oc) => ;
+R12: Oc (Oc) + S2a (S2a) => O_o (O_o) + S2a (S2a);
+R13: O_o (O_o) => Oc (Oc);
+R14: O_o (O_o) => ;

@@ -25,7 +25,7 @@ import glob
 
 # Import required modules
 from pyCOT.io.functions import read_txt
-from pyCOT.ERC_Hierarchy import ERC, species_list_to_names
+from pyCOT.analysis.ERC_Hierarchy import ERC, species_list_to_names
 
 def count_cliques_in_hierarchy(graph):
     """Count the number of connected components (cliques) in the hierarchy graph"""

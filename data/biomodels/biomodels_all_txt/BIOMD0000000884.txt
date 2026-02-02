@@ -1,0 +1,6 @@
+R0: U (U) + V (V) => L (L) + U (U) + V (V);
+R1: L (L) => ;
+R2:  => U (U);
+R3: U (U) + V (V) => V (V);
+R4: U (U) + L (L) => V (V) + U (U) + L (L);
+R5: V (V) + L (L) => L (L);

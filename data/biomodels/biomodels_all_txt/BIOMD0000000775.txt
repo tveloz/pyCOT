@@ -1,0 +1,10 @@
+R0:  => G (G);
+R1: G (G) + C (C) => C (C);
+R2: G (G) + Q (Q) => Q (Q);
+R3:  => C (C);
+R4: C (C) + G (G) => G (G);
+R5: C (C) + Q (Q) => Q (Q);
+R6: G (G) => N (N) + G (G);
+R7: N (N) + Q (Q) => Q (Q);
+R8:  => Q (Q);
+R9: Q (Q) => ;

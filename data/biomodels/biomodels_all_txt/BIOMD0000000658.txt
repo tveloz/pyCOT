@@ -1,0 +1,17 @@
+R0: Dsh_i (Dsh_i) + W (W) => Dsh_a (Dsh_a) + W (W);
+R1: Dsh_a (Dsh_a) => Dsh_i (Dsh_i);
+R2: APC_axin_GSK3 (APC/axin/GSK3) + Dsh_a (Dsh_a) => GSK3 (GSK3) + APC_axin (APC/axin) + Dsh_a (Dsh_a);
+R3: APC_axin_GSK3 (APC/axin/GSK3) => APC__axin__GSK3 (APC*/axin*/GSK3);
+R4: APC__axin__GSK3 (APC*/axin*/GSK3) => APC_axin_GSK3 (APC/axin/GSK3);
+R5: GSK3 (GSK3) + APC_axin (APC/axin) => APC_axin_GSK3 (APC/axin/GSK3);
+R6: APC (APC) + Axin (Axin) => APC_axin (APC/axin);
+R7: APC__axin__GSK3 (APC*/axin*/GSK3) + B_catenin_0 (B_catenin) => B_catenin_APC__axin__GSK3 (B_catenin/APC*/axin*/GSK3);
+R8: B_catenin_APC__axin__GSK3 (B_catenin/APC*/axin*/GSK3) => B_catenin__APC__axin__GSK3 (B_catenin*/APC*/axin*/GSK3);
+R9: B_catenin__APC__axin__GSK3 (B_catenin*/APC*/axin*/GSK3) => B_catenin (B_catenin*) + APC__axin__GSK3 (APC*/axin*/GSK3);
+R10: B_catenin (B_catenin*) => ;
+R11:  => B_catenin_0 (B_catenin);
+R12: B_catenin_0 (B_catenin) => ;
+R13:  => Axin (Axin);
+R14: Axin (Axin) => ;
+R15: B_catenin_0 (B_catenin) + TCF (TCF) => B_catenin_TCF (B_catenin/TCF);
+R16: APC (APC) + B_catenin_0 (B_catenin) => B_catenin_APC (B_catenin/APC);

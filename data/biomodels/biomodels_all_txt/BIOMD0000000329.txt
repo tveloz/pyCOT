@@ -1,0 +1,8 @@
+R0:  => a (G-alpha);
+R1: a (G-alpha) => 2a (G-alpha);
+R2: a (G-alpha) + b (activePLC) => b (activePLC);
+R3: a (G-alpha) + c (Calcium) => c (Calcium);
+R4: a (G-alpha) => b (activePLC) + a (G-alpha);
+R5: b (activePLC) => ;
+R6: a (G-alpha) => c (Calcium) + a (G-alpha);
+R7: c (Calcium) => ;

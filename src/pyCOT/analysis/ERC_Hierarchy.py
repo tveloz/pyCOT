@@ -21,8 +21,8 @@ from itertools import chain
 from collections import defaultdict, deque
 from collections import Counter # para el gráfico de cantidad de básicos vs repeticiones
 from pyCOT.io.functions import *
-from pyCOT.rn_visualize import *
-from pyCOT.rn_rustworkx import *
+from pyCOT.visualization.rn_visualize import *
+from pyCOT.core.rn_rustworkx import *
 import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
 import plotly.graph_objects as go

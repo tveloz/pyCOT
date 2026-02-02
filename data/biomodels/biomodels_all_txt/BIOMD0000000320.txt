@@ -1,0 +1,14 @@
+R0: A_dopa (A_dopa) => C_dopa (C_dopa);
+R1: A_dopa (A_dopa) => ;
+R2: A_M (A_M) => C1_M (C1_M);
+R3: A_B (A_B) => C1_B (C1_B);
+R4: A_B (A_B) => ;
+R5: C_dopa (C_dopa) => ;
+R6: C_dopa (C_dopa) => C_OMD (C_3-OMD);
+R7: C_dopa (C_dopa) => ;
+R8: C_OMD (C_3-OMD) => ;
+R9: C1_B (C1_B) => ;
+R10: C1_B (C1_B) => C1_M (C1_M);
+R11: C1_M (C1_M) => ;
+R12: C1_B (C1_B) => C2_B (C2_B);
+R13: C1_M (C1_M) => C2_M (C2_M);

@@ -1,0 +1,11 @@
+R0: CaI (CaI) => IP3 (IP3) + CaI (CaI);
+R1: CaI (CaI) => CaS (CaS);
+R2: CaS (CaS) + g (g) + IP3 (IP3) => CaI (CaI) + g (g) + IP3 (IP3);
+R3: IP3 (IP3) => ;
+R4: CaI (CaI) => g (g) + CaI (CaI);
+R5: g (g) => ;
+R6: CaS (CaS) => CaI (CaI) + CaS (CaS);
+R7: CaI (CaI) => ;
+R8: CaI (CaI) => CaM (CaM);
+R9: CaM (CaM) => CaI (CaI);
+R10: CaS (CaS) + CaI (CaI) + g (g) + IP3 (IP3) => CaM (CaM) + CaI (CaI) + g (g) + IP3 (IP3);

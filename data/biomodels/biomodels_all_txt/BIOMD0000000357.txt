@@ -1,0 +1,8 @@
+R0: E (E) + P (P) => E_P_1 (E_P_1);
+R1: E_P_1 (E_P_1) => E (E) + M (M);
+R2: E (E) + M (M) => E_M (E_M);
+R3: E_M (E_M) => E (E) + T (T);
+R4: E (E) + P (P) => E_P_2 (E_P_2);
+R5: E_P_2 (E_P_2) => E (E) + P2 (P2);
+R6: E (E) + P2 (P2) => E_P2 (E_P2);
+R7: E_P2 (E_P2) => E (E) + T (T);

@@ -1,0 +1,5 @@
+R0: EmptySet (EmptySet) + P (Pt) => M (M) + P (Pt);
+R1: EmptySet (EmptySet) + M (M) => P (Pt) + M (M);
+R2: M (M) => EmptySet (EmptySet);
+R3: P (Pt) => EmptySet (EmptySet);
+R4: P (Pt) => EmptySet (EmptySet);

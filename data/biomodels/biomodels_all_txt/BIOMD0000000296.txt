@@ -1,0 +1,8 @@
+R0: source (source) + C2 (C2) => C1 (C1) + C2 (C2);
+R1: C1 (C1) + A2 (A2) => sink (sink) + A2 (A2);
+R2: source (source) + C1 (C1) => C2 (C2) + C1 (C1);
+R3: C2 (C2) + A1 (A1) => sink (sink) + A1 (A1);
+R4: source (source) + C1 (C1) => A1 (A1) + C1 (C1);
+R5: A1 (A1) => sink (sink);
+R6: source (source) + C2 (C2) => A2 (A2) + C2 (C2);
+R7: A2 (A2) => sink (sink);

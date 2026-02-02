@@ -1,0 +1,7 @@
+R0: infected_tumor_cells (infected_tumor_cells) => uninfected_tumor_cells (uninfected_tumor_cells) + infected_tumor_cells (infected_tumor_cells);
+R1: uninfected_tumor_cells (uninfected_tumor_cells) => ;
+R2: uninfected_tumor_cells (uninfected_tumor_cells) => infected_tumor_cells (infected_tumor_cells) + uninfected_tumor_cells (uninfected_tumor_cells);
+R3: infected_tumor_cells (infected_tumor_cells) + virus_specific_CTLs (virus-specific_CTLs) => virus_specific_CTLs (virus-specific_CTLs);
+R4: uninfected_tumor_cells (uninfected_tumor_cells) => infected_tumor_cells (infected_tumor_cells);
+R5: infected_tumor_cells (infected_tumor_cells) => virus_specific_CTLs (virus-specific_CTLs) + infected_tumor_cells (infected_tumor_cells);
+R6: virus_specific_CTLs (virus-specific_CTLs) => ;

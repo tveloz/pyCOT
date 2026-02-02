@@ -1,0 +1,2 @@
+R0: Cdk2 (Cdk2) + CyclinA (CyclinA) => CDK2cycA (CDK2cycA);
+R1: CDK2cycA (CDK2cycA) => CDK2cycA_star_ (CDK2cycA_star_);

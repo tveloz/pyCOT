@@ -1,0 +1,12 @@
+R0:  => P (P);
+R1: P (P) => ;
+R2: P (P) + N (N) => N (N);
+R3: P (P) => ;
+R4: Pt (Pt) + N (N) => N (N);
+R5: Pt (Pt) => ;
+R6: N (N) => Pt (Pt);
+R7: Pt (Pt) => ;
+R8:  => M (M);
+R9: M (M) => ;
+R10:  => N (N);
+R11: N (N) => ;

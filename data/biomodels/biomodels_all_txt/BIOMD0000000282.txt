@@ -1,0 +1,3 @@
+R0: e (enzyme E (catalase)) + x (substrate S (hydrogen peroxide)) => p (enzyme-substrate complex ES (catalase - hydrogen peroxide));
+R1: p (enzyme-substrate complex ES (catalase - hydrogen peroxide)) + x (substrate S (hydrogen peroxide)) => e (enzyme E (catalase)) + p1 (product 1);
+R2: p (enzyme-substrate complex ES (catalase - hydrogen peroxide)) + a (donor AH2) => e (enzyme E (catalase)) + p2 (product 2);

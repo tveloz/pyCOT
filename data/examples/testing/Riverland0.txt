@@ -1,0 +1,17 @@
+R1: V	=>	V+V_n;		
+R2: W+V	=>	V+V_W;	
+R3: V_W		=>	R_W;		
+R4: G_f+V_W 	=>	G_f+R_W;	
+R5: V_W+V	=>	V_u + V	;
+R6: V_n+V_u	=>	0		;
+R7: V_n+G_f	=>	V_n		;
+R8: R		=>	R+R_n	;	
+R9: R_W+R	=>	R_u + R	;
+R10: R_n+R_u	=>	0	;	
+R11: R_n		=>	G_f+R_n;	
+R12: L		=>	L+L_n		;
+R13: L+R_u		=>	L+L_u+R_u;	
+R14: L_n+L_u	=>	0		;
+R15: L_n		=>	G_f+L_n	;
+R16: 		=>	W		;
+

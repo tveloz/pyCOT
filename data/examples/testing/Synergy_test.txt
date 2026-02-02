@@ -1,0 +1,7 @@
+R1:	a+b=> b;
+R2: a+b=>a;
+R3:	c+d=> d;
+R4: d+c=>c
+R5:	a+d =>e;
+R6:	c+b=>y;
+R7: y+e=>x

@@ -1,0 +1,8 @@
+R0: X (X) + RVV (RVV) => Xa (Xa) + RVV (RVV);
+R1: Xa (Xa) => Xa_ATIII (Xa_ATIII);
+R2: Va (Va) + Xa (Xa) + PL (PL) => PT (PT);
+R3: V (V) + IIa (IIa) => Va (Va) + IIa (IIa);
+R4: II (II) + PT (PT) => IIa (IIa) + PT (PT);
+R5: II (II) + Xa (Xa) => IIa (IIa) + Xa (Xa);
+R6: IIa (IIa) => IIa_alpha2M (IIa_alpha2M);
+R7: IIa (IIa) => IIa_ATIII (IIa_ATIII);

@@ -1,5 +1,5 @@
 import pytest
-from pyCOT.rn_rustworkx import Reaction, ReactionNode, ReactionEdge
+from pyCOT.core.rn_rustworkx import Reaction, ReactionNode, ReactionEdge
 
 @pytest.fixture
 def reaction_node():

@@ -1,0 +1,15 @@
+R0:  => normalized_normal_cell_n (normalized normal cell n);
+R1: normalized_normal_cell_n (normalized normal cell n) => ;
+R2: normalized_normal_cell_n (normalized normal cell n) + normalized_cancer_cell_a (normalized cancer cell a) => normalized_cancer_cell_a (normalized cancer cell a);
+R3: normalized_normal_cell_n (normalized normal cell n) + normalized_pre_cancer_cell_g (normalized pre-cancer cell g) => normalized_pre_cancer_cell_g (normalized pre-cancer cell g);
+R4:  => normalized_pre_cancer_cell_g (normalized pre-cancer cell g);
+R5: normalized_pre_cancer_cell_g (normalized pre-cancer cell g) => ;
+R6: normalized_pre_cancer_cell_g (normalized pre-cancer cell g) + normalized_normal_cell_n (normalized normal cell n) => normalized_normal_cell_n (normalized normal cell n);
+R7: normalized_pre_cancer_cell_g (normalized pre-cancer cell g) => ;
+R8: normalized_pre_cancer_cell_g (normalized pre-cancer cell g) + normalized_cancer_cell_a (normalized cancer cell a) => normalized_cancer_cell_a (normalized cancer cell a);
+R9: normalized_cancer_cell_a (normalized cancer cell a) + normalized_pre_cancer_cell_g (normalized pre-cancer cell g) => normalized_pre_cancer_cell_g (normalized pre-cancer cell g);
+R10: normalized_cancer_cell_a (normalized cancer cell a) => ;
+R11:  => normalized_cancer_cell_a (normalized cancer cell a);
+R12: normalized_cancer_cell_a (normalized cancer cell a) + normalized_normal_cell_n (normalized normal cell n) => normalized_normal_cell_n (normalized normal cell n);
+R13: normalized_cancer_cell_a (normalized cancer cell a) => ;
+R14: normalized_pre_cancer_cell_g (normalized pre-cancer cell g) => normalized_cancer_cell_a (normalized cancer cell a);

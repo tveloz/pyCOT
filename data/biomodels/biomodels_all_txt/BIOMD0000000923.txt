@@ -1,0 +1,4 @@
+R0: Osteoclasts__O_c (Osteoclasts (O_c)) + Osteoblasts__O_b (Osteoblasts (O_b)) => Bone_Density__z (Bone Density (z)) + Osteoclasts__O_c (Osteoclasts (O_c)) + Osteoblasts__O_b (Osteoblasts (O_b));
+R1: Osteoclasts__O_c (Osteoclasts (O_c)) + B (B) => Osteoblasts__O_b (Osteoblasts (O_b)) + Osteoclasts__O_c (Osteoclasts (O_c)) + B (B);
+R2: B (B) + Osteoblasts__O_b (Osteoblasts (O_b)) => Osteoclasts__O_c (Osteoclasts (O_c)) + B (B) + Osteoblasts__O_b (Osteoblasts (O_b));
+R3:  => B (B);

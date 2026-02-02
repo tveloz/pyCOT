@@ -1,0 +1,8 @@
+R0: infected_cancer_cells (infected_cancer_cells) => uninfected_cancer_cells (uninfected_cancer_cells) + infected_cancer_cells (infected_cancer_cells);
+R1: uninfected_cancer_cells (uninfected_cancer_cells) + free_virus (free_virus) => infected_cancer_cells (infected_cancer_cells);
+R2: uninfected_cancer_cells (uninfected_cancer_cells) + immune_cells (immune_cells) => immune_cells (immune_cells);
+R3: infected_cancer_cells (infected_cancer_cells) + immune_cells (immune_cells) => immune_cells (immune_cells);
+R4: infected_cancer_cells (infected_cancer_cells) => free_virus (free_virus) + infected_cancer_cells (infected_cancer_cells);
+R5: free_virus (free_virus) + immune_cells (immune_cells) => immune_cells (immune_cells);
+R6: infected_cancer_cells (infected_cancer_cells) + uninfected_cancer_cells (uninfected_cancer_cells) => immune_cells (immune_cells) + infected_cancer_cells (infected_cancer_cells) + uninfected_cancer_cells (uninfected_cancer_cells);
+R7: immune_cells (immune_cells) => ;

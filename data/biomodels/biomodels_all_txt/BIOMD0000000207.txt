@@ -1,0 +1,6 @@
+R0: M2 (cdk2) => C1 (cyclinB) + M2 (cdk2);
+R1: C1 (cyclinB) + X1 (ubiquitin ligase) => X1 (ubiquitin ligase);
+R2: C1 (cyclinB) => ;
+R3: M1 (cdk1) => C2 (cyclinE) + M1 (cdk1);
+R4: C2 (cyclinE) + X2 (Ubiquitin ligase 2) => X2 (Ubiquitin ligase 2);
+R5: C2 (cyclinE) => ;

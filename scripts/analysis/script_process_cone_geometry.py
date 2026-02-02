@@ -33,13 +33,13 @@ from mpl_toolkits.mplot3d import Axes3D
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pyCOT.io.functions import read_txt
-from pyCOT.process_structure import (
-    compute_nullspace_vectors, 
+from pyCOT.analysis.process_structure import (
+    compute_nullspace_vectors,
     compute_feasible_region,
     classify_feasible_points,
     analyze_cone
 )
-from pyCOT.plot_process_analysis import plot_cone_and_region, plot_cone_2d_projections
+from pyCOT.visualization.plot_process_analysis import plot_cone_and_region, plot_cone_2d_projections
 
 # Create output directory
 output_dir = "./outputs/script_cone_geometry"

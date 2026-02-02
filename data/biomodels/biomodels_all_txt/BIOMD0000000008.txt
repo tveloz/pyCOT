@@ -1,0 +1,13 @@
+R0:  => C (cyclin);
+R1: C (cyclin) + X (protease) => X (protease);
+R2: C (cyclin) => ;
+R3:  => M (cdc2k);
+R4: M (cdc2k) => ;
+R5:  => X (protease);
+R6: X (protease) => ;
+R7: C (cyclin) + Y (cyclin inhibitor) => Z (complex inhibitor-cyclin);
+R8: Z (complex inhibitor-cyclin) => C (cyclin) + Y (cyclin inhibitor);
+R9: Z (complex inhibitor-cyclin) => C (cyclin);
+R10: Z (complex inhibitor-cyclin) => Y (cyclin inhibitor);
+R11:  => Y (cyclin inhibitor);
+R12: Y (cyclin inhibitor) => ;

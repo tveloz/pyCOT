@@ -1,0 +1,11 @@
+Analysis started at 2025-04-11 17:22:01
+Input directory: networks/Navarino/
+
+Starting batch analysis of reaction networks in networks/Navarino/
+Found 2 reaction network files
+
+Processing file 1/2: networks/Navarino/RN_IN_02_PyCOT.txt
+
+
+=== ANALYZING FILE: networks/Navarino/RN_IN_02_PyCOT.txt ===
+Calculating semi-organisations for RN_IN_02_PyCOT

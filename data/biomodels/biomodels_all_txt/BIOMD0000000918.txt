@@ -1,0 +1,7 @@
+R0: serum (serum) => Myc (Myc) + serum (serum);
+R1: Myc (Myc) + CycD (CycD) + Rb_E2F_complex (Rb-E2F complex) + CycE (CycE) + Rb (Rb) => E2F (E2F) + Myc (Myc) + CycD (CycD) + Rb_E2F_complex (Rb-E2F complex) + CycE (CycE) + Rb (Rb);
+R2: Myc (Myc) + serum (serum) => CycD (CycD) + Myc (Myc) + serum (serum);
+R3: E2F (E2F) => CycE (CycE) + E2F (E2F);
+R4: Phosphorylated_Rb (Phosphorylated Rb) + E2F (E2F) + CycD (CycD) + CycE (CycE) => Rb (Rb) + Phosphorylated_Rb (Phosphorylated Rb) + E2F (E2F) + CycD (CycD) + CycE (CycE);
+R5: CycD (CycD) + Rb (Rb) + CycE (CycE) + Rb_E2F_complex (Rb-E2F complex) => Phosphorylated_Rb (Phosphorylated Rb) + CycD (CycD) + Rb (Rb) + CycE (CycE) + Rb_E2F_complex (Rb-E2F complex);
+R6: CycD (CycD) + CycE (CycE) => Rb_E2F_complex (Rb-E2F complex) + CycD (CycD) + CycE (CycE);

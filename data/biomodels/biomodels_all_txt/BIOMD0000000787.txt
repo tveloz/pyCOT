@@ -1,0 +1,4 @@
+R0:  => V_Tumor_Volume (V_Tumor_Volume);
+R1: V_Tumor_Volume (V_Tumor_Volume) + C_Cytotoxic_T_Lymphocytes_Coverage (C_Cytotoxic_T_Lymphocytes_Coverage) => C_Cytotoxic_T_Lymphocytes_Coverage (C_Cytotoxic_T_Lymphocytes_Coverage);
+R2: V_Tumor_Volume (V_Tumor_Volume) => C_Cytotoxic_T_Lymphocytes_Coverage (C_Cytotoxic_T_Lymphocytes_Coverage) + V_Tumor_Volume (V_Tumor_Volume);
+R3: C_Cytotoxic_T_Lymphocytes_Coverage (C_Cytotoxic_T_Lymphocytes_Coverage) => ;

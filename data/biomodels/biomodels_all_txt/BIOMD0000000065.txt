@@ -1,0 +1,16 @@
+R0:  => M (mRNA);
+R1: M (mRNA) => ;
+R2: I1 (PartialmRNA) => M (mRNA);
+R3: A (allolactose) => I1 (PartialmRNA) + A (allolactose);
+R4: B (Betagalactosidase) => ;
+R5: I2 (PartialBetagalactosidase) => B (Betagalactosidase);
+R6: M (mRNA) => I2 (PartialBetagalactosidase) + M (mRNA);
+R7: A (allolactose) => ;
+R8: A (allolactose) + B (Betagalactosidase) => B (Betagalactosidase);
+R9: L (lactose_internal) + B (Betagalactosidase) => A (allolactose) + B (Betagalactosidase);
+R10: L (lactose_internal) => ;
+R11: L (lactose_internal) + P (permease) => P (permease);
+R12: P (permease) + L_e (External_Lactose) => L (lactose_internal) + P (permease) + L_e (External_Lactose);
+R13: P (permease) => ;
+R14: I3 (PartialPermease) => P (permease);
+R15: M (mRNA) => I3 (PartialPermease) + M (mRNA);

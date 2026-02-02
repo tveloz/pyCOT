@@ -1,0 +1,8 @@
+R0: Glco (Glucose outside the cell) + G6P (Glucose 6-phosphate) => Glci (Glucose inside the cell) + G6P (Glucose 6-phosphate);
+R1: ATP (ATP) + Glci (Glucose inside the cell) => G6P (Glucose 6-phosphate);
+R2: ATP (ATP) + G6P (Glucose 6-phosphate) => Carbo (Glycogen and Trehalose);
+R3: ATP (ATP) + G6P (Glucose 6-phosphate) => FDP (Fructose 1,6-phosphate);
+R4: FDP (Fructose 1,6-phosphate) => 2ATP (ATP) + 2PEP (Phosphoenol pyruvate);
+R5: PEP (Phosphoenol pyruvate) + FDP (Fructose 1,6-phosphate) => ATP (ATP) + EtOH (Ethanol) + FDP (Fructose 1,6-phosphate);
+R6: FDP (Fructose 1,6-phosphate) + PEP (Phosphoenol pyruvate) + ATP (ATP) => Gly (Glycerol) + PEP (Phosphoenol pyruvate) + ATP (ATP);
+R7: ATP (ATP) => ;

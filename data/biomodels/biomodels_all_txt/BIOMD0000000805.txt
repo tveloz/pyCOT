@@ -1,0 +1,10 @@
+R0: He (He) => Hi (Hi);
+R1: Hi (Hi) => He (He);
+R2: Hi (Hi) + Li (Li) => He (He) + Le (Le);
+R3:  => Hi (Hi);
+R4:  => Hi (Hi);
+R5: He (He) => ;
+R6:  => Li (Li);
+R7: Li (Li) => ;
+R8: Le (Le) => ;
+R9: Hi (Hi) => Li (Li) + Hi (Hi);

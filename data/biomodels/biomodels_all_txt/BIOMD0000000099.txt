@@ -1,0 +1,14 @@
+R0: species_6 (ERK2) => species_4 (ACA) + species_6 (ERK2);
+R1: species_4 (ACA) => ;
+R2: species_1 (In_cAMP) => species_2 (PKA) + species_1 (In_cAMP);
+R3: species_2 (PKA) => ;
+R4: species_5 (CAR1) => species_6 (ERK2) + species_5 (CAR1);
+R5: species_6 (ERK2) + species_2 (PKA) => species_2 (PKA);
+R6:  => species_3 (REGA);
+R7: species_3 (REGA) + species_6 (ERK2) => species_6 (ERK2);
+R8: species_4 (ACA) => species_1 (In_cAMP) + species_4 (ACA);
+R9: species_1 (In_cAMP) + species_3 (REGA) => species_3 (REGA);
+R10: species_4 (ACA) => species_0 (Ex_cAMP) + species_4 (ACA);
+R11: species_0 (Ex_cAMP) => ;
+R12: species_0 (Ex_cAMP) => species_5 (CAR1) + species_0 (Ex_cAMP);
+R13: species_5 (CAR1) + species_2 (PKA) => species_2 (PKA);

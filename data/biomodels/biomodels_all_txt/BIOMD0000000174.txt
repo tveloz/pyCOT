@@ -1,0 +1,10 @@
+R0:  => r5 (Rab5-GDP);
+R1: r5 (Rab5-GDP) + R5 (Rab5-GTP) => 2R5 (Rab5-GTP);
+R2: r5 (Rab5-GDP) => ;
+R3:  => r7 (Rab7-GDP);
+R4: r7 (Rab7-GDP) + R7 (Rab7-GTP) => 2R7 (Rab7-GTP);
+R5: r7 (Rab7-GDP) + R5 (Rab5-GTP) => R7 (Rab7-GTP) + R5 (Rab5-GTP);
+R6: R5 (Rab5-GTP) + R7 (Rab7-GTP) => r5 (Rab5-GDP) + R7 (Rab7-GTP);
+R7: r7 (Rab7-GDP) => ;
+R8: R5 (Rab5-GTP) => r5 (Rab5-GDP);
+R9: R7 (Rab7-GTP) => r7 (Rab7-GDP);

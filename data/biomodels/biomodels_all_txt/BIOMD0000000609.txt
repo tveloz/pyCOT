@@ -1,0 +1,10 @@
+R0: 2Paracetamol_APAP (Paracetamol_APAP) => NAPQI (NAPQI) + Paracetamol_APAP (Paracetamol_APAP);
+R1: 2NAPQI (NAPQI) => Paracetamol_APAP (Paracetamol_APAP) + NAPQI (NAPQI);
+R2: 2Paracetamol_APAP (Paracetamol_APAP) => Paracetamol_APAP (Paracetamol_APAP);
+R3: 2NAPQI (NAPQI) => Protein_adducts (Protein_adducts) + NAPQI (NAPQI);
+R4: 2NAPQI (NAPQI) + 2GSH (GSH) => NAPQI (NAPQI) + GSH (GSH);
+R5: 2GSH (GSH) => GSH (GSH);
+R6:  => GSH (GSH);
+R7: 2Paracetamol_APAP (Paracetamol_APAP) + 2Sulphate__PAPS (Sulphate_PAPS) => Paracetamol_APAP (Paracetamol_APAP) + Sulphate__PAPS (Sulphate_PAPS);
+R8: 2Sulphate__PAPS (Sulphate_PAPS) => Sulphate__PAPS (Sulphate_PAPS);
+R9:  => Sulphate__PAPS (Sulphate_PAPS);

@@ -1,0 +1,26 @@
+r1: A_v + 2*iG_A => A_p + 2*iG_A ;
+r2: B_v +  2*iG_B => B_p + 2*iG_B;
+r3: 2*A_p => 2*A_p + iG_A;
+r4: 2*B_p => 2*B_p + iG_B;
+r5: 2*A_v => 2*A_v + iD_A;
+r6: 2*B_v => 2*B_v + iD_B;
+r7: A_p + D_A => A_v + D_A;
+r8: B_p + D_B => B_v + D_B;
+r9: A_v + A_p + iD_A => 2*A_v;
+r10: B_v + B_p + iD_B => 2*B_v;
+r11: A_p + A_v + iG_A => 2*A_p + iG_A;
+r12: B_p + B_v + iG_B => 2*B_p + iG_B;
+r13: A_v + G_B => A_v + D_B;
+r14: B_v + G_A => B_v + D_A;
+r15: A_p + D_A => A_p + G_A;
+r16: B_p + D_B => B_p + G_B;
+#Peaceful B witnessing damage develops grievance perception without being violent themselves
+r17b: B_p + D_B => B_p + D_B + iD_B
+r17a: A_p + D_A => A_p + D_A + iD_A
+# Grievance perception converts peaceful to violent
+r18b: B_p + iD_B => B_v + iD_B 
+r18a: A_p + iD_A => A_v + iD_A
+r19: iG_A =>;
+r20: iG_B =>;
+r21: iD_A =>;
+r22: iD_B =>

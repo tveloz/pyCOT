@@ -1,0 +1,3 @@
+R0:  => Population_of_Eggs (Population of Eggs);
+R1: Population_of_Eggs (Population of Eggs) => Population_of_Larvae (Population of Larvae) + Population_of_Eggs (Population of Eggs);
+R2: Population_of_Larvae (Population of Larvae) => Population_of_Pupae (Population of Pupae) + Population_of_Larvae (Population of Larvae);

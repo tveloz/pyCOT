@@ -1,0 +1,5 @@
+R0: c3 (ClosedState_3) => c2 (ClosedState_2);
+R1: c2 (ClosedState_2) => c1 (ClosedState_1);
+R2: c1 (ClosedState_1) => o (OpenState);
+R3: o (OpenState) => i (InactivationState);
+R4: c1 (ClosedState_1) => i (InactivationState);

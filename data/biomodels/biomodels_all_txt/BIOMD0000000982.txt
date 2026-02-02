@@ -1,0 +1,2 @@
+R0: Susceptible (Susceptible) + Infected (Infected) => 2Infected (Infected);
+R1: Infected (Infected) => Removed (Removed);

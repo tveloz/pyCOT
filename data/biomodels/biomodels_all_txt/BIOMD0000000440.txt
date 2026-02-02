@@ -1,0 +1,10 @@
+R0: 2species_0 (MKKK) + 2species_7 (M_PP) => species_1 (MKKK_P) + 2species_7 (M_PP) + species_0 (MKKK);
+R1: 2species_2 (MKK) + 2species_1 (MKKK_P) + 2species_3 (MKK_P) + 2species_7 (M_PP) => 3species_3 (MKK_P) + 2species_1 (MKKK_P) + 2species_7 (M_PP) + species_2 (MKK);
+R2: 2species_3 (MKK_P) + 2species_1 (MKKK_P) + 2species_2 (MKK) + 2species_7 (M_PP) => species_4 (MKK_PP) + 2species_1 (MKKK_P) + 2species_2 (MKK) + 2species_7 (M_PP) + species_3 (MKK_P);
+R3: 2species_5 (M) + 2species_4 (MKK_PP) + 2species_6 (M_P) => 3species_6 (M_P) + 2species_4 (MKK_PP) + species_5 (M);
+R4: 2species_6 (M_P) + 2species_4 (MKK_PP) + 2species_5 (M) => species_7 (M_PP) + 2species_4 (MKK_PP) + 2species_5 (M) + species_6 (M_P);
+R5: 2species_1 (MKKK_P) + 2species_8 (P1) => species_0 (MKKK) + 2species_8 (P1) + species_1 (MKKK_P);
+R6: 2species_4 (MKK_PP) + 2species_9 (P2) + 2species_3 (MKK_P) => 3species_3 (MKK_P) + 2species_9 (P2) + species_4 (MKK_PP);
+R7: 2species_3 (MKK_P) + 2species_9 (P2) + 2species_4 (MKK_PP) => species_2 (MKK) + 2species_9 (P2) + 2species_4 (MKK_PP) + species_3 (MKK_P);
+R8: 2species_7 (M_PP) + 2species_10 (P3) + 2species_6 (M_P) + species_5 (M) => 3species_6 (M_P) + 2species_10 (P3) + species_5 (M) + species_7 (M_PP);
+R9: 2species_6 (M_P) + 2species_10 (P3) + 2species_7 (M_PP) + species_5 (M) => 2species_5 (M) + 2species_10 (P3) + 2species_7 (M_PP) + species_6 (M_P);

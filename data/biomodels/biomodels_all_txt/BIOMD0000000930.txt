@@ -1,0 +1,14 @@
+R0:  => Tumor_Cell_Population__T (Tumor Cell Population (T));
+R1: Tumor_Cell_Population__T (Tumor Cell Population (T)) + Effector_immune_cell_population__N (Effector immune cell population (N)) => Effector_immune_cell_population__N (Effector immune cell population (N));
+R2: Tumor_Cell_Population__T (Tumor Cell Population (T)) + Chemotherapeutic_drug_concentration__M (Chemotherapeutic drug concentration (M)) => Chemotherapeutic_drug_concentration__M (Chemotherapeutic drug concentration (M));
+R3:  => Effector_immune_cell_population__N (Effector immune cell population (N));
+R4: Tumor_Cell_Population__T (Tumor Cell Population (T)) => Effector_immune_cell_population__N (Effector immune cell population (N)) + Tumor_Cell_Population__T (Tumor Cell Population (T));
+R5: Effector_immune_cell_population__N (Effector immune cell population (N)) => ;
+R6: Effector_immune_cell_population__N (Effector immune cell population (N)) + Tumor_Cell_Population__T (Tumor Cell Population (T)) => Tumor_Cell_Population__T (Tumor Cell Population (T));
+R7: Effector_immune_cell_population__N (Effector immune cell population (N)) + Chemotherapeutic_drug_concentration__M (Chemotherapeutic drug concentration (M)) => Chemotherapeutic_drug_concentration__M (Chemotherapeutic drug concentration (M));
+R8:  => Circulating_lymphocyte_population__C (Circulating lymphocyte population (C));
+R9: Circulating_lymphocyte_population__C (Circulating lymphocyte population (C)) => ;
+R10: Circulating_lymphocyte_population__C (Circulating lymphocyte population (C)) + Chemotherapeutic_drug_concentration__M (Chemotherapeutic drug concentration (M)) => Chemotherapeutic_drug_concentration__M (Chemotherapeutic drug concentration (M));
+R11: Chemotherapeutic_drug_concentration__M (Chemotherapeutic drug concentration (M)) => ;
+R12:  => Chemotherapeutic_drug_concentration__M (Chemotherapeutic drug concentration (M));
+R13: Chemotherapeutic_drug_concentration__M (Chemotherapeutic drug concentration (M)) + Tumor_Cell_Population__T (Tumor Cell Population (T)) => Tumor_Cell_Population__T (Tumor Cell Population (T));

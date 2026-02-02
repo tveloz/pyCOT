@@ -1,0 +1,13 @@
+R0: s10 (C_3) => s11 (C_3_P);
+R1: s2 (C3_Gene) + s11 (C_3_P) => s9 (C3_mRNA) + s11 (C_3_P);
+R2: s9 (C3_mRNA) => species_12 (junk);
+R3: s10 (C_3) => species_12 (junk);
+R4: s11 (C_3_P) => species_12 (junk);
+R5: s13 (C_3_pre) + s9 (C3_mRNA) => s10 (C_3) + s9 (C3_mRNA);
+R6: species_2 (C1_mRNA) => species_1 (C1);
+R7: species_3 (C1_phos) + s11 (C_3_P) => species_4 (c1c3complex);
+R8: species_1 (C1) => species_3 (C1_phos);
+R9: species_1 (C1) => species_12 (junk);
+R10: species_4 (c1c3complex) => species_12 (junk);
+R11: species_3 (C1_phos) => species_1 (C1);
+R12: species_3 (C1_phos) => species_12 (junk);

@@ -1,0 +1,3 @@
+R0:  => Normal_cells (Normal_cells);
+R1: Normal_cells (Normal_cells) + Tumor_cells (Tumor_cells) => Tumor_cells (Tumor_cells);
+R2: Normal_cells (Normal_cells) => Tumor_cells (Tumor_cells) + Normal_cells (Normal_cells);

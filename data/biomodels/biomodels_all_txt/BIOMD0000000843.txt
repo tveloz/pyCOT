@@ -1,0 +1,15 @@
+R0: HSP (HSP) + HSF_3 (HSF_3) => 2HSF (HSF) + HSP_HSF (HSP_HSF);
+R1: HSP (HSP) + S (S) => HSP_S (HSP_S);
+R2: HSP_S (HSP_S) => HSP (HSP) + S (S);
+R3: HSF (HSF) + HSP (HSP) => HSP_HSF (HSP_HSF);
+R4: HSP_HSF (HSP_HSF) => HSP (HSP) + HSF (HSF);
+R5: HSP (HSP) => ;
+R6: HSP_S (HSP_S) => HSP (HSP) + P (P);
+R7: mRNA (mRNA) => HSP (HSP) + mRNA (mRNA);
+R8:  => HSP (HSP);
+R9: 3HSF (HSF) => HSF_3 (HSF_3);
+R10: P (P) => S (S);
+R11: HSE (HSE) + HSF_3 (HSF_3) => HSE_HSF_3 (HSE_HSF_3);
+R12: HSE_HSF_3 (HSE_HSF_3) => HSE (HSE) + HSF_3 (HSF_3);
+R13: HSE_HSF_3 (HSE_HSF_3) => mRNA (mRNA) + HSE_HSF_3 (HSE_HSF_3);
+R14: mRNA (mRNA) => ;

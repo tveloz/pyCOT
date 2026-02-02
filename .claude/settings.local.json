@@ -12,9 +12,13 @@
       "Bash(git credential-manager:*)",
       "Bash(git config:*)",
       "Bash(python scripts/script_org_computation_pypeline1.py:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "c:\\Users\\hp\\Dropbox\\Public\\AcademicWork\\Europe\\CLEA\\Postdocs\\TempletonPostdoc\\sftw\\pyCOT\\src\\pyCOT"
+    ]
   }
 }

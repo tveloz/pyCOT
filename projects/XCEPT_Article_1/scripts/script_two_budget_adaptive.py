@@ -28,11 +28,11 @@ warnings.filterwarnings('ignore')
 # Add the root directory to the PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 from pyCOT.io.functions import read_txt
-from pyCOT.semantic_partition import define_semantic_categories, SemanticPartition
-from pyCOT.process_analyzer import (classify_process_mode, is_cognitive_domain,
+from pyCOT.core.semantic_partition import define_semantic_categories, SemanticPartition
+from pyCOT.analysis.process_analyzer import (classify_process_mode, is_cognitive_domain,
                                      analyze_category_behavior, track_category_sequence,
                                      compute_category_statistics)
-from pyCOT.process_structure import rolling_window_aggregation
+from pyCOT.analysis.process_structure import rolling_window_aggregation
 
 # ============================================================================
 # SCENARIO DEFINITIONS

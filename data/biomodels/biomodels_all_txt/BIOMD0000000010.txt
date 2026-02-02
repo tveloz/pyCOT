@@ -1,0 +1,10 @@
+R0: MKKK (Mos) + MAPK_PP (Erk2-PP) => MKKK_P (Mos-P) + MAPK_PP (Erk2-PP);
+R1: MKKK_P (Mos-P) => MKKK (Mos);
+R2: MKK (Mek1) + MKKK_P (Mos-P) => MKK_P (Mek1-P) + MKKK_P (Mos-P);
+R3: MKK_P (Mek1-P) + MKKK_P (Mos-P) => MKK_PP (Mek1-PP) + MKKK_P (Mos-P);
+R4: MKK_PP (Mek1-PP) => MKK_P (Mek1-P);
+R5: MKK_P (Mek1-P) => MKK (Mek1);
+R6: MAPK (Erk2) + MKK_PP (Mek1-PP) => MAPK_P (Erk2-P) + MKK_PP (Mek1-PP);
+R7: MAPK_P (Erk2-P) + MKK_PP (Mek1-PP) => MAPK_PP (Erk2-PP) + MKK_PP (Mek1-PP);
+R8: MAPK_PP (Erk2-PP) => MAPK_P (Erk2-P);
+R9: MAPK_P (Erk2-P) => MAPK (Erk2);

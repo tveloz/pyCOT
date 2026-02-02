@@ -1,0 +1,16 @@
+R0: 2species_4 (Pbs2) + 2species_12 (Hog1PPActive) => species_5 (Pbs2P) + 2species_12 (Hog1PPActive) + species_4 (Pbs2);
+R1: 2species_5 (Pbs2P) + 2species_6 (Phosphatase) => species_4 (Pbs2) + 2species_6 (Phosphatase) + species_5 (Pbs2P);
+R2: 2species_2 (Hog1) + 2species_5 (Pbs2P) + 2species_11 (Sho1Pbs2P) => species_9 (Hog1P) + 2species_5 (Pbs2P) + 2species_11 (Sho1Pbs2P) + species_2 (Hog1);
+R3: 2species_9 (Hog1P) + 2species_6 (Phosphatase) => species_2 (Hog1) + 2species_6 (Phosphatase) + species_9 (Hog1P);
+R4: 2species_8 (RNA) => species_7 (Protein) + 2species_8 (RNA);
+R5: 2species_7 (Protein) => species_7 (Protein);
+R6: 2species_7 (Protein) + 2species_12 (Hog1PPActive) => species_1 (Glyin) + 2species_7 (Protein) + 2species_12 (Hog1PPActive);
+R7: 2species_1 (Glyin) + species_13 (Glyex) => 2species_13 (Glyex) + species_1 (Glyin);
+R8: 2species_12 (Hog1PPActive) => species_8 (RNA) + 2species_12 (Hog1PPActive);
+R9: 2species_8 (RNA) => species_8 (RNA);
+R10: 2species_9 (Hog1P) + 2species_5 (Pbs2P) + 2species_11 (Sho1Pbs2P) => species_3 (Hog1PP) + 2species_5 (Pbs2P) + 2species_11 (Sho1Pbs2P) + species_9 (Hog1P);
+R11: 2species_3 (Hog1PP) + 2species_6 (Phosphatase) => species_9 (Hog1P) + 2species_6 (Phosphatase) + species_3 (Hog1PP);
+R12: 2species_11 (Sho1Pbs2P) => species_10 (Sho1) + species_4 (Pbs2) + species_11 (Sho1Pbs2P);
+R13: 2species_4 (Pbs2) + 2species_10 (Sho1) + 2species_12 (Hog1PPActive) => species_11 (Sho1Pbs2P) + 2species_12 (Hog1PPActive) + species_4 (Pbs2) + species_10 (Sho1);
+R14: 2species_14 (Fps1) => species_15 (Fps1P) + species_14 (Fps1);
+R15: 2species_15 (Fps1P) + 2species_12 (Hog1PPActive) => species_14 (Fps1) + 2species_12 (Hog1PPActive) + species_15 (Fps1P);

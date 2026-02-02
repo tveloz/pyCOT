@@ -1,0 +1,10 @@
+R0: x1 (free basolateral BSP) => x3 (free intracellular BSP);
+R1: x3 (free intracellular BSP) => x5 (apical BSP);
+R2: x1 (free basolateral BSP) => x3 (free intracellular BSP);
+R3: x3 (free intracellular BSP) => x1 (free basolateral BSP);
+R4: x3 (free intracellular BSP) => x5 (apical BSP);
+R5: x1 (free basolateral BSP) => x2 (basolateral bound BSP);
+R6: x2 (basolateral bound BSP) => x1 (free basolateral BSP);
+R7: x3 (free intracellular BSP) => x4 (bound intracellular BSP);
+R8: x4 (bound intracellular BSP) => x3 (free intracellular BSP);
+R9: x1 (free basolateral BSP) => x5 (apical BSP);

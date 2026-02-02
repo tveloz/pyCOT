@@ -1,0 +1,7 @@
+R0: Tumour_cells (Tumour_cells) + CAR_T_cells_off_tumour (CAR_T-cells_off-tumour) => CAR_T_cells_on_tumour (CAR_T-cells_on-tumour) + Tumour_cells (Tumour_cells) + CAR_T_cells_off_tumour (CAR_T-cells_off-tumour);
+R1: CAR_T_cells_on_tumour (CAR_T-cells_on-tumour) + Tumour_cells (Tumour_cells) => Tumour_cells (Tumour_cells);
+R2:  => Tumour_cells (Tumour_cells);
+R3: Tumour_cells (Tumour_cells) + CAR_T_cells_on_tumour (CAR_T-cells_on-tumour) => CAR_T_cells_on_tumour (CAR_T-cells_on-tumour);
+R4: B_cells (B_cells) => CAR_T_cells_off_tumour (CAR_T-cells_off-tumour) + B_cells (B_cells);
+R5: CAR_T_cells_off_tumour (CAR_T-cells_off-tumour) => ;
+R6: B_cells (B_cells) + CAR_T_cells_off_tumour (CAR_T-cells_off-tumour) => CAR_T_cells_off_tumour (CAR_T-cells_off-tumour);

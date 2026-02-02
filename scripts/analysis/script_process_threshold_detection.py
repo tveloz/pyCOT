@@ -31,14 +31,14 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pyCOT.io.functions import read_txt
 from pyCOT.simulations.ode import simulation
-from pyCOT.semantic_partition import define_semantic_categories
-from pyCOT.process_structure import multi_scale_aggregation
-from pyCOT.process_analyzer import (
+from pyCOT.core.semantic_partition import define_semantic_categories
+from pyCOT.analysis.process_structure import multi_scale_aggregation
+from pyCOT.analysis.process_analyzer import (
     analyze_category_behavior,
     analyze_temporal_scale,
     detect_thresholds
 )
-from pyCOT.plot_process_analysis import (
+from pyCOT.visualization.plot_process_analysis import (
     plot_thresholds_on_dynamics,
     plot_category_dynamics_across_scales
 )

@@ -1,0 +1,15 @@
+R0: ara (ara) => ;
+R1: ara (ara) => taRNA (taRNA) + ara (ara);
+R2: taRNA (taRNA) => ;
+R3:  => mT7cr (mT7cr);
+R4: mT7cr (mT7cr) => ;
+R5: pT3 (pT3) => mGFPcr (mGFPcr) + pT3 (pT3);
+R6: mGFPcr (mGFPcr) => ;
+R7: taRNA (taRNA) + mT7cr (mT7cr) => pT7 (pT7) + taRNA (taRNA) + mT7cr (mT7cr);
+R8: taRNA (taRNA) + mGFPcr (mGFPcr) => pGFP (pGFP) + taRNA (taRNA) + mGFPcr (mGFPcr);
+R9: pT7 (pT7) => ;
+R10: pGFP (pGFP) => ;
+R11: pT7 (pT7) => mT3cr (mT3cr) + pT7 (pT7);
+R12: mT3cr (mT3cr) => ;
+R13: taRNA (taRNA) + mT3cr (mT3cr) => pT3 (pT3) + taRNA (taRNA) + mT3cr (mT3cr);
+R14: pT3 (pT3) => ;

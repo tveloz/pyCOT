@@ -1,0 +1,8 @@
+R0:  => notch1 (notch1);
+R1:  => notch2 (notch2);
+R2:  => delta2 (delta2);
+R3:  => delta1 (delta1);
+R4: delta1 (delta1) => ;
+R5: delta2 (delta2) => ;
+R6: notch1 (notch1) => ;
+R7: notch2 (notch2) => ;

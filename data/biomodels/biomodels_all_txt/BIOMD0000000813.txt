@@ -1,0 +1,8 @@
+R0:  => x_Tumor_Cells (x_Tumor_Cells);
+R1: x_Tumor_Cells (x_Tumor_Cells) + z_Cytokine (z_Cytokine) => z_Cytokine (z_Cytokine);
+R2: x_Tumor_Cells (x_Tumor_Cells) => y_CD4_T_Cells (y_CD4_T_Cells) + x_Tumor_Cells (x_Tumor_Cells);
+R3: y_CD4_T_Cells (y_CD4_T_Cells) => ;
+R4:  => y_CD4_T_Cells (y_CD4_T_Cells);
+R5: x_Tumor_Cells (x_Tumor_Cells) + y_CD4_T_Cells (y_CD4_T_Cells) => z_Cytokine (z_Cytokine) + x_Tumor_Cells (x_Tumor_Cells) + y_CD4_T_Cells (y_CD4_T_Cells);
+R6: z_Cytokine (z_Cytokine) => ;
+R7:  => z_Cytokine (z_Cytokine);

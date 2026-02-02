@@ -1,0 +1,9 @@
+R0: C_Cancer_Uncomplexed (C_Cancer_Uncomplexed) + E_CTL (E_CTL) => X_Complex (X_Complex) + E_CTL (E_CTL);
+R1: X_Complex (X_Complex) => C_Cancer_Uncomplexed (C_Cancer_Uncomplexed);
+R2: X_Complex (X_Complex) => ;
+R3: E_CTL (E_CTL) + C_Cancer_Uncomplexed (C_Cancer_Uncomplexed) => P_Perforin (P_Perforin) + E_CTL (E_CTL) + C_Cancer_Uncomplexed (C_Cancer_Uncomplexed);
+R4: P_Perforin (P_Perforin) + C_Cancer_Uncomplexed (C_Cancer_Uncomplexed) => ;
+R5:  => C_Cancer_Uncomplexed (C_Cancer_Uncomplexed);
+R6: C_Cancer_Uncomplexed (C_Cancer_Uncomplexed) => ;
+R7:  => T_ast (T_ast);
+R8: T_ast (T_ast) => ;

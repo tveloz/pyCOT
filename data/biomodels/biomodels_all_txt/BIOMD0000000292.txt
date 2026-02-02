@@ -1,0 +1,4 @@
+R0: NADP (NADP_super_+) => NADPH (NADPH);
+R1: 2ADP (ADP) + NADP (NADP_super_+) => 2ATP (ATP) + NADP (NADP_super_+);
+R2: Y (Y) + NADPH (NADPH) + ATP (ATP) => X (X) + ADP (ADP) + NADP (NADP_super_+);
+R3: X (X) + ATP (ATP) => Y (Y) + ADP (ADP);

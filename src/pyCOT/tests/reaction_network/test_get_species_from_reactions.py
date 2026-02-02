@@ -1,5 +1,5 @@
 import pytest
-from pyCOT.rn_rustworkx import ReactionNetwork, Species, InvalidNode
+from pyCOT.core.rn_rustworkx import ReactionNetwork, Species, InvalidNode
 
 # Fixture to create a ReactionNetwork instance
 @pytest.fixture

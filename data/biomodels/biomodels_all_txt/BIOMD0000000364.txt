@@ -1,0 +1,16 @@
+R0: E (E) + P (P) => E_P_1 (E_P_1);
+R1: E_P_1 (E_P_1) => E (E) + M (M);
+R2: M (M) => M1 (M1);
+R3: E (E) + M1 (M1) => E_M1 (E_M1);
+R4: E (E) + M (M) => E_M (E_M);
+R5: E_M1 (E_M1) => E (E) + T (T);
+R6: E_M (E_M) => E (E) + T (T);
+R7: E (E) + P (P) => E_P_2 (E_P_2);
+R8: E_P_2 (E_P_2) => E (E) + P2 (P2);
+R9: P2 (P2) => P21 (P21);
+R10: E (E) + P21 (P21) => E_P21 (E_P21);
+R11: E (E) + P2 (P2) => E_P2 (E_P2);
+R12: E_P21 (E_P21) => E (E) + T (T);
+R13: E_P2 (E_P2) => E (E) + T (T);
+R14: E_P_1 (E_P_1) => T (T);
+R15: E_P_2 (E_P_2) => T (T);

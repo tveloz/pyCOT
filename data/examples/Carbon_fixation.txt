@@ -1,0 +1,7 @@
+R1: 	Land + 2Atmos => 2Land + Atmos;
+R2: 	2Land + Atmos => Land + 2Atmos;
+R3: 	Atmos => Ocean;
+R4: 	Ocean => Atmos;
+R5: 	Storage => Atmos;
+R6: 	Atmos => DAC;
+R7: 	DAC => Storage;

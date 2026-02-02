@@ -1,0 +1,16 @@
+R0: A (A) + R (R) => C (C);
+R1: A (A) => EmptySet (EmptySet);
+R2: C (C) => R (R);
+R3: R (R) => EmptySet (EmptySet);
+R4: A (A) + DA (DA) => DAp (DAp);
+R5: DAp (DAp) => A (A) + DA (DA);
+R6: DA (DA) => DA (DA) + MA (MA);
+R7: DAp (DAp) => DAp (DAp) + MA (MA);
+R8: MA (MA) => EmptySet (EmptySet);
+R9: MA (MA) => A (A) + MA (MA);
+R10: A (A) + DR (DR) => DRp (DRp);
+R11: DRp (DRp) => A (A) + DR (DR);
+R12: DR (DR) => DR (DR) + MR (MR);
+R13: DRp (DRp) => DRp (DRp) + MR (MR);
+R14: MR (MR) => EmptySet (EmptySet);
+R15: MR (MR) => MR (MR) + R (R);

@@ -1,0 +1,14 @@
+R0: ADP (ADP) + NAD (NAD) + halfglucose (halfglucose) => ATP (ATP) + NADH (NADH) + pyruvate (pyruvate);
+R1: NADH (NADH) + pyruvate (pyruvate) => NAD (NAD) + lactate (lactate);
+R2: NAD (NAD) + pyruvate (pyruvate) + CoA (CoA) => NADH (NADH) + AcCoA (AcCoA);
+R3: AcCoA (AcCoA) + PO4 (PO4) => CoA (CoA) + AcP (AcP);
+R4: ADP (ADP) + AcP (AcP) => ATP (ATP) + Ac (Ac);
+R5: NADH (NADH) + AcCoA (AcCoA) => NAD (NAD) + CoA (CoA) + AcO (AcO);
+R6: NADH (NADH) + AcO (AcO) => NAD (NAD) + EtOH (EtOH);
+R7: 2pyruvate (pyruvate) => AcLac (AcLac);
+R8: AcLac (AcLac) => AcetoinIn (AcetoinIn);
+R9: AcetoinIn (AcetoinIn) => AcetoinOut (AcetoinOut);
+R10: NADH (NADH) + AcetoinIn (AcetoinIn) => NAD (NAD) + Butanediol (Butanediol);
+R11: ATP (ATP) => ADP (ADP);
+R12: NADH (NADH) + O2 (O2) => NAD (NAD);
+R13: AcLac (AcLac) => AcetoinIn (AcetoinIn);

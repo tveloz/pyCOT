@@ -15,7 +15,7 @@ import time
 from itertools import combinations
 import networkx as nx
 from collections import defaultdict
-from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, closure, species_list_to_names
+from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy, closure, species_list_to_names
 
 # ============================================================================
 # 1. CORE CLASSES

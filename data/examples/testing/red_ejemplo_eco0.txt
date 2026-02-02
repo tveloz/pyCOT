@@ -1,0 +1,9 @@
+r1 : rio => agua + rio;
+r2 : planta + agua + nutrientes => 2 planta;
+r3 : herbivoro + planta + agua => 2 herbivoro;
+r4 : depredador + herbivoro + agua => 2 depredador; 
+r5 : herbivoro => nutrientes ;
+r6 : depredador => nutrientes;
+r7 : parasito + planta => planta_parasitada;
+r8 : herbivoro + planta_parasitada => planta_parasitada;
+

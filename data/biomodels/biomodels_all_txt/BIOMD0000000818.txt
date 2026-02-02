@@ -1,0 +1,10 @@
+R0: GF (GF) => Myc (Myc) + GF (GF);
+R1: AKT (AKT) + PI3K (PI3K) => AKTp (AKTp) + PI3K (PI3K);
+R2: AKTp (AKTp) => AKT (AKT);
+R3: GSK3B (GSK3B) + AKTp (AKTp) => GSK3Bp (GSK3Bp) + AKTp (AKTp);
+R4: GSK3Bp (GSK3Bp) => GSK3B (GSK3B);
+R5: Myc (Myc) + ERK (ERK) => Myc_ser62 (Myc_ser62) + ERK (ERK);
+R6: Myc_ser62 (Myc_ser62) + GSK3B (GSK3B) => Myc_thr58 (Myc_thr58) + GSK3B (GSK3B);
+R7: Myc (Myc) => ;
+R8: Myc_ser62 (Myc_ser62) => ;
+R9: Myc_thr58 (Myc_thr58) => ;

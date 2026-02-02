@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from pyCOT.rn_rustworkx import ReactionNetwork
+from pyCOT.core.rn_rustworkx import ReactionNetwork
 
 @pytest.fixture
 def reaction_network():

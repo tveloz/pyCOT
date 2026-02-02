@@ -1,0 +1,8 @@
+R0:  => EpoR (EpoR);
+R1: EpoR (EpoR) => ;
+R2: SAv (SAv) + EpoR (EpoR) => SAv_EpoR (SAv_EpoR);
+R3: SAv_EpoR (SAv_EpoR) => SAv (SAv) + EpoR (EpoR);
+R4: SAv_EpoR (SAv_EpoR) => SAv_EpoRi (SAv_EpoRi);
+R5: SAv_EpoRi (SAv_EpoRi) => SAv (SAv);
+R6: SAv_EpoRi (SAv_EpoRi) => dSAvi (dSAvi);
+R7: SAv_EpoRi (SAv_EpoRi) => dSAve (dSAve);

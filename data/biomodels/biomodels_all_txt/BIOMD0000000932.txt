@@ -1,0 +1,5 @@
+R0: A (A) => Gp (Gp) + A (A);
+R1: Gp (Gp) => Gi (Gi);
+R2: Gi (Gi) => A (A);
+R3: A (A) => ;
+R4: A (A) + Gp (Gp) => B (B) + A (A) + Gp (Gp);

@@ -1,0 +1,9 @@
+R0: Surface_Receptor_External (Surface_Receptor_External) + Ligand_EGF (Ligand_EGF) => Receptor_Ligand_Complex (Receptor_Ligand_Complex);
+R1: Receptor_Ligand_Complex (Receptor_Ligand_Complex) => Surface_Receptor_External (Surface_Receptor_External);
+R2: Receptor_Ligand_Complex (Receptor_Ligand_Complex) + Free_pit_proteins (Free_pit_proteins) => Receptor_Ligand_Pit_Protein_complex (Receptor_Ligand_Pit_Protein_complex);
+R3: Receptor_Ligand_Pit_Protein_complex (Receptor_Ligand_Pit_Protein_complex) => Receptor_Ligand_Complex (Receptor_Ligand_Complex);
+R4: Surface_Receptor_External (Surface_Receptor_External) => Internalised_receptors (Internalised_receptors);
+R5: Receptor_Ligand_Complex (Receptor_Ligand_Complex) => Internalised_receptors (Internalised_receptors) + Internalised_Ligand (Internalised_Ligand);
+R6: Receptor_Ligand_Pit_Protein_complex (Receptor_Ligand_Pit_Protein_complex) => Internalised_receptors (Internalised_receptors) + Internalised_Ligand (Internalised_Ligand);
+R7: Internalised_Ligand (Internalised_Ligand) => ;
+R8: Internalised_receptors (Internalised_receptors) => Surface_Receptor_External (Surface_Receptor_External);

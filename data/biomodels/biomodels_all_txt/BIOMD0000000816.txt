@@ -1,0 +1,16 @@
+R0:  => Uninfected_Tumor_Cell_U (Uninfected Tumor Cell U);
+R1: Uninfected_Tumor_Cell_U (Uninfected Tumor Cell U) + Infected_Cancer_Cell_I (Infected Cancer Cell I) + Tumor_targeting_T_cells_T (Tumor-targeting T cells T) + Total_cells_N (Total cells N) => Infected_Cancer_Cell_I (Infected Cancer Cell I) + Tumor_targeting_T_cells_T (Tumor-targeting T cells T) + Total_cells_N (Total cells N);
+R2: Uninfected_Tumor_Cell_U (Uninfected Tumor Cell U) + Oncolytic_Adenovirus_V (Oncolytic Adenovirus V) + Total_cells_N (Total cells N) => Infected_Cancer_Cell_I (Infected Cancer Cell I) + Oncolytic_Adenovirus_V (Oncolytic Adenovirus V) + Total_cells_N (Total cells N);
+R3: Infected_Cancer_Cell_I (Infected Cancer Cell I) => ;
+R4: Infected_Cancer_Cell_I (Infected Cancer Cell I) + Tumor_targeting_T_cells_T (Tumor-targeting T cells T) + Total_cells_N (Total cells N) => Tumor_targeting_T_cells_T (Tumor-targeting T cells T) + Total_cells_N (Total cells N);
+R5:  => Oncolytic_Adenovirus_V (Oncolytic Adenovirus V);
+R6: Oncolytic_Adenovirus_V (Oncolytic Adenovirus V) => ;
+R7: Infected_Cancer_Cell_I (Infected Cancer Cell I) => Oncolytic_Adenovirus_V (Oncolytic Adenovirus V) + Infected_Cancer_Cell_I (Infected Cancer Cell I);
+R8: Naive_T_cells_A (Naive T cells A) => Tumor_targeting_T_cells_T (Tumor-targeting T cells T) + Naive_T_cells_A (Naive T cells A);
+R9: Infected_Cancer_Cell_I (Infected Cancer Cell I) => Naive_T_cells_A (Naive T cells A) + Infected_Cancer_Cell_I (Infected Cancer Cell I);
+R10: Infected_Cancer_Cell_I (Infected Cancer Cell I) => Tumor_targeting_T_cells_T (Tumor-targeting T cells T) + Infected_Cancer_Cell_I (Infected Cancer Cell I);
+R11: Dendritic_Cells_D (Dendritic Cells D) => Tumor_targeting_T_cells_T (Tumor-targeting T cells T) + Dendritic_Cells_D (Dendritic Cells D);
+R12: Tumor_targeting_T_cells_T (Tumor-targeting T cells T) => ;
+R13: Naive_T_cells_A (Naive T cells A) => ;
+R14:  => Dendritic_Cells_D (Dendritic Cells D);
+R15: Dendritic_Cells_D (Dendritic Cells D) => ;

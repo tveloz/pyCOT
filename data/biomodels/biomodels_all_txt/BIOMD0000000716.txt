@@ -1,0 +1,10 @@
+R0:  => S_b (Susceptible bird (S_b));
+R1: S_b (Susceptible bird (S_b)) => ;
+R2: S_b (Susceptible bird (S_b)) + I_b (Infected bird (I_b)) => 2I_b (Infected bird (I_b));
+R3: I_b (Infected bird (I_b)) => ;
+R4: I_b (Infected bird (I_b)) => ;
+R5:  => S_h (Susceptible human (S_h));
+R6: S_h (Susceptible human (S_h)) => ;
+R7: S_h (Susceptible human (S_h)) + I_b (Infected bird (I_b)) => I_a (Infected Human (I_a)) + I_b (Infected bird (I_b));
+R8: I_a (Infected Human (I_a)) => ;
+R9: I_a (Infected Human (I_a)) => ;

@@ -30,10 +30,10 @@ import numpy as np
 from scipy.optimize import linprog
 from itertools import combinations
 from collections import defaultdict, Counter
-from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, closure, species_list_to_names
+from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy, closure, species_list_to_names
 
 # Import from our SORN_Generators module
-from pyCOT.SORN_Generators import (
+from pyCOT.analysis.SORN_Generators import (
     IrreducibleGenerator, ERC_SORN, ProductiveExtension,
     identify_p_ercs, build_erc_sorn, find_productive_extensions,
     build_irreducible_generators, is_semi_self_maintaining

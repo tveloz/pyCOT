@@ -1,0 +1,15 @@
+R0: aca (aca) + oaa (oaa) => coa (coa) + cit (cit);
+R1: cit (cit) => icit (icit);
+R2: icit (icit) => akg (akg);
+R3: icit (icit) => akg (akg);
+R4: akg (akg) => sca (sca);
+R5: akg (akg) => ssa (ssa);
+R6: ssa (ssa) => suc (suc);
+R7: sca (sca) => suc (suc);
+R8: suc (suc) => fa (fa);
+R9: fa (fa) => mal (mal);
+R10: mal (mal) => oaa (oaa);
+R11: icit (icit) => suc (suc) + gly (gly);
+R12: icit (icit) => suc (suc) + gly (gly);
+R13: gly (gly) + aca (aca) => mal (mal) + coa (coa);
+R14: akg (akg) + icit (icit) => biosyn (biosyn) + icit (icit);

@@ -1,0 +1,11 @@
+R0: IR (IR) => IRins (IRins);
+R1: IRins (IRins) => IR (IR);
+R2: IRins (IRins) => IRp (IRp);
+R3: IRp (IRp) => IRiP (IRiP);
+R4: IRiP (IRiP) + Xp (Xp) => IRi (IRi) + Xp (Xp);
+R5: IRp (IRp) => IR (IR);
+R6: IRi (IRi) => IR (IR);
+R7: IRS (IRS) + IRiP (IRiP) + IRp (IRp) + Xp (Xp) => IRSiP (IRSiP) + IRiP (IRiP) + IRp (IRp) + Xp (Xp);
+R8: IRSiP (IRSiP) => IRS (IRS);
+R9: X (X) + IRSiP (IRSiP) => Xp (Xp) + IRSiP (IRSiP);
+R10: Xp (Xp) => X (X);

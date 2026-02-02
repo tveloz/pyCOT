@@ -1,0 +1,8 @@
+R0: 2species_3 (Xj) => species_1 (Xi) + 2species_3 (Xj);
+R1: 2species_1 (Xi) => species_1 (Xi);
+R2: 2species_2 (Yi) + 2species_4 (Yj) + 2species_1 (Xi) => 3species_2 (Yi) + 2species_4 (Yj) + 2species_1 (Xi);
+R3: 2species_2 (Yi) => species_2 (Yi);
+R4: 2species_1 (Xi) => species_3 (Xj) + 2species_1 (Xi);
+R5: 2species_3 (Xj) => species_3 (Xj);
+R6: 2species_2 (Yi) + 2species_4 (Yj) + 2species_3 (Xj) => 3species_4 (Yj) + 2species_2 (Yi) + 2species_3 (Xj);
+R7: 2species_4 (Yj) => species_4 (Yj);

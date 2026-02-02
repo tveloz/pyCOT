@@ -1,0 +1,8 @@
+R0: g6p (glucose 6-phosphate) => f6p (fructose 6-phosphate);
+R1: glx (glucose) => glc (glucose);
+R2: glc (glucose) + atp (ATP) + t6p (trehalose 6-phosphate) => g6p (glucose 6-phosphate) + adp (ADP) + h (H+) + t6p (trehalose 6-phosphate);
+R3: g6p (glucose 6-phosphate) => g1p (glucose 1-phosphate);
+R4: t6p (trehalose 6-phosphate) + h2o (water) => trh (trehalose) + pho (phosphate);
+R5: g6p (glucose 6-phosphate) + udg (UDP glucose) => t6p (trehalose 6-phosphate) + udp (UDP) + h (H+);
+R6: trh (trehalose) + h2o (water) => 2glc (glucose);
+R7: g1p (glucose 1-phosphate) + utp (UTP) + h (H+) => udg (UDP glucose) + ppi (diphosphate);

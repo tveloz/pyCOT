@@ -1,0 +1,6 @@
+R0: totRuBP (totRuBP) + RuBP (RuBP) + E_RuBisCO (RuBisCo) => 2PGA (PGA) + E_RuBisCO (RuBisCo);
+R1: PGA (PGA) + ATP (ATP) => ADP (ADP) + TP (TP) + Pi (Pi);
+R2: 5TP (TP) => 3Ru5P (Ru5P) + 2Pi (Pi);
+R3: Ru5P (Ru5P) + ATP (ATP) + Pi (Pi) => RuBP (RuBP) + ADP (ADP) + Pi (Pi);
+R4: TP (TP) + Pic (Pic) => TPc (TPc) + Pi (Pi);
+R5: ADP (ADP) + Pi (Pi) => ATP (ATP);

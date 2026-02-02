@@ -1,0 +1,8 @@
+R0: ESA (ESA) + 2Da (Da) => Pa (Pa) + 2Da (Da);
+R1: ESB (ESB) + 2Db (Db) => Pb (Pb) + 2Db (Db);
+R2: 2Pa (Pa) => ESA (ESA) + Pa (Pa);
+R3: 2Pb (Pb) => ESB (ESB) + Pb (Pb);
+R4: 3Pa (Pa) + 2Db (Db) => BDb (BDb) + Pa (Pa) + Db (Db);
+R5: 3Pb (Pb) + 2Da (Da) => BDa (BDa) + Pb (Pb) + Da (Da);
+R6: 2BDa (BDa) => Da (Da) + 2Pb (Pb) + BDa (BDa);
+R7: 2BDb (BDb) => 2Pa (Pa) + Db (Db) + BDb (BDb);

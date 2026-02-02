@@ -1,0 +1,10 @@
+R0: EC (Extracellular Calcium) => Z (Cytosolic Calcium);
+R1: Z (Cytosolic Calcium) => Y (Intravesicular Calcium);
+R2: Y (Intravesicular Calcium) + A (IP3) => Z (Cytosolic Calcium) + A (IP3);
+R3: Y (Intravesicular Calcium) => Z (Cytosolic Calcium);
+R4: Z (Cytosolic Calcium) => EC (Extracellular Calcium);
+R5:  => A (IP3);
+R6: A (IP3) + Z (Cytosolic Calcium) => Z (Cytosolic Calcium);
+R7: A (IP3) => ;
+R8: Z (Cytosolic Calcium) => GP (Glycogen Phosphorylase) + Z (Cytosolic Calcium);
+R9: GP (Glycogen Phosphorylase) => ;

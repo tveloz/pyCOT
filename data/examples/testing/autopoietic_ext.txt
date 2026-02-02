@@ -1,0 +1,15 @@
+R0: 	=> NB; 
+R1:	=> Bh; 
+#Muerte Natural de Bh
+R2:	Bh=> ; 
+#Homeostasis perdida de energia
+R3:	Bf=>Bh;    
+R4:	Bh+NB=>Bf+NH; 
+R5:	Bf=>2Bh;  
+R6:	Hf+NH=>Hf+NP; 
+R7:	NP+Ph=>Pf; 
+R8:	Pf+Hh=>Ph+Hf; 
+R9:	Hh=>;
+R10:	Ph=>;
+R11:	Hf=>2Hh;
+R12:	Pf=>2Ph;

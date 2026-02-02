@@ -9,7 +9,7 @@ import numpy as np
 
 from pyCOT.io.functions import read_txt
 from pyCOT.simulations.metapopulation import *
-from pyCOT.plot_dynamics import * 
+from pyCOT.visualization.plot_dynamics import * 
 
 ################################################################################################# 
 # Ejemplo de uso  

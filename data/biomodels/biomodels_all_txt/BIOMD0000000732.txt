@@ -1,0 +1,6 @@
+R0: Source (Source) => Tumor (Tumor);
+R1: Tumor (Tumor) + Immune_cells (Immune_cells) => Sink (Sink) + Immune_cells (Immune_cells);
+R2: Source (Source) + Tumor (Tumor) + IL2 (IL2) => Immune_cells (Immune_cells) + Tumor (Tumor) + IL2 (IL2);
+R3: Immune_cells (Immune_cells) => Sink (Sink);
+R4: Source (Source) + Immune_cells (Immune_cells) + Tumor (Tumor) => IL2 (IL2) + Immune_cells (Immune_cells) + Tumor (Tumor);
+R5: IL2 (IL2) => Sink (Sink);

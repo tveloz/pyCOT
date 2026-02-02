@@ -1,0 +1,6 @@
+R0:  => Antigen_expressing_cells (Antigen-expressing_cells);
+R1: Antigen_expressing_cells (Antigen-expressing_cells) + Effector_cells (Effector_cells) => Effector_cells (Effector_cells);
+R2: Antigen_expressing_cells (Antigen-expressing_cells) => Regulatory_cells (Regulatory_cells) + Antigen_expressing_cells (Antigen-expressing_cells);
+R3: Regulatory_cells (Regulatory_cells) => ;
+R4: Antigen_expressing_cells (Antigen-expressing_cells) + Regulatory_cells (Regulatory_cells) => Effector_cells (Effector_cells) + Antigen_expressing_cells (Antigen-expressing_cells) + Regulatory_cells (Regulatory_cells);
+R5: Effector_cells (Effector_cells) => ;

@@ -1,0 +1,17 @@
+R0:  => Susceptible_Human (Susceptible);
+R1:  => Susceptible_Human (Susceptible);
+R2: Recovered (Recovered) => Susceptible_Human (Susceptible);
+R3: Susceptible_Human (Susceptible) => Exposed_Human (Exposed);
+R4: Susceptible_Human (Susceptible) => ;
+R5: Exposed_Human (Exposed) => Infected_Human (Infected);
+R6: Exposed_Human (Exposed) => ;
+R7: Infected_Human (Infected) => Recovered (Recovered);
+R8: Infected_Human (Infected) => ;
+R9: Infected_Human (Infected) => ;
+R10: Recovered (Recovered) => ;
+R11:  => Susceptible_Mosquito (Susceptible);
+R12: Susceptible_Mosquito (Susceptible) => Exposed_Mosquito (Exposed);
+R13: Susceptible_Mosquito (Susceptible) => ;
+R14: Exposed_Mosquito (Exposed) => Infected_Mosquito (Infected);
+R15: Exposed_Mosquito (Exposed) => ;
+R16: Infected_Mosquito (Infected) => ;

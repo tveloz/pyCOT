@@ -25,9 +25,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pyCOT.io.functions import read_txt
 from pyCOT.simulations.ode import *
-from pyCOT.plot_dynamics import *
-from pyCOT.plot_process_analysis import *      # Updated: uses refactored version
-from pyCOT.process_analyzer import *   # New: explicit import of analysis functions
+from pyCOT.visualization.plot_dynamics import *
+from pyCOT.visualization.plot_process_analysis import *      # Updated: uses refactored version
+from pyCOT.analysis.process_analyzer import *   # New: explicit import of analysis functions
 
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT

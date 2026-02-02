@@ -1,0 +1,8 @@
+R0:  => T (T);
+R1: T (T) + N (N) + D (D) + L (L) => N (N) + D (D) + L (L);
+R2: T (T) => N (N) + T (T);
+R3: N (N) + T (T) + D (D) => T (T) + D (D);
+R4:  => D (D);
+R5: D (D) + L (L) + N (N) + T (T) => L (L) + N (N) + T (T);
+R6: D (D) + T (T) + N (N) => L (L) + D (D) + T (T) + N (N);
+R7: L (L) + T (T) + N (N) => T (T) + N (N);

@@ -1,0 +1,13 @@
+R0: ORN (L-Ornithine) => P (Putrescine);
+R1: SAM (S-adenosyl-L-methionine) + S (Spermine) + P (Putrescine) => A (S-adenosylmethioninamine) + S (Spermine) + P (Putrescine);
+R2: S (Spermine) + AcCoA (Acetyl-CoA) + D (Spermidine) => aS (N1-Acetylspermine) + CoA (CoA) + D (Spermidine);
+R3: D (Spermidine) + AcCoA (Acetyl-CoA) + S (Spermine) => aD (N1-Acetylspermidine) + CoA (CoA) + S (Spermine);
+R4: aD (N1-Acetylspermidine) + aS (N1-Acetylspermine) + D (Spermidine) + S (Spermine) => P (Putrescine) + aS (N1-Acetylspermine) + D (Spermidine) + S (Spermine);
+R5: aS (N1-Acetylspermine) + aD (N1-Acetylspermidine) + S (Spermine) => D (Spermidine) + aD (N1-Acetylspermidine) + S (Spermine);
+R6: A (S-adenosylmethioninamine) + P (Putrescine) => D (Spermidine);
+R7: A (S-adenosylmethioninamine) + D (Spermidine) => S (Spermine);
+R8: Met (Methionine) => SAM (S-adenosyl-L-methionine);
+R9: AcCoA (Acetyl-CoA) => CoA (CoA);
+R10: CoA (CoA) => AcCoA (Acetyl-CoA);
+R11: P (Putrescine) => ;
+R12: aD (N1-Acetylspermidine) => ;

@@ -14,12 +14,12 @@ import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import required modules
-from pyCOT.rn_rustworkx import ReactionNetwork
+from pyCOT.core.rn_rustworkx import ReactionNetwork
 from pyCOT.io.functions import read_txt
-from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_names
-from pyCOT.ERC_Synergy_Complementarity import *
+from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_names
+from pyCOT.analysis.ERC_Synergy_Complementarity import *
 # Import our new SORN_Generators module
-from pyCOT.SORN_Generators import (
+from pyCOT.analysis.SORN_Generators import (
     IrreducibleGenerator,
     ProductiveExtension,
     identify_p_ercs,

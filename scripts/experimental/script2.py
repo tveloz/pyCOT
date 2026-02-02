@@ -12,11 +12,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import pyCOT modules - UPDATED IMPORTS
 from pyCOT.io.functions import read_txt
-from pyCOT.plot_dynamics import plot_series_ode
+from pyCOT.visualization.plot_dynamics import plot_series_ode
 from pyCOT.simulations.ode import simulation
 from pyCOT.kinetics.deterministic_advanced import * # Updated: explicit import
 from pyCOT.kinetics.deterministic_basic import *
-from pyCOT.semantic_partition import define_semantic_categories
+from pyCOT.core.semantic_partition import define_semantic_categories
 import matplotlib.pyplot as plt
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT

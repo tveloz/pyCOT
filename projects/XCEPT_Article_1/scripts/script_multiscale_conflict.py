@@ -26,8 +26,8 @@ from matplotlib.gridspec import GridSpec
 from pyCOT.simulations.ode import simulation
 from pyCOT.kinetics.deterministic_advanced import rate_saturated, rate_threshold_memory, rate_cosine
 from pyCOT.io.functions import read_txt
-from pyCOT.semantic_partition import define_semantic_categories
-from pyCOT.process_analyzer import analyze_temporal_scale
+from pyCOT.core.semantic_partition import define_semantic_categories
+from pyCOT.analysis.process_analyzer import analyze_temporal_scale
 
 # ========================================
 # CONFIGURATION

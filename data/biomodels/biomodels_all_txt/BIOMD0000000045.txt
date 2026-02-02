@@ -1,0 +1,8 @@
+R0: EC (EC) => Z (Z);
+R1: Z (Z) => Y (Y);
+R2: Y (Y) => Z (Z);
+R3: Y (Y) => Z (Z);
+R4: Z (Z) => EC (EC);
+R5: X (X) => Z (Z);
+R6: Z (Z) => X (X);
+R7: X (X) => Z (Z);

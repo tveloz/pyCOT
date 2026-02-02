@@ -1,0 +1,14 @@
+R0: y_PSC (y_PSC) => x_PCC (x_PCC) + y_PSC (y_PSC);
+R1: x_PCC (x_PCC) + z_Effector_Cells (z_Effector_Cells) + w_TPC (w_TPC) => z_Effector_Cells (z_Effector_Cells) + w_TPC (w_TPC);
+R2: w_TPC (w_TPC) => y_PSC (y_PSC) + w_TPC (w_TPC);
+R3: y_PSC (y_PSC) => ;
+R4: v_TSC (v_TSC) + w_TPC (w_TPC) => z_Effector_Cells (z_Effector_Cells) + v_TSC (v_TSC) + w_TPC (w_TPC);
+R5: z_Effector_Cells (z_Effector_Cells) => ;
+R6:  => z_Effector_Cells (z_Effector_Cells);
+R7: x_PCC (x_PCC) + z_Effector_Cells (z_Effector_Cells) => w_TPC (w_TPC) + x_PCC (x_PCC) + z_Effector_Cells (z_Effector_Cells);
+R8: w_TPC (w_TPC) => ;
+R9: x_PCC (x_PCC) + y_PSC (y_PSC) + v_TSC (v_TSC) => w_TPC (w_TPC) + x_PCC (x_PCC) + y_PSC (y_PSC) + v_TSC (v_TSC);
+R10: x_PCC (x_PCC) + z_Effector_Cells (z_Effector_Cells) => v_TSC (v_TSC) + x_PCC (x_PCC) + z_Effector_Cells (z_Effector_Cells);
+R11: v_TSC (v_TSC) => ;
+R12: R_siRNA (R_siRNA) => ;
+R13:  => R_siRNA (R_siRNA);

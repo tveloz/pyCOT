@@ -1,0 +1,9 @@
+R0: species_1 (x) => ;
+R1: species_2 (y) => ;
+R2: species_3 (u) => ;
+R3: species_4 (v) => ;
+R4: species_3 (u) => species_3 (u) + species_1 (x);
+R5: species_4 (v) => species_4 (v) + species_2 (y);
+R6: species_2 (y) => species_2 (y) + species_3 (u);
+R7: species_1 (x) => species_1 (x) + species_4 (v);
+R8: species_4 (v) => species_4 (v) + species_1 (x);

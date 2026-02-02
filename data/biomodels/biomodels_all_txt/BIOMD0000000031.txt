@@ -1,0 +1,4 @@
+R0: M (M) + MAPKK1 (MAPKK1) => Mp (Mp) + MAPKK1 (MAPKK1);
+R1: Mp (Mp) + MAPKK2 (MAPKK2) + M (M) => Mpp (Mpp) + MAPKK2 (MAPKK2) + M (M);
+R2: Mpp (Mpp) + MKP3 (MKP3) + M (M) => Mp (Mp) + MKP3 (MKP3) + M (M);
+R3: Mp (Mp) + MKP3 (MKP3) + Mpp (Mpp) => M (M) + MKP3 (MKP3) + Mpp (Mpp);

@@ -1,0 +1,9 @@
+R0: R (R) + C (C) => RC (RC);
+R1: RC (RC) => R (R) + C (C) + RC (RC);
+R2: RC (RC) => ;
+R3: C (C) => ;
+R4: A_T (A_T) => C (C) + A_T (A_T);
+R5: C (C) => A_T (A_T) + C (C);
+R6: A_T (A_T) => ;
+R7:  => R (R);
+R8: R (R) => ;

@@ -1,0 +1,10 @@
+R0:  => Gp (Gp);
+R1: Gp (Gp) => Gm (Gm);
+R2: Gp (Gp) + Ap (Ap) => Ap (Ap);
+R3: Ai (Ai) => Am (Am);
+R4: Gi (Gi) => Ai (Ai);
+R5: Am (Am) => Ap (Ap);
+R6: Ap (Ap) => ;
+R7: Gm (Gm) => Gi (Gi);
+R8: Gm (Gm) => Am (Am);
+R9: Gm (Gm) + Am (Am) => Am (Am);

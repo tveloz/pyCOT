@@ -1,0 +1,7 @@
+R0: p100t (p100t) => p100 (p100);
+R1: p100 (p100) + NIK (NIK) => p52 (p52) + NIK (NIK);
+R2: p52 (p52) => ;
+R3: p100 (p100) => ;
+R4: 2p100 (p100) => IkBd (IkBd);
+R5: IkBd (IkBd) => ;
+R6: IkBd (IkBd) + NIK (NIK) => NIK (NIK);

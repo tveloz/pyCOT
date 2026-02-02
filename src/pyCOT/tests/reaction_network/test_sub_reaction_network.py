@@ -1,6 +1,6 @@
 import pytest
-from pyCOT.rn_rustworkx import ReactionNetwork
-from pyCOT.rn_types import ReactionEdge, Species, ReactionNode
+from pyCOT.core.rn_rustworkx import ReactionNetwork
+from pyCOT.core.rn_types import ReactionEdge, Species, ReactionNode
 
 def test_sub_network_single_species():
     rn = ReactionNetwork()

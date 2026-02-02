@@ -1,0 +1,6 @@
+R0: AR_Dose (AR_Dose) + F1 (F1) => AR_A1 (AR) + F1 (F1);
+R1: AR_Dose (AR_Dose) + F2 (F2) => AR_A2 (AR) + F2 (F2);
+R2: AR_A1 (AR) => AR_Central (AR);
+R3: AR_A2 (AR) => AR_Central (AR);
+R4:  => AR_Central (AR);
+R5: AR_Central (AR) => ;

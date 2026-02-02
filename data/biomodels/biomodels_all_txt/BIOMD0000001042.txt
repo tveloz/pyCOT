@@ -1,0 +1,12 @@
+R0:  => Tumor_cells (Tumor_cells);
+R1: Tumor_cells (Tumor_cells) + NK_cells (NK_cells) + IL_2 (IL-2) => NK_cells (NK_cells) + IL_2 (IL-2);
+R2: Circulating_lymphocytes (Circulating_lymphocytes) + Tumor_cells (Tumor_cells) => NK_cells (NK_cells) + Circulating_lymphocytes (Circulating_lymphocytes) + Tumor_cells (Tumor_cells);
+R3: NK_cells (NK_cells) + Tumor_cells (Tumor_cells) => Tumor_cells (Tumor_cells);
+R4: Tumor_cells (Tumor_cells) + NK_cells (NK_cells) + Circulating_lymphocytes (Circulating_lymphocytes) + IL_2 (IL-2) => CD8_T_cells (CD8_T_cells) + Tumor_cells (Tumor_cells) + NK_cells (NK_cells) + Circulating_lymphocytes (Circulating_lymphocytes) + IL_2 (IL-2);
+R5: CD8_T_cells (CD8_T_cells) + Tumor_cells (Tumor_cells) + NK_cells (NK_cells) => Tumor_cells (Tumor_cells) + NK_cells (NK_cells);
+R6: Tumor_cells (Tumor_cells) + IL_2 (IL-2) => CD4_T_cells (CD4_T_cells) + Tumor_cells (Tumor_cells) + IL_2 (IL-2);
+R7: CD4_T_cells (CD4_T_cells) + Tumor_cells (Tumor_cells) => Tumor_cells (Tumor_cells);
+R8:  => Circulating_lymphocytes (Circulating_lymphocytes);
+R9: Circulating_lymphocytes (Circulating_lymphocytes) => ;
+R10: Tumor_cells (Tumor_cells) + CD4_T_cells (CD4_T_cells) => IL_2 (IL-2) + Tumor_cells (Tumor_cells) + CD4_T_cells (CD4_T_cells);
+R11: IL_2 (IL-2) => ;

@@ -1,0 +1,13 @@
+R0:  => T (T);
+R1: T (T) + R (R) + N (N) => R (R) + N (N);
+R2: C (C) + I (I) => N (N) + C (C) + I (I);
+R3: N (N) + T (T) => T (T);
+R4: N (N) + C (C) + T (T) + I (I) => L (L) + N (N) + C (C) + T (T) + I (I);
+R5: L (L) + T (T) + R (R) + I (I) => T (T) + R (R) + I (I);
+R6: C (C) + I (I) => R (R) + C (C) + I (I);
+R7: R (R) + S (S) => S (S);
+R8:  => C (C);
+R9: C (C) + L (L) => I (I) + C (C) + L (L);
+R10: I (I) => ;
+R11:  => S (S);
+R12: S (S) => ;

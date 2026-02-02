@@ -1,0 +1,3 @@
+R0: Hser (Homoserine) => Phser (Phosphohomoserine);
+R1: Phser (Phosphohomoserine) + Cys (Cysteine) + CGS (Cystathionine gamma-synthase) => Cystathionine (Cystathionine) + Phi (Inorganic phosphate) + CGS (Cystathionine gamma-synthase);
+R2: Phser (Phosphohomoserine) + AdoMet (S-adenosylmethionine) + TS (Threonine synthase) => Thr (Threonine) + Phi (Inorganic phosphate) + AdoMet (S-adenosylmethionine) + TS (Threonine synthase);

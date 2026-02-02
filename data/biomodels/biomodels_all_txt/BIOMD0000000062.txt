@@ -1,0 +1,5 @@
+R0: Tt (Total tryptophan) => Enz (Anthranilate synthase) + Tt (Total tryptophan);
+R1: Enz (Anthranilate synthase) => ;
+R2: Enz (Anthranilate synthase) + Tt (Total tryptophan) => Ts (Synthesized tryptophan) + Enz (Anthranilate synthase) + Tt (Total tryptophan);
+R3: Ts (Synthesized tryptophan) => ;
+R4: Ts (Synthesized tryptophan) => ;

@@ -1,0 +1,6 @@
+R0: Vitamins (Vitamins) => Normal_cells (Normal_cells) + Vitamins (Vitamins);
+R1: Normal_cells (Normal_cells) + Tumor_cells (Tumor_cells) => Tumor_cells (Tumor_cells);
+R2: Normal_cells (Normal_cells) => Tumor_cells (Tumor_cells) + Normal_cells (Normal_cells);
+R3: Tumor_cells (Tumor_cells) + Vitamins (Vitamins) => Vitamins (Vitamins);
+R4:  => Vitamins (Vitamins);
+R5: Vitamins (Vitamins) => ;

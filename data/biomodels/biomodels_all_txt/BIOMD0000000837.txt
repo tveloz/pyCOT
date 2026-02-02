@@ -1,0 +1,17 @@
+R0: B (B) => 2B (B);
+R1: B (B) + C_e (C_e) => C_e (C_e);
+R2: B (B) + C_e (C_e) + H_e (H_e) => Inflam (Inflam) + B (B) + C_e (C_e) + H_e (H_e);
+R3: Inflam (Inflam) => ;
+R4: Inflam (Inflam) + D (D) => D (D);
+R5: B (B) + C_m (C_m) + Inflam (Inflam) + H_e (H_e) => C_e (C_e) + B (B) + C_m (C_m) + Inflam (Inflam) + H_e (H_e);
+R6: C_e (C_e) => ;
+R7: C_m (C_m) + Inflam (Inflam) => 2C_m (C_m) + Inflam (Inflam);
+R8: C_m (C_m) + B (B) + H_e (H_e) + Inflam (Inflam) => B (B) + H_e (H_e) + Inflam (Inflam);
+R9: B (B) + H_m (H_m) + Inflam (Inflam) => H_e (H_e) + B (B) + H_m (H_m) + Inflam (Inflam);
+R10: H_e (H_e) => ;
+R11: H_m (H_m) => 2H_m (H_m);
+R12: H_m (H_m) + B (B) + Inflam (Inflam) => B (B) + Inflam (Inflam);
+R13:  => L (L);
+R14: L (L) => 2L (L);
+R15: L (L) => ;
+R16:  => Inflam (Inflam);

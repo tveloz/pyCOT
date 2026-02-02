@@ -1,0 +1,8 @@
+R0: X (X) + VIIa_TF (VIIa_TF) => VIIa_TF_X (VIIa_TF_X);
+R1: VIIa_TF_X (VIIa_TF_X) => VIIa_TF_Xa (VIIa_TF_Xa);
+R2: VIIa_TF_Xa (VIIa_TF_Xa) => Xa (Xa) + VIIa_TF (VIIa_TF);
+R3: Xa (Xa) + TFPI (TFPI) => Xa_TFPI (Xa_TFPI);
+R4: VIIa_TF (VIIa_TF) + Xa_TFPI (Xa_TFPI) => Xa_TFPI_VIIa_TF (Xa_TFPI_VIIa_TF);
+R5: VIIa_TF_Xa (VIIa_TF_Xa) + TFPI (TFPI) => VIIa_TF_Xa_TFPI (VIIa_TF_Xa_TFPI);
+R6: VIIa_TF_Xa_TFPI (VIIa_TF_Xa_TFPI) => Xa_TFPI_VIIa_TF (Xa_TFPI_VIIa_TF);
+R7: VIIa_TF_X (VIIa_TF_X) + Xa_TFPI (Xa_TFPI) => X (X) + VIIa_TF_Xa_TFPI (VIIa_TF_Xa_TFPI);

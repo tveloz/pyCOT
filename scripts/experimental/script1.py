@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # A
 
 # Import the necessary modules from pyCOT  
 from pyCOT.io.functions import read_txt, print_reaction_network
-from pyCOT.rn_visualize import rn_visualize_html, rn_visualize_png_in_out
+from pyCOT.visualization.rn_visualize import rn_visualize_html, rn_visualize_png_in_out
 
 # ========================================
 # 2. CREATING THE REACTION_NETWORK OBJECT

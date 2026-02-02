@@ -1,0 +1,16 @@
+R1: nectar+Queen+bee_d=>Queen+brood_w;
+R2: nectar+Queen+bee_d=>Queen+brood_g;
+R3: nectar+Queen+bee_d=>Queen+brood_d;
+R4: bee_w+forage_area=>bee_w+nectar;
+R5: nectar+brood_w=>bee_w;
+R6: nectar+brood_g=>bee_g;
+R7: nectar+brood_d=>bee_d;
+R8: beatles+brood_w=>2beatles;
+R9: beatles+brood_g=>2beatles;
+R10: beatles+brood_d=>2beatles;
+R11: mites+bee_w=>2mites;
+R12: mites+bee_g=>2mites;
+R13: mites+bee_d=>2mites;
+R14: bee_g+beatles=>bee_g;
+R15: 2 mites=> mites;
+

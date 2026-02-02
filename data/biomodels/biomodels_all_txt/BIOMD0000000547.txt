@@ -1,0 +1,14 @@
+R0: 2species_6 (AsIIIex) + 2species_11 (Fps1) + species_1 (AsIIIin) => 2species_1 (AsIIIin) + 2species_11 (Fps1) + species_6 (AsIIIex);
+R1: 2species_9 (Hog1) + 2species_1 (AsIIIin) => species_10 (Hog1PP) + 2species_1 (AsIIIin) + species_9 (Hog1);
+R2: 2species_10 (Hog1PP) => species_9 (Hog1) + species_10 (Hog1PP);
+R3: 2species_15 (Fps1P) => species_11 (Fps1) + species_15 (Fps1P);
+R4: 2species_1 (AsIIIin) => species_2 (AsIIIProt) + species_1 (AsIIIin);
+R5: 2species_2 (AsIIIProt) => species_1 (AsIIIin) + species_2 (AsIIIProt);
+R6: 2species_1 (AsIIIin) + 2species_7 (GSH) => species_3 (AsGS3) + species_1 (AsIIIin) + species_7 (GSH);
+R7: 2species_3 (AsGS3) + 2species_5 (Ycf1) => species_4 (vAsGS3) + 2species_5 (Ycf1) + species_3 (AsGS3);
+R8: 2species_1 (AsIIIin) => species_14 (Acr3) + 2species_1 (AsIIIin);
+R9: 2species_14 (Acr3) => species_14 (Acr3);
+R10: 2species_1 (AsIIIin) + 2species_14 (Acr3) => species_6 (AsIIIex) + 2species_14 (Acr3) + species_1 (AsIIIin);
+R11: 2species_11 (Fps1) + 2species_1 (AsIIIin) + 2species_10 (Hog1PP) => species_15 (Fps1P) + 2species_1 (AsIIIin) + 2species_10 (Hog1PP) + species_11 (Fps1);
+R12: 2species_3 (AsGS3) => species_1 (AsIIIin) + species_7 (GSH) + species_3 (AsGS3);
+R13: 2species_4 (vAsGS3) => species_3 (AsGS3) + species_4 (vAsGS3);

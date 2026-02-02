@@ -1,0 +1,12 @@
+R0: OCT4_Gene (OCT4_Gene) + A (A) + SOX2 (SOX2) + NANOG (NANOG) + CDX2 (CDX2) + GCNF (GCNF) => OCT4 (OCT4) + A (A) + SOX2 (SOX2) + NANOG (NANOG) + CDX2 (CDX2) + GCNF (GCNF);
+R1: OCT4 (OCT4) => degradation (degradation);
+R2: SOX2_Gene (SOX2_Gene) + OCT4 (OCT4) + NANOG (NANOG) => SOX2 (SOX2) + OCT4 (OCT4) + NANOG (NANOG);
+R3: SOX2 (SOX2) => degradation (degradation);
+R4: NANOG_Gene (NANOG_Gene) + OCT4 (OCT4) + SOX2 (SOX2) + GATA6 (GATA6) + SN (SN) => NANOG (NANOG) + OCT4 (OCT4) + SOX2 (SOX2) + GATA6 (GATA6) + SN (SN);
+R5: NANOG (NANOG) => degradation (degradation);
+R6: CDX2_Gene (CDX2_Gene) + OCT4 (OCT4) => CDX2 (CDX2) + OCT4 (OCT4);
+R7: CDX2 (CDX2) => degradation (degradation);
+R8: GCNF_Gene (GCNF_Gene) + CDX2 (CDX2) + GATA6 (GATA6) => GCNF (GCNF) + CDX2 (CDX2) + GATA6 (GATA6);
+R9: GCNF (GCNF) => degradation (degradation);
+R10: GATA6_Gene (GATA6_Gene) + OCT4 (OCT4) + NANOG (NANOG) + SG (SG) => GATA6 (GATA6) + OCT4 (OCT4) + NANOG (NANOG) + SG (SG);
+R11: GATA6 (GATA6) => degradation (degradation);

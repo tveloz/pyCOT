@@ -1,0 +1,17 @@
+R0: Arg (Arg) + Fe3__enos (Fe3+(enos)) => Fe3__Arg (Fe3+_Arg);
+R1: Arg (Arg) + Fe2 (Fe2+) => Fe2__Arg (Fe2+_Arg);
+R2:  => Arg (Arg);
+R3: Fe3__enos (Fe3+(enos)) => Fe2 (Fe2+);
+R4: Fe3__NO (Fe3+_NO) => Fe3__enos (Fe3+(enos)) + NO (NO);
+R5: Fe2__NO (Fe2+_NO) + O2 (O2) => Fe3__enos (Fe3+(enos)) + O2 (O2);
+R6: Fe3__NOHA (Fe3+_NOHA) => Fe3__enos (Fe3+(enos)) + NOHA (NOHA);
+R7: Fe3__Arg (Fe3+_Arg) => Fe2__Arg (Fe2+_Arg);
+R8: Fe2__NOHA (Fe2+_NOHA) => Fe2 (Fe2+) + NOHA (NOHA);
+R9: Fe2__Arg (Fe2+_Arg) + O2 (O2) => Fe3__O2__Arg (Fe3+_O2-_Arg) + O2 (O2);
+R10: Fe3__O2__Arg (Fe3+_O2-_Arg) => Fe2__Arg (Fe2+_Arg);
+R11: Fe3__O2__Arg (Fe3+_O2-_Arg) => Fe3__NOHA (Fe3+_NOHA);
+R12: Fe3__NOHA (Fe3+_NOHA) => Fe2__NOHA (Fe2+_NOHA);
+R13: Fe2__NOHA (Fe2+_NOHA) + O2 (O2) => Fe3__O2__NOHA (Fe3+_O2-_NOHA) + O2 (O2);
+R14: Fe3__O2__NOHA (Fe3+_O2-_NOHA) => Fe3__NO (Fe3+_NO) + Citrulline (Citrulline);
+R15: Fe3__NO (Fe3+_NO) => Fe2__NO (Fe2+_NO);
+R16: Fe3__O2__NOHA (Fe3+_O2-_NOHA) => Fe2__NOHA (Fe2+_NOHA);

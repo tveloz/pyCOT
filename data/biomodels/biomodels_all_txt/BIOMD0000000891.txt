@@ -1,0 +1,6 @@
+R0:  => u (u);
+R1: u (u) + v (v) + w (w) => v (v) + w (w);
+R2:  => v (v);
+R3: v (v) + u (u) => u (u);
+R4: u (u) => w (w) + u (u);
+R5: w (w) + u (u) => u (u);

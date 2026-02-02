@@ -1,0 +1,26 @@
+DYNAMICAL HIERARCHY ALGORITHM ANALYSIS REPORT
+============================================================
+
+Dataset Overview:
+  Networks analyzed: 15
+  Network size range: 7-32 ERCs
+  Average network size: 20.2 ERCs
+
+Performance Summary:
+  Average execution time: 5.540s
+  Average efficiency ratio: 26.98%
+  Average reduction factor: 4.6x
+  Total synergies found: 148
+
+Best Performer:
+  File: RN_Ns_25_Norg_8_id_187.txt
+  ERCs: 21
+  Reduction factor: 7.1x
+  Execution time: 1.398s
+
+Worst Performer:
+  File: RN_Ns_25_Norg_8_id_196.txt
+  ERCs: 7
+  Reduction factor: 1.4x
+  Execution time: 0.206s
+

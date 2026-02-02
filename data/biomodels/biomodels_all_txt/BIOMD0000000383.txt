@@ -1,0 +1,4 @@
+R0: RuBP (RuBP) + CO2 (CO2) + 2NADPH (NADPH) + O2 (O2) => 2PGA (PGA) + O2 (O2);
+R1: RuBP (RuBP) + CO2 (CO2) + 2NADPH (NADPH) + O2 (O2) => 1PGA (PGA) + O2 (O2);
+R2: PGA (PGA) + NADPH (NADPH) => RuBP (RuBP) + NADPH (NADPH);
+R3: NADP (NADP) => NADPH (NADPH);

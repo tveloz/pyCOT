@@ -1,0 +1,12 @@
+R0:  => Pyr (pyruvate);
+R1: Pyr (pyruvate) + NAD (NAD(+)) => AcCoA (acetyl-CoA) + NADH (NADH);
+R2: OAA (oxaloacetate) + AcCoA (acetyl-CoA) => Cit (citrate);
+R3: Cit (citrate) + NAD (NAD(+)) => KG (alpha-ketoglutarate) + NADH (NADH);
+R4: KG (alpha-ketoglutarate) + ADP (ADP) + 2NAD (NAD(+)) => OAA (oxaloacetate) + ATP (ATP) + 2NADH (NADH);
+R5: OAA (oxaloacetate) => KG (alpha-ketoglutarate);
+R6: Pyr (pyruvate) + ATP (ATP) => OAA (oxaloacetate) + ADP (ADP);
+R7: OAA (oxaloacetate) => ;
+R8: NADH (NADH) + O2 (oxygen) + 11H (H+) => NAD (NAD(+)) + H2O (water) + 10He (H+);
+R9: ADP (ADP) + iP (phosphate) + 3He (H+) => ATP (ATP) + H2O (water) + 3H (H+);
+R10: ATP (ATP) => ADP (ADP);
+R11: He (H+) => H (H+);

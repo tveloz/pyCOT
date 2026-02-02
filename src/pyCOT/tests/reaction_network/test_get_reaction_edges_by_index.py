@@ -1,5 +1,5 @@
 import pytest
-from pyCOT.rn_rustworkx import ReactionEdge, ReactionNetwork
+from pyCOT.core.rn_rustworkx import ReactionEdge, ReactionNetwork
 
 @pytest.fixture
 def rn():

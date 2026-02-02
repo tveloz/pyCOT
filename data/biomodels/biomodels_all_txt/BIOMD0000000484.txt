@@ -1,0 +1,2 @@
+R0: ES (ES) => S (S);
+R1: 2S (S) => ES (ES) + S (S);

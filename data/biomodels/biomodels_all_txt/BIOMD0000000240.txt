@@ -1,0 +1,14 @@
+R0: AprE (AprE) => ;
+R1: mAprE (mAprE) => AprE (AprE) + mAprE (mAprE);
+R2: 2DegUP (DegUP) => Dim (Dim);
+R3: Dim (Dim) => 2DegUP (DegUP);
+R4: DegU (DegU) => ;
+R5: DegUP (DegUP) => ;
+R6: Dim (Dim) => ;
+R7: mDegU (mDegU) => ;
+R8: DegUP (DegUP) => DegU (DegU);
+R9: mAprE (mAprE) => ;
+R10: Dim (Dim) => mAprE (mAprE) + Dim (Dim);
+R11: DegU (DegU) => DegUP (DegUP);
+R12: mDegU (mDegU) => DegU (DegU) + mDegU (mDegU);
+R13: Dim (Dim) => mDegU (mDegU) + Dim (Dim);

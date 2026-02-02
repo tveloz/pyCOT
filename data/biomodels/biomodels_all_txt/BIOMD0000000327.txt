@@ -1,0 +1,11 @@
+R0: 2bb (HCO3-) + nb (Na+) => 2bi (HCO3-) + ni (Na+);
+R1: bl (HCO3-) => bi (HCO3-);
+R2: cl (CL-) => ci (CL-);
+R3: bl (HCO3-) + ci (CL-) => bi (HCO3-) + cl (CL-);
+R4: bb (HCO3-) + ci (CL-) => bi (HCO3-) + cb (CL-);
+R5: ni (Na+) => nb (Na+);
+R6: ni (Na+) => nb (Na+);
+R7:  => bi (HCO3-);
+R8:  => bl (HCO3-);
+R9:  => cl (CL-);
+R10: bl (HCO3-) => ;

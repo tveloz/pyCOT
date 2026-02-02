@@ -12,7 +12,7 @@ import numpy as np
 
 from pyCOT.io.functions import read_txt
 from pyCOT.simulations.spatial import simulate_spatial_dynamics
-from pyCOT.plot_dynamics import (
+from pyCOT.visualization.plot_dynamics import (
     plot_diffusion_time_series_2D,
     plot_heatmaps_all_species_2D,
     animate_diffusion_heatmaps_all_species_2D

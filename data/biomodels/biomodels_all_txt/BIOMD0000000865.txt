@@ -1,0 +1,8 @@
+R0: B (B) + I (I) => C (C) + B (B) + I (I);
+R1: C (C) => ;
+R2: B (B) => P (P) + B (B);
+R3: P (P) => ;
+R4: B (B) + I (I) => 2I (I) + B (B);
+R5: I (I) => ;
+R6: B (B) => ;
+R7: I (I) + C (C) => B (B) + I (I) + C (C);

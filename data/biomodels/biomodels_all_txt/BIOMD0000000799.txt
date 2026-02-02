@@ -1,0 +1,4 @@
+R0: y_Leukemic_Cell (y_Leukemic_Cell) => x_Normal_Hematopoietic_Stem_Cell (x_Normal_Hematopoietic_Stem_Cell) + y_Leukemic_Cell (y_Leukemic_Cell);
+R1: x_Normal_Hematopoietic_Stem_Cell (x_Normal_Hematopoietic_Stem_Cell) => ;
+R2: x_Normal_Hematopoietic_Stem_Cell (x_Normal_Hematopoietic_Stem_Cell) => y_Leukemic_Cell (y_Leukemic_Cell) + x_Normal_Hematopoietic_Stem_Cell (x_Normal_Hematopoietic_Stem_Cell);
+R3: y_Leukemic_Cell (y_Leukemic_Cell) => ;

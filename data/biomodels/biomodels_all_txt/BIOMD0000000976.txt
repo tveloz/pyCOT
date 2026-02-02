@@ -1,0 +1,5 @@
+R0: Susceptible (Susceptible) + Infected_weak_immune_system (Infected_weak_immune_system) => Infected_strong_immune_system (Infected_strong_immune_system) + Infected_weak_immune_system (Infected_weak_immune_system);
+R1: Susceptible (Susceptible) + Infected_strong_immune_system (Infected_strong_immune_system) => Infected_weak_immune_system (Infected_weak_immune_system) + Infected_strong_immune_system (Infected_strong_immune_system);
+R2: Infected_strong_immune_system (Infected_strong_immune_system) => Recovered (Recovered);
+R3: Infected_weak_immune_system (Infected_weak_immune_system) => Recovered (Recovered);
+R4: Infected_weak_immune_system (Infected_weak_immune_system) => ;

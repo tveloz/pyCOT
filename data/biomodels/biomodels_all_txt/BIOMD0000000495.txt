@@ -1,0 +1,17 @@
+R0: 3mw73259e20_240e_4f3a_b2e0_9ca248658898 (SerE) => mw15abaa48_d7d0_4845_ae04_c573d289d495 (Ser) + 2mw73259e20_240e_4f3a_b2e0_9ca248658898 (SerE);
+R1: 3mw15abaa48_d7d0_4845_ae04_c573d289d495 (Ser) => mwfcfaf604_14d4_47a6_b021_226d1fb5497c (PS) + 2mw15abaa48_d7d0_4845_ae04_c573d289d495 (Ser);
+R2: 3mw15abaa48_d7d0_4845_ae04_c573d289d495 (Ser) => mw8796c919_9251_4970_8f87_0bca9ecfeb5c (Etn) + 2mw15abaa48_d7d0_4845_ae04_c573d289d495 (Ser);
+R3: 3mw8796c919_9251_4970_8f87_0bca9ecfeb5c (Etn) => mw849ed3fd_87d9_44d2_9f3e_4d631b900d41 (PEtn) + 2mw8796c919_9251_4970_8f87_0bca9ecfeb5c (Etn);
+R4: 3mw849ed3fd_87d9_44d2_9f3e_4d631b900d41 (PEtn) => mwcb834e43_dc57_45ae_9452_f4c10955caf1 (PCho) + 2mw849ed3fd_87d9_44d2_9f3e_4d631b900d41 (PEtn);
+R5: 3mwfcfaf604_14d4_47a6_b021_226d1fb5497c (PS) => mwf166ad55_4ff0_49fb_95d2_b657ad7653d5 (PE) + 2mwfcfaf604_14d4_47a6_b021_226d1fb5497c (PS);
+R6: 3mw849ed3fd_87d9_44d2_9f3e_4d631b900d41 (PEtn) => mwf166ad55_4ff0_49fb_95d2_b657ad7653d5 (PE) + 2mw849ed3fd_87d9_44d2_9f3e_4d631b900d41 (PEtn);
+R7: 3mwcb834e43_dc57_45ae_9452_f4c10955caf1 (PCho) => mwee54b5b4_b8c0_41df_8dda_5b160c5e10a5 (PC) + 2mwcb834e43_dc57_45ae_9452_f4c10955caf1 (PCho);
+R8: 3mwf166ad55_4ff0_49fb_95d2_b657ad7653d5 (PE) => mwee54b5b4_b8c0_41df_8dda_5b160c5e10a5 (PC) + 2mwf166ad55_4ff0_49fb_95d2_b657ad7653d5 (PE);
+R9: 3mwee54b5b4_b8c0_41df_8dda_5b160c5e10a5 (PC) => mwfcfaf604_14d4_47a6_b021_226d1fb5497c (PS) + 2mwee54b5b4_b8c0_41df_8dda_5b160c5e10a5 (PC);
+R10: 3mwf166ad55_4ff0_49fb_95d2_b657ad7653d5 (PE) => mwfcfaf604_14d4_47a6_b021_226d1fb5497c (PS) + 2mwf166ad55_4ff0_49fb_95d2_b657ad7653d5 (PE);
+R11: 3mwee54b5b4_b8c0_41df_8dda_5b160c5e10a5 (PC) => 2mwee54b5b4_b8c0_41df_8dda_5b160c5e10a5 (PC);
+R12: 3mwfcfaf604_14d4_47a6_b021_226d1fb5497c (PS) => 2mwfcfaf604_14d4_47a6_b021_226d1fb5497c (PS);
+R13: mwf166ad55_4ff0_49fb_95d2_b657ad7653d5 (PE) + 2mwfcfaf604_14d4_47a6_b021_226d1fb5497c (PS) => 2mwfcfaf604_14d4_47a6_b021_226d1fb5497c (PS);
+R14: 3mw919f8a86_e702_4b24_9cd7_adad694fcf9b (ChoE) => mw812f63db_4cb0_40ad_b92b_9874be969dfe (Cho) + 2mw919f8a86_e702_4b24_9cd7_adad694fcf9b (ChoE);
+R15: 3mw812f63db_4cb0_40ad_b92b_9874be969dfe (Cho) => mwcb834e43_dc57_45ae_9452_f4c10955caf1 (PCho) + 2mw812f63db_4cb0_40ad_b92b_9874be969dfe (Cho);
+R16: 3mw08818dfe_fb12_45cc_8c1d_d965f142d0ce (EtnE) + 2mw8796c919_9251_4970_8f87_0bca9ecfeb5c (Etn) => 3mw8796c919_9251_4970_8f87_0bca9ecfeb5c (Etn) + 2mw08818dfe_fb12_45cc_8c1d_d965f142d0ce (EtnE);

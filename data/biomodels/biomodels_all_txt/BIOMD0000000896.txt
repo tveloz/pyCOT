@@ -1,0 +1,15 @@
+R0: Hsp70 (Hsp70) + HSF (HSF) => Hsp70_HSF (Hsp70_HSF);
+R1: Hsp70_HSF (Hsp70_HSF) => Hsp70 (Hsp70) + HSF (HSF);
+R2: Hsp70 (Hsp70) + S (S) => Hsp70_S (Hsp70_S);
+R3: Hsp70_S (Hsp70_S) => Hsp70 (Hsp70) + S (S);
+R4: 3HSF (HSF) => HSF_3 (HSF_3);
+R5: HSF_3 (HSF_3) + Hsp70 (Hsp70) => 2HSF (HSF) + Hsp70_HSF (Hsp70_HSF);
+R6: mRNA (mRNA) => Hsp70 (Hsp70);
+R7: Hsp70_S (Hsp70_S) => Hsp70 (Hsp70);
+R8: Hsp70 (Hsp70) => ;
+R9: S (S) + Hsp70_HSF (Hsp70_HSF) => Hsp70_S (Hsp70_S) + HSF (HSF);
+R10: Hsp70_S (Hsp70_S) + HSF (HSF) => Hsp70_HSF (Hsp70_HSF) + S (S);
+R11: HSF_3 (HSF_3) + HSE (HSE) => HSF_3_HSE (HSF_3_HSE);
+R12: HSF_3_HSE (HSF_3_HSE) => HSE (HSE) + HSF_3 (HSF_3);
+R13: HSF_3_HSE (HSF_3_HSE) => mRNA (mRNA) + HSF_3_HSE (HSF_3_HSE);
+R14:  => S (S);

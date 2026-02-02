@@ -1,0 +1,6 @@
+R0: Mad1_CMad2 (Mad1_C-Mad2) + OMad2 (O-Mad2) => Mad1_CMad2_OMad2 (Mad1_C-Mad2_O-Mad2*);
+R1: Mad1_CMad2_OMad2 (Mad1_C-Mad2_O-Mad2*) + Cdc20 (Cdc20) => Mad1_CMad2 (Mad1_C-Mad2) + Cdc20_CMad2 (Cdc20_C-Mad2);
+R2: Cdc20_CMad2 (Cdc20_C-Mad2) => Cdc20 (Cdc20) + OMad2 (O-Mad2);
+R3: Cdc20_CMad2 (Cdc20_C-Mad2) + Bub3_BubR1 (Bub3_BubR1) => MCC (MCC);
+R4: Bub3_BubR1 (Bub3_BubR1) + Cdc20 (Cdc20) => Bub3_BubR1_Cdc20 (Bub3_BubR1_Cdc20);
+R5: OMad2 (O-Mad2) + Cdc20 (Cdc20) => Cdc20_CMad2 (Cdc20_C-Mad2);

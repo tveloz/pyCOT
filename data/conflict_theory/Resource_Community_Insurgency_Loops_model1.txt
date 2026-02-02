@@ -1,0 +1,55 @@
+# Conflict Model Reaction Network - Restructured
+# 34 reactions organized in 7 categories
+# Species: SR_RL, SR_SL, WR_RL, WR_SL, AG_RL, AG_SL (population-land complexes)
+#          RL, SL (land types)
+#          E (economic output), T (trust), V (violence), Gov (governance)
+
+# Land and Resource Dynamics (r1-r6)
+r1: SL => RL;
+r1p: SR_SL=>SR_RL;
+r1q: WR_SL=>WR_RL;
+r2: RL => SL;
+r3: SR_RL => SR_SL;
+r4: WR_RL => WR_SL;
+r5: AG_RL => AG_SL;
+r6: Gov + SR_SL => SR_RL;
+
+# Economic Production and Government Presence (r7-r10)
+r7: SR_RL => SR_SL + E;
+r8: WR_RL => WR_SL + E;
+r9: 2E => Gov;
+r10: => Gov;
+
+# Population Migration (r11-r15)
+r11: SR_SL + RL => SR_RL + SL;
+r12: WR_SL + RL => WR_RL + SL;
+r13: SR_RL + SL + V => RL + SR_SL;
+r14: WR_RL + SL + V => RL + WR_SL;
+r15: AG_SL + RL => AG_RL + SL;
+
+# Resilience Transitions (r16-r19)
+r16: E + WR_RL => SR_RL;
+r17: E + WR_SL => SR_SL;
+r18: SR_SL => WR_SL;
+r19: E + Gov + AG_SL => WR_SL;
+
+# Trust and Social Cohesion (r20-r24)
+r20: SR_RL + 2E => SR_RL + 2E + T;
+r21: Gov + SR_RL => Gov + SR_RL + T;
+r22: Gov + WR_RL => SR_RL;
+r23: V + T => ;
+r24: 2Gov => ;
+
+# Violence Generation (r25-r29)
+r25: 2WR_SL => 2WR_SL + V;
+r26: AG_SL + SR_RL => AG_RL + WR_SL + V;
+r27: AG_SL + Gov => WR_SL + V;
+r28: Gov + AG_SL => WR_SL + V;
+r29: 2V => ;
+
+# Armed Group Dynamics (r30-r34)
+r30: WR_SL + AG_SL + V => 2AG_SL;
+r31: AG_SL + WR_RL => AG_RL + WR_SL;
+r32: AG_SL + SR_RL => AG_RL + WR_SL;
+r33: AG_SL + E => AG_RL;
+r34: 2AG_RL + Gov => 2AG_RL;

@@ -1,0 +1,11 @@
+R0: 2A (A) + 2gB (gB) => AgB (AgB) + A (A) + gB (gB);
+R1: 2AgB (AgB) => A (A) + gB (gB) + AgB (AgB);
+R2: 2gB (gB) => rB (rB) + 2gB (gB);
+R3: 2AgB (AgB) => rB (rB) + 2AgB (AgB);
+R4: 2rB (rB) => rB (rB);
+R5:  => A (A);
+R6: 2A (A) => A (A);
+R7: 2rB (rB) => B (B) + 2rB (rB);
+R8: 2B (B) => B (B);
+R9: 2A (A) + 2B (B) => AB (AB) + A (A) + B (B);
+R10: 2AB (AB) => AB (AB);

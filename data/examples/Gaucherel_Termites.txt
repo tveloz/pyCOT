@@ -1,0 +1,13 @@
+R1: Wk_p+ Te_p =>Wd_m+Ai_m #The workers and the fungi are consuming wood and air
+R2: Fg_m =>Te_m #The fungi need the fungal gardens in order to survive
+R3: Wk_p+ Sl_p =>Wd_p+ Te_p+ Fg_p+ Ec_p+Md_p #The workers are foraging in the soil for wood and fungus; from the soil+ the workers are building the fungal gardens+ the egg chambers and the mount
+R4: Wd_m =>Wk_m+ Te_m #The workers and the fungus need to eat wood to survive
+R5: Rp_p+ Sl_p =>Ec_p #For the soil+ the queen and the king can also build egg rooms
+R6: Rp_p+ Ec_p =>Wk_p #In the egg chambers+ the queen and the king are producing eggs that are becoming workers
+R7: Wk_p+Wd_p =>Sd_p+Rp_p #Eating some wood+ the larvae are metamorphosing into soldiers and/or nymphaea
+R8: Md_p+At_p =>Ai_p #The air of the nest is being refreshed by passing through the mound and exchanging with the atmosphere
+R9: Wk_m =>Fg_m+ Sd_m #The soldiers cannot survive without the workers to feed them+ and the fungal gardens need some maintenance by the workers
+R10: Wk_m+Rp_m =>Ec_m #The egg chambers need some maintenance by the workers or the reproductives+ otherwise they collapse
+R11: Sd_p =>Ac_m #The soldiers are killing ant competitors intruding into the colony
+R12: Ac_p+ Sd_m =>Wk_m+Rp_m #Without the soldiers+ the ant competitors are invading the colony and killing the workers and the reproductives
+R13: Ai_m =>Rp_m+Wk_m+ Te_m #The reproductives+ the workers and the fungus need to breathe the air of the nest to survive

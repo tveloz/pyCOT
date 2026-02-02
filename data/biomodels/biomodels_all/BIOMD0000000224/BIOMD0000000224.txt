@@ -1,0 +1,6 @@
+JChannel: 1IP3 + 1g + 1CaS => 1IP3 + 1g + 1CaI;
+JPump: 1CaI => 1CaS;
+kPLC: 1CaI => 1CaI + 1IP3;
+kPhosphatase: 1IP3 => ;
+inhibition_parameter1: 1CaI => 1CaI + 1g;
+inhibition_parameter2: 1CaI + 1g => 1CaI + ;

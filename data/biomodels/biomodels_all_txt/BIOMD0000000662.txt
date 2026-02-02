@@ -1,0 +1,10 @@
+R0: Source (Source) => T_cell_naive (T_cell_naive);
+R1: T_cell_naive (T_cell_naive) => Sink (Sink);
+R2: T_cell_naive (T_cell_naive) + CML (CML) => Sink (Sink) + CML (CML);
+R3: Source (Source) + CML (CML) => T_cell_effector (T_cell_effector) + CML (CML);
+R4: T_cell_effector (T_cell_effector) => Sink (Sink);
+R5: T_cell_effector (T_cell_effector) + CML (CML) => Sink (Sink) + CML (CML);
+R6: Source (Source) => CML (CML);
+R7: CML (CML) + T_cell_effector (T_cell_effector) => Sink (Sink) + T_cell_effector (T_cell_effector);
+R8: CML (CML) => Sink (Sink);
+R9: Source (Source) + T_cell_naive (T_cell_naive) + CML (CML) => T_cell_effector (T_cell_effector) + T_cell_naive (T_cell_naive) + CML (CML);

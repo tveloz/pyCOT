@@ -18,17 +18,17 @@ from pyCOT.tests.reaction_network.test_add_from_reaction_string import rn
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import required modules
-from pyCOT.rn_rustworkx import ReactionNetwork
+from pyCOT.core.rn_rustworkx import ReactionNetwork
 from pyCOT.io.functions import read_txt
-from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy
-from pyCOT.ERC_Synergy_Complementarity import build_erc_sorn
+from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy
+from pyCOT.analysis.ERC_Synergy_Complementarity import build_erc_sorn
 # Import SORN_Generators for building generators
-from pyCOT.SORN_Generators import (
-    build_irreducible_generators 
+from pyCOT.analysis.SORN_Generators import (
+    build_irreducible_generators
 )
 
 # Import our new Persistent_Modules_Generator module
-from pyCOT.Persistent_Modules_Generator import (
+from pyCOT.analysis.Persistent_Modules_Generator import (
     ElementarySO,
     Organization, 
     OrganizationHierarchy,

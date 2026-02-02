@@ -1,0 +1,10 @@
+R0: OCT4_Gene (OCT4_Gene) + A (A) + OCT4_SOX2 (OCT4_SOX2) + NANOG (NANOG) => OCT4 (OCT4) + A (A) + OCT4_SOX2 (OCT4_SOX2) + NANOG (NANOG);
+R1: OCT4 (OCT4) => degradation (degradation);
+R2: NANOG_Gene (NANOG_Gene) + OCT4_SOX2 (OCT4_SOX2) + p53 (p53) => NANOG (NANOG) + OCT4_SOX2 (OCT4_SOX2) + p53 (p53);
+R3: NANOG (NANOG) => degradation (degradation);
+R4: OCT4 (OCT4) + SOX2 (SOX2) => OCT4_SOX2 (OCT4_SOX2);
+R5: OCT4_SOX2 (OCT4_SOX2) => degradation (degradation);
+R6: SOX2_Gene (SOX2_Gene) + A (A) + OCT4_SOX2 (OCT4_SOX2) + NANOG (NANOG) => SOX2 (SOX2) + A (A) + OCT4_SOX2 (OCT4_SOX2) + NANOG (NANOG);
+R7: SOX2 (SOX2) => degradation (degradation);
+R8: targetGene (targetGene) + OCT4_SOX2 (OCT4_SOX2) + NANOG (NANOG) => Protein (Protein) + OCT4_SOX2 (OCT4_SOX2) + NANOG (NANOG);
+R9: Protein (Protein) => degradation (degradation);

@@ -1,0 +1,12 @@
+R0: G (G) => ;
+R1: A_im (A_im) + G (G) => A (A) + G (G);
+R2: E (E) => G (G) + E (E);
+R3: A (A) => R (R) + A (A);
+R4: A (A) + E (E) => R (R) + A (A) + E (E);
+R5: A (A) => E (E) + A (A);
+R6: A (A) => ;
+R7: R (R) => ;
+R8: E (E) => ;
+R9: G (G) => ;
+R10: A (A) => ;
+R11: A (A) + R (R) => R (R);

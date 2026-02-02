@@ -1,0 +1,9 @@
+R0:  => RA (RA);
+R1: RA (RA) => ;
+R2: RA (RA) + C (CYP26) => C (CYP26);
+R3: F (FGF) => M_C (cyp26_mRNA) + F (FGF);
+R4: M_C (cyp26_mRNA) => ;
+R5: M_C (cyp26_mRNA) => C (CYP26) + M_C (cyp26_mRNA);
+R6: C (CYP26) => ;
+R7: RA (RA) + M_F (FGF_mRNA) => F (FGF) + RA (RA) + M_F (FGF_mRNA);
+R8: F (FGF) => ;

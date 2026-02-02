@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np
 from rustworkx import PyDiGraph, InvalidNode
 from pyCOT.io._utils import simplify_terms, str2int_or_float
-from pyCOT.rn_types import Species, Reaction, ReactionEdge, ReactionNode, StoichiometryMatrix
+from pyCOT.core.rn_types import Species, Reaction, ReactionEdge, ReactionNode, StoichiometryMatrix
 
 
 

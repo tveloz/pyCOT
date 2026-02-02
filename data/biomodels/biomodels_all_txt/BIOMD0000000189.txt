@@ -1,0 +1,14 @@
+R0: Mdm2_mRNA (Mdm2_mRNA) => Mdm2_mRNA (Mdm2_mRNA) + Mdm2 (Mdm2) + mdm2syn (mdm2syn);
+R1: p53 (p53) => p53 (p53) + Mdm2_mRNA (Mdm2_mRNA) + Mdm2mRNAsyn (Mdm2mRNAsyn);
+R2: Mdm2_mRNA (Mdm2_mRNA) => Sink (Sink) + Mdm2mRNAdeg (Mdm2mRNAdeg);
+R3: Mdm2 (Mdm2) => Sink (Sink) + mdm2deg (mdm2deg);
+R4: Source (Source) => p53 (p53) + p53syn (p53syn);
+R5: Mdm2_p53 (Mdm2_p53) => Mdm2 (Mdm2) + p53deg (p53deg);
+R6: p53 (p53) + Mdm2 (Mdm2) => Mdm2_p53 (Mdm2_p53);
+R7: Mdm2_p53 (Mdm2_p53) => p53 (p53) + Mdm2 (Mdm2);
+R8:  => damDNA (damDNA) + totdamDNA (totdamDNA);
+R9: damDNA (damDNA) => Sink (Sink);
+R10: damDNA (damDNA) => damDNA (damDNA) + ARF (ARF);
+R11: ARF (ARF) + Mdm2 (Mdm2) => ARF_Mdm2 (ARF_Mdm2);
+R12: ARF_Mdm2 (ARF_Mdm2) => ARF (ARF) + mdm2deg (mdm2deg);
+R13: ARF (ARF) => Sink (Sink);

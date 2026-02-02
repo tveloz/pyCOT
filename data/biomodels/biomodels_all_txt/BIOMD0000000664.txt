@@ -1,0 +1,15 @@
+R0: g1_0 (g1) => FGFR (FGFR) + g1_0 (g1);
+R1: FGFR (FGFR) => ;
+R2: g2_0 (g2) => MSH (MSH) + g2_0 (g2);
+R3: MSH (MSH) => ;
+R4: C_Raf_inactive (C-Raf inactive) + FGFR (FGFR) => C_Raf (C-Raf) + C_Raf_inactive (C-Raf inactive) + FGFR (FGFR);
+R5: C_Raf_inactive (C-Raf inactive) + MAPK (MAPK) => C_Raf (C-Raf) + C_Raf_inactive (C-Raf inactive) + MAPK (MAPK);
+R6: C_Raf (C-Raf) => ;
+R7: FGFR (FGFR) => B_Raf (B-Raf) + FGFR (FGFR);
+R8: MSH (MSH) => B_Raf (B-Raf) + MSH (MSH);
+R9: B_Raf (B-Raf) => ;
+R10: C_Raf (C-Raf) => MAPK (MAPK) + C_Raf (C-Raf);
+R11: B_Raf (B-Raf) => MAPK (MAPK) + B_Raf (B-Raf);
+R12: MAPK (MAPK) => ;
+R13: C_Raf (C-Raf) + MSH (MSH) => C_Raf_inactive (C-Raf inactive) + MSH (MSH);
+R14: C_Raf_inactive (C-Raf inactive) => ;

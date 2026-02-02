@@ -35,7 +35,7 @@ from pathlib import Path
 
 # Import required modules
 from pyCOT.io.functions import read_txt
-from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, closure
+from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy, closure
 
 # Import core synergy/complementarity functions
 from pyCOT.ERC_synergy import (

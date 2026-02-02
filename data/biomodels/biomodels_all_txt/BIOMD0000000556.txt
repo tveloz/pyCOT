@@ -1,0 +1,8 @@
+R0:  => APP (APP);
+R1: 2APP (APP) + 2C99 (C99) => C83 (C83) + 2C99 (C99) + APP (APP);
+R2: 2APP (APP) => C99 (C99) + APP (APP);
+R3: 2C83 (C83) + 2C99 (C99) => p3 (p3) + 2C99 (C99) + C83 (C83);
+R4: 2C99 (C99) + 2C83 (C83) => AB (AB) + 2C83 (C83) + C99 (C99);
+R5: 2C99 (C99) + 2APP (APP) => C83 (C83) + 2APP (APP) + C99 (C99);
+R6: 2C83 (C83) + 2X (X) => p3 (p3) + 2X (X) + C83 (C83);
+R7: 2C99 (C99) + 2X (X) => AB (AB) + 2X (X) + C99 (C99);

@@ -1,0 +1,5 @@
+R0: species_1 (LA) => species_7 (13HOD-S(Z,E)) + species_8 (13HOD-R(Z,E)) + species_9 (13HOD-S(E,E)) + species_10 (13HOD-R(E,E)) + species_11 (9HOD-S(Z,E)) + species_12 (9HOD-R(Z,E)) + species_13 (9HOD-S(E,E)) + species_14 (9HOD-R(E,E));
+R1: species_1 (LA) => species_7 (13HOD-S(Z,E)) + species_8 (13HOD-R(Z,E)) + species_9 (13HOD-S(E,E)) + species_10 (13HOD-R(E,E)) + species_11 (9HOD-S(Z,E)) + species_12 (9HOD-R(Z,E)) + species_13 (9HOD-S(E,E)) + species_14 (9HOD-R(E,E));
+R2: species_1 (LA) => species_7 (13HOD-S(Z,E)) + species_8 (13HOD-R(Z,E)) + species_9 (13HOD-S(E,E)) + species_10 (13HOD-R(E,E)) + species_11 (9HOD-S(Z,E)) + species_12 (9HOD-R(Z,E)) + species_13 (9HOD-S(E,E)) + species_14 (9HOD-R(E,E));
+R3: species_7 (13HOD-S(Z,E)) => species_15 (nHexanal);
+R4: species_8 (13HOD-R(Z,E)) => species_15 (nHexanal);

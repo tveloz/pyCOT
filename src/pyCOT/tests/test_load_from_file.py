@@ -6,7 +6,7 @@ import sys
 
 import argparse
 import os
-from pyCOT.rn_rustworkx import ReactionNetwork
+from pyCOT.core.rn_rustworkx import ReactionNetwork
 from pyCOT.io.functions import read_txt
 
 file_path = "Txt/autopoietic.txt"

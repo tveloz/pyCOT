@@ -1,0 +1,5 @@
+R0: APAP (APAP) => NAPQI (NAPQI);
+R1: GSH (GSH) + NAPQI (NAPQI) => NAPQIGSH (NAPQIGSH);
+R2: X1 (X1) => GSH (GSH);
+R3: APAP (APAP) => APAPconj_Glu (APAPconj_Glu);
+R4: APAP (APAP) => APAPconj_Sul (APAPconj_Sul);

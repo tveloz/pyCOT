@@ -1,0 +1,10 @@
+R0:  => NT (NT);
+R1: NT (NT) + NI (NI) => NI (NI);
+R2: NT (NT) => NI (NI) + NT (NT);
+R3: NI (NI) => ;
+R4:  => BT (BT);
+R5: BT (BT) => ;
+R6: NT (NT) => BT (BT) + NT (NT);
+R7:  => BI (BI);
+R8: BI (BI) => ;
+R9: NI (NI) => BI (BI) + NI (NI);

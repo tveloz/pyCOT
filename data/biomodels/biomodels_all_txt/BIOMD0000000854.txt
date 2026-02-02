@@ -1,0 +1,7 @@
+R0: Pc (Pc) => Ac (Ac);
+R1: Ac (Ac) => Ap (Ap);
+R2: Ap (Ap) => Ac (Ac);
+R3: Pp (Pp) => Pc (Pc);
+R4: Pc (Pc) => Pp (Pp);
+R5: Pp (Pp) => Ap (Ap);
+R6: Ap (Ap) => Pp (Pp);

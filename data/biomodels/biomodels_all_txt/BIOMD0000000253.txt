@@ -1,0 +1,4 @@
+R0: Glc (glucose) + ATP (ATP) + Tre6P (trehalose 6-phosphate) => HMP (hexose monophosphate) + Tre6P (trehalose 6-phosphate);
+R1: HMP (hexose monophosphate) + ATP (ATP) => Fru16P2 (fructose 1,6-bisphosphate);
+R2: Fru16P2 (fructose 1,6-bisphosphate) + 4ADP (ADP) => 4ATP (ATP);
+R3: ATP (ATP) => ADP (ADP);

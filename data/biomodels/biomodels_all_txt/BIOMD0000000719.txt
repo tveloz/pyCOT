@@ -1,0 +1,9 @@
+R0:  => Cyclin_B1_Cdk1_complex_phosphorylated (Cyclin B1 Cdk1 complex phosphorylated);
+R1: Cyclin_B1_Cdk1_complex_unphosphorylated (Cyclin B1 Cdk1 complex unphosphorylated) + APC_C_active (APC/C active) => APC_C_active (APC/C active);
+R2: Cyclin_B1_Cdk1_complex_phosphorylated (Cyclin B1 Cdk1 complex phosphorylated) + APC_C_active (APC/C active) => APC_C_active (APC/C active);
+R3: Cyclin_B1_Cdk1_complex_phosphorylated (Cyclin B1 Cdk1 complex phosphorylated) => Cyclin_B1_Cdk1_complex_unphosphorylated (Cyclin B1 Cdk1 complex unphosphorylated);
+R4: Cyclin_B1_Cdk1_complex_unphosphorylated (Cyclin B1 Cdk1 complex unphosphorylated) => Cyclin_B1_Cdk1_complex_phosphorylated (Cyclin B1 Cdk1 complex phosphorylated);
+R5: Cyclin_B1_Cdk1_complex_phosphorylated (Cyclin B1 Cdk1 complex phosphorylated) + Plx1_total (Plx1_total) => Plx1_active (Plx1_active) + Cyclin_B1_Cdk1_complex_phosphorylated (Cyclin B1 Cdk1 complex phosphorylated) + Plx1_total (Plx1_total);
+R6: Plx1_active (Plx1_active) => ;
+R7: Plx1_active (Plx1_active) + APC_C_total (APC/C total) => APC_C_active (APC/C active) + Plx1_active (Plx1_active) + APC_C_total (APC/C total);
+R8: APC_C_active (APC/C active) => ;

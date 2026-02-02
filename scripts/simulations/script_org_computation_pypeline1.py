@@ -22,11 +22,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import pyCOT modules
 from pyCOT.io.functions import read_txt
-from pyCOT.rn_visualize import rn_visualize_html
-from pyCOT.Persistent_Modules_Generator import compute_all_organizations
+from pyCOT.visualization.rn_visualize import rn_visualize_html
+from pyCOT.analysis.Persistent_Modules_Generator import compute_all_organizations
 from pyCOT.simulations import simulation
 from pyCOT.simulations.abstractions import abstraction_ordinary
-from pyCOT.ERC_Hierarchy import ERC_Hierarchy
+from pyCOT.analysis.ERC_Hierarchy import ERC_Hierarchy
 
 # ========================================
 # 2. CONFIGURATION PARAMETERS

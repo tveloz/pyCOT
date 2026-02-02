@@ -1,0 +1,15 @@
+R0: Susceptible (Susceptible) + Infected (Infected) + Asymptomatic (Asymptomatic) + Total_population (Total_population) => Exposed (Exposed) + Infected (Infected) + Asymptomatic (Asymptomatic) + Total_population (Total_population);
+R1: Susceptible (Susceptible) + Infected (Infected) + Quarantined (Quarantined) + Total_population (Total_population) => Susceptible_isolated (Susceptible_isolated) + Infected (Infected) + Quarantined (Quarantined) + Total_population (Total_population);
+R2: Susceptible_isolated (Susceptible_isolated) => Susceptible (Susceptible);
+R3: Exposed (Exposed) => Infected (Infected);
+R4: Exposed (Exposed) => Asymptomatic (Asymptomatic);
+R5: Exposed (Exposed) + Infected (Infected) + Quarantined (Quarantined) + Total_population (Total_population) => 2Quarantined (Quarantined) + Infected (Infected) + Total_population (Total_population);
+R6: Infected (Infected) => Hospitalised (Hospitalised);
+R7: Infected (Infected) => ;
+R8: Infected (Infected) => Recovered (Recovered);
+R9: 2Infected (Infected) + Quarantined (Quarantined) + Total_population (Total_population) => 2Quarantined (Quarantined) + Infected (Infected) + Total_population (Total_population);
+R10: Asymptomatic (Asymptomatic) => Recovered (Recovered);
+R11: Asymptomatic (Asymptomatic) + Infected (Infected) + Quarantined (Quarantined) + Total_population (Total_population) => 2Quarantined (Quarantined) + Infected (Infected) + Total_population (Total_population);
+R12: Quarantined (Quarantined) => Hospitalised (Hospitalised);
+R13: Hospitalised (Hospitalised) => Deceased (Deceased);
+R14: Hospitalised (Hospitalised) => Recovered (Recovered);

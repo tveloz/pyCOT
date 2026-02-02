@@ -1,0 +1,8 @@
+R0: 2Source (Source) => Abeta (AbetaMonomer) + Source (Source);
+R1: 2Abeta (AbetaMonomer) + 2Nep (Neprilysin) => Sink (Sink) + 2Nep (Neprilysin) + Abeta (AbetaMonomer);
+R2: 3Abeta (AbetaMonomer) => AbDim (AbetaDimer) + Abeta (AbetaMonomer);
+R3: 2AbDim (AbetaDimer) => 2Abeta (AbetaMonomer) + AbDim (AbetaDimer);
+R4: 3AbDim (AbetaDimer) => 4AbP (AbetaPlaque) + AbDim (AbetaDimer);
+R5: 2Abeta (AbetaMonomer) + 2AbP (AbetaPlaque) => 3AbP (AbetaPlaque) + Abeta (AbetaMonomer);
+R6: 2AbP (AbetaPlaque) => Abeta (AbetaMonomer) + AbP (AbetaPlaque);
+R7: 2Nep (Neprilysin) => Sink (Sink) + Nep (Neprilysin);

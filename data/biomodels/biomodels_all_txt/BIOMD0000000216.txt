@@ -1,0 +1,17 @@
+R0:  => M (M);
+R1: TF (TF) => M (M) + TF (TF);
+R2: M (M) => ;
+R3: M (M) => CP (CP) + M (M);
+R4: CP (CP) => ;
+R5: 2CP (CP) => CP2 (CP2);
+R6: CP2 (CP2) => 2CP (CP);
+R7: CP (CP) + CP2 (CP2) + IC (IC) => CP2 (CP2) + IC (IC);
+R8: CP (CP) => ;
+R9: IC (IC) => CP2 (CP2) + TF (TF);
+R10: CP2 (CP2) => ;
+R11: CP2 (CP2) + TF (TF) => IC (IC);
+R12: CP2 (CP2) + CP (CP) + IC (IC) => CP (CP) + IC (IC);
+R13: CP2 (CP2) => ;
+R14: IC (IC) => TF (TF);
+R15: IC (IC) => TF (TF);
+R16: IC (IC) + CP2 (CP2) + CP (CP) => TF (TF) + CP2 (CP2) + CP (CP);

@@ -1,0 +1,9 @@
+R0: ADPi (ADPi) + Pi (Pii) => ATPi (ATPi);
+R1: ATPi (ATPi) + Cri (Cri) => ADPi (ADPi) + PCri (PCri);
+R2: ATP (ATP) + Cr (Cr) => PCr (PCr) + ADP (ADP);
+R3: ATP (ATP) => ADP (ADP) + P (Pi);
+R4: Pi (Pii) => P (Pi);
+R5: Cri (Cri) => Cr (Cr);
+R6: ADPi (ADPi) => ADP (ADP);
+R7: PCri (PCri) => PCr (PCr);
+R8: ATPi (ATPi) => ATP (ATP);

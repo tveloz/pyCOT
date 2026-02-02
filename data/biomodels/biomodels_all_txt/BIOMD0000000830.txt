@@ -1,0 +1,7 @@
+R0: s6 (golgi) => s1 (HS surface);
+R1: s1 (HS surface) => s2 (early endosome);
+R2: s2 (early endosome) => s1 (HS surface);
+R3: s2 (early endosome) => s3 (late endosome);
+R4: s3 (late endosome) => s4 (lysosome);
+R5: s4 (lysosome) => release (release);
+R6: s1 (HS surface) => shedding (shedding);

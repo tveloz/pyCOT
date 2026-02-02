@@ -1,0 +1,13 @@
+R0: Uninfected_M2_macrophages (Uninfected_M2_macrophages) => Uninfected_tumour_cells (Uninfected_tumour_cells) + Uninfected_M2_macrophages (Uninfected_M2_macrophages);
+R1: Uninfected_tumour_cells (Uninfected_tumour_cells) + Oncolytic_viruses (Oncolytic_viruses) => Infected_tumour_cells (Infected tumour_cells) + Oncolytic_viruses (Oncolytic_viruses);
+R2: Uninfected_tumour_cells (Uninfected_tumour_cells) + M1_macrophages (M1_macrophages) + Uninfected_M2_macrophages (Uninfected_M2_macrophages) => M1_macrophages (M1_macrophages) + Uninfected_M2_macrophages (Uninfected_M2_macrophages);
+R3: Infected_tumour_cells (Infected tumour_cells) + M1_macrophages (M1_macrophages) + Uninfected_M2_macrophages (Uninfected_M2_macrophages) => M1_macrophages (M1_macrophages) + Uninfected_M2_macrophages (Uninfected_M2_macrophages);
+R4: Oncolytic_viruses (Oncolytic_viruses) + Infected_tumour_cells (Infected tumour_cells) + Uninfected_tumour_cells (Uninfected_tumour_cells) + Uninfected_M2_macrophages (Uninfected_M2_macrophages) => M1_macrophages (M1_macrophages) + Oncolytic_viruses (Oncolytic_viruses) + Infected_tumour_cells (Infected tumour_cells) + Uninfected_tumour_cells (Uninfected_tumour_cells) + Uninfected_M2_macrophages (Uninfected_M2_macrophages);
+R5: M1_macrophages (M1_macrophages) + Uninfected_tumour_cells (Uninfected_tumour_cells) + Oncolytic_viruses (Oncolytic_viruses) => Uninfected_M2_macrophages (Uninfected_M2_macrophages) + Uninfected_tumour_cells (Uninfected_tumour_cells) + Oncolytic_viruses (Oncolytic_viruses);
+R6: M1_macrophages (M1_macrophages) => ;
+R7: Uninfected_tumour_cells (Uninfected_tumour_cells) + M1_macrophages (M1_macrophages) => Uninfected_M2_macrophages (Uninfected_M2_macrophages) + Uninfected_tumour_cells (Uninfected_tumour_cells) + M1_macrophages (M1_macrophages);
+R8: Uninfected_M2_macrophages (Uninfected_M2_macrophages) + Oncolytic_viruses (Oncolytic_viruses) => Infected_M2_macrophages (Infected_M2_macrophages) + Oncolytic_viruses (Oncolytic_viruses);
+R9: Uninfected_M2_macrophages (Uninfected_M2_macrophages) => ;
+R10: Infected_M2_macrophages (Infected_M2_macrophages) => ;
+R11: Infected_tumour_cells (Infected tumour_cells) + Infected_M2_macrophages (Infected_M2_macrophages) => Oncolytic_viruses (Oncolytic_viruses) + Infected_tumour_cells (Infected tumour_cells) + Infected_M2_macrophages (Infected_M2_macrophages);
+R12: Oncolytic_viruses (Oncolytic_viruses) + M1_macrophages (M1_macrophages) + Uninfected_M2_macrophages (Uninfected_M2_macrophages) => M1_macrophages (M1_macrophages) + Uninfected_M2_macrophages (Uninfected_M2_macrophages);

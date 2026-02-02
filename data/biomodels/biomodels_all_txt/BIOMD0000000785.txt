@@ -1,0 +1,5 @@
+R0:  => x_Malignant_Cells (x_Malignant_Cells);
+R1: x_Malignant_Cells (x_Malignant_Cells) => y_Lymphocytes (y_Lymphocytes);
+R2:  => y_Lymphocytes (y_Lymphocytes);
+R3: y_Lymphocytes (y_Lymphocytes) => ;
+R4: y_Lymphocytes (y_Lymphocytes) + x_Malignant_Cells (x_Malignant_Cells) => x_Malignant_Cells (x_Malignant_Cells);

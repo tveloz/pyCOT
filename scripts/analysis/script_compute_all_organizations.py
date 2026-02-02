@@ -11,9 +11,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import pyCOT modules
 
-from pyCOT.plot_dynamics import plot_series_ode
+from pyCOT.visualization.plot_dynamics import plot_series_ode
 # Import required modules
-from pyCOT.Persistent_Modules_Generator import compute_all_organizations  # Organization computation
+from pyCOT.analysis.Persistent_Modules_Generator import compute_all_organizations  # Organization computation
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -22,14 +22,14 @@ from collections import Counter, defaultdict
 import time
 import json
 from pathlib import Path
-from pyCOT.rn_rustworkx import ReactionNetwork
+from pyCOT.core.rn_rustworkx import ReactionNetwork
 from pyCOT.io.functions import read_txt
-from pyCOT.rn_visualize import hierarchy_visualize_html, rn_visualize_html
+from pyCOT.visualization.rn_visualize import hierarchy_visualize_html, rn_visualize_html
 
 # Import the reaction network library and persistent modules
-from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy
-from pyCOT.ERC_Synergy_Complementarity import build_erc_sorn
-from pyCOT.Persistent_Modules_Generator import (
+from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy
+from pyCOT.analysis.ERC_Synergy_Complementarity import build_erc_sorn
+from pyCOT.analysis.Persistent_Modules_Generator import (
     ElementarySO,
     Organization,
     compute_elementary_sos

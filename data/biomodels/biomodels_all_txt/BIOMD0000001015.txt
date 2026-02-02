@@ -1,0 +1,9 @@
+R0: D (Damaged_fibres_(D)) + M (Macrophages_(M)) => H (CD4+_T_Helper_cells_(H)) + D (Damaged_fibres_(D)) + M (Macrophages_(M));
+R1: H (CD4+_T_Helper_cells_(H)) => ;
+R2: D (Damaged_fibres_(D)) + H (CD4+_T_Helper_cells_(H)) => C (CD8+_cytotoxic_T_lymphocytes_(C)) + D (Damaged_fibres_(D)) + H (CD4+_T_Helper_cells_(H));
+R3: C (CD8+_cytotoxic_T_lymphocytes_(C)) => ;
+R4: D (Damaged_fibres_(D)) => M (Macrophages_(M)) + D (Damaged_fibres_(D));
+R5: M (Macrophages_(M)) => ;
+R6: 2N (Normal_fibres_(N)) + C (CD8+_cytotoxic_T_lymphocytes_(C)) => D (Damaged_fibres_(D)) + C (CD8+_cytotoxic_T_lymphocytes_(C)) + N (Normal_fibres_(N));
+R7: D (Damaged_fibres_(D)) + M (Macrophages_(M)) => R (Regenerative_fibres_(R)) + M (Macrophages_(M));
+R8: R (Regenerative_fibres_(R)) => N (Normal_fibres_(N));

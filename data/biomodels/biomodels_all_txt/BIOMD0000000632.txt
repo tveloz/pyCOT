@@ -1,0 +1,14 @@
+R0:  => CycE (CycE);
+R1: 2CycE (CycE) => CycE (CycE);
+R2:  => Cdk2 (Cdk2);
+R3: 2Cdk2 (Cdk2) => Cdk2 (Cdk2);
+R4: 2CycE (CycE) + 2Cdk2 (Cdk2) => CycECdk2 (CycECdk2) + CycE (CycE) + Cdk2 (Cdk2);
+R5: 2CycECdk2 (CycECdk2) => CycE (CycE) + Cdk2 (Cdk2) + CycECdk2 (CycECdk2);
+R6: 2CycECdk2 (CycECdk2) + 2p21 (p21) + CycECdk2a (CycECdk2a) => 2CycECdk2a (CycECdk2a) + 2p21 (p21) + CycECdk2 (CycECdk2);
+R7: 2CycECdk2a (CycECdk2a) => CycECdk2 (CycECdk2) + CycECdk2a (CycECdk2a);
+R8: 2DDR (DDR) => p53 (p53) + 2DDR (DDR);
+R9: 2DNADamageC (DNADamageC) => DNADamageC (DNADamageC);
+R10: 2DNADamageS (DNADamageS) => DNADamageS (DNADamageS);
+R11: 2p53 (p53) => p21 (p21) + 2p53 (p53);
+R12: 2p21 (p21) => p21 (p21);
+R13: 2p53 (p53) => p53 (p53);

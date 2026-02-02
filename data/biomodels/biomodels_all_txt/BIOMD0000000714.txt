@@ -1,0 +1,10 @@
+R0:  => P (Pathogen (P));
+R1: P (Pathogen (P)) => ;
+R2: P (Pathogen (P)) => ;
+R3:  => Nstar (Activated Phagocytes (Nstar));
+R4: Nstar (Activated Phagocytes (Nstar)) => ;
+R5:  => D (Tissue Damage (D));
+R6: D (Tissue Damage (D)) => ;
+R7:  => C_A (Anti-inflammatory mediators (C_A));
+R8:  => C_A (Anti-inflammatory mediators (C_A));
+R9: C_A (Anti-inflammatory mediators (C_A)) => ;

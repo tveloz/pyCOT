@@ -1,0 +1,2 @@
+R0: L (Ligand) + R (Receptor) => LR (Ligand-Receptor);
+R1: LR (Ligand-Receptor) + CA (CoActivator) => LRCA (Ligand-Receptor-CoActivator);

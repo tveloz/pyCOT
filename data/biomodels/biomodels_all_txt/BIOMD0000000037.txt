@@ -1,0 +1,12 @@
+R0: Pfr (Pfr) => Pr (Pr);
+R1: Pr (Pr) => Pfr (Pfr);
+R2: Xi (Xi) + Pr (Pr) => Xa (Xa) + Pr (Pr);
+R3: Xa (Xa) => Xi (Xi);
+R4: prepreS (prepreS) + Xa (Xa) => preS (preS) + Xa (Xa);
+R5: preS (preS) + Ya (Ya) => S (S) + Ya (Ya);
+R6: Ya (Ya) + Gluc (Gluc) => Yi (Yi);
+R7: V (V) => S (S) + V (V);
+R8: S (S) => V (V) + S (S);
+R9: S (S) => ;
+R10: V (V) => ;
+R11: Pr (Pr) => Pi (Pi);

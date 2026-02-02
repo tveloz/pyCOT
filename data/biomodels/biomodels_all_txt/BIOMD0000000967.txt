@@ -1,0 +1,9 @@
+R0: R (R) => ;
+R1: V (V) => R (R) + V (V);
+R2: R (R) + V (V) => L (L) + V (V);
+R3: R (R) + V (V) => E (E) + V (V);
+R4: L (L) => ;
+R5: L (L) => E (E);
+R6: E (E) => ;
+R7: V (V) => ;
+R8: E (E) => V (V) + E (E);

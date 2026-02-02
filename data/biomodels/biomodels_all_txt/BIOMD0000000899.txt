@@ -1,0 +1,8 @@
+R0: s3 (GEF) + s1 (Activator) => s4 (Active GEF) + s1 (Activator);
+R1: s4 (Active GEF) => s3 (GEF);
+R2: s1 (Activator) => s2 (Degrade);
+R3: s5 (GDP-Rho) + s4 (Active GEF) + s7 (GDI) => s6 (GTP-Rho) + s4 (Active GEF) + s7 (GDI);
+R4: s6 (GTP-Rho) + s8 (GAP) + s7 (GDI) => s5 (GDP-Rho) + s8 (GAP) + s7 (GDI);
+R5: s5 (GDP-Rho) + s7 (GDI) => s10 (GDI·GDP-Rho);
+R6: s7 (GDI) + s6 (GTP-Rho) => s13 (GDI·GTP-Rho);
+R7: s6 (GTP-Rho) + s9 (Effector) => s16 (Effector·GTP-Rho);

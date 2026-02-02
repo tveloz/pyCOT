@@ -1,6 +1,6 @@
 import pytest
 from pyCOT.io.functions import from_string
-from pyCOT.rn_rustworkx import ReactionNetwork
+from pyCOT.core.rn_rustworkx import ReactionNetwork
 
 def test_empty_string():
     with pytest.raises(ValueError):

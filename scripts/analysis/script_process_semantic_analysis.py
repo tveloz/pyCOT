@@ -32,9 +32,9 @@ import matplotlib.patches as mpatches
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pyCOT.io.functions import read_txt
-from pyCOT.semantic_partition import define_semantic_categories
-from pyCOT.process_structure import decompose_to_single_reactions
-from pyCOT.process_analyzer import (
+from pyCOT.core.semantic_partition import define_semantic_categories
+from pyCOT.analysis.process_structure import decompose_to_single_reactions
+from pyCOT.analysis.process_analyzer import (
     classify_process_mode,
     analyze_category_behavior,
     track_category_sequence,

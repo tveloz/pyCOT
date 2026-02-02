@@ -1,0 +1,14 @@
+R0: GlcE (Glucose external) => GlcI (Glucose);
+R1: Pg (Phosphates in Glycosome) + GlcI (Glucose) + ATPg (ATP gly.) + ADPg (ADP gly.) => Glc6P (Glucose 6-phosphate) + ATPg (ATP gly.) + ADPg (ADP gly.);
+R2: Glc6P (Glucose 6-phosphate) => Fru6P (Fructose 6-phosphate);
+R3: Pg (Phosphates in Glycosome) + Fru6P (Fructose 6-phosphate) + ATPg (ATP gly.) => Fru16BP (Fructose 1,6-bisphosphate) + ATPg (ATP gly.);
+R4: Fru16BP (Fructose 1,6-bisphosphate) + DHAPg (DHAP gly.) + ATPg (ATP gly.) + ADPg (ADP gly.) => GAP (Glyceraldehyde 3-phosphate) + DHAP (Dihydroxyacetone phosphate) + DHAPg (DHAP gly.) + ATPg (ATP gly.) + ADPg (ADP gly.);
+R5: DHAP (Dihydroxyacetone phosphate) + DHAPg (DHAP gly.) => GAP (Glyceraldehyde 3-phosphate) + DHAPg (DHAP gly.);
+R6: GAP (Glyceraldehyde 3-phosphate) + NAD (NAD) => NADH (NADH) + BPGA13 (1,3-bisphosphoglycerate);
+R7: DHAP (Dihydroxyacetone phosphate) + NADH (NADH) + DHAPg (DHAP gly.) + Gly3Pg (Gy3P g.) => NAD (NAD) + Gly3P (Glycerol 3-phosphate) + DHAPg (DHAP gly.) + Gly3Pg (Gy3P g.);
+R8: Gly3P (Glycerol 3-phosphate) + Gly3Pc (Gy3P c.) => DHAP (Dihydroxyacetone phosphate) + Gly3Pc (Gy3P c.);
+R9: Pyr (Pyruvate) => PyrE (Pyruvate external);
+R10: BPGA13 (1,3-bisphosphoglycerate) + ADPg (ADP gly.) + ATPg (ATP gly.) + PGAg (3-PGA g.) => Nb (3-PGA 2-PGA PEP) + Pg (Phosphates in Glycosome) + ADPg (ADP gly.) + ATPg (ATP gly.) + PGAg (3-PGA g.);
+R11: Nb (3-PGA 2-PGA PEP) + PEPc (PEP c.) + ADPc (ADP cyt.) + ATPc (ATP cyt.) => Pc (Phosphates cytosol) + Pyr (Pyruvate) + PEPc (PEP c.) + ADPc (ADP cyt.) + ATPc (ATP cyt.);
+R12: Pc (Phosphates cytosol) + ATPc (ATP cyt.) + ADPc (ADP cyt.) => ATPc (ATP cyt.) + ADPc (ADP cyt.);
+R13: Gly3P (Glycerol 3-phosphate) + ADPg (ADP gly.) + Gly3Pg (Gy3P g.) + ATPg (ATP gly.) => Pg (Phosphates in Glycosome) + Gly (Glycerol) + ADPg (ADP gly.) + Gly3Pg (Gy3P g.) + ATPg (ATP gly.);

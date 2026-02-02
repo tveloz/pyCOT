@@ -1,0 +1,10 @@
+R0: Sti_g (Sti_g) => Sti_g1 (Sti_g1);
+R1: Sti_g1 (Sti_g1) => Sti_g2 (Sti_g2);
+R2: Sti_g2 (Sti_g2) => Sti_g3 (Sti_g3);
+R3: Sti_g3 (Sti_g3) => Sti_g4 (Sti_g4);
+R4: Sti_g4 (Sti_g4) => ;
+R5: Sti_b (Sti_b) => Sti_b1 (Sti_b1);
+R6: Sti_b1 (Sti_b1) => Sti_b2 (Sti_b2);
+R7: Sti_b2 (Sti_b2) => Sti_b3 (Sti_b3);
+R8: Sti_b3 (Sti_b3) => Sti_b4 (Sti_b4);
+R9: Sti_b4 (Sti_b4) => ;

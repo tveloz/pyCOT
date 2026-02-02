@@ -1,0 +1,8 @@
+R0: X (X) + B (B) => A (A) + B (B);
+R1: A (A) => B (B);
+R2: B (B) + D (D) => C (C) + D (D);
+R3: C (C) => D (D);
+R4: D (D) => Y (Y);
+R5: B (B) + F (F) => E (E) + F (F);
+R6: E (E) => F (F);
+R7: F (F) => Z (Z);

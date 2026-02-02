@@ -1,0 +1,6 @@
+R0: S (S) => X (X) + S (S);
+R1: X (X) + Rp (Rp) => Rp (Rp);
+R2: Y (Y) + X (X) => Yp (Yp) + X (X);
+R3: Yp (Yp) => Y (Y);
+R4: R (R) + Yp (Yp) => Rp (Rp) + Yp (Yp);
+R5: Rp (Rp) => R (R);

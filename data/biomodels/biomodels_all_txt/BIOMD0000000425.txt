@@ -1,0 +1,4 @@
+R0:  => c (ribosome concentration);
+R1: 2c (ribosome concentration) => c (ribosome concentration);
+R2: c (ribosome concentration) => 2c (ribosome concentration);
+R3: 2c (ribosome concentration) => c (ribosome concentration);

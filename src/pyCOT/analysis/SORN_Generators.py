@@ -26,8 +26,8 @@ import time
 from itertools import combinations
 import networkx as nx
 from collections import defaultdict, Counter
-from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, closure, species_list_to_names
-from pyCOT.ERC_Synergy_Complementarity import (
+from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy, closure, species_list_to_names
+from pyCOT.analysis.ERC_Synergy_Complementarity import (
     ERC_SORN,
     build_erc_sorn,
     get_fundamental_synergies_brute_force

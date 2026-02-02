@@ -1,0 +1,5 @@
+R0: ATP (ATP) => ADP (ADP);
+R1: 6ADP (ADP) + CTtis (CTtis) + Pi (Pi) + CFtis (CFtis) => 6ATP (ATP) + Pi (Pi) + CFtis (CFtis);
+R2:  => CTcap (CTcap);
+R3: CTcap (CTcap) + CFcap (CFcap) + CFtis (CFtis) => CTtis (CTtis) + CFcap (CFcap) + CFtis (CFtis);
+R4: ADP (ADP) + PCr (PCr) => ATP (ATP) + Cr (Cr);

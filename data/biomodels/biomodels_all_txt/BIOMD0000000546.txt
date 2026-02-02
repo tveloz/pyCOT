@@ -1,0 +1,5 @@
+R0: s1 (Ep) + s3 (V) => s2 (Eps) + s3 (V);
+R1:  => s1 (Ep);
+R2: s2 (Eps) => ;
+R3: s3 (V) => ;
+R4: s2 (Eps) => s3 (V) + s2 (Eps);

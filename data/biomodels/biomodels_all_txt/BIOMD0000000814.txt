@@ -1,0 +1,5 @@
+R0: Damaged_Tumor_Cells_D (Damaged Tumor Cells D) => Tumor_Cell_Population_P (Tumor Cell Population P) + Damaged_Tumor_Cells_D (Damaged Tumor Cells D);
+R1: Tumor_Cell_Population_P (Tumor Cell Population P) + Drug_Concentration_C (Drug Concentration C) => Damaged_Tumor_Cells_D (Damaged Tumor Cells D) + Drug_Concentration_C (Drug Concentration C);
+R2: Tumor_Cell_Population_P (Tumor Cell Population P) + Drug_Concentration_C (Drug Concentration C) => Drug_Concentration_C (Drug Concentration C);
+R3: Damaged_Tumor_Cells_D (Damaged Tumor Cells D) + Tumor_Cell_Population_P (Tumor Cell Population P) => Tumor_Cell_Population_P (Tumor Cell Population P);
+R4: Drug_Concentration_C (Drug Concentration C) => ;

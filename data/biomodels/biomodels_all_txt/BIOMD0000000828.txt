@@ -1,0 +1,12 @@
+R0:  => Glucose_G (Glucose G);
+R1:  => Drug_D (Drug D);
+R2: Glucose_G (Glucose G) => ;
+R3: Drug_D (Drug D) => ;
+R4: Glucose_G (Glucose G) + AMPK_A (AMPK A) => miR_451_M (miR-451 M) + Glucose_G (Glucose G) + AMPK_A (AMPK A);
+R5: miR_451_M (miR-451 M) => ;
+R6:  => AMPK_A (AMPK A);
+R7: miR_451_M (miR-451 M) => AMPK_A (AMPK A) + miR_451_M (miR-451 M);
+R8: AMPK_A (AMPK A) => ;
+R9:  => mTOR_R (mTOR R);
+R10: deltaD (deltaD) + AMPK_A (AMPK A) => mTOR_R (mTOR R) + deltaD (deltaD) + AMPK_A (AMPK A);
+R11: 2mTOR_R (mTOR R) => mTOR_R (mTOR R);

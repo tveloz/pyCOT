@@ -29,22 +29,22 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from pyCOT.io.functions import read_txt
 from pyCOT.simulations.ode import *
-from pyCOT.semantic_partition import define_semantic_categories
-from pyCOT.process_structure import (
+from pyCOT.core.semantic_partition import define_semantic_categories
+from pyCOT.analysis.process_structure import (
     aggregate_processes,
     rolling_window_aggregation,
     multi_scale_aggregation,
     disaggregate_process,
     disaggregation_random_sampling,
 )
-from pyCOT.process_analyzer import (
+from pyCOT.analysis.process_analyzer import (
     classify_process_mode,
     analyze_category_behavior,
     analyze_pathway_variability,
     analyze_temporal_scale,
     analyze_full_multiscale_robustness
 )
-from pyCOT.plot_process_analysis import (
+from pyCOT.visualization.plot_process_analysis import (
     plot_category_dynamics_across_scales,
     plot_all_categories_dynamics,
     plot_category_balance_heatmap,

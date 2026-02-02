@@ -1,0 +1,11 @@
+R0: Susceptible (Susceptible) + Infectious (Infectious) + Asymptomatic (Asymptomatic) + Hospitalized (Hospitalized) => Exposed (Exposed) + Infectious (Infectious) + Asymptomatic (Asymptomatic) + Hospitalized (Hospitalized);
+R1: Exposed (Exposed) => Infectious (Infectious);
+R2: Exposed (Exposed) => Asymptomatic (Asymptomatic);
+R3: Infectious (Infectious) => Hospitalized (Hospitalized);
+R4: Infectious (Infectious) => Recovered (Recovered);
+R5: Infectious (Infectious) => Deceased (Deceased);
+R6: Asymptomatic (Asymptomatic) => Recovered (Recovered);
+R7: Asymptomatic (Asymptomatic) => Deceased (Deceased);
+R8: Hospitalized (Hospitalized) => Deceased (Deceased);
+R9: Hospitalized (Hospitalized) => Recovered (Recovered);
+R10: Exposed (Exposed) => Cumulative_Cases (Cumulative_Cases) + Exposed (Exposed);

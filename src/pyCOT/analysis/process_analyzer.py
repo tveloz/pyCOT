@@ -25,8 +25,8 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Local imports
 
-from pyCOT.semantic_partition import SemanticPartition
-from pyCOT.process_structure import (
+from pyCOT.core.semantic_partition import SemanticPartition
+from pyCOT.analysis.process_structure import (
     ProcessAggregation, ProcessDisaggregation,
     disaggregation_random_sampling, rolling_window_aggregation,
     decompose_to_single_reactions
@@ -758,7 +758,7 @@ def analyze_temporal_scale(
             'category_statistics_by_scale': Statistical summaries per scale
             'patterns_by_scale': Patterns identified at each scale
     """
-    from pyCOT.process_structure import multi_scale_aggregation
+    from pyCOT.analysis.process_structure import multi_scale_aggregation
     
     # Perform multi-scale aggregation
     aggregations_by_scale = multi_scale_aggregation(
@@ -856,7 +856,7 @@ def analyze_full_multiscale_robustness(
     Returns:
         Dictionary with comprehensive multi-scale robustness analysis
     """
-    from pyCOT.process_structure import multi_scale_aggregation
+    from pyCOT.analysis.process_structure import multi_scale_aggregation
     
     # First, perform temporal aggregation at all scales
     aggregations_by_scale = multi_scale_aggregation(

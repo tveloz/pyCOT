@@ -1,0 +1,2 @@
+R0:  => c (cytosolic free ca concentration);
+R1:  => cer (ER ca concentration);

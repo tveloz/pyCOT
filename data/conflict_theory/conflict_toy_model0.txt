@@ -1,0 +1,10 @@
+r1:  G + R => V + R #{eq:mobilization}\\
+r2:  V => 2G #{eq:grievance_generation}\\
+r3:  V=> N + V#{eq:narrative_production}\\
+r4:  N + R => V + N #{eq:narrative_mobilization}\\
+r5:  G + N => R + N #{eq:resource_recruitment}
+r6:  2G=>;
+r7:  2N=>;
+r8:  2V=>;
+r9:  P + V=>P; # Peace forces fight violence
+r10: F => F + R # Foreign powers bring resources

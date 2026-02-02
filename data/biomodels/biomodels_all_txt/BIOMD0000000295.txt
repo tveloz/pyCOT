@@ -1,0 +1,8 @@
+R0: FN (FN) + FNp (FNp) => MF (MF) + FN (FN) + FNp (FNp);
+R1: MF (MF) => ;
+R2: MF (MF) => FC (FC) + MF (MF);
+R3: FC (FC) => ;
+R4: FC (FC) => FN (FN);
+R5: MF (MF) => FCp (FCp) + MF (MF);
+R6: FCp (FCp) => ;
+R7: FCp (FCp) => FNp (FNp);

@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from pyCOT.rn_types import Species, Reaction, ReactionEdge, ReactionNode, StoichiometryMatrix, NamedVector
+from pyCOT.core.rn_types import Species, Reaction, ReactionEdge, ReactionNode, StoichiometryMatrix, NamedVector
 
 @pytest.fixture
 def species_list():

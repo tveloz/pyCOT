@@ -7,9 +7,9 @@ import sys
 # Add the project root directory to the PYTHONPATH
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from pyCOT.rn_rustworkx import ReactionNetwork
-from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_names
-from pyCOT.ERC_Synergy_Complementarity import get_complementarity, is_complementary_type1, is_complementary_type2, is_complementary_type3
+from pyCOT.core.rn_rustworkx import ReactionNetwork
+from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_names
+from pyCOT.analysis.ERC_Synergy_Complementarity import get_complementarity, is_complementary_type1, is_complementary_type2, is_complementary_type3
 from pyCOT.io.functions import read_txt
 import time
 

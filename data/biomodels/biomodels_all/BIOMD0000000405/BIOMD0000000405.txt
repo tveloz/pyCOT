@@ -1,0 +1,8 @@
+reaction_1: 1species_1 + 1species_5 => 1species_3;
+reaction_2: 1species_2 + 1species_5 => 1species_4;
+reaction_3:  => 1species_1;
+reaction_4:  => 1species_2;
+reaction_5: 1species_3 => 1species_5;
+reaction_6: 1species_4 => 1species_5;
+reaction_7: 1species_1 => ;
+reaction_8: 1species_2 => ;

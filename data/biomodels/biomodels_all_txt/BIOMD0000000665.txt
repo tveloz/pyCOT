@@ -1,0 +1,13 @@
+R0: Rs_0 (Rs) + L_0 (L) => Cs_0 (Cs) + L_0 (L);
+R1: Cs_0 (Cs) => Rs_0 (Rs);
+R2: Cs_0 (Cs) => Rs_0 (Rs) + Cs_0 (Cs);
+R3: Rs_0 (Rs) => Ri_0 (Ri);
+R4:  => Rs_0 (Rs);
+R5: Cs_0 (Cs) => Ci_0 (Ci);
+R6: Ri_0 (Ri) + Li_0 (Li) => Ci_0 (Ci) + Li_0 (Li);
+R7: Ci_0 (Ci) => Ri_0 (Ri);
+R8: Ri_0 (Ri) => ;
+R9: Ci_0 (Ci) => Ld_0 (Ld);
+R10: Li_0 (Li) + Ri_0 (Ri) + Ci_0 (Ci) => Ri_0 (Ri) + Ci_0 (Ci);
+R11: Li_0 (Li) => ;
+R12: L_0 (L) + Rs_0 (Rs) + Cs_0 (Cs) + Li_0 (Li) + Y_0 (Y) => Rs_0 (Rs) + Cs_0 (Cs) + Li_0 (Li) + Y_0 (Y);

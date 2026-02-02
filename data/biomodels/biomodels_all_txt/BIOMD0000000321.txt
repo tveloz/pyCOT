@@ -1,0 +1,6 @@
+R0: A_dopa (A_dopa) => C_dopa (C_dopa);
+R1: A_dopa (A_dopa) => ;
+R2: C_dopa (C_dopa) => ;
+R3: C_dopa (C_dopa) => C_OMD (C_3-OMD);
+R4: C_dopa (C_dopa) => ;
+R5: C_OMD (C_3-OMD) => ;

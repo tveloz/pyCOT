@@ -1,0 +1,9 @@
+R0: 3STAT5A (STAT5A) => pApA (pApA) + STAT5A (STAT5A);
+R1: 2STAT5A (STAT5A) + 2STAT5B (STAT5B) => pApB (pApB) + STAT5A (STAT5A) + STAT5B (STAT5B);
+R2: 3STAT5B (STAT5B) => pBpB (pBpB) + STAT5B (STAT5B);
+R3: 2pApA (pApA) => nucpApA (nucpApA) + pApA (pApA);
+R4: 2pApB (pApB) => nucpApB (nucpApB) + pApB (pApB);
+R5: 2pBpB (pBpB) => nucpBpB (nucpBpB) + pBpB (pBpB);
+R6: 2nucpApA (nucpApA) => 2STAT5A (STAT5A) + nucpApA (nucpApA);
+R7: 2nucpApB (nucpApB) => STAT5A (STAT5A) + STAT5B (STAT5B) + nucpApB (nucpApB);
+R8: 2nucpBpB (nucpBpB) => 2STAT5B (STAT5B) + nucpBpB (nucpBpB);

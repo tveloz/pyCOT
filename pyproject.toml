@@ -5,6 +5,7 @@ description = "Reaction Network library to study Chemical Organization Theory"
 authors = ["Tomas Veloz <tveloz@gmail.com>"]
 license = "GNU v.3"
 readme = "README.md"
+packages = [{include = "pyCOT", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -22,6 +23,10 @@ mplcursors = "^0.6"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
+
+[tool.pytest.ini_options]
+testpaths = ["src/pyCOT/tests"]
+pythonpath = ["src"]
 
 [build-system]
 requires = ["poetry-core"]

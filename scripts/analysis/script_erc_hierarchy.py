@@ -1,5 +1,5 @@
-from pyCOT.rn_rustworkx import ReactionNetwork
-from pyCOT.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_names
+from pyCOT.core.rn_rustworkx import ReactionNetwork
+from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_names
 from pyCOT.io.functions import read_txt
 #from pyCOT.synergy_calculator import SynergyCalculator
 import matplotlib.pyplot as plt

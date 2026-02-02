@@ -1,0 +1,7 @@
+R0:  => E (Effector Cells);
+R1: E (Effector Cells) + T (Tumor Cells) => 2E (Effector Cells) + T (Tumor Cells);
+R2: T (Tumor Cells) => 2T (Tumor Cells);
+R3: 2T (Tumor Cells) => T (Tumor Cells);
+R4: T (Tumor Cells) + E (Effector Cells) => E (Effector Cells);
+R5: E (Effector Cells) + T (Tumor Cells) => T (Tumor Cells);
+R6: E (Effector Cells) => ;

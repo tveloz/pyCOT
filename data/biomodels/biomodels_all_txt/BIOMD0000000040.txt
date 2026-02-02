@@ -1,0 +1,5 @@
+R0: Br (Br-) + BrO3 (BrO3-) => HBrO2 (HBrO2) + HOBr (HOBr);
+R1: Br (Br-) + HBrO2 (HBrO2) => 2HOBr (HOBr);
+R2: BrO3 (BrO3-) + HBrO2 (HBrO2) => Ce (Ce4+) + 2HBrO2 (HBrO2);
+R3: 2HBrO2 (HBrO2) => BrO3 (BrO3-) + HOBr (HOBr);
+R4: Ce (Ce4+) => Br (Br-);

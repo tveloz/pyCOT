@@ -1,0 +1,11 @@
+r1:  SP + R => E + SP + R;        # Production (SP and R catalytic)
+r2:  E + R + IP => SP;     # Recovery/Uplift (E and R needed)
+r3:  => R;                      # Resource regeneration
+r4:  SP => IP;                     # Natural Impoverishment  
+r5:  2IP => 2IP + V;               # Impoverishment conflict
+r6:  DP + IP=> DP+IP+V;            # Displacement and Impoverished conflict 
+r7:  2V =>;                        # Violence decay
+r8:  IP + V => DP;                 # Generation of people in Displacement situation
+r9:  2R =>;                         # Resource depletion    
+r10: 2E =>;                         # Economic decay
+r11: E + R + DP => IP;              # Recovery/Uplift (E and R needed)

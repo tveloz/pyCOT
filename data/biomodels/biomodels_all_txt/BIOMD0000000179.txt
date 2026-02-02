@@ -1,0 +1,17 @@
+R0:  => R1 (R1);
+R1: R1 (R1) => ;
+R2: R1 (R1) => P1 (P1) + R1 (R1);
+R3: P1 (P1) => ;
+R4: P1 (P1) => P1_prime (P1_prime) + P1 (P1);
+R5: P2_prime (P2_prime) => P1_prime (P1_prime) + P2_prime (P2_prime);
+R6: P3_prime (P3_prime) => P1_prime (P1_prime) + P3_prime (P3_prime);
+R7: P1_prime (P1_prime) => ;
+R8:  => R2 (R2);
+R9: R2 (R2) => ;
+R10: R2 (R2) => P2 (P2) + R2 (R2);
+R11: P2 (P2) => ;
+R12: P2 (P2) => P2_prime (P2_prime) + P2 (P2);
+R13: P1_prime (P1_prime) => P2_prime (P2_prime) + P1_prime (P1_prime);
+R14: P2_prime (P2_prime) => ;
+R15: P2_prime (P2_prime) => P3_prime (P3_prime) + P2_prime (P2_prime);
+R16: P3_prime (P3_prime) => ;

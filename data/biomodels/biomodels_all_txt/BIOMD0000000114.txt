@@ -1,0 +1,4 @@
+R0:  => y (Ca_Cyt);
+R1: x (Ca_ER) => y (Ca_Cyt);
+R2: y (Ca_Cyt) => ;
+R3: x (Ca_ER) => y (Ca_Cyt);

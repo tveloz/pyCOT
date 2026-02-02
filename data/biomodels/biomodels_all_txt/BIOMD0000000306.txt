@@ -1,0 +1,8 @@
+R0: Ep (Ep) => R (R) + Ep (Ep);
+R1: S (S) => R (R) + S (S);
+R2: R (R) => ;
+R3: R (R) + X (X) => X (X);
+R4: E (E) + R (R) => Ep (Ep) + R (R);
+R5: Ep (Ep) => E (E);
+R6: R (R) => X (X) + R (R);
+R7: X (X) => ;

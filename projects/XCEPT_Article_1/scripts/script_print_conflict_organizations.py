@@ -4,8 +4,8 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 from pyCOT.io.functions import read_txt
-from pyCOT.Persistent_Modules_Generator import compute_all_organizations
-from pyCOT.rn_visualize import hierarchy_visualize_html
+from pyCOT.analysis.Persistent_Modules_Generator import compute_all_organizations
+from pyCOT.visualization.rn_visualize import hierarchy_visualize_html
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from collections import defaultdict

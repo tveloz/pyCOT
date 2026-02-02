@@ -12,7 +12,7 @@ from pyCOT.io.functions import read_txt
 from pyCOT.simulations.ode import simulation
 from pyCOT.simulations.spatial import simulate_spatial_dynamics
 from pyCOT.simulations.metapopulation import simulate_metapopulation_dynamics
-from pyCOT.plot_dynamics import * 
+from pyCOT.visualization.plot_dynamics import * 
 
 # ################################################################################################# 
 # # Example 1: Spatial (PDE) Reaction-Diffusion on 2D Grid

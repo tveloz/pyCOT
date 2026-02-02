@@ -1,0 +1,5 @@
+R0:  => auxin (auxin);
+R1:  => IAA (IAA);
+R2:  => ARF (ARF);
+R3: ARF (ARF) + IAA (IAA) => IAA (IAA);
+R4: IAA (IAA) + auxin (auxin) => auxin (auxin);

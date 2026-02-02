@@ -1,0 +1,4 @@
+R0:  => alpha (alpha);
+R1: alpha (alpha) => 50beta (beta);
+R2: beta (beta) => gamma (gamma);
+R3: gamma (gamma) => ;

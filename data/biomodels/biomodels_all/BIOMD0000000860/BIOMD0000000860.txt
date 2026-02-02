@@ -1,0 +1,5 @@
+miR_synthesis: 1TF1 => 1TF1 + 1miR;
+miR_degradation: 1miR => 1Sink;
+TF1target_transcription: 1TF1 => 1TF1 + 1TF1target_mRNA;
+TF1target_mRNA_degradation: 1TF1target_mRNA => 1Sink;
+TF1target_mRNA_degradation_via_MiR: 1TF1target_mRNA + 1miR => 1Sink + 1miR;

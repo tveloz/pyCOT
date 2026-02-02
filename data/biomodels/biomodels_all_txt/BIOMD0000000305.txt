@@ -1,0 +1,4 @@
+R0: S0 (S0) + ATP (ATP) => S1 (S1) + Pi_ (Pi_) + fwd_step1 (fwd_step1);
+R1: S1 (S1) => S0 (S0) + ADP (ADP) + fwd_step2 (fwd_step2);
+R2: S0 (S0) + ATP (ATP) => S1 (S1) + Pi_ (Pi_) + back_step1 (back_step1);
+R3: S1 (S1) => S0 (S0) + ADP (ADP) + back_step2 (back_step2);

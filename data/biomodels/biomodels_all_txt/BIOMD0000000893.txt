@@ -1,0 +1,6 @@
+R0: z (z) => x (x) + z (z);
+R1: x (x) + z (z) => z (z);
+R2: x (x) => y (y) + x (x);
+R3: y (y) => ;
+R4: y (y) => z (z) + y (y);
+R5: z (z) + x (x) => x (x);

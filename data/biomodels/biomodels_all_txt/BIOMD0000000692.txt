@@ -1,0 +1,5 @@
+R0: RasGTP_minus_NF1_star_ (RasGTP_minus_NF1_star_) => RasGDP_minus_NF1_Pi (RasGDP_minus_NF1_Pi);
+R1: RasGDP_minus_NF1_Pi (RasGDP_minus_NF1_Pi) => Pi (Pi) + RasGDP_NF1 (RasGDP_NF1);
+R2: RasGTP_minus_NF1 (RasGTP_minus_NF1) => RasGTP_minus_NF1_star_ (RasGTP_minus_NF1_star_);
+R3: RasGDP_NF1 (RasGDP_NF1) => RasGDP (RasGDP) + NF1 (NF1);
+R4: RasGTP (RasGTP) + NF1 (NF1) => RasGTP_minus_NF1 (RasGTP_minus_NF1);

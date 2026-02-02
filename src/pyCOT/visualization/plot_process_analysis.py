@@ -22,7 +22,7 @@ from collections import Counter
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 # Import from pyCOT modules
-from pyCOT.process_analyzer import (
+from pyCOT.analysis.process_analyzer import (
     classify_process_mode, 
     get_intervals_by_category,
     analyze_cone,
@@ -793,7 +793,7 @@ def plot_cone_and_region(
         >>> # S is your stoichiometric matrix
         >>> files, points = plot_cone_and_region(S, grid_max=3, grid_res=15)
     """
-    from pyCOT.process_structure import analyze_cone
+    from pyCOT.analysis.process_structure import analyze_cone
     import os
     from mpl_toolkits.mplot3d import Axes3D
     
@@ -919,7 +919,7 @@ def plot_cone_2d_projections(
     Returns:
         Matplotlib figure
     """
-    from pyCOT.process_structure import analyze_cone
+    from pyCOT.analysis.process_structure import analyze_cone
     
     n_reactions = S.shape[1]
     
@@ -1324,7 +1324,7 @@ def plot_series_with_domain_intervals(time_series, flux_vector, S,
     Returns:
         fig, ax
     """
-    from pyCOT.plot_dynamics import plot_series_ode
+    from pyCOT.visualization.plot_dynamics import plot_series_ode
     
     fig, ax = plot_series_ode(time_series, title=title, save_figure=save_figure, ax=ax)
 
@@ -1391,7 +1391,7 @@ def plot_flux_with_domain_intervals(flux_vector, S,
     Returns:
         fig, ax
     """
-    from pyCOT.plot_dynamics import plot_series_ode
+    from pyCOT.visualization.plot_dynamics import plot_series_ode
     
     fig, ax = plot_series_ode(flux_vector, title=title, save_figure=save_figure, ax=ax)
     print("\nflux_vector_shape =", flux_vector.shape)

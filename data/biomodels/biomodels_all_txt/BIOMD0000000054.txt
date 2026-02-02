@@ -1,0 +1,5 @@
+R0:  => I (Ions);
+R1: 3I (Ions) + E (Energy pool) => ;
+R2:  => E (Energy pool);
+R3: E (Energy pool) => ;
+R4:  => A (Adenylate pool);

@@ -1,0 +1,10 @@
+R0:  => lck_inactive (Inactive lck);
+R1: lck_active (Active lck) + phosphatase_active (Active phosphatase) => lck_inactive (Inactive lck) + phosphatase_active (Active phosphatase);
+R2: lck_inactive (Inactive lck) => lck_active (Active lck);
+R3: lck_inactive (Inactive lck) => lck_active (Active lck);
+R4: lck_inactive (Inactive lck) => ;
+R5: lck_active (Active lck) => ;
+R6: phosphatase_inactive (Inactive phosphatase) => phosphatase_active (Active phosphatase);
+R7: phosphatase_inactive (Inactive phosphatase) + lck_active (Active lck) => phosphatase_active (Active phosphatase) + lck_active (Active lck);
+R8: phosphatase_active (Active phosphatase) => phosphatase_inactive (Inactive phosphatase);
+R9: phosphatase_active (Active phosphatase) => ;

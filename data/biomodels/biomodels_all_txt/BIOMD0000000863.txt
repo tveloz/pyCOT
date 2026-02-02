@@ -1,0 +1,13 @@
+R0: TV (TV) => 2TV (TV);
+R1: TV (TV) + U (DSB) => TVd (TVD) + U (DSB);
+R2: TVd (TVD) => ;
+R3: TV (TV) + dTeff (TC_D) => dTeff (TC_D);
+R4:  => U (DSB);
+R5: U (DSB) => ;
+R6: TVd (TVD) + TV (TV) + dTeff (TC_D) => nTeff (TC_ND) + TVd (TVD) + TV (TV) + dTeff (TC_D);
+R7: PDL1 (PDL1) + TVd (TVD) + TV (TV) + dTeff (TC_D) + nTeff (TC_ND) => 2nTeff (TC_ND) + PDL1 (PDL1) + TVd (TVD) + TV (TV) + dTeff (TC_D);
+R8: nTeff (TC_ND) => ;
+R9: PDL1 (PDL1) + TVd (TVD) + TV (TV) + dTeff (TC_D) + nTeff (TC_ND) => 2dTeff (TC_D) + PDL1 (PDL1) + TVd (TVD) + TV (TV) + nTeff (TC_ND);
+R10: dTeff (TC_D) => ;
+R11: dTeff (TC_D) => PDL1 (PDL1) + dTeff (TC_D);
+R12: PDL1 (PDL1) => ;

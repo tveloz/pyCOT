@@ -1,0 +1,4 @@
+R0: EmptySet (EmptySet) + P (protein) => M (mRNA) + P (protein);
+R1: EmptySet (EmptySet) + M (mRNA) => P (protein) + M (mRNA);
+R2: M (mRNA) => EmptySet (EmptySet);
+R3: P (protein) => EmptySet (EmptySet);

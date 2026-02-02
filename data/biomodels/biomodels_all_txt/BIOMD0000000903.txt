@@ -1,0 +1,10 @@
+R0: E (E) => C (C) + E (E);
+R1: C (C) + I (I) => I (I);
+R2: C (C) + E (E) => T (T) + C (C) + E (E);
+R3: T (T) + I (I) => I (I);
+R4:  => H (H);
+R5: H (H) + T (T) + E (E) => T (T) + E (E);
+R6: T (T) => I (I) + T (T);
+R7: I (I) + T (T) + E (E) => T (T) + E (E);
+R8:  => E (E);
+R9: E (E) + C (C) + T (T) + H (H) => C (C) + T (T) + H (H);

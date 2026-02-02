@@ -1,0 +1,14 @@
+R0: M (M) + N (N) + Tc (Tc) + Tr (Tr) => N (N) + Tc (Tc) + Tr (Tr);
+R1: M (M) => ;
+R2:  => M (M);
+R3:  => M (M);
+R4:  => Tc (Tc);
+R5: Tc (Tc) => ;
+R6: N (N) + M (M) => Tc (Tc) + N (N) + M (M);
+R7:  => N (N);
+R8:  => N (N);
+R9: Tc (Tc) => N (N) + Tc (Tc);
+R10: N (N) => ;
+R11: Tr (Tr) => ;
+R12:  => Tr (Tr);
+R13: M (M) => Tr (Tr) + M (M);

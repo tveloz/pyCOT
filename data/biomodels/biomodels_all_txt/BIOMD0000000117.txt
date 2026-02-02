@@ -1,0 +1,6 @@
+R0:  => z (Ca in the cytosol);
+R1:  => z (Ca in the cytosol);
+R2: y (Ca in the InsP3-insensitive pool) => z (Ca in the cytosol);
+R3: z (Ca in the cytosol) => y (Ca in the InsP3-insensitive pool);
+R4: y (Ca in the InsP3-insensitive pool) => z (Ca in the cytosol);
+R5: z (Ca in the cytosol) => ;
