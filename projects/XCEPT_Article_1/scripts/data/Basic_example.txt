@@ -1,0 +1,91 @@
+# Conflict-Peace Reaction Network
+# Species: G (Grievances), A (Armed groups), I (Institutions),
+#          T (Trust), Rc (Conflict resources), Rp (Peace resources)
+#
+# Architecture: 4 conflict reactions (u1-u4) + 4 peace reactions (c1-c4)
+# + 2 social-memory decay reactions (f1,f2). 10 reactions total; 6x10 S matrix.
+#
+# Core autocatalytic cycles:
+#   Conflict: u1+u2+u3 → net A(+1), Rp(-1)  [A grows by consuming Rp each turn]
+#   Peace:    c1+c2+c3 → net I(+1)            [I grows; T and Rp internally balanced]
+#
+# Key structural asymmetries:
+#   1. Peace cycle is self-sustaining (no net resource loss per I gained).
+#      Conflict cycle always drains Rp by 1 per A gained — conflict growth is
+#      parasitic on peace resources.
+#   2. c1 (T+Rp→2Rp) has no conflict mirror; peace can bootstrap Rp from I
+#      via c2+c1 sub-path while conflict must corrupt Rp (u1) to gain Rc.
+#   3. LV coupling: u4 destroys I → c2 weakens → T falls → c1 slows → Rp collapses.
+
+# --- Conflict reactions (exploit and grow) ---
+
+u1: A + Rp => A + Rc;
+# Corruption: armed groups convert peace resources into conflict resources.
+# A catalytic (not consumed); Rp consumed, Rc produced.
+# Inhibited by Rp: above a threshold stock of Rp, A cannot profitably extract more.
+# Structural asymmetry: conflict drains Rp directly; peace has no mirror reaction.
+# v_u1 = k_u1 * A * Rp / (Rp + Km_u1)
+
+u2: A => A + G;
+# Propaganda: armed groups generate grievances; saturates at high A
+# (diminishing returns — each additional armed group adds less marginal propaganda).
+# A is catalytic. Mirrors c2: I=>I+T  (A generates G :: I generates T).
+# Both use MM saturation in their catalyst.
+# v_u2 = k_u2 * A / (A + Km_u2)
+
+u3: G + Rc => A;
+# Recruitment: grievances + conflict resources produce armed group members.
+# Both G and Rc consumed; MM saturation in G.
+# No direct peace mirror (peace cycle grows I via c3 autocatalysis).
+# v_u3 = k_u3 * G * Rc / (G + Km_u3)
+
+u4: A + I => A ;
+# Institutional assault: armed groups destroy institutional capacity.
+# A catalytic (not consumed); I destroyed, nothing gained.
+# Purely destructive — asymmetric mirror of c4 (I+A=>I):
+#   u4 net: I(-1)   conflict destroys peace infrastructure, no resource gain
+#   c4 net: A(-1)   peace suppresses conflict, no resource gain either
+# v_u4 = k_u4 * A * I / (I + Km_u4)
+
+# --- Peace reactions (build and protect) ---
+
+c1: T+Rp => 2Rp;
+# Trust-driven peace resource regeneration: T amplifies Rp; MM in Rp.
+# Both T and Rp consumed; Rp net +1. NO conflict mirror — the structural
+# LV asymmetry. Sub-path c2+c1 generates Rp with I as catalyst only:
+#   c2: I→T(+1), c1: T(-1)Rp(+1) → net Rp(+1) with I catalytic.
+# LV coupling: u4 destroys I → c2 weakens → T falls → c1 slows → Rp collapses.
+# v_c1 = k_c1 * T * Rp / (Rp + Km_c1)
+
+c2: I => I + T;
+# Trust building: institutions generate social trust. I catalytic.
+# Symmetric mirror of u2: A=>A+G  (I generates T :: A generates G).
+# v_c2 = k_c2 * I / (I + Km_I)
+
+c3: I + Rp => 2I;
+# Institutional autocatalysis: institutions grow by investing peace resources.
+# I is both catalyst and product; Rp consumed; MM saturation in I.
+# Policy lever alpha_inst.
+# v_c3 = alpha_inst * k_c3 * I * Rp / (I + Km_c3)
+
+c4: I + A => I;
+# Conflict reduction: institutions suppress armed groups.
+# I is catalytic; A is eliminated. MM saturation in I, policy lever gamma_sec.
+# v_c4 = gamma_sec * k_c4 * A * I / (I + Km_c4)
+
+# --- Forgetting reactions (social memory / attrition decay) ---
+# Quadratic form 2X=>; : two units required to sustain each other in memory.
+# Lone beliefs/groups fade faster than shared ones — carrying-capacity metaphor.
+# Combined with linear production, gives logistic steady states.
+#
+# Only social memory phenomena (beliefs/attitudes) decay naturally.
+# A, I, Rc, Rp are structural — bounded by saturated kinetics.
+
+f1: 2G => ;
+# Grievance forgetting: beliefs fade quadratically without reinforcement.
+# v_f1 = k_f1 * G^2
+
+f2: 2T => ;
+# Trust forgetting: trust erodes quadratically without renewal.
+# Safety net: when Rp=0, only c2 generates T and c1+f2 drain it → f2 bounds T.
+# v_f2 = k_f2 * T^2

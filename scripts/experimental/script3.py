@@ -20,7 +20,7 @@ from pyCOT.analysis.Persistent_Modules_Generator import compute_all_organization
 # 2. CREATING THE REACTION_NETWORK OBJECT
 # ========================================
 file_path = 'Txt/Farm.txt'
-file_path = 'networks/testing/binary_RAF1.txt'
+#file_path = 'networks/testing/binary_RAF1.txt'
 # file_path = 'Txt/autopoietic.txt'
 # file_path = 'Txt/2007Dittrich-Speroni_fixed_point.txt'
 # file_path = 'Txt/2007Dittrich-Speroni_Ex_HIV.txt'
@@ -45,10 +45,13 @@ file_path = 'networks/testing/binary_RAF1.txt'
 #file_path = 'data/conflict_theory/Resource_Community_Insurgency_Loops_model3.txt'  # Conflict model
 
 # Convert relative path to absolute path from project root
-file_path = 'data/biomodels/biomodels_interesting/BMID000000141754_url.txt'
+#file_path = 'data/biomodels/biomodels_interesting/BMID000000141754_url.txt'
+
 file_path = os.path.join(project_root, file_path)
+file_path = 'data/Examples_tests/testing/gene_reg.txt'
 
 rn = read_txt(file_path)
+
 rn_visualize_html(rn, filename="rn1.html")
 # ========================================
 # 3. COMPUTE SEMI-ORGANIZATIONS AND ORGANIZATIONS

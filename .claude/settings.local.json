@@ -14,7 +14,8 @@
       "Bash(python scripts/script_org_computation_pypeline1.py:*)",
       "Bash(python:*)",
       "Bash(ls:*)",
-      "Bash(pip show:*)"
+      "Bash(pip show:*)",
+      "Read(//c/Users/hp/.claude/projects/c--Users-hp-Dropbox-Public-AcademicWork-Europe-CLEA-Postdocs-TempletonPostdoc-sftw-pyCOT/memory/**)"
     ],
     "deny": [],
     "ask": [],

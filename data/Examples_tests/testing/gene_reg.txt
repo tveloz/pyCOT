@@ -1,0 +1,6 @@
+r1: gene_1f + RNAP => gene_1f + RNAP + rep_1;
+r2: gene_2f + RNAP => gene_2f + RNAP + rep_2;
+r3: gene_2f + rep_1 => gene_2b + rep_1;
+r4: gene_1f + rep_2 => gene_1b + rep_2;
+r5: rep_1 =>; 
+r6: rep_2 => 

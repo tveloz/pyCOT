@@ -1,0 +1,177 @@
+% ============================================================
+% Subsection: Adaptive Strategies
+% XCEPT Article 1 — Section 4
+% Place this immediately after the Timescale Expansion subsection
+% ============================================================
+
+\subsection{Adaptive Strategies}
+\label{sec:adaptive}
+
+The timescale analysis of Section~\ref{sec:timescale} reveals that different
+modes become operative at different resolutions and at different moments of the
+trajectory.  A natural question is whether an actor can exploit this temporal
+structure deliberately: \emph{enable the right modes at the right times, allow
+sufficient iterations for each mode to accumulate enough firing to be effective,
+and switch modes when the state signals that the current regime has been
+exhausted.}  We call such a plan an \emph{adaptive strategy}.
+
+\paragraph{Formalisation.}
+An adaptive strategy for the peace actor partitions the simulation horizon into
+consecutive \emph{regimes} $\{B_1, B_2, \ldots\}$, each associated with a
+subset of active reactions.  At each step the actor evaluates a \emph{regime
+indicator}---a scalar summary of the current state---and switches to a new
+regime when the indicator crosses a threshold.  Within each regime, the
+within-pool allocation fractions $(\alpha, \gamma)$ are set so that only the
+targeted mode is funded: $\alpha = 0$ suppresses institution-building ($c_3$),
+while $\gamma = 0$ suppresses armed-group suppression ($c_4$).
+
+In the example that follows we implement the adaptive strategy as a
+\emph{Monte-Carlo model-predictive-control} (MC-MPC) rule: at each step $t$,
+$n_{\mathrm{s}} = 30$ candidate $(\alpha, \gamma)$ pairs are sampled uniformly
+from $[0,1]^2$; for each candidate the deterministic Michaelis-Menten kinetics
+are rolled forward for $H = 50$ steps and scored by the peace advantage
+$\pi(\mathbf{x}) = (I + T + R_p) - (G + A + R_c)$; the candidate with the
+highest score is then applied in the actual \emph{stochastic} step.  The
+stochastic budget-allocation dynamics described in
+Appendix~A draw random fractions of the available stocks $A$ and $R_c$
+(conflict actor) and $R_p$ and $I$ (peace actor) as investment budgets at
+each iteration; the total quantities consumed from $R_p$ and $R_c$ across the
+simulation therefore serve as a natural \emph{cost of implementation}:
+$R_c$ tracks the material resources the conflict actor spends, and $R_p$ tracks
+the peace actor's expenditure.
+
+\paragraph{Scenario: no-policy fails, fixed policy fails, adaptive succeeds.}
+Figure~\ref{fig:three_strategies} compares three strategies starting from the
+same initial state $\mathbf{x}_0 = (G,A,I,T,R_c,R_p) = (4,2,2,5,4,6)$.
+
+\begin{itemize}
+\item \textbf{No policy} $(\alpha = \gamma = 0)$: the peace actor makes no
+      investment.  With no suppression and no institution-building, the conflict
+      sustaining mode $C2$ operates unchallenged.  Armed groups grow to the
+      carrying capacity ($A \to 15$) and institutions collapse ($I \to 0$).
+
+\item \textbf{Fixed policy} $(\alpha = 0,\; \gamma = 0.8)$: the peace actor
+      commits $80\%$ of its $I$-budget to suppression ($c_4$) and none to
+      institution-building ($c_3$).  Initially this activates the suppression
+      mode $P4$, reducing $A$.  However, because $c_3 = 0$, mode $P2/P3$ is
+      permanently disabled.  Institutions can only be consumed by the fighting
+      reaction $c_4$ (which is catalysed by $I$), so $I$ erodes monotonically.
+      Once $I \to 0$, the suppression mode $P4$ itself collapses---$c_4$
+      requires $I$ as a co-reactant---and $A$ recovers.  The fixed policy
+      therefore fails at the same long-run outcome as no-policy, merely
+      delaying collapse.
+
+\item \textbf{MC adaptive}: the lookahead consistently selects $\alpha \approx
+      0.7$--$0.9$ alongside a moderate $\gamma$, discovering that institution
+      building must accompany suppression to prevent $I$ from being eroded.
+      After $\approx 50$ steps the system crosses into the regime where $A < 1$
+      and $I > 10$; thereafter the mode analysis (Figure~\ref{fig:mc_modes})
+      confirms that only the peace-sustaining mode $P3$ remains active at
+      longer timescales, consolidating the peace outcome.
+\end{itemize}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{figures/5k_three_strategies.png}
+  \caption{Three-strategy comparison under stochastic budget-allocation kinetics
+    (300 steps, $\mathbf{x}_0 = (4,2,2,5,4,6)$).  No policy: conflict wins.
+    Fixed policy ($\alpha{=}0,\,\gamma{=}0.8$): institutions collapse once $I$
+    is eroded, and armed groups recover.  MC adaptive: sustained peace is
+    reached, with institutions and territory growing to carrying capacity.}
+  \label{fig:three_strategies}
+\end{figure}
+
+\paragraph{Cost analysis.}
+Figure~\ref{fig:policy_cost} shows the cumulative $c_3$ (institution-building)
+and $c_4$ (security) fluxes for each strategy.  The fixed policy spends
+$\approx 6.5$ units on security ($c_4$) and zero on institution-building
+($c_3$).  The MC adaptive policy spends $\approx 14.2$ units on $c_3$ and
+$\approx 6.1$ units on $c_4$---a larger total, but it achieves peace.
+Crucially, the \emph{fixed policy's resource expenditure stops early}: once $I
+\to 0$ the suppression mode is inoperative and no further $c_4$ investment can
+be absorbed.  The adaptive strategy therefore does not spend much more than the
+fixed policy in absolute terms; the difference is that it allocates resources
+to both modes in the right temporal order, allowing each to complete before
+switching.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{figures/5m_policy_cost.png}
+  \caption{Cumulative cost split into $c_3$ (institution-building, left) and
+    $c_4$ (security, right) for the three strategies.  Dashed lines show
+    deterministic single-lever extremes (pure security / pure growth) for
+    reference.  The adaptive strategy invests more in $c_3$ than the fixed
+    policy, but achieves a qualitatively different outcome at a similar total
+    resource cost.}
+  \label{fig:policy_cost}
+\end{figure}
+
+\paragraph{Mode activation over time.}
+Figure~\ref{fig:mc_modes} shows the timescale-resolved mode analysis for the
+three strategies.  In the \emph{no-policy} run the conflict markers ($G,A,R_c$)
+remain in overproduction or challenge mode at all timescales throughout the
+simulation, while peace markers are persistently in problem mode.  In the
+\emph{fixed-policy} run the peace markers show a brief window of challenge or
+overproduction at short timescales (when suppression first fires), but revert
+to problem mode at longer timescales as $I$ depletes.  The conflict markers
+partially enter problem mode early (suppression is working), yet recover once
+$I$ can no longer sustain $c_4$.  In the \emph{MC adaptive} run the mode
+structure is qualitatively different: the peace markers transition through
+challenge and into overproduction at progressively longer timescales as the
+run progresses, while the conflict markers move from challenge to problem mode
+and stay there.  This transition is not instantaneous---it unfolds over roughly
+50 steps before the mode locks in---illustrating the core principle of the
+adaptive strategy: one must \emph{wait} for a mode to accumulate sufficient
+activation before testing whether to switch.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.49\linewidth]{figures/5n_np_mode_conflict.png}%
+  \includegraphics[width=0.49\linewidth]{figures/5n_np_mode_peace.png}\\[4pt]
+  \includegraphics[width=0.49\linewidth]{figures/5n_pp_mode_conflict.png}%
+  \includegraphics[width=0.49\linewidth]{figures/5n_pp_mode_peace.png}\\[4pt]
+  \includegraphics[width=0.49\linewidth]{figures/5n_mc_mode_conflict.png}%
+  \includegraphics[width=0.49\linewidth]{figures/5n_mc_mode_peace.png}
+  \caption{Timescale-resolved mode classification (overproduction/challenge/problem)
+    for conflict species $\{G,A,R_c\}$ (left column) and peace species
+    $\{I,T,R_p\}$ (right column), across the three strategies: no-policy (top
+    row), fixed policy (middle row), MC adaptive (bottom row).  The adaptive run
+    is the only one in which peace markers transition into persistent
+    overproduction at longer timescales while conflict markers settle into problem
+    mode.}
+  \label{fig:mc_modes}
+\end{figure}
+
+\paragraph{Design principle.}
+The example illustrates a general design template for adaptive strategies in
+reaction-network conflict models:
+
+\begin{enumerate}
+  \item \textbf{Identify operative modes.} Use the timescale expansion
+        (Section~\ref{sec:timescale}) to determine which modes are structurally
+        present in each phase of the dynamics.
+
+  \item \textbf{Enable modes sequentially.} Activate the mode that addresses the
+        current bottleneck (suppression while $A$ is large; institution-building
+        while $I$ is low), and commit enough resources for the mode to fire a
+        substantial number of times before re-evaluating.
+
+  \item \textbf{Monitor the regime indicator.} Track a compact state summary
+        (here, $\pi(\mathbf{x}) = (I+T+R_p) - (G+A+R_c)$, or the enabling
+        degrees $\pi_{P4} = \min(I,A)$ and $\alpha_{C2} = \min(G,R_c)$) to
+        detect when the current mode has been exhausted or when a new threat
+        has emerged.
+
+  \item \textbf{Switch conservatively.} Hysteresis margins around the switching
+        threshold prevent chattering between regimes when the state fluctuates
+        near the boundary, ensuring each mode accumulates enough activation to
+        have a measurable stoichiometric effect.
+\end{enumerate}
+
+This template is not specific to the MC-MPC implementation used here; any
+mechanism that gates reactions based on the current state and waits
+sufficiently long before switching implements the same logic.  The reaction
+network formalism makes the template explicit: the stoichiometric matrix $S$,
+the enabling degrees, and the mode projections are all computable directly from
+the network specification, so the design of an adaptive strategy can be guided
+by structural analysis rather than trial and error.

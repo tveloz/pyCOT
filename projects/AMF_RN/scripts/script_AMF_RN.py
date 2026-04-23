@@ -13,14 +13,14 @@ import mplcursors
 VIS_DIR = 'projects/AMF_RN/outputs'
 os.makedirs(VIS_DIR, exist_ok=True)
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))), 'src'))
 from pyCOT.io.functions import read_txt
 from pyCOT.simulations.ode import simulation
 
 # ========================================
 # 1. LOAD NETWORK
 # ========================================
-file_path = 'data/examples/AMF_RN.txt'
+file_path = 'data/Ecological_models/AMF_RN.txt'
 rn = read_txt(file_path)
 
 species_amf = [specie.name for specie in rn.species()]

@@ -1,0 +1,195 @@
+% ============================================================
+% Appendix: Stochastic Game-Theoretic Dynamics
+% XCEPT Article 1 — Section 4
+% ============================================================
+
+\section*{Appendix: Stochastic Game-Theoretic Dynamics}
+\addcontentsline{toc}{section}{Appendix: Stochastic Game-Theoretic Dynamics}
+
+\subsection*{A.1 General Framework}
+
+The stochastic dynamics model a discrete-time conflict system in which two
+players---a \emph{conflict actor} and a \emph{peace actor}---simultaneously
+allocate resources to competing reactions at each time step $t$.  The system
+state is the vector $\mathbf{x}_t = (G,A,I,T,R_c,R_p)_t \in \mathbb{R}_{\geq 0}^6$
+of six stocks: guerrilla forces ($G$), armed groups ($A$), institutions ($I$),
+territory under peace ($T$), rebel capital ($R_c$), and peace resources ($R_p$).
+
+\paragraph{State update.}
+All ten reactions fire simultaneously each step.  The reaction amounts
+$\mathbf{v}_t \in \mathbb{R}_{\geq 0}^{10}$ are assembled from four
+sub-processes described below, and the state advances as
+\begin{equation}
+    \mathbf{x}_{t+1} = \max\!\bigl(\mathbf{x}_t + S\,\mathbf{v}_t,\;\mathbf{0}\bigr),
+    \label{eq:update}
+\end{equation}
+where $S \in \mathbb{Z}^{6\times 10}$ is the net stoichiometric matrix loaded
+from the reaction-network specification.
+
+\paragraph{Automatic decay reactions.}
+Reactions $f_1$ (guerrilla self-attrition, $2G\!\to\!\varnothing$) and
+$f_2$ (territory erosion, $2T\!\to\!\varnothing$) are always active with
+amounts
+\begin{equation}
+    v_{f_1} = \min\!\bigl(k_{f_1}\,G^2,\;G/2\bigr),
+    \qquad
+    v_{f_2} = \min\!\bigl(k_{f_2}\,T^2,\;T/2\bigr),
+\end{equation}
+with decay constants $k_{f_1}=k_{f_2}=0.001$.  The cap at half the current
+stock prevents these reactions from driving the species negative in a single step.
+
+\paragraph{Stochastic investment budgets.}
+Before each step both actors draw a random fraction of their available resource
+stocks to invest.  For a stock $s$ with threshold $\tau$ and percentage
+interval $[\underline{p},\bar{p}]$, the investable amount is
+\begin{equation}
+    b(s) =
+    \begin{cases}
+        s & \text{if } s \leq \tau \quad \text{(desperate mode: invest all)},\\[4pt]
+        p\cdot s, \quad p \sim \mathcal{U}(\underline{p},\bar{p}) & \text{otherwise}.
+    \end{cases}
+\end{equation}
+The conflict actor draws budgets $b_A$ from $A$ and $b_{R_c}$ from $R_c$; the
+peace actor draws $b_{R_p}$ from $R_p$ and $b_I$ from $I$.  Parameters
+$\tau$ and $[\underline{p},\bar{p}]$ are set separately for each stock and
+policy scenario (Table~\ref{tab:stoch_params}).
+
+\paragraph{Carrying-capacity ceiling.}
+Each reaction $j$ is suppressed as any of its product species approaches its
+carrying capacity $K_s^{\max}$.  A scale factor is computed as
+\begin{equation}
+    \sigma_j = \min_{s\,:\,S_{sj}>0}
+               \max\!\Bigl(0,\;1 - \tfrac{x_s}{K_s^{\max}}\Bigr),
+    \qquad v_j \;\leftarrow\; \sigma_j\,v_j.
+\end{equation}
+Carrying capacities are $K^{\max} = (20,15,15,20,15,15)$ for
+$(G,A,I,T,R_c,R_p)$ respectively.
+
+\paragraph{Contention resolution.}
+After budgets are allocated and ceilings applied, the combined reaction vector
+may violate non-negativity of the state.  An iterative rescaling loop checks
+$\mathbf{x}_t + S\mathbf{v}_t \geq \mathbf{0}$ component-wise; for any species
+$s$ projected to go negative, all reactions consuming $s$ are uniformly scaled
+down by the factor $x_s / \sum_{j:\,S_{sj}<0} |S_{sj}|\,v_j$.  This continues
+until feasibility is satisfied or a maximum of 20 iterations is reached.
+
+\subsection*{A.2 Allocation Strategies}
+
+Both actors choose an \emph{allocation strategy} that determines how their
+budgets are split among competing reactions.
+
+\paragraph{Strategy 0 — Random.}
+Budget shares are drawn from a symmetric Dirichlet distribution:
+$\mathbf{w} \sim \mathrm{Dir}(\mathbf{1})$.  For the peace actor,
+$b_{R_p}$ is split between $c_1$ and $c_3$ using one Dirichlet sample, and
+$b_I$ is split between $c_2$ and $c_4$ using an independent sample.
+
+\paragraph{Strategy 1 — Reactive (used in all experiments).}
+The conflict actor always commits its entire $R_c$ budget to reaction $u_3$
+($u_3$: $G + R_c \to A$, the primary recruitment pathway), while $b_A$ is
+split among $u_1$, $u_2$, and $u_4$ with inverse-scarcity weights:
+\begin{equation}
+    w_{u_1} \propto \tfrac{1}{R_c},\quad
+    w_{u_2} \propto \tfrac{1}{G},\quad
+    w_{u_4} \propto \tfrac{I}{A},
+    \qquad
+    v_{u_k} = b_A\,\frac{w_{u_k}}{w_{u_1}+w_{u_2}+w_{u_4}},
+    \quad v_{u_3} = b_{R_c}.
+\end{equation}
+The weight $w_{u_4} \propto I/A$ reflects a threat-proportional logic: the
+conflict actor targets institutions more heavily when they are large relative
+to armed groups.
+
+The peace actor splits each budget pool with analogous scarcity weights:
+\begin{align}
+    b_{R_p}\ \text{pool:}&\quad
+        w_{c_1} \propto 1/R_p,\quad w_{c_3} \propto 1/I
+        \quad\Rightarrow\quad v_{c_k} = b_{R_p}\,w_{c_k}/\textstyle\sum w. \notag\\
+    b_I\ \text{pool:}&\quad
+        w_{c_2} \propto 1/T,\quad w_{c_4} \propto A/I
+        \quad\Rightarrow\quad v_{c_k} = b_I\,w_{c_k}/\textstyle\sum w. \notag
+\end{align}
+The reactive strategy directs investment toward the most depleted resource or
+the most urgent threat without requiring explicit rule programming.
+
+\paragraph{Strategy 2 — Pure Cycle.}
+Fixed proportions: $u_1{:}u_2{:}u_4 = 0.4{:}0.4{:}0.2$ of $b_A$ (with
+$v_{u_3}=b_{R_c}$ as always), and $c_1{:}c_3 = 0.6{:}0.4$ of $b_{R_p}$,
+$c_2{:}c_4 = 0.7{:}0.3$ of $b_I$.
+
+After allocation, feasibility caps prevent any reaction from over-consuming its
+secondary substrates (e.g.\ $c_3$ cannot use more $R_p$ than available,
+$c_4$ cannot consume more $A$ than available).
+
+\subsection*{A.3 Fixed Policy Implementation}
+
+\emph{The conflict actor's allocation is identical across all scenarios}
+(no-policy, fixed, and adaptive): it always uses Strategy~1 with the same
+budget thresholds $(\tau_A, \tau_{R_c})$ and percentage intervals.  Policy
+design affects only the peace actor.
+
+In the \emph{fixed policy} scenario, the peace actor uses Strategy~1 (reactive)
+with investment intervals $[\underline{p}_{R_p}, \bar{p}_{R_p}]$ and
+$[\underline{p}_I, \bar{p}_I]$ held constant throughout the simulation.
+The no-policy baseline uses negligibly small intervals (near zero investment),
+so the difference between the two runs is solely the magnitude of the peace
+actor's per-step commitment.  Because both strategy and intervals are fixed
+irrespective of the system state, the policy cannot respond to changes in the
+relative balance between conflict and peace stocks.
+
+\subsection*{A.4 Adaptive Policy Implementation}
+
+The adaptive strategy augments the fixed strategy with a \emph{regime selector}
+that gates reactions based on the current state, creating a state-dependent
+allocation without requiring continuous parameter tuning.  The conflict actor's
+allocation remains unchanged (Strategy~1, same parameters as in the fixed case);
+the regime selector operates exclusively on the peace actor's reaction gating.
+
+\paragraph{Regime classification.}
+At each step, two bottleneck quantities are computed:
+\begin{equation}
+    \pi_{P_4} = \min(I,\,A),
+    \qquad
+    \alpha_{C_2} = \min(G,\,R_c).
+\end{equation}
+$\pi_{P_4}$ measures the feasibility of security-mode reactions (limited by
+the smaller of institutions and armed groups); $\alpha_{C_2}$ measures the
+feasibility of the conflict recruitment cycle (limited by guerrillas and rebel
+capital).  Three regimes are defined:
+
+\begin{itemize}[nosep]
+    \item \textbf{Regime A} (Build): the current state favours institution
+          building.  Active by default; entered when
+          $\pi_{P_4} < \alpha_{C_2} - \delta_{\downarrow}$ from Regime~B.
+    \item \textbf{Regime B} (Suppress): conflict suppression is dominant.
+          Entered from A when $\pi_{P_4} > \alpha_{C_2} + \delta_{\uparrow}$.
+    \item \textbf{Regime C} (Fallback): triggered whenever $R_p < R_p^{\text{floor}}$
+          and $\pi_{P_4} > \alpha_{C_2}$, overriding A/B to replenish peace
+          resources before re-engaging Regime~A.
+\end{itemize}
+
+The thresholds $\delta_{\uparrow}$ and $\delta_{\downarrow}$ implement
+\emph{hysteresis}: switching from A to B requires a clearly dominant conflict
+signal, and switching back requires an unambiguous peace advantage.  This
+prevents chattering at the boundary.
+
+\paragraph{Regime-gated reaction allocation.}
+Within each budget pool, the chosen strategy (e.g.\ reactive) determines the
+within-pool split.  The regime then zeroes one reaction per pool and redirects
+its budget share to the remaining active reaction:
+\begin{align}
+    \text{Regime A or C:}&\quad v_{c_4} \leftarrow 0;\quad
+        v_{c_2} \leftarrow v_{c_2} + v_{c_4}^{\,\text{strategy}}
+        \quad\text{(all } b_I \text{ to territory growth, no suppression)}.
+        \notag\\[3pt]
+    \text{Regime B:}&\quad v_{c_3} \leftarrow 0;\quad
+        v_{c_1} \leftarrow v_{c_1} + v_{c_3}^{\,\text{strategy}}
+        \quad\text{(all } b_{R_p} \text{ to } R_p \text{ regeneration, no building)}.
+        \notag
+\end{align}
+The $b_{R_p}$ and $b_I$ budget totals are still governed by
+$\text{STOCH\_PEACE\_PCT\_POL}$, so the same investment-interval parameters
+control the overall resource commitment in both fixed and adaptive runs.  The
+regime selection determines \emph{which reactions} within each pool are active,
+not \emph{how much} is invested in total.  After allocation the same ceiling
+suppression and contention resolution steps apply as in the general framework.
