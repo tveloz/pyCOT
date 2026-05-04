@@ -1,0 +1,38 @@
+# ========================================
+# AMF Reaction Network
+# ========================================
+
+# =================
+# 1. PLANT REACTIONS
+# =================
+R1: Plant_active => Plant_active + C_plant;                        # Photosynthesis / Carbon fixation
+R2: Plant_limited + N_plant + P_plant => Plant_active;             # Activation by sufficient nutrients
+R3: Plant_active => Plant_limited;                                 # Limitation / Senescence
+R4: Plant_active + C_plant + N_plant + P_plant  => 2*Plant_active; # Growth (biomass accumulation)
+R5: Plant_active + N_avail => Plant_active + N_plant;              # Direct N uptake by roots
+R6: Plant_active + P_avail => Plant_active + P_plant;              # Direct P uptake by roots. La raíz pague Carbono para absorber P
+R7: Plant_active + N_plant + P_plant  => N_avail + P_avail;        # Recycling / Nutrient return to soil: Plant_active
+R8: Plant_limited + N_plant + P_plant => N_avail + P_avail;        # Recycling / Nutrient return to soil: Plant_limited
+
+# =================
+# 2. MYCELIUM REACTIONS
+# =================
+R9:  Mycelium + N_avail => Mycelium + N_fungus;                    # Absorption of Nutrients from the Soil: N
+R10: Mycelium + P_avail => Mycelium + P_fungus;                    # Absorption of Nutrients from the Soil: P 
+R11: Mycelium + C_fungus + N_fungus + P_fungus => 2*Mycelium;      # Growth (extrarradical hyphae)
+R12: Mycelium => N_avail + P_avail;                                # Mortality / nutrient return
+
+# =================
+# 3. FUNGUS REACTIONS
+# =================
+R13: Fungus + C_plant => Fungus + C_fungus;                        # Carbon acquisition from plant
+R14: Fungus + N_fungus => Fungus + N_plant;                        # Nutrient transfer to plant: N
+R15: Fungus + P_fungus => Fungus + P_plant;                        # Nutrient transfer to plant: P 
+R16: Fungus + C_fungus + N_fungus + P_fungus => 2*Fungus;          # Growth (intrarradical biomass)
+R17: Fungus => N_avail + P_avail;                                  # Nutrient recycling 
+
+# =================
+# 6. INPUTS
+# =================
+R18: => N_avail;                                                   # External N input (atmospheric deposition, fertilization)
+R19: => P_avail;                                                   # External P input (mineral weathering, fertilization) 
