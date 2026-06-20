@@ -67,7 +67,7 @@ from pyCOT.analysis.SORN_Generators import is_semi_self_maintaining
 
 # -- Network file --------------------------------------------------------------
 RN_FILE = os.path.join(_PYCOT_ROOT, 'data', 'biomodels',
-                       'biomodels_interesting', 'BIOMD0000000237_manyOrgs.txt')
+                       'biomodels_interesting', 'bigg_iAF692.txt')
 # Alternatives:
 # RN_FILE = os.path.join(_PYCOT_ROOT, 'networks', 'testing', 'Farm.txt')
 # RN_FILE = 'data\\Examples_tests\\testing\\ERC_synergy0.txt'
@@ -267,8 +267,7 @@ print(f"  {len(RN.species())} species, {len(RN.reactions())} reactions")
 print("Computing ERCs...")
 t0   = time.time()
 ercs = ERC.ERCs(RN)
-ercs = [e for e in ercs if len(e.get_closure_names(RN)) > 0]
-print(f"  {len(ercs)} ERCs (E_∅ excluded)  ({time.time()-t0:.1f}s)")
+print(f"  {len(ercs)} ERCs  ({time.time()-t0:.1f}s)")
 
 print("Building hierarchy...")
 hierarchy = ERC_Hierarchy(RN, ercs)
@@ -496,7 +495,7 @@ maintenance_legend = ax.legend(
         mpatches.Patch(facecolor=COL_SSM, label='Semi-self-maintaining  (SSM)'),
         mpatches.Patch(facecolor=COL_DEF, label='Neither / not reactive'),
     ],
-    loc='lower right', fontsize=10, framealpha=0.9,
+    loc='upper right', fontsize=10, framealpha=0.9,
     title='Maintenance class', title_fontsize=10,
 )
 ax.add_artist(maintenance_legend)
@@ -525,7 +524,7 @@ junc_handle = ax.scatter([], [], s=JUNC_SIZE,
 comp_handles.append(junc_handle)
 
 comp_legend = ax.legend(handles=comp_handles,
-                        loc='upper right', fontsize=10,
+                        loc='upper left', fontsize=10,
                         framealpha=0.9,
                         title='Complementarity type', title_fontsize=10)
 ax.add_artist(comp_legend)
@@ -566,4 +565,9 @@ ax.set_title(
     fontsize=11)
 ax.axis('off')
 plt.tight_layout()
+_out_dir = os.path.join(_SCRIPT_DIR, '..', 'outputs', 'complementarity_viz')
+os.makedirs(_out_dir, exist_ok=True)
+_out_path = os.path.join(_out_dir, f'complementarity_viz_{net_name}.png')
+plt.savefig(_out_path, dpi=150, bbox_inches='tight')
+print(f"Saved: {os.path.abspath(_out_path)}")
 plt.show()

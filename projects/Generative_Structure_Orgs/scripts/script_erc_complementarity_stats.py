@@ -52,7 +52,7 @@ from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_nam
 
 # -- Configuration -------------------------------------------------------------
 SCAN_FOLDERS = [
-    os.path.join(_PYCOT_ROOT, 'data', 'biomodels', 'biomodels_all_txt', 'Biomodels_txt_sample'),
+    os.path.join(_PYCOT_ROOT, 'data', 'biomodels', 'biomodels_all_txt'),
     # os.path.join(_PYCOT_ROOT, 'networks', 'testing', 'performance_benchmark'),
     # os.path.join(_PYCOT_ROOT, 'networks', 'testing'),
 ]
@@ -60,8 +60,9 @@ SCAN_FOLDERS = [
 OUT_DIR  = os.path.normpath(os.path.join(_SCRIPT_DIR, '..', 'outputs', 'complementarity_stats'))
 CSV_FILE = os.path.join(OUT_DIR, 'complementarity_stats.csv')
 
-MAX_ERCS      = 200    # skip networks with more ERCs than this
-MAX_TIME_ERCS = 120    # max seconds for ERC computation
+MAX_REACTIONS = 250  # skip networks with more reactions than this (pre-ERC filter)
+MAX_ERCS      = 250  # skip networks with more than this many ERCs (post-ERC filter)
+MAX_TIME_ERCS = 1200  # max seconds for ERC computation
 
 os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -226,11 +227,25 @@ def collect_files(folders):
 all_files = collect_files(SCAN_FOLDERS)
 print(f"Found {len(all_files)} .txt files across {len(SCAN_FOLDERS)} folder(s).")
 
+# Load existing CSV so already-computed networks are not reprocessed.
+# Previously filtered/skipped networks are absent from the CSV, so raising
+# MAX_REACTIONS will automatically retry them on the next run.
+if os.path.exists(CSV_FILE):
+    _existing = pd.read_csv(CSV_FILE)
+    already_done = set(_existing['file'].astype(str))
+    print(f"Resuming: {len(already_done)} networks already cached in {CSV_FILE}")
+else:
+    _existing = pd.DataFrame()
+    already_done = set()
+
 records = []
 skipped = []
 
 for idx, fpath in enumerate(all_files):
     fname = os.path.basename(fpath)
+    if fname in already_done:
+        print(f"[{idx+1}/{len(all_files)}] {fname}  — CACHED, skip")
+        continue
     print(f"\n[{idx+1}/{len(all_files)}] {fname}")
 
     try:
@@ -238,6 +253,11 @@ for idx, fpath in enumerate(all_files):
         n_sp = len(RN.species())
         n_rx = len(RN.reactions())
         print(f"  {n_sp} species, {n_rx} reactions")
+
+        if n_rx > MAX_REACTIONS:
+            print(f"  SKIP: too many reactions ({n_rx} > {MAX_REACTIONS})")
+            skipped.append((fname, f'too many reactions: {n_rx}'))
+            continue
 
         t0    = time.time()
         ercs  = ERC.ERCs(RN)
@@ -290,6 +310,12 @@ for idx, fpath in enumerate(all_files):
             'time_complementarity': round(t_c,   2),
         })
 
+        # Write after every network so progress survives interruptions.
+        _cur = pd.concat([_existing, pd.DataFrame(records)], ignore_index=True) \
+               if not _existing.empty else pd.DataFrame(records)
+        _cur.to_csv(CSV_FILE, index=False)
+        print(f"  → CSV updated ({len(_cur)} total records)")
+
     except Exception as exc:
         import traceback
         print(f"  ERROR: {exc}")
@@ -300,9 +326,16 @@ for idx, fpath in enumerate(all_files):
 # Save CSV
 # =============================================================================
 
-df = pd.DataFrame(records)
+new_df = pd.DataFrame(records)
+if not _existing.empty and not new_df.empty:
+    df = pd.concat([_existing, new_df], ignore_index=True)
+elif not new_df.empty:
+    df = new_df
+else:
+    df = _existing
 df.to_csv(CSV_FILE, index=False)
-print(f"\nSaved {len(df)} records to {CSV_FILE}")
+print(f"\nSaved {len(df)} records to {CSV_FILE} "
+      f"({len(new_df)} new, {len(_existing)} previously cached)")
 if skipped:
     print(f"Skipped {len(skipped)} networks:")
     for fn, reason in skipped:
@@ -326,48 +359,45 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
 # ---------------------------------------------------------------------------
 # Plot 1 — Complementary pair counts vs theoretical maximum C(n_ercs, 2)
+#
+# Log-log axes: networks range widely in size, so C(n,2) spans ~1 – 20 000.
+# On a linear scale the data clusters at the bottom; log-log spreads the
+# full dynamic range and keeps y = x as a clean 45° diagonal.
+# Networks whose count is 0 for a given type are omitted (log(0) undefined).
 # ---------------------------------------------------------------------------
-x_max    = df['n_pairs_max'].values
-y_comp   = df['n_complementary_pairs'].values
-y_pure   = df['n_pure_complementary_pairs'].values
-y_fund   = df['n_fundamental_edges'].values
+x_max  = df['n_pairs_max'].values
+y_comp = df['n_complementary_pairs'].values
+y_pure = df['n_pure_complementary_pairs'].values
+y_fund = df['n_fundamental_edges'].values
 
-diag_max = max(
-    x_max.max(),
-    max(y_comp.max(), y_pure.max(), y_fund.max())
-) * 1.05
+for col, y_vals in [('complementary', y_comp),
+                    ('pure',          y_pure),
+                    ('fundamental',   y_fund)]:
+    sty  = COMP_STYLES[col]
+    mask = (x_max > 0) & (y_vals > 0)     # log scale needs strictly positive values
+    ax1.scatter(x_max[mask], y_vals[mask],
+                color=sty['color'], marker=sty['marker'],
+                s=55, alpha=0.80, edgecolors='white', lw=0.5,
+                label=sty['label'], zorder=sty['zorder'])
 
-ax1.scatter(x_max, y_comp,
-            color=COMP_STYLES['complementary']['color'],
-            marker=COMP_STYLES['complementary']['marker'],
-            s=55, alpha=0.80, edgecolors='white', lw=0.5,
-            label=COMP_STYLES['complementary']['label'],
-            zorder=COMP_STYLES['complementary']['zorder'])
-ax1.scatter(x_max, y_pure,
-            color=COMP_STYLES['pure']['color'],
-            marker=COMP_STYLES['pure']['marker'],
-            s=55, alpha=0.80, edgecolors='white', lw=0.5,
-            label=COMP_STYLES['pure']['label'],
-            zorder=COMP_STYLES['pure']['zorder'])
-ax1.scatter(x_max, y_fund,
-            color=COMP_STYLES['fundamental']['color'],
-            marker=COMP_STYLES['fundamental']['marker'],
-            s=55, alpha=0.80, edgecolors='white', lw=0.5,
-            label=COMP_STYLES['fundamental']['label'],
-            zorder=COMP_STYLES['fundamental']['zorder'])
+# Diagonal y = x — straight 45° line in log-log space
+x_pos = x_max[x_max > 0]
+if len(x_pos):
+    d_lo = x_pos.min() * 0.7
+    d_hi = x_pos.max() * 1.5
+    ax1.plot([d_lo, d_hi], [d_lo, d_hi], 'k--', lw=0.9, alpha=0.35,
+             label='y = x  (all pairs complementary)')
 
-ax1.plot([0, diag_max], [0, diag_max], 'k--', lw=0.9, alpha=0.35,
-         label='y = x  (all pairs complementary)')
-ax1.set_xlim(-diag_max * 0.02, diag_max)
-ax1.set_ylim(-diag_max * 0.02, diag_max)
-ax1.set_xlabel('C(|ERCs|, 2)  —  theoretical max unordered pairs', fontsize=11)
-ax1.set_ylabel('Complementary pairs', fontsize=11)
+ax1.set_xscale('log')
+ax1.set_yscale('log')
+ax1.set_xlabel('C(|ERCs|, 2)  —  theoretical max unordered pairs  [log]', fontsize=11)
+ax1.set_ylabel('Complementary pairs  [log]', fontsize=11)
 ax1.set_title(
-    'Complementary pairs vs theoretical maximum\n'
-    'Points far below diagonal → complementarities are rare',
+    'Complementary pairs vs theoretical maximum  (log–log)\n'
+    'Distance below the diagonal reflects rarity  ·  zero counts omitted',
     fontsize=11, fontweight='bold')
 ax1.legend(fontsize=9)
-ax1.grid(True, alpha=0.25)
+ax1.grid(True, alpha=0.25, which='both')
 
 # ---------------------------------------------------------------------------
 # Plot 2 — Producer/consumer ERC fractions vs complementary pair fraction
@@ -399,17 +429,18 @@ ax2.scatter(xv, df['ratio_consumers'].values,
 
 ax2.axvline(0.5, color='gray', lw=0.8, ls=':', alpha=0.5)
 ax2.axhline(0.5, color='gray', lw=0.8, ls=':', alpha=0.5)
-ax2.set_xlim(-0.02, 1.02)
+ax2.set_xscale('symlog', linthresh=0.01)
+ax2.set_xlim(0, 1.05)
 ax2.set_ylim(-0.02, 1.02)
 ax2.set_xlabel(
-    'Fundamental complementarity fraction  =  fund. edges / C(|ERCs|, 2)',
+    'Fundamental complementarity fraction  =  fund. edges / C(|ERCs|, 2)  [symlog]',
     fontsize=11)
 ax2.set_ylabel(
     'Fraction of ERCs  (producers or consumers in fundamental pairs)',
     fontsize=11)
 ax2.set_title(
     'Producer/consumer ERC fractions vs fundamental complementarity fraction\n'
-    'Node size ∝ |ERCs|  ·  both axes ∈ [0, 1]',
+    'Node size ∝ |ERCs|  ·  x: symlog  ·  y: linear ∈ [0, 1]',
     fontsize=11, fontweight='bold')
 
 # Size legend

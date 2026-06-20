@@ -1,9 +1,15 @@
+import sys
+import os
+from pathlib import Path
+
+# Add src directory to path to enable imports when running directly
+_src_path = Path(__file__).parent.parent.parent  # Navigate to src directory
+if str(_src_path) not in sys.path:
+    sys.path.insert(0, str(_src_path))
+
 from pyCOT.core.rn_rustworkx import ReactionNetwork
 from pyCOT.io._utils import separate_string, remove_comments
 #from pyCOT.Persistent_Modules import is_self_maintaining
-
-# Import libraries 
-import os
 
 def from_string(string: str) -> ReactionNetwork:
     """

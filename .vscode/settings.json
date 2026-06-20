@@ -1,0 +1,9 @@
+{
+    "python.analysis.extraPaths": ["${workspaceFolder}/src"],
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python",
+        "editor.formatOnSave": true
+    }
+}

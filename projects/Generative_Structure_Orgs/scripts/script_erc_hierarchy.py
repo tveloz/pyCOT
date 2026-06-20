@@ -29,7 +29,7 @@ non-negative-production flux has some reactions silent (e.g. a wasteful
 definition (Dittrich & di Fenizio 2007) requires v > 0 — all enabled
 reactions must fire.  The local _is_sm() below enforces v ≥ SM_EPS.
 
-Default network: data/biomodels/biomodels_interesting/BIOMD0000000652_manyOrgs.txt
+Default network: data/biomodels/biomodels_interesting/BIOMD0000000237_manyOrgs.txt
 """
 
 import os
@@ -55,7 +55,7 @@ from pyCOT.analysis.SORN_Generators import is_semi_self_maintaining
 
 # -- Network file --------------------------------------------------------------
 RN_FILE = os.path.join(_PYCOT_ROOT, 'data', 'biomodels',
-                       'biomodels_interesting', 'BIOMD0000000237_manyOrgs.txt')
+                       'biomodels_interesting', 'bigg_iAF692.txt')
 
 # Uncomment to use the Farm network instead:
 #RN_FILE = os.path.join(_PYCOT_ROOT, 'networks', 'testing', 'Farm.txt')

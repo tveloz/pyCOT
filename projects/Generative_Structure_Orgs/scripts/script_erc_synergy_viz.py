@@ -60,7 +60,7 @@ from pyCOT.analysis.SORN_Generators import is_semi_self_maintaining
 
 # -- Network file --------------------------------------------------------------
 RN_FILE = os.path.join(_PYCOT_ROOT, 'data', 'biomodels',
-                       'biomodels_interesting', 'BIOMD0000000237_manyOrgs.txt')
+                       'biomodels_interesting', 'bigg_iAF692.txt')
 # Uncomment alternatives:
 # RN_FILE = os.path.join(_PYCOT_ROOT, 'networks', 'testing', 'Farm.txt')
 # RN_FILE = 'data\\Examples_tests\\testing\\ERC_synergy0.txt'
@@ -98,9 +98,8 @@ SHRINK_JUNC =  5   # shrink from / into junction nodes
 # Set False to hide non-maximal basic synergies (less visual clutter)
 SHOW_BASIC = True
 
-# Junction position blend weight: 0 = midpoint of reactants, 1 = target.
-# 0.35 places the junction 35% of the way from the reactant midpoint to T.
-JUNC_BLEND = 0.35
+# How far to push junctions off an ERC level line when the computed y lands on one.
+PUSH_OFF_LEVEL = 0.40
 
 
 # ===========================================================================
@@ -321,29 +320,67 @@ for lvl, nodes in level_nodes.items():
     for i, node in enumerate(nodes):
         pos[node] = np.array([(i - (len(nodes) - 1) / 2) * 2.0, lvl * 2.0])
 
-# Junction positions: blend between midpoint-of-reactants and target
-junc_pos = {}   # key → np.array([x, y])
-pair_junc_count = defaultdict(int)   # sorted-pair → count, for jitter
+# Junction positions: between the reactant midpoint and the target,
+# always kept between levels (never on top of an ERC node).
+#
+# X: midpoint of E1 and E2 — keeps the junction visually between the reactants.
+# Y: midpoint between max(y_E1, y_E2) and y_T — keeps the junction between
+#    the highest reactant level and the target level.
+# Push-off: if the computed y falls on an ERC level line, shift toward target.
+# Jitter: when the same reactant pair has multiple synergies, spread junctions
+#         horizontally so they don't stack.
+
+level_ys = sorted(set(float(p[1]) for p in pos.values()))
+
+def _clear_of_levels(y, level_ys, y_target, step=PUSH_OFF_LEVEL, max_iter=8):
+    """Shift y toward y_target until it is not within 0.22 of any ERC level."""
+    direction = 1 if y_target >= y else -1
+    for _ in range(max_iter):
+        if not any(abs(y - ly) < 0.22 for ly in level_ys):
+            break
+        y += direction * step
+    return y
+
+junc_pos = {}
+pair_junc_count = defaultdict(int)   # sorted-pair → # junctions already placed
 
 for key, (l1, l2) in syn_reactants.items():
     _, t_label = key
     if l1 not in pos or l2 not in pos or t_label not in pos:
         continue
-    mid  = (pos[l1] + pos[l2]) * 0.5
-    tpos = pos[t_label]
-    base = mid * (1 - JUNC_BLEND) + tpos * JUNC_BLEND
-    # Small perpendicular jitter when the same reactant pair has multiple synergies
+
+    p1 = pos[l1]
+    p2 = pos[l2]
+    pt = pos[t_label]
+
+    # X: centred between the two reactants (target x does not influence this)
+    x_junc = (p1[0] + p2[0]) / 2.0
+
+    # Y: midpoint between the higher reactant and the target
+    y_hi  = max(p1[1], p2[1])
+    y_T   = float(pt[1])
+    if abs(y_T - y_hi) > 0.5:
+        y_junc = (y_hi + y_T) / 2.0
+    else:
+        # Reactants and target at the same level — push junction in target direction
+        y_sign = 1 if y_T >= y_hi else -1
+        y_junc = y_hi + y_sign * 0.7
+
+    # Ensure junction is not sitting on an ERC level line
+    y_junc = _clear_of_levels(y_junc, level_ys, y_T)
+
+    base = np.array([x_junc, y_junc])
+
+    # Horizontal jitter so multiple synergies for the same reactant pair
+    # don't pile up at the same x position
     pair_key = tuple(sorted([l1, l2]))
     count = pair_junc_count[pair_key]
     if count > 0:
-        direction = tpos - mid
-        perp = np.array([-direction[1], direction[0]])
-        norm = np.linalg.norm(perp)
-        if norm > 1e-9:
-            perp /= norm
-        sign  = 1 if count % 2 == 1 else -1
-        base += sign * (count + 1) * 0.25 * perp
+        sign   = 1 if count % 2 == 1 else -1
+        offset = ((count + 1) // 2) * 0.42
+        base   = base + np.array([sign * offset, 0.0])
     pair_junc_count[pair_key] += 1
+
     junc_pos[key] = base
 
 
@@ -491,4 +528,9 @@ ax.set_title(
     fontsize=12)
 ax.axis('off')
 plt.tight_layout()
+_out_dir = os.path.join(_SCRIPT_DIR, '..', 'outputs', 'synergy_viz')
+os.makedirs(_out_dir, exist_ok=True)
+_out_path = os.path.join(_out_dir, f'synergy_viz_{net_name}.png')
+plt.savefig(_out_path, dpi=150, bbox_inches='tight')
+print(f"Saved: {os.path.abspath(_out_path)}")
 plt.show()
