@@ -17,13 +17,15 @@ import os
 import sys
 from matplotlib.colors import TwoSlopeNorm
 
-sys.path.append('/Users/yvanomarbalderamoreno/Downloads/pyCOT/src')
-sys.path.append('/Users/yvanomarbalderamoreno/Downloads/pyCOT')
+# Add pyCOT to path - locate relative to this script
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_pycot_root = os.path.normpath(os.path.join(_script_dir, '..', '..', '..'))
+sys.path.insert(0, os.path.join(_pycot_root, 'src'))
 
 from pyCOT.io.functions import read_txt
 from pyCOT.simulations.ode import simulation
 
-VIS_DIR = 'projects/AMF/outputs_3'
+VIS_DIR = 'projects/AMF/outputs'
 os.makedirs(VIS_DIR, exist_ok=True)
 
 # ========================================
@@ -784,7 +786,7 @@ def plot_mycorrhizal_function(rn, save_path=None):
 
 if __name__ == '__main__':
 
-    FILE_PATH = 'data/Ecological_models/AMF_2.txt'
+    FILE_PATH = os.path.join(_pycot_root, 'data', 'Ecological_models', 'AMF.txt')
     rn = read_txt(FILE_PATH)
 
     print(f"Species:    {[s.name for s in rn.species()]}")
