@@ -1,0 +1,5 @@
+R0: C (C) + R (R) => I (I) + C (C) + R (R);
+R1: R (R) => C (C) + R (R);
+R2: C (C) + I (I) => I (I);
+R3: C (C) => R (R) + C (C);
+R4: R (R) + I (I) => I (I);

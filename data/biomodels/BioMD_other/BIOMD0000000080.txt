@@ -1,0 +1,6 @@
+R0: D (D) + R (R) => DR (DR);
+R1: DR (DR) + G_GDP (G_GDP) => DRG_GDP (DRG_GDP);
+R2: DRG_GDP (DRG_GDP) => GDP (GDP) + DRG (DRG);
+R3: DRG (DRG) + GTP (GTP) => DRG_GTP (DRG_GTP);
+R4: DRG_GTP (DRG_GTP) => G_GTP (G_GTP) + DR (DR);
+R5: G_GTP (G_GTP) => G_GDP (G_GDP);

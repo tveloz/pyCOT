@@ -1,0 +1,13 @@
+R0:  => G (G);
+R1: G (G) + T_beta (T_beta) + M (M) + C_T (C_T) => T_beta (T_beta) + M (M) + C_T (C_T);
+R2:  => M (M);
+R3: I_gamma (I_gamma) + T_beta (T_beta) => M (M) + I_gamma (I_gamma) + T_beta (T_beta);
+R4: M (M) + G (G) => G (G);
+R5: G (G) + T_beta (T_beta) => C_T (C_T) + G (G) + T_beta (T_beta);
+R6: C_T (C_T) => ;
+R7: C_T (C_T) + G (G) => G (G);
+R8:  => T_beta (T_beta);
+R9: G (G) => T_beta (T_beta) + G (G);
+R10: T_beta (T_beta) => ;
+R11: C_T (C_T) => I_gamma (I_gamma) + C_T (C_T);
+R12: I_gamma (I_gamma) => ;

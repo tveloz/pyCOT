@@ -1,0 +1,9 @@
+R0: I (Infected Hepatocytes (I)) => T (Healthy Hepatocytes (T)) + I (Infected Hepatocytes (I));
+R1: I (Infected Hepatocytes (I)) => T (Healthy Hepatocytes (T)) + I (Infected Hepatocytes (I));
+R2: T (Healthy Hepatocytes (T)) => ;
+R3: T (Healthy Hepatocytes (T)) + V (Viral Load (V)) => I (Infected Hepatocytes (I));
+R4: T (Healthy Hepatocytes (T)) => I (Infected Hepatocytes (I)) + T (Healthy Hepatocytes (T));
+R5: I (Infected Hepatocytes (I)) => ;
+R6: I (Infected Hepatocytes (I)) => ;
+R7: I (Infected Hepatocytes (I)) => V (Viral Load (V)) + I (Infected Hepatocytes (I));
+R8: V (Viral Load (V)) => ;

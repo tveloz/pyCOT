@@ -1,0 +1,8 @@
+R0:  => EpoR (EpoR);
+R1: EpoR (EpoR) => ;
+R2: Epo (Epo) + EpoR (EpoR) => Epo_EpoR (Epo_EpoR);
+R3: Epo_EpoR (Epo_EpoR) => Epo (Epo) + EpoR (EpoR);
+R4: Epo_EpoR (Epo_EpoR) => Epo_EpoRi (Epo_EpoRi);
+R5: Epo_EpoRi (Epo_EpoRi) => Epo (Epo) + EpoR (EpoR);
+R6: Epo_EpoRi (Epo_EpoRi) => dEpoi (dEpoi);
+R7: Epo_EpoRi (Epo_EpoRi) => dEpoe (dEpoe);

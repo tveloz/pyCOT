@@ -1,0 +1,11 @@
+R0: NGF (NGF) + TrkA (TrkA) => NGF_TrkA (NGF_TrkA);
+R1: pTrkA (pTrkA) + Akt (Akt) => pTrkA_Akt (pTrkA_Akt);
+R2: pTrkA_Akt (pTrkA_Akt) => pTrkA (pTrkA) + pAkt (pAkt);
+R3: pTrkA (pTrkA) => ;
+R4: pAkt (pAkt) + S6 (S6) => pAkt_S6 (pAkt_S6);
+R5: pAkt_S6 (pAkt_S6) => pAkt (pAkt) + pS6 (pS6);
+R6: pAkt (pAkt) => Akt (Akt);
+R7: pS6 (pS6) => S6 (S6);
+R8: pro_TrkA (pro_TrkA) => TrkA (TrkA);
+R9: NGF_TrkA (NGF_TrkA) => pTrkA (pTrkA);
+R10: TrkA (TrkA) => ;

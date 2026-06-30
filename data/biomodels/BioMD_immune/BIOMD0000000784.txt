@@ -1,0 +1,9 @@
+R0:  => x_Tumor_Cells (x_Tumor_Cells);
+R1: x_Tumor_Cells (x_Tumor_Cells) + y_Healthy_Cells (y_Healthy_Cells) => y_Healthy_Cells (y_Healthy_Cells);
+R2: x_Tumor_Cells (x_Tumor_Cells) => ;
+R3:  => y_Healthy_Cells (y_Healthy_Cells);
+R4: y_Healthy_Cells (y_Healthy_Cells) + x_Tumor_Cells (x_Tumor_Cells) => x_Tumor_Cells (x_Tumor_Cells);
+R5:  => z_Effector_Cells (z_Effector_Cells);
+R6: z_Effector_Cells (z_Effector_Cells) => ;
+R7: x_Tumor_Cells (x_Tumor_Cells) => z_Effector_Cells (z_Effector_Cells) + x_Tumor_Cells (x_Tumor_Cells);
+R8: z_Effector_Cells (z_Effector_Cells) + x_Tumor_Cells (x_Tumor_Cells) => x_Tumor_Cells (x_Tumor_Cells);

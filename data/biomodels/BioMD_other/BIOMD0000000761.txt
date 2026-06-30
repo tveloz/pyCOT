@@ -1,0 +1,14 @@
+R0: U (U_IL-21) => ;
+R1: Z (Z_Tumor_SA) => U (U_IL-21) + Z (Z_Tumor_SA);
+R2:  => X (X_NK_T_Cells);
+R3: 2X (X_NK_T_Cells) + U (U_IL-21) => X (X_NK_T_Cells) + U (U_IL-21);
+R4:  => Y (Y_CD8_T_Cells);
+R5: Y (Y_CD8_T_Cells) + M (M_CD8_Memory_Factor) => M (M_CD8_Memory_Factor);
+R6: U (U_IL-21) => M (M_CD8_Memory_Factor) + U (U_IL-21);
+R7: M (M_CD8_Memory_Factor) => ;
+R8: U (U_IL-21) => P (P_Cytotoxic_Protein) + U (U_IL-21);
+R9: P (P_Cytotoxic_Protein) => ;
+R10: Z (Z_Tumor_SA) + P (P_Cytotoxic_Protein) + X (X_NK_T_Cells) => P (P_Cytotoxic_Protein) + X (X_NK_T_Cells);
+R11: Z (Z_Tumor_SA) + P (P_Cytotoxic_Protein) + Y (Y_CD8_T_Cells) => P (P_Cytotoxic_Protein) + Y (Y_CD8_T_Cells);
+R12:  => Z (Z_Tumor_SA);
+R13: Z (Z_Tumor_SA) => 2Z (Z_Tumor_SA);

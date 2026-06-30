@@ -15,12 +15,15 @@
       "Bash(python:*)",
       "Bash(ls:*)",
       "Bash(pip show:*)",
-      "Read(//c/Users/hp/.claude/projects/c--Users-hp-Dropbox-Public-AcademicWork-Europe-CLEA-Postdocs-TempletonPostdoc-sftw-pyCOT/memory/**)"
+      "Read(//c/Users/hp/.claude/projects/c--Users-hp-Dropbox-Public-AcademicWork-Europe-CLEA-Postdocs-TempletonPostdoc-sftw-pyCOT/memory/**)",
+      "Read(//c/Users/hp/Dropbox/Public/AcademicWork/papers/Submitted/GenerativeStructuresOrganizations/current_submission_BMB/Generative_Structure_Closed_Sets_200526/**)",
+      "Bash(grep \"\\\\.txt$\")"
     ],
     "deny": [],
     "ask": [],
     "additionalDirectories": [
-      "c:\\Users\\hp\\Dropbox\\Public\\AcademicWork\\Europe\\CLEA\\Postdocs\\TempletonPostdoc\\sftw\\pyCOT\\src\\pyCOT"
+      "c:\\Users\\hp\\Dropbox\\Public\\AcademicWork\\Europe\\CLEA\\Postdocs\\TempletonPostdoc\\sftw\\pyCOT\\src\\pyCOT",
+      "C:\\Users\\hp\\Dropbox\\Public\\AcademicWork\\papers\\Submitted\\GenerativeStructuresOrganizations\\current_submission_BMB\\Generative_Structure_Closed_Sets_200526"
     ]
   }
 }

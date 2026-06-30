@@ -1,0 +1,4 @@
+R0: EmptySet (EmptySet) + dClkF (free dClk) => Per (Per) + dClkF (free dClk);
+R1: EmptySet (EmptySet) + dClkF (free dClk) => dClk (dClk) + dClkF (free dClk);
+R2: Per (Per) => EmptySet (EmptySet);
+R3: dClk (dClk) => EmptySet (EmptySet);

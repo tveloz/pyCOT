@@ -1,0 +1,17 @@
+R0:  => As (As);
+R1: As (As) => ;
+R2: As (As) + Bs (Bs) => Bs (Bs);
+R3: As (As) => ;
+R4: As (As) => ;
+R5:  => Bs (Bs);
+R6: As (As) => Bs (Bs) + As (As);
+R7: As (As) => Bs (Bs) + As (As);
+R8: Bs (Bs) => ;
+R9: As (As) => Asyn (Asyn) + As (As);
+R10: Asyn (Asyn) => ;
+R11: Asyn (Asyn) + Bsyn (Bsyn) => Bsyn (Bsyn);
+R12: Asyn (Asyn) => ;
+R13:  => Bsyn (Bsyn);
+R14: Asyn (Asyn) => Bsyn (Bsyn) + Asyn (Asyn);
+R15: Asyn (Asyn) => Bsyn (Bsyn) + Asyn (Asyn);
+R16: Bsyn (Bsyn) => ;

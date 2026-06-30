@@ -1,0 +1,17 @@
+R0: NFAT_Pi_Nuc (Phosphorylated NFAT in nucleus) + Act_C_Nuc (Active Calcineurin in nucleus) => Act_C_Nuc (Active Calcineurin in nucleus) + NFAT_Nuc (NFAT_Nuc);
+R1: Act_C_Nuc (Active Calcineurin in nucleus) + NFAT_Nuc (NFAT_Nuc) => NFAT_Act_C_Nuc (NFAT Calcineurin complex in nucleus);
+R2: NFAT_Nuc (NFAT_Nuc) => NFAT_Cyt (NFAT_Cyt);
+R3: Act_C_Nuc (Active Calcineurin in nucleus) => Act_C_Cyt (Active Calcineurin in cytosol);
+R4: NFAT_Act_C_Nuc (NFAT Calcineurin complex in nucleus) => NFAT_Pi_Act_C_Nuc (Phosphorylated NFAT Calcineurin complex in nucleus);
+R5: NFAT_Pi_Act_C_Nuc (Phosphorylated NFAT Calcineurin complex in nucleus) => Act_C_Nuc (Active Calcineurin in nucleus) + NFAT_Pi_Nuc (Phosphorylated NFAT in nucleus);
+R6: NFAT_Act_C_Nuc (NFAT Calcineurin complex in nucleus) => NFAT_Act_C_Cyt (NFAT Calcineurin complex in cytosol);
+R7: NFAT_Act_C_Cyt (NFAT Calcineurin complex in cytosol) => NFAT_Pi_Act_C_Cyt (Phosphorylated NFAT Calcineurin complex in cytosol);
+R8: NFAT_Pi_Act_C_Cyt (Phosphorylated NFAT Calcineurin complex in cytosol) => Act_C_Cyt (Active Calcineurin in cytosol) + NFAT_Pi_Cyt (Phosphorylated NFAT in cytosol);
+R9: NFAT_Pi_Cyt (Phosphorylated NFAT in cytosol) => NFAT_Pi_Nuc (Phosphorylated NFAT in nucleus);
+R10: NFAT_Act_C_Cyt (NFAT Calcineurin complex in cytosol) => Act_C_Cyt (Active Calcineurin in cytosol) + NFAT_Cyt (NFAT_Cyt);
+R11: NFAT_Pi_Act_C_Cyt (Phosphorylated NFAT Calcineurin complex in cytosol) => NFAT_Pi_Act_C_Nuc (Phosphorylated NFAT Calcineurin complex in nucleus);
+R12: NFAT_Pi_Cyt (Phosphorylated NFAT in cytosol) + Act_C_Cyt (Active Calcineurin in cytosol) => Act_C_Cyt (Active Calcineurin in cytosol) + NFAT_Cyt (NFAT_Cyt);
+R13: 3Ca_Cyt (Calcium in Cytosol) + Inact_C_Cyt (Inactive Calcineurin in cytosol) => Act_C_Cyt (Active Calcineurin in cytosol);
+R14: 3Ca_Nuc (Calcium in Nucleus) + Inact_C_Nuc (Inactive Calcineurin in nucleus) => Act_C_Nuc (Active Calcineurin in nucleus);
+R15: Inact_C_Cyt (Inactive Calcineurin in cytosol) => Inact_C_Nuc (Inactive Calcineurin in nucleus);
+R16: Ca_Cyt (Calcium in Cytosol) => Ca_Nuc (Calcium in Nucleus);

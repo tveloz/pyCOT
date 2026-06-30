@@ -1,0 +1,12 @@
+R0: Lysine (Lysine) + Glucose (Glucose) => Schiff (Schiff);
+R1: Schiff (Schiff) => Lysine (Lysine) + Glucose (Glucose);
+R2: Schiff (Schiff) => Amadori (Amadori);
+R3: Amadori (Amadori) => Schiff (Schiff);
+R4: Glucose (Glucose) => Glyoxal (Glyoxal);
+R5: Amadori (Amadori) => CML (CML);
+R6: Lysine (Lysine) + Glyoxal (Glyoxal) => CML (CML);
+R7: Glyoxal (Glyoxal) => ;
+R8: Schiff (Schiff) => CML (CML);
+R9: Schiff (Schiff) => Lysine (Lysine) + Schiff (Schiff);
+R10: Schiff (Schiff) => Glyoxal (Glyoxal) + Schiff (Schiff);
+R11: Schiff (Schiff) => ;

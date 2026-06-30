@@ -1,0 +1,14 @@
+R0: Ag (Ag) + Ifn_Prot (Ifn_Prot) => Tbet_mRNA (Tbet_mRNA) + Ag (Ag) + Ifn_Prot (Ifn_Prot);
+R1: Rec_Prot (Rec_Prot) => Tbet_mRNA (Tbet_mRNA) + Rec_Prot (Rec_Prot);
+R2:  => Tbet_mRNA (Tbet_mRNA);
+R3: Tbet_mRNA (Tbet_mRNA) => ;
+R4: Tbet_Prot (Tbet_Prot) => ;
+R5: Rec_mRNA (Rec_mRNA) => ;
+R6: Rec_Prot (Rec_Prot) => ;
+R7: Ifn_mRNA (Ifn_mRNA) => ;
+R8: Ifn_Prot (Ifn_Prot) => ;
+R9: Tbet_mRNA (Tbet_mRNA) => Tbet_Prot (Tbet_Prot) + Tbet_mRNA (Tbet_mRNA);
+R10: Ifn_mRNA (Ifn_mRNA) => Ifn_Prot (Ifn_Prot) + Ifn_mRNA (Ifn_mRNA);
+R11: Rec_mRNA (Rec_mRNA) => Rec_Prot (Rec_Prot) + Rec_mRNA (Rec_mRNA);
+R12: Tbet_Prot (Tbet_Prot) + Ag (Ag) => Rec_mRNA (Rec_mRNA) + Tbet_Prot (Tbet_Prot) + Ag (Ag);
+R13: Tbet_Prot (Tbet_Prot) + Rec_Prot (Rec_Prot) + Ag (Ag) => Ifn_mRNA (Ifn_mRNA) + Tbet_Prot (Tbet_Prot) + Rec_Prot (Rec_Prot) + Ag (Ag);

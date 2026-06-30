@@ -1,0 +1,7 @@
+R0:  => C (Cyclin);
+R1: C (Cyclin) => ;
+R2: C (Cyclin) + X (Cyclin Protease) => X (Cyclin Protease);
+R3:  => M (CDC-2 Kinase);
+R4: M (CDC-2 Kinase) => ;
+R5:  => X (Cyclin Protease);
+R6: X (Cyclin Protease) => ;

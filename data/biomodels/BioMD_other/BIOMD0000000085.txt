@@ -1,0 +1,17 @@
+R0: species_1 (G) + species_3 (T) => species_5 (G*T);
+R1: species_5 (G*T) => species_6 (GD) + species_7 (Pi);
+R2: species_6 (GD) => species_1 (G) + species_8 (D);
+R3: species_9 (RG) + species_3 (T) => species_10 (RG*T);
+R4: species_5 (G*T) + species_4 (R) => species_10 (RG*T);
+R5: species_5 (G*T) + species_0 (A) => species_11 (G*AT);
+R6: species_6 (GD) + species_0 (A) => species_12 (GAD);
+R7: species_6 (GD) + species_4 (R) => species_13 (RGD);
+R8: species_10 (RG*T) => species_13 (RGD) + species_7 (Pi);
+R9: species_13 (RGD) => species_9 (RG) + species_8 (D);
+R10: species_11 (G*AT) => species_12 (GAD) + species_7 (Pi);
+R11: species_12 (GAD) => species_2 (GA) + species_8 (D);
+R12: species_2 (GA) + species_4 (R) => species_14 (RGA);
+R13: species_14 (RGA) + species_3 (T) => species_15 (RG*AT);
+R14: species_10 (RG*T) + species_0 (A) => species_15 (RG*AT);
+R15: species_15 (RG*AT) => species_16 (RGAD) + species_7 (Pi);
+R16: species_16 (RGAD) => species_14 (RGA) + species_8 (D);

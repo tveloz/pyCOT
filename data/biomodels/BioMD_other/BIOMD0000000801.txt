@@ -1,0 +1,13 @@
+R0: B (B) => T (T) + B (B);
+R1: T (T) => ;
+R2: T (T) + I (I) => I (I);
+R3: B (B) => S (S);
+R4: B (B) + T (T) => T (T);
+R5: B (B) + I (I) => I (I);
+R6: B (B) => I (I) + B (B);
+R7: T (T) => I (I) + T (T);
+R8: I (I) => ;
+R9: I (I) + T (T) => T (T);
+R10:  => S (S);
+R11: S (S) => ;
+R12: S (S) => B (B);

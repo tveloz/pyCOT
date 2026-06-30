@@ -1,0 +1,4 @@
+R0: E (E) => R (R) + E (E);
+R1: R (R) + S (S) => S (S);
+R2: Ep (Ep) => E (E);
+R3: E (E) + R (R) => Ep (Ep) + R (R);

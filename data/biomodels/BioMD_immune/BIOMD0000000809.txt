@@ -1,0 +1,9 @@
+R0:  => x (Immune cell x);
+R1: y (Tumour cell y) => x (Immune cell x) + y (Tumour cell y);
+R2: x (Immune cell x) + y (Tumour cell y) => y (Tumour cell y);
+R3:  => y (Tumour cell y);
+R4: y (Tumour cell y) + x (Immune cell x) => x (Immune cell x);
+R5: x (Immune cell x) + y (Tumour cell y) => u (Chemokine concentration u) + x (Immune cell x) + y (Tumour cell y);
+R6: u (Chemokine concentration u) => ;
+R7: x (Immune cell x) + y (Tumour cell y) => ystar (Dead tumour cell ystar) + x (Immune cell x) + y (Tumour cell y);
+R8: ystar (Dead tumour cell ystar) => ;

@@ -1,0 +1,4 @@
+R0: Tumour_cells (Tumour_cells) => CAR_T_cells (CAR_T-cells) + Tumour_cells (Tumour_cells);
+R1: CAR_T_cells (CAR_T-cells) + Tumour_cells (Tumour_cells) => Tumour_cells (Tumour_cells);
+R2:  => Tumour_cells (Tumour_cells);
+R3: Tumour_cells (Tumour_cells) + CAR_T_cells (CAR_T-cells) => CAR_T_cells (CAR_T-cells);

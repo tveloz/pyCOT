@@ -1,0 +1,13 @@
+R0: 2FADD (FADD) => DISC (DISC) + FADD (FADD);
+R1: 2DISC (DISC) => FADD (FADD) + DISC (DISC);
+R2: 2p55free (p55free) + 2DISC (DISC) => DISCp55 (DISCp55) + p55free (p55free) + DISC (DISC);
+R3: 2DISCp55 (DISCp55) => p30 (p30) + DISCp55 (DISCp55);
+R4: 2p43 (p43) => p18 (p18) + DISC (DISC) + p43 (p43);
+R5: 3DISCp55 (DISCp55) + 2p30 (p30) => p43 (p43) + 2DISCp55 (DISCp55) + 2p30 (p30);
+R6: 2DISCp55 (DISCp55) + 2p43 (p43) => 3p43 (p43) + DISCp55 (DISCp55);
+R7: 3p30 (p30) + 2DISCp55 (DISCp55) => p18 (p18) + DISC (DISC) + 2DISCp55 (DISCp55) + 2p30 (p30);
+R8: 2p30 (p30) + 2p43 (p43) => p18 (p18) + DISC (DISC) + 2p43 (p43) + p30 (p30);
+R9: 2p18 (p18) => p18inactive (p18inactive) + p18 (p18);
+R10: 2Bid (Bid) + 2p43 (p43) + 2p18 (p18) => tBid (tBid) + 2p43 (p43) + 2p18 (p18) + Bid (Bid);
+R11: 2PrNES_mCherry (PrNES_mCherry) + 2p43 (p43) + 2p18 (p18) => PrNES (PrNES) + mCherry (mCherry) + 2p43 (p43) + 2p18 (p18) + PrNES_mCherry (PrNES_mCherry);
+R12: 2PrER_mGFP (PrER_mGFP) + 2p18 (p18) => PrER (PrER) + mGFP (mGFP) + 2p18 (p18) + PrER_mGFP (PrER_mGFP);

@@ -1,0 +1,17 @@
+R0:  => y1 (Per2 or Cry mRNA);
+R1: y1 (Per2 or Cry mRNA) => ;
+R2: y1 (Per2 or Cry mRNA) => y2 (PER2_CRY_complex_cytoplasm) + y1 (Per2 or Cry mRNA);
+R3: y2 (PER2_CRY_complex_cytoplasm) => ;
+R4: y2 (PER2_CRY_complex_cytoplasm) => y3 (PER2_CRY_complex_nucleus);
+R5: y3 (PER2_CRY_complex_nucleus) => y2 (PER2_CRY_complex_cytoplasm);
+R6: y3 (PER2_CRY_complex_nucleus) => ;
+R7:  => y4 (Bmal1 mRNA);
+R8: y4 (Bmal1 mRNA) => ;
+R9: y4 (Bmal1 mRNA) => y5 (BMAL1_cytoplasm) + y4 (Bmal1 mRNA);
+R10: y5 (BMAL1_cytoplasm) => ;
+R11: y5 (BMAL1_cytoplasm) => y6 (BMAL1_nucleus);
+R12: y6 (BMAL1_nucleus) => y5 (BMAL1_cytoplasm);
+R13: y6 (BMAL1_nucleus) => ;
+R14: y6 (BMAL1_nucleus) => y7 (Active BMAL1);
+R15: y7 (Active BMAL1) => y6 (BMAL1_nucleus);
+R16: y7 (Active BMAL1) => ;

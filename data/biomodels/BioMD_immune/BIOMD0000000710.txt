@@ -1,0 +1,16 @@
+R0:  => U_H (Healthy Epithelial cells (U_H));
+R1: U_H (Healthy Epithelial cells (U_H)) + V (Viral Load (V)) => U_E (Partially infected Epithelial cells (U_E)) + V (Viral Load (V));
+R2: U_H (Healthy Epithelial cells (U_H)) + IFN (Interferon (IFN)) => U_R (Resistant Epithelial cells (U_R)) + IFN (Interferon (IFN));
+R3: U_H (Healthy Epithelial cells (U_H)) => ;
+R4: U_E (Partially infected Epithelial cells (U_E)) => U_I (Infected Epithelial cells (U_I));
+R5: U_E (Partially infected Epithelial cells (U_E)) + K (Natural Killers (K)) => K (Natural Killers (K));
+R6: U_I (Infected Epithelial cells (U_I)) => ;
+R7: U_I (Infected Epithelial cells (U_I)) + K (Natural Killers (K)) => K (Natural Killers (K));
+R8: U_R (Resistant Epithelial cells (U_R)) => ;
+R9: U_I (Infected Epithelial cells (U_I)) => V (Viral Load (V)) + U_I (Infected Epithelial cells (U_I));
+R10: V (Viral Load (V)) => ;
+R11: U_I (Infected Epithelial cells (U_I)) => IFN (Interferon (IFN)) + U_I (Infected Epithelial cells (U_I));
+R12: IFN (Interferon (IFN)) => ;
+R13:  => K (Natural Killers (K));
+R14: U_I (Infected Epithelial cells (U_I)) => K (Natural Killers (K)) + U_I (Infected Epithelial cells (U_I));
+R15: K (Natural Killers (K)) => ;

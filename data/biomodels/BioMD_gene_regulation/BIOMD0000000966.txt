@@ -1,0 +1,6 @@
+R0: Py (Py) => Py1 (Py1);
+R1: Py1 (Py1) => Zn_2 (Zn^2) + Py (Py);
+R2: Dw (Dw) + Py1 (Py1) => Qw2 (Qw2);
+R3: Qw2 (Qw2) => Dw (Dw) + Py1 (Py1);
+R4: Dw (Dw) + Rw (Rw) => Qw1 (Qw1);
+R5: Qw1 (Qw1) => Dw (Dw) + Rw (Rw);

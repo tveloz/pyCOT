@@ -1,0 +1,3 @@
+R0: 2IPTG (IPTG) + 2x (x) + sigb (sigb) => 2sigb (sigb) + 2x (x) + IPTG (IPTG);
+R1: 2sigb (sigb) + lacz (lacz) => 2lacz (lacz) + sigb (sigb);
+R2: 2sigb (sigb) + x (x) => 2x (x) + sigb (sigb);

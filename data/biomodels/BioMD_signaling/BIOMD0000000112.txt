@@ -1,0 +1,8 @@
+R0: R_smad_cyt (R-Smad_cyt) + receptor (receptors) => R_smad_P_cyt (R-Smad-P_cyt) + receptor (receptors);
+R1: R_smad_nuc (R-Smad_nuc) => R_smad_cyt (R-Smad_cyt);
+R2: smad4_nuc (Smad4_nuc) => smad4_cyt (Smad4_cyt);
+R3: R_smad_P_cyt (R-Smad-P_cyt) + smad4_cyt (Smad4_cyt) => R_smad_P_smad4_cyt (R-Smad-P-Smad4_cyt);
+R4: R_smad_P_smad4_cyt (R-Smad-P-Smad4_cyt) => R_smad_P_smad4_nuc (R-Smad-P-Smad4_nuc);
+R5: R_smad_P_smad4_nuc (R-Smad-P-Smad4_nuc) => smad4_nuc (Smad4_nuc) + R_smad_P_nuc (R-Smad-P_nuc);
+R6: R_smad_P_nuc (R-Smad-P_nuc) => R_smad_nuc (R-Smad_nuc) + Pi (Pi);
+R7: receptor (receptors) => ;

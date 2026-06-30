@@ -63,7 +63,7 @@ def read_txt(file: str, exact_names: bool = False) -> ReactionNetwork:
     """
     rn = ReactionNetwork()
     reaction_comments = {}
-    with open(file, 'r') as f:
+    with open(file, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
             if line and not line.startswith('#'):

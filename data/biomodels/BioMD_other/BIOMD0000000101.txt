@@ -1,0 +1,13 @@
+R0: RII (Receptor 2) + RI (Receptor 1) => lRIRII (ligand receptor complex-plasma membrane);
+R1: lRIRII (ligand receptor complex-plasma membrane) => ;
+R2: lRIRII (ligand receptor complex-plasma membrane) => ;
+R3: lRIRII (ligand receptor complex-plasma membrane) => lRIRII_endo (ligand receptor complex-endosome);
+R4:  => RI (Receptor 1);
+R5: RI (Receptor 1) => ;
+R6: RI (Receptor 1) => RI_endo (Receptor 1-endosome);
+R7: RI_endo (Receptor 1-endosome) => RI (Receptor 1);
+R8: lRIRII_endo (ligand receptor complex-endosome) => RI (Receptor 1) + RII (Receptor 2);
+R9:  => RII (Receptor 2);
+R10: RII (Receptor 2) => ;
+R11: RII (Receptor 2) => RII_endo (Receptor 2 endosome);
+R12: RII_endo (Receptor 2 endosome) => RII (Receptor 2);

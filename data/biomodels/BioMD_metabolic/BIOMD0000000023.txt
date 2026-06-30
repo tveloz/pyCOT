@@ -1,0 +1,11 @@
+R0: Fruex (Fruex) => Fru (Fru);
+R1: Glcex (Glcex) => Glc (Glc);
+R2: ATP (ATP) + Glc (Glc) + Fru (Fru) => HexP (HexP) + ADP (ADP) + Fru (Fru);
+R3: Fru (Fru) + ATP (ATP) + Glc (Glc) => HexP (HexP) + ADP (ADP) + Glc (Glc);
+R4: Fru (Fru) + ATP (ATP) => HexP (HexP) + ADP (ADP);
+R5: 2HexP (HexP) + phos (phos) => UDP (UDP) + Suc6P (Suc6P) + phos (phos);
+R6: Suc6P (Suc6P) => Suc (Suc) + phos (phos);
+R7: HexP (HexP) + Fru (Fru) => Suc (Suc) + UDP (UDP);
+R8: Suc (Suc) => Fru (Fru) + Glc (Glc);
+R9: HexP (HexP) => glycolysis (glycolysis);
+R10: Suc (Suc) => Sucvac (Sucvac);

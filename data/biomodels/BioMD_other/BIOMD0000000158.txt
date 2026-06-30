@@ -1,0 +1,6 @@
+R0:  => x (p53);
+R1: x (p53) => ;
+R2: x (p53) + y (Mdm2) => y (Mdm2);
+R3: x (p53) => y0 (precursor Mdm2) + x (p53);
+R4: y0 (precursor Mdm2) => y (Mdm2);
+R5: y (Mdm2) => ;

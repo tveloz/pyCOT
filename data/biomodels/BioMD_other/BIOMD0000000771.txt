@@ -1,0 +1,6 @@
+R0: y_Tumor_Cell (y_Tumor_Cell) + x_Infected_Cell (x_Infected_Cell) => 2y_Tumor_Cell (y_Tumor_Cell) + x_Infected_Cell (x_Infected_Cell);
+R1: y_Tumor_Cell (y_Tumor_Cell) + v_Virus (v_Virus) => x_Infected_Cell (x_Infected_Cell);
+R2: y_Tumor_Cell (y_Tumor_Cell) + x_Infected_Cell (x_Infected_Cell) => x_Infected_Cell (x_Infected_Cell);
+R3: x_Infected_Cell (x_Infected_Cell) => ;
+R4: x_Infected_Cell (x_Infected_Cell) => v_Virus (v_Virus) + x_Infected_Cell (x_Infected_Cell);
+R5: v_Virus (v_Virus) => ;

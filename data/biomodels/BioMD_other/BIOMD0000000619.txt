@@ -1,0 +1,13 @@
+R0: CArt (CArt) => CGut (CGut);
+R1: AGutlumen (AGutlumen) => CGut (CGut);
+R2: CLung (CLung) => CArt (CArt);
+R3: CVen (CVen) => CLung (CLung);
+R4: CArt (CArt) => CRest (CRest);
+R5: CRest (CRest) => CVen (CVen);
+R6: CArt (CArt) => CLiver (CLiver);
+R7: CLiver (CLiver) => CMetabolized (CMetabolized);
+R8: CGut (CGut) => CLiver (CLiver);
+R9: CLiver (CLiver) => CVen (CVen);
+R10: CArt (CArt) => CKidney (CKidney);
+R11: CKidney (CKidney) => CTubules (CTubules);
+R12: CKidney (CKidney) => CVen (CVen);

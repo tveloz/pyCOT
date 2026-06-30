@@ -1,0 +1,11 @@
+R0: Fbna (Fbna) + Thb (Thb) => C1 (C1);
+R1: C1 (C1) => Fbna (Fbna) + Thb (Thb);
+R2: C1 (C1) + Fbna (Fbna) => C2 (C2);
+R3: C2 (C2) => C1 (C1) + Fbna (Fbna);
+R4: C0 (C0) => Thb (Thb) + Fbna (Fbna);
+R5: C1 (C1) => FM (FM) + Thb (Thb);
+R6: FM (FM) + Thb (Thb) => C1 (C1);
+R7: C2 (C2) => C1 (C1) + FM (FM);
+R8: FM (FM) + C1 (C1) => C2 (C2);
+R9: Thb (Thb) + Fbni (Fbni) => C0 (C0);
+R10: C0 (C0) => Thb (Thb) + Fbni (Fbni);

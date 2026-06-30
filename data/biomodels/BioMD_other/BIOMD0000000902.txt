@@ -1,0 +1,7 @@
+R0: x (x) + y (y) => 2x (x) + y (y);
+R1: x (x) + y (y) => I (I);
+R2: I (I) + x (x) + y (y) => 2y (y) + x (x);
+R3: y (y) => ;
+R4: y (y) + z (z) => z (z);
+R5: y (y) + z (z) => 2z (z) + y (y);
+R6: z (z) => ;

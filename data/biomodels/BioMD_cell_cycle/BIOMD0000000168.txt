@@ -1,0 +1,10 @@
+R0:  => D_1 (D);
+R1: 2D_1 (D) + E_1 (E) => D_1 (D) + E_1 (E);
+R2: E2F_1 (E2F) => E_1 (E) + E2F_1 (E2F);
+R3: 2E_1 (E) + X_1 (X) => E_1 (E) + X_1 (X);
+R4: RP_1 (RP) + X_1 (X) => R_1 (R) + RP_1 (RP) + X_1 (X);
+R5: 2R_1 (R) + RS_1 (RS) + E2F_1 (E2F) => 2RS_1 (RS) + R_1 (R) + E2F_1 (E2F);
+R6: 2RS_1 (RS) + D_1 (D) => RS_1 (RS) + D_1 (D);
+R7: 2RS_1 (RS) + E_1 (E) => RS_1 (RS) + E_1 (E);
+R8: E_1 (E) + E2F_1 (E2F) + X_1 (X) => 2X_1 (X) + E_1 (E) + E2F_1 (E2F);
+R9: 2X_1 (X) => X_1 (X);

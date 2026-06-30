@@ -1,0 +1,5 @@
+R0: H (H) + R (R) => HR (HR);
+R1: 2HR (HR) => HRRH (HRRH);
+R2: HRRH (HRRH) + GQ (GQ) => E (E);
+R3: IP3 (IP3) => ;
+R4: E (E) => IP3 (IP3) + E (E);

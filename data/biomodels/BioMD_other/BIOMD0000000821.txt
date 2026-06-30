@@ -1,0 +1,7 @@
+R0: tumor_volume_x_1 (tumor volume x_1) + endothelial_volume_x_2 (endothelial volume x_2) => endothelial_volume_x_2 (endothelial volume x_2);
+R1: endothelial_volume_x_2 (endothelial volume x_2) => ;
+R2: tumor_volume_x_1 (tumor volume x_1) => endothelial_volume_x_2 (endothelial volume x_2) + tumor_volume_x_1 (tumor volume x_1);
+R3: endothelial_volume_x_2 (endothelial volume x_2) + tumor_volume_x_1 (tumor volume x_1) => tumor_volume_x_1 (tumor volume x_1);
+R4: endothelial_volume_x_2 (endothelial volume x_2) + concentration_of_administrated_inhibitor_x_3 (concentration of administrated inhibitor x_3) => concentration_of_administrated_inhibitor_x_3 (concentration of administrated inhibitor x_3);
+R5: concentration_of_administrated_inhibitor_x_3 (concentration of administrated inhibitor x_3) => ;
+R6:  => concentration_of_administrated_inhibitor_x_3 (concentration of administrated inhibitor x_3);

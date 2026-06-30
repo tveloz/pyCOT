@@ -1,0 +1,11 @@
+R0: h1 (Receptor fraction Cell1) => c1 (Calcium ion Cell1) + h1 (Receptor fraction Cell1);
+R1: c1 (Calcium ion Cell1) => ;
+R2:  => c1 (Calcium ion Cell1);
+R3:  => h1 (Receptor fraction Cell1);
+R4: h1 (Receptor fraction Cell1) => ;
+R5: h2 (Receptor fraction Cell2) => c2 (Calcium ion Cell2) + h2 (Receptor fraction Cell2);
+R6: c2 (Calcium ion Cell2) => ;
+R7:  => c2 (Calcium ion Cell2);
+R8:  => h2 (Receptor fraction Cell2);
+R9: h2 (Receptor fraction Cell2) => ;
+R10: c2 (Calcium ion Cell2) => c1 (Calcium ion Cell1);

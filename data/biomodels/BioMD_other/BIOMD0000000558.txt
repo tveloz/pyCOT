@@ -1,0 +1,4 @@
+R0: 2alpha_syn (alpha-syn) => ROS (ROS) + 2alpha_syn (alpha-syn);
+R1: 2ROS (ROS) => ROS (ROS);
+R2: 2ROS (ROS) => alpha_syn (alpha-syn) + 2ROS (ROS);
+R3: 2alpha_syn (alpha-syn) => alpha_syn (alpha-syn);

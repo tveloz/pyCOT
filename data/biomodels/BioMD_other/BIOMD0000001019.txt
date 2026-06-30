@@ -1,0 +1,8 @@
+R0: Cm (Cm) + T (T) => Ct (Ct) + T (T);
+R1: Ct (Ct) => 2Ct (Ct);
+R2: Ct (Ct) => ;
+R3: Ct (Ct) + T (T) => T (T);
+R4: Ct (Ct) => Cm (Cm) + Ct (Ct);
+R5: Cm (Cm) => ;
+R6:  => T (T);
+R7: T (T) + Ct (Ct) => Ct (Ct);

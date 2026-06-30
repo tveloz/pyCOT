@@ -1,0 +1,16 @@
+R0: s32 (Complex_br_(Su(H)/CoR)) => s75 (E(spl)-C genes);
+R1: s35 (Complex_br_(Mastermind/Su(H)/_br_CoA/NI_sub_c_sub_s)) => s75 (E(spl)-C genes);
+R2: s15 (NI_sub_c_sub_t) + s82 (gama secretase) => s19 (N_sub_tm) + s63 (NI_sub_c_sub_s) + s82 (gama secretase);
+R3: s7 (Delta) + s23 (Neuralized) => s22 (a7_degraded) + s23 (Neuralized);
+R4: s63 (NI_sub_c_sub_s) + s25 (Numb) => s24 (NI_sub_c_sub_s) + s25 (Numb);
+R5: s32 (Complex_br_(Su(H)/CoR)) + s24 (NI_sub_c_sub_s) => s26 (Su(H)) + s28 (CoR) + s24 (NI_sub_c_sub_s);
+R6: s24 (NI_sub_c_sub_s) + s26 (Su(H)) + s27 (Mastermind) + s29 (CoA) => s35 (Complex_br_(Mastermind/Su(H)/_br_CoA/NI_sub_c_sub_s));
+R7: s24 (NI_sub_c_sub_s) + s39 (Ub) + s38 (Sel 10) => s37 (NI_sub_c_sub_s) + s38 (Sel 10);
+R8: s37 (NI_sub_c_sub_s) => s40 (a46_degraded);
+R9: s1 (Notch) + s4 (fucose) + s42 (Neurotic) => s41 (Notch) + s42 (Neurotic);
+R10: s41 (Notch) + s48 (Serrate) + s2 (Fringe) => s53 (Complex_br_(Serrate/Notch)) + s2 (Fringe);
+R11: s53 (Complex_br_(Serrate/Notch)) + s21 (TACE) => s60 (Complex_br_(Serrate/N_sub_ext)) + s15 (NI_sub_c_sub_t) + s21 (TACE);
+R12: s25 (Numb) + s65 (LNXp80) => s64 (a25_degraded) + s65 (LNXp80);
+R13: s7 (Delta) + s41 (Notch) + s2 (Fringe) => s67 (Complex_br_(Notch/Delta)) + s2 (Fringe);
+R14: s67 (Complex_br_(Notch/Delta)) + s21 (TACE) => s18 (Complex_br_(Delta/N_sub_ext)) + s15 (NI_sub_c_sub_t) + s21 (TACE);
+R15: s76 (s76) + s77 (s77) + s81 (dapt) => s82 (gama secretase) + s81 (dapt);

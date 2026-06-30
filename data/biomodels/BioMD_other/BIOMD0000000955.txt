@@ -1,0 +1,13 @@
+R0: Susceptible (Susceptible) + Diagnosed (Diagnosed) + Ailing (Ailing) + Recognized (Recognized) => Infected (Infected) + Diagnosed (Diagnosed) + Ailing (Ailing) + Recognized (Recognized);
+R1: Infected (Infected) => Diagnosed (Diagnosed);
+R2: Infected (Infected) => Ailing (Ailing);
+R3: Infected (Infected) => Healed (Healed);
+R4: Diagnosed (Diagnosed) => Recognized (Recognized);
+R5: Diagnosed (Diagnosed) => Healed (Healed);
+R6: Ailing (Ailing) => Recognized (Recognized);
+R7: Ailing (Ailing) => Healed (Healed);
+R8: Ailing (Ailing) => Threatened (Threatened);
+R9: Recognized (Recognized) => Threatened (Threatened);
+R10: Recognized (Recognized) => Healed (Healed);
+R11: Threatened (Threatened) => Extinct (Extinct);
+R12: Threatened (Threatened) => Healed (Healed);

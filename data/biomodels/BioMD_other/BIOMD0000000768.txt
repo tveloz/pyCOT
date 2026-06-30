@@ -1,0 +1,13 @@
+R0: C (C) + T (T) + Cp (Cp) => Th (Th) + C (C) + T (T) + Cp (Cp);
+R1: Cp (Cp) => Th (Th) + Cp (Cp);
+R2: Th (Th) => ;
+R3: Th (Th) + T (T) => T (T);
+R4: Cp (Cp) + Cs (Cs) => T (T) + Cp (Cp) + Cs (Cs);
+R5: T (T) + Cs (Cs) => Cs (Cs);
+R6: C (C) => ;
+R7: Th (Th) + T (T) + Cp (Cp) => C (C) + Th (Th) + T (T) + Cp (Cp);
+R8: Cs (Cs) => ;
+R9: Th (Th) + T (T) + Cp (Cp) => Cs (Cs) + Th (Th) + T (T) + Cp (Cp);
+R10: Cp (Cp) => ;
+R11: Th (Th) + T (T) => Cp (Cp) + Th (Th) + T (T);
+R12: T (T) => Cp (Cp) + T (T);

@@ -1,0 +1,8 @@
+R0: IL7Ra (IL7Ra) + gamma_c (gamma_c) => IL7Ru (IL7Ru);
+R1: IL7Ru (IL7Ru) => IL7Ra (IL7Ra) + gamma_c (gamma_c);
+R2: IL15Rbeta (IL15Rbeta) + gamma_c (gamma_c) => IL15Ru (IL15Ru);
+R3: IL15Ru (IL15Ru) => IL15Rbeta (IL15Rbeta) + gamma_c (gamma_c);
+R4: IL7 (IL7) + IL7Ru (IL7Ru) => IL7Rb (IL7Rb);
+R5: IL7Rb (IL7Rb) => IL7 (IL7) + IL7Ru (IL7Ru);
+R6: IL15 (IL15) + IL15Ru (IL15Ru) => IL15Rb (IL15Rb);
+R7: IL15Rb (IL15Rb) => IL15 (IL15) + IL15Ru (IL15Ru);

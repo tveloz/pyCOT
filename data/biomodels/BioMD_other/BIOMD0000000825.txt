@@ -1,0 +1,4 @@
+R0: Sensitive_tumor_S (Sensitive tumor S) => Resistant_tumor_R (Resistant tumor R);
+R1: Resistant_tumor_R (Resistant tumor R) => Sensitive_tumor_S (Sensitive tumor S) + Resistant_tumor_R (Resistant tumor R);
+R2: Sensitive_tumor_S (Sensitive tumor S) => Resistant_tumor_R (Resistant tumor R) + Sensitive_tumor_S (Sensitive tumor S);
+R3: Sensitive_tumor_S (Sensitive tumor S) => ;

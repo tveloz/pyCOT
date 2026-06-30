@@ -1,0 +1,11 @@
+R0: Glu (Glu) => Fru (Fru);
+R1: Fru (Fru) => Glu (Glu);
+R2: Glu (Glu) => C5 (C5) + Formic_acid (Formic_acid);
+R3: Fru (Fru) => C5 (C5) + Formic_acid (Formic_acid);
+R4: Fru (Fru) => 2Triose (Triose);
+R5: Triose (Triose) => Cn (Cn) + Acetic_acid (Acetic_acid);
+R6: lys_R (lys_R) + Glu (Glu) => Amadori (Amadori);
+R7: Amadori (Amadori) => Acetic_acid (Acetic_acid) + lys_R (lys_R);
+R8: Amadori (Amadori) => AMP (AMP);
+R9: lys_R (lys_R) + Fru (Fru) => AMP (AMP);
+R10: AMP (AMP) => Melanoidin (Melanoidin);

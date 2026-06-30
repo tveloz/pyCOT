@@ -1,0 +1,17 @@
+R0: B (Basal) => BL (BasalACh);
+R1: BL (BasalACh) => BLL (BasalACh2);
+R2: BLL (BasalACh2) => ALL (ActiveACh2);
+R3: A (Active) => AL (ActiveACh);
+R4: AL (ActiveACh) => ALL (ActiveACh2);
+R5: B (Basal) => A (Active);
+R6: BL (BasalACh) => AL (ActiveACh);
+R7: I (Intermediate) => IL (IntermediateACh);
+R8: IL (IntermediateACh) => ILL (IntermediateACh2);
+R9: A (Active) => I (Intermediate);
+R10: AL (ActiveACh) => IL (IntermediateACh);
+R11: ALL (ActiveACh2) => ILL (IntermediateACh2);
+R12: D (Desensitised) => DL (DesensitisedACh);
+R13: DL (DesensitisedACh) => DLL (DesensitisedACh2);
+R14: I (Intermediate) => D (Desensitised);
+R15: IL (IntermediateACh) => DL (DesensitisedACh);
+R16: ILL (IntermediateACh2) => DLL (DesensitisedACh2);

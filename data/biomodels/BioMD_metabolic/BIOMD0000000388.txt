@@ -1,0 +1,7 @@
+R0: RuBP (RuBP) => 2PGA (PGA);
+R1: PGA (PGA) + ATP (ATP) => ADP (ADP) + DPGA (DPGA);
+R2: DPGA (DPGA) => GAP (GAP) + Pi (Pi);
+R3: GAP (GAP) => Ru5P (Ru5P);
+R4: Ru5P (Ru5P) + ATP (ATP) => RuBP (RuBP) + ADP (ADP);
+R5: PGA (PGA) => ;
+R6: GAP (GAP) => ;

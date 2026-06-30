@@ -1,0 +1,8 @@
+R0:  => S_HSC (S_HSC);
+R1: S_HSC (S_HSC) => 2A_PC (A_PC);
+R2:  => A_PC (A_PC);
+R3: A_PC (A_PC) => 2D_TDSC (D_TDSC);
+R4: D_TDSC (D_TDSC) => ;
+R5:  => L_LSC (L_LSC);
+R6: L_LSC (L_LSC) => 2T_TDLC (T_TDLC);
+R7: T_TDLC (T_TDLC) => ;

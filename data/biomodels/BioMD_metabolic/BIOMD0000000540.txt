@@ -1,0 +1,11 @@
+R0: 2s22 (F6P_proxy) + s1 (PFKL) + 2s5 (PEP) + 2s6 (Isocitrate) + 2s7 (2-oxoglutarate) + 2s8 (Malate) + 2s9 (F2,6BP) + 2s10 (Citrate) + 2s13 (pPFKL) => s4 (F1,6BP) + s1 (PFKL) + 2s5 (PEP) + 2s6 (Isocitrate) + 2s7 (2-oxoglutarate) + 2s8 (Malate) + 2s9 (F2,6BP) + 2s10 (Citrate) + 2s13 (pPFKL) + s22 (F6P_proxy);
+R1: 2s4 (F1,6BP) + s2 (FBPase) + 2s9 (F2,6BP) + 2s10 (Citrate) => s22 (F6P_proxy) + s2 (FBPase) + 2s9 (F2,6BP) + 2s10 (Citrate) + s4 (F1,6BP);
+R2: 2s4 (F1,6BP) + s12 (ALDO) => s11 (sa4_degraded) + s12 (ALDO) + s4 (F1,6BP);
+R3: s8 (Malate) => s14 (sa8_degraded);
+R4: s7 (2-oxoglutarate) => s15 (sa7_degraded);
+R5: s5 (PEP) => s16 (sa5_degraded);
+R6: s6 (Isocitrate) => s17 (sa6_degraded);
+R7: s9 (F2,6BP) => s18 (sa9_degraded);
+R8: s10 (Citrate) => s19 (sa10_degraded);
+R9: s13 (pPFKL) => s20 (sa13_degraded);
+R10: s3 (F6P) => s21 (sa3_degraded);

@@ -1,0 +1,9 @@
+R0:  => x1 (x1);
+R1:  => x2 (x2);
+R2: ppERKc (ppERK(cytosol)) + DUSP (DUSP) => ppERKn (ppERK(nucleus)) + ppERKc (ppERK(cytosol)) + DUSP (DUSP);
+R3: ppERKn (ppERK(nucleus)) => DUSP (DUSP) + ppERKn (ppERK(nucleus));
+R4: ppERKn (ppERK(nucleus)) => pRSKn (pRSKn) + ppERKn (ppERK(nucleus));
+R5: ppERKn (ppERK(nucleus)) + pRSKn (pRSKn) => cFOSp (cFOS preRNA) + ppERKn (ppERK(nucleus)) + pRSKn (pRSKn);
+R6: cFOSp (cFOS preRNA) => cFOSm (cFOSmRNA) + cFOSp (cFOS preRNA);
+R7: cFOSm (cFOSmRNA) + ppERKc (ppERK(cytosol)) + pcFOS (pc-FOS) => cFOS (cFOS) + cFOSm (cFOSmRNA) + ppERKc (ppERK(cytosol)) + pcFOS (pc-FOS);
+R8: cFOS (cFOS) + ppERKc (ppERK(cytosol)) => pcFOS (pc-FOS) + cFOS (cFOS) + ppERKc (ppERK(cytosol));

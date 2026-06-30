@@ -1,0 +1,15 @@
+R0: y2 (pRB) => y1 (E2F) + y2 (pRB);
+R1: y1 (E2F) => ;
+R2: y1 (E2F) => y2 (pRB) + y1 (E2F);
+R3: y2 (pRB) + y5 (active cycE_cdk2) => y3 (Phosphorylated pRB) + y5 (active cycE_cdk2);
+R4: y2 (pRB) => ;
+R5: y3 (Phosphorylated pRB) => ;
+R6: y1 (E2F) => y4 (inactive cycE_cdk2) + y1 (E2F);
+R7: y6 (AP-1) => y4 (inactive cycE_cdk2) + y6 (AP-1);
+R8: y4 (inactive cycE_cdk2) => y5 (active cycE_cdk2);
+R9: y5 (active cycE_cdk2) => y4 (inactive cycE_cdk2);
+R10: y4 (inactive cycE_cdk2) => ;
+R11: y5 (active cycE_cdk2) => ;
+R12: y1 (E2F) => y6 (AP-1) + y1 (E2F);
+R13:  => y6 (AP-1);
+R14: y6 (AP-1) => ;

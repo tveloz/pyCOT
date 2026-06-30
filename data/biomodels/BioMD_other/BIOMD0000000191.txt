@@ -1,0 +1,5 @@
+R0: ARGin (Arginine in) + ORN (Ornithine) => 2ORN (Ornithine);
+R1: ARGex (Arginine ex) + ORN (Ornithine) => ARGin (Arginine in) + ORN (Ornithine);
+R2: ORN (Ornithine) + ARGex (Arginine ex) + ARGin (Arginine in) => ARGex (Arginine ex) + ARGin (Arginine in);
+R3: ARGin (Arginine in) => ;
+R4: ORN (Ornithine) => ;

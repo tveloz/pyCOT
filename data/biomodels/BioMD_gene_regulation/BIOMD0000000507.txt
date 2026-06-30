@@ -1,0 +1,4 @@
+R0: 2species_2 (V) => species_1 (U) + 2species_2 (V);
+R1: 2species_1 (U) => species_1 (U);
+R2:  => species_2 (V);
+R3: 2species_2 (V) => species_2 (V);

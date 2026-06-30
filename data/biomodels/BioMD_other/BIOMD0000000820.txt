@@ -1,0 +1,7 @@
+R0:  => tumor_at_Exp_Lin_growth (tumor at Exp-Lin growth);
+R1:  => tumor_at_Gen__logistic_growth (tumor at Gen. logistic growth);
+R2:  => tumor_at_Gomp__growth (tumor at Gomp. growth);
+R3:  => tumor_at_Power_growth (tumor at Power growth);
+R4:  => tumor_at_Von_Bert__growth (tumor at Von Bert. growth);
+R5:  => tumor_at_Exp_growth (tumor at Exp growth);
+R6:  => tumor_at_Logistic_growth (tumor at Logistic growth);

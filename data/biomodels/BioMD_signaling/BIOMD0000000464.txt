@@ -1,0 +1,10 @@
+R0: 3s4 (Ca_B) + 2s3 (Ca_c) => 3s3 (Ca_c) + 2s4 (Ca_B);
+R1: s5 (s5) + 3s1 (Ca_ex) + 2s2 (Ca_s) => 3s2 (Ca_s) + 3s1 (Ca_ex);
+R2: s7 (s7) + 3s3 (Ca_c) + 3s12 (TimeT) + s119 (Shear Stress) => s6 (IP3) + 3s3 (Ca_c) + 3s12 (TimeT) + s119 (Shear Stress);
+R3: 3s6 (IP3) => s8 (s8) + 2s6 (IP3);
+R4: 3s2 (Ca_s) + 3s6 (IP3) + 2s3 (Ca_c) => 3s3 (Ca_c) + 3s6 (IP3) + 2s2 (Ca_s);
+R5: 3s3 (Ca_c) => s9 (s9) + 2s3 (Ca_c);
+R6: 3s3 (Ca_c) => s10 (s10) + 2s3 (Ca_c);
+R7: s11 (s11) => s3 (Ca_c);
+R8: s13 (s13) => s12 (TimeT);
+R9: 3s3 (Ca_c) => s9 (s9) + 2s3 (Ca_c);

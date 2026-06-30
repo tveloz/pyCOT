@@ -1,0 +1,17 @@
+R0: CaI (CaI) => IP3 (IP3) + CaI (CaI);
+R1: CaI (CaI) + mw0ebc76ad_49d7_4845_8f88_04d443fbe7f3 (SERCA) => CaS (CaS) + mw0ebc76ad_49d7_4845_8f88_04d443fbe7f3 (SERCA);
+R2: CaS (CaS) + g (g) + IP3 (IP3) => CaI (CaI) + g (g) + IP3 (IP3);
+R3: IP3 (IP3) => ;
+R4: CaI (CaI) => g (g) + CaI (CaI);
+R5: g (g) => ;
+R6: mw7cb2644a_384a_4bbb_93fd_fd686e01d7cb (STIM) + CaS (CaS) => CaI (CaI) + mw7cb2644a_384a_4bbb_93fd_fd686e01d7cb (STIM) + CaS (CaS);
+R7: CaI (CaI) + mwaf195932_a72c_4552_8cf2_b349b15d39c4 (PMCA) => mwaf195932_a72c_4552_8cf2_b349b15d39c4 (PMCA);
+R8: CaI (CaI) => mwaf195932_a72c_4552_8cf2_b349b15d39c4 (PMCA) + CaI (CaI);
+R9: mwaf195932_a72c_4552_8cf2_b349b15d39c4 (PMCA) => ;
+R10: CaS (CaS) => mw0ebc76ad_49d7_4845_8f88_04d443fbe7f3 (SERCA) + CaS (CaS);
+R11: CaS (CaS) + CaI (CaI) => mw7cb2644a_384a_4bbb_93fd_fd686e01d7cb (STIM) + CaS (CaS) + CaI (CaI);
+R12: mw7cb2644a_384a_4bbb_93fd_fd686e01d7cb (STIM) => ;
+R13: mw0ebc76ad_49d7_4845_8f88_04d443fbe7f3 (SERCA) => ;
+R14: CaI (CaI) => mw013a7c64_a9ec_483c_b3b8_ed658337ee95 (CaM);
+R15: CaS (CaS) + g (g) + IP3 (IP3) + CaI (CaI) => mw013a7c64_a9ec_483c_b3b8_ed658337ee95 (CaM) + g (g) + IP3 (IP3) + CaI (CaI);
+R16: mw013a7c64_a9ec_483c_b3b8_ed658337ee95 (CaM) => CaI (CaI);

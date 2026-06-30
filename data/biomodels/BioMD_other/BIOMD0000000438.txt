@@ -1,0 +1,7 @@
+R0: 2s19 (LasR) => s3 (sa3_degraded) + s19 (LasR);
+R1: 2s2 (mRNA(LasR)) => s19 (LasR) + s2 (mRNA(LasR));
+R2: 2s19 (LasR) + 2s4 (3OC12HSL) + s42 (LasR/AHL) => 2s42 (LasR/AHL) + s19 (LasR) + s4 (3OC12HSL);
+R3: 2s42 (LasR/AHL) + 2s16 (pLuxR) + s17 (A pLux) => 2s17 (A pLux) + s16 (pLuxR) + s42 (LasR/AHL);
+R4: 2s4 (3OC12HSL) => s5 (sa6_degraded) + s4 (3OC12HSL);
+R5: 2s1 (Ptet-LasR) + s2 (mRNA(LasR)) => 2s2 (mRNA(LasR)) + s1 (Ptet-LasR);
+R6: 2s17 (A pLux) + s45 (GFP) => 2s45 (GFP) + s17 (A pLux);

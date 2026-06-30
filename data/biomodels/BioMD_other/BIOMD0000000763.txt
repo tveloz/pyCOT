@@ -1,0 +1,9 @@
+R0: N_Tumour (N_Tumour) => 2N_Tumour (N_Tumour);
+R1: N_Tumour (N_Tumour) + T_C (T_C) => T_C (T_C);
+R2:  => T_H (T_H);
+R3:  => T_C (T_C);
+R4: T_C (T_C) + T_H (T_H) => 2T_C (T_C) + T_H (T_H);
+R5: T_H (T_H) + N_Tumour (N_Tumour) => 2T_H (T_H) + N_Tumour (N_Tumour);
+R6: T_C (T_C) => ;
+R7: T_C (T_C) + N_Tumour (N_Tumour) => N_Tumour (N_Tumour);
+R8: T_H (T_H) => ;

@@ -1,0 +1,7 @@
+R0: Tm (Tm) => Ti (Ti) + Tm (Tm);
+R1: Ti (Ti) + I (I) => I (I);
+R2: Ti (Ti) => Tm (Tm) + Ti (Ti);
+R3: Tm (Tm) + I (I) + u (u) => I (I) + u (u);
+R4: Ti (Ti) + Tm (Tm) => I (I) + Ti (Ti) + Tm (Tm);
+R5: I (I) + Tm (Tm) + u (u) + Ti (Ti) => Tm (Tm) + u (u) + Ti (Ti);
+R6: u (u) => ;

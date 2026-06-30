@@ -1,0 +1,6 @@
+R0:  => Susceptible (Susceptible);
+R1: Susceptible (Susceptible) + Removal (Removal) => Zombie (Zombie) + Susceptible (Susceptible) + Removal (Removal);
+R2: Susceptible (Susceptible) + Zombie (Zombie) => Zombie (Zombie);
+R3: Susceptible (Susceptible) + Zombie (Zombie) => Removal (Removal) + Susceptible (Susceptible) + Zombie (Zombie);
+R4: Removal (Removal) + Susceptible (Susceptible) + Zombie (Zombie) => Susceptible (Susceptible) + Zombie (Zombie);
+R5: Zombie (Zombie) + Susceptible (Susceptible) => Susceptible (Susceptible);

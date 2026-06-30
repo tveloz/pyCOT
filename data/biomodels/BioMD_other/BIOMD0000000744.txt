@@ -1,0 +1,14 @@
+R0:  => x (x);
+R1: y (y) => x (x) + y (y);
+R2: x (x) + z (z) + w (w) => z (z) + w (w);
+R3:  => y (y);
+R4: w (w) => y (y) + w (w);
+R5: y (y) => ;
+R6: v (v) + w (w) => z (z) + v (v) + w (w);
+R7:  => z (z);
+R8: z (z) => ;
+R9: x (x) + z (z) => w (w) + x (x) + z (z);
+R10: w (w) => ;
+R11: x (x) + y (y) + v (v) => w (w) + x (x) + y (y) + v (v);
+R12: x (x) + z (z) => v (v) + x (x) + z (z);
+R13: v (v) => ;

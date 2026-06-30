@@ -1,0 +1,15 @@
+R0: Macrophages (Macrophages) => Active_TGF_beta (Active TGF-beta) + Macrophages (Macrophages);
+R1: Active_TGF_beta (Active TGF-beta) => ;
+R2:  => Macrophages (Macrophages);
+R3: Active_TGF_beta (Active TGF-beta) => Macrophages (Macrophages) + Active_TGF_beta (Active TGF-beta);
+R4:  => Macrophages (Macrophages);
+R5: Macrophages (Macrophages) => ;
+R6: Macrophages (Macrophages) + Capillaries (Capillaries) => Capillaries (Capillaries);
+R7:  => VEGF (VEGF);
+R8: Macrophages (Macrophages) => VEGF (VEGF) + Macrophages (Macrophages);
+R9: VEGF (VEGF) => ;
+R10: VEGF (VEGF) + LECs (LECs) => LECs (LECs);
+R11: VEGF (VEGF) + Active_TGF_beta (Active TGF-beta) => LECs (LECs) + VEGF (VEGF) + Active_TGF_beta (Active TGF-beta);
+R12: VEGF (VEGF) => LECs (LECs) + VEGF (VEGF);
+R13: LECs (LECs) + Macrophages (Macrophages) + Capillaries (Capillaries) => Macrophages (Macrophages) + Capillaries (Capillaries);
+R14: LECs (LECs) + VEGF (VEGF) => Capillaries (Capillaries) + VEGF (VEGF);

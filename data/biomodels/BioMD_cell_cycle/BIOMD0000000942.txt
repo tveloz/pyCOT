@@ -1,0 +1,15 @@
+R0: Cdc25_phosphorylated (Cdc25_phosphorylated) + ppase (ppase) => ppase (ppase);
+R1: Cyclin_Cdk1_MPF (Cyclin_Cdk1_MPF) + Cdc25_total (Cdc25_total) => Cdc25_phosphorylated (Cdc25_phosphorylated) + Cyclin_Cdk1_MPF (Cyclin_Cdk1_MPF) + Cdc25_total (Cdc25_total);
+R2: Cyclin_Cdk1_preMPF (Cyclin_Cdk1_preMPF) + Cdc25_phosphorylated (Cdc25_phosphorylated) => Cyclin_Cdk1_MPF (Cyclin_Cdk1_MPF) + Cdc25_phosphorylated (Cdc25_phosphorylated);
+R3: Cyclin_Cdk1_MPF (Cyclin_Cdk1_MPF) + Wee1 (Wee1) => Cyclin_Cdk1_preMPF (Cyclin_Cdk1_preMPF) + Wee1 (Wee1);
+R4: Wee1_phosphorylated (Wee1_phosphorylated) + ppase (ppase) => ppase (ppase);
+R5: Cyclin_Cdk1_MPF (Cyclin_Cdk1_MPF) + Wee1_total (Wee1_total) => Wee1_phosphorylated (Wee1_phosphorylated) + Cyclin_Cdk1_MPF (Cyclin_Cdk1_MPF) + Wee1_total (Wee1_total);
+R6: Cyclin (Cyclin) + Cdk1 (Cdk1) => Cyclin_Cdk1_MPF (Cyclin_Cdk1_MPF) + Cdk1 (Cdk1);
+R7:  => Cyclin (Cyclin);
+R8: IE_phosphorylated (IE_phosphorylated) + ppase (ppase) => ppase (ppase);
+R9: Cyclin_Cdk1_MPF (Cyclin_Cdk1_MPF) + IE_total (IE_total) => IE_phosphorylated (IE_phosphorylated) + Cyclin_Cdk1_MPF (Cyclin_Cdk1_MPF) + IE_total (IE_total);
+R10: APC_active (APC_active) + ppase (ppase) => ppase (ppase);
+R11: IE_phosphorylated (IE_phosphorylated) + APC_total (APC_total) => APC_active (APC_active) + IE_phosphorylated (IE_phosphorylated) + APC_total (APC_total);
+R12: Cyclin_Cdk1_MPF (Cyclin_Cdk1_MPF) => ;
+R13: Cyclin (Cyclin) => ;
+R14: Cyclin_Cdk1_preMPF (Cyclin_Cdk1_preMPF) => ;

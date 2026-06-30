@@ -1,0 +1,10 @@
+R0: species_0 (X1p) => species_1 (X2p);
+R1:  => species_0 (X1p);
+R2: species_1 (X2p) => species_2 (X3p);
+R3:  => species_3 (Y1p);
+R4: species_3 (Y1p) => species_4 (Y2p);
+R5: species_4 (Y2p) => species_5 (Y3p);
+R6: species_0 (X1p) => species_4 (Y2p);
+R7: species_3 (Y1p) => species_1 (X2p);
+R8: species_2 (X3p) + species_5 (Y3p) => species_5 (Y3p);
+R9: species_5 (Y3p) + species_2 (X3p) => species_2 (X3p);

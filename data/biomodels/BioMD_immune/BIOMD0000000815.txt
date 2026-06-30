@@ -1,0 +1,6 @@
+R0:  => x_Cancer (x_Cancer);
+R1: x_Cancer (x_Cancer) + y_Immune_System (y_Immune_System) => y_Immune_System (y_Immune_System);
+R2: x_Cancer (x_Cancer) => ;
+R3:  => y_Immune_System (y_Immune_System);
+R4: y_Immune_System (y_Immune_System) + x_Cancer (x_Cancer) => x_Cancer (x_Cancer);
+R5: y_Immune_System (y_Immune_System) => ;

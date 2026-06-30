@@ -1,0 +1,7 @@
+R0: EC (EC) => Z (Z);
+R1: Z (Z) => Y (Y);
+R2: Y (Y) + Rho (Rho) => Z (Z) + Rho (Rho);
+R3: Y (Y) => Z (Z);
+R4: Z (Z) => EC (EC);
+R5: Rho (Rho) + Z (Z) => Fraction_Inactive_Channels (Fraction_Inactive_Channels) + Z (Z);
+R6: Fraction_Inactive_Channels (Fraction_Inactive_Channels) => Rho (Rho);

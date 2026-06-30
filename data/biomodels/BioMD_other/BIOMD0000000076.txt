@@ -1,0 +1,2 @@
+R0: DHAP (DHAP) => G3P (Glycerol 3-phosphate);
+R1: G3P (Glycerol 3-phosphate) => Gly (Glycerol);

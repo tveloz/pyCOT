@@ -1,0 +1,5 @@
+R0: R (Receptor) => O (Open State);
+R1: R (Receptor) => I1 (Inactivated State 1);
+R2: O (Open State) => S (Shut State);
+R3: O (Open State) => A (Activated State);
+R4: A (Activated State) => I2 (Inactivated State 2);

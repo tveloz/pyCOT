@@ -1,0 +1,13 @@
+R0:  => Cytosolic_Rapamycin (Cytosolic Rapamycin);
+R1: Cytosolic_Rapamycin (Cytosolic Rapamycin) => ;
+R2:  => mTOR (mTOR);
+R3: mTOR (mTOR) => ;
+R4:  => Raptor (Raptor);
+R5: Raptor (Raptor) => ;
+R6:  => Rictor (Rictor);
+R7: Rictor (Rictor) => ;
+R8: mTOR (mTOR) + Raptor (Raptor) => mTORC1 (mTORC1);
+R9: mTOR (mTOR) + Rictor (Rictor) => mTORC2 (mTORC2);
+R10: mTOR (mTOR) + Cytosolic_Rapamycin (Cytosolic Rapamycin) => mTOR_Rapamycin (mTOR_Rapamycin);
+R11: mTORC1 (mTORC1) + Cytosolic_Rapamycin (Cytosolic Rapamycin) => mTORC1_Rapamycin (mTORC1_Rapamycin);
+R12: mTORC1_Rapamycin (mTORC1_Rapamycin) => mTOR_Rapamycin (mTOR_Rapamycin) + Raptor (Raptor);

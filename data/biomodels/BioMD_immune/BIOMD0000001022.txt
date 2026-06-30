@@ -1,0 +1,6 @@
+R0:  => T (Tumor_cells);
+R1: T (Tumor_cells) + I (Intratumoral_T_cells) => I (Intratumoral_T_cells);
+R2: S (Specific_T_cells) => I (Intratumoral_T_cells);
+R3: I (Intratumoral_T_cells) => ;
+R4: N (Naive_T_cells) + T (Tumor_cells) => S (Specific_T_cells) + T (Tumor_cells);
+R5:  => S (Specific_T_cells);

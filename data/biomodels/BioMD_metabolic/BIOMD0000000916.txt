@@ -1,0 +1,4 @@
+R0: The_FOD_in_the_circulation__X1 (The FOD in the circulation (X1)) => The_FOD_in_the_metabolizing_tissues__X4 (The FOD in the metabolizing tissues (X4));
+R1: The_FOD_in_the_metabolizing_tissues__X4 (The FOD in the metabolizing tissues (X4)) => The_FOD_in_the_gallbladder___intestinal_lumen__X5 (The FOD in the gallbladder + intestinal lumen (X5));
+R2: The_FOD_in_the_gallbladder___intestinal_lumen__X5 (The FOD in the gallbladder + intestinal lumen (X5)) => The_cumulative_FOD_excreted_in_the_non_urinary_pool__X3 (The cumulative FOD excreted in the non-urinary pool (X3));
+R3: The_FOD_in_the_metabolizing_tissues__X4 (The FOD in the metabolizing tissues (X4)) => The_cumulative_FOD_excreted_in_the_urine__X2 (The cumulative FOD excreted in the urine (X2));

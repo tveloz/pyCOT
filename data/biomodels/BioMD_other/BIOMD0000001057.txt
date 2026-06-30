@@ -1,0 +1,5 @@
+R0:  => TFp53 (TFp53);
+R1: miR34a (miR34a) => TFp53 (TFp53) + miR34a (miR34a);
+R2: TFp53 (TFp53) => ;
+R3: TFp53 (TFp53) => miR34a (miR34a) + TFp53 (TFp53);
+R4: miR34a (miR34a) => ;

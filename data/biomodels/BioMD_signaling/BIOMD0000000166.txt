@@ -1,0 +1,9 @@
+R0:  => X (TF_A);
+R1: X (TF_A) => ;
+R2:  => X (TF_A);
+R3:  => Z (Calcium in cytoplasm);
+R4:  => Z (Calcium in cytoplasm);
+R5: Z (Calcium in cytoplasm) => Y (Calcium in store);
+R6: Y (Calcium in store) => Z (Calcium in cytoplasm);
+R7: Y (Calcium in store) => Z (Calcium in cytoplasm);
+R8: Z (Calcium in cytoplasm) => ;

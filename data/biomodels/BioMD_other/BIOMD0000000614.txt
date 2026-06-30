@@ -1,0 +1,4 @@
+R0:  => f (fibril fraction);
+R1:  => f (fibril fraction);
+R2: f (fibril fraction) => ;
+R3: f (fibril fraction) => ;

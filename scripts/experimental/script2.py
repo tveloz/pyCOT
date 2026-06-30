@@ -36,7 +36,8 @@ print(os.path.dirname(os.path.abspath(__file__)))
 
 file_path = 'networks/Conflict_Theory/Resource_Scarcity_Toy_Model2.txt'
 file_path = 'networks/testing/Eigen_simple.txt'
-
+file_path = 'networks/testing/autopoietic_ext.txt'
+file_path = os.path.join(root_dir, file_path)
 rn = read_txt(file_path)
 
 additional_laws = {
@@ -48,72 +49,36 @@ additional_laws = {
 # ========================================
 # DEFINE SEMANTIC CATEGORIES
 # ========================================
-#species_list = ['SR', 'R', 'E', 'WR', 'DT', 'T', 'V']
-species_list = ['f', 'a', 'p1', 'p2']
+# Species: l (source), a (autocatalyst), b (intermediate), c (catalyst), p (parasite)
+species_list = ['l', 'a', 'b', 'c', 'p']
 category_dict = {
-    #'peace': ['SR', 'R', 'E', 'T'],
-    #'conflict': ['DT', 'V', 'WR']
-    'Hypercycle':['p1', 'p2','f'],
-    'Autocatalytic_cycle':['a','f']
+    'base_network': ['l', 'a', 'b','c','p'],
+    #'extended parasitic': ['p']
 }
 semantic_partition = define_semantic_categories(species_list, category_dict)
 
 # ========================================
 # CUSTOM PLOTTING FUNCTION
 # ========================================
-def plot_dynamics_separated(time_series, semantic_partition, species_list, title="Dynamics", save_path=None):
+def plot_dynamics_single(time_series, species_list, title="Dynamics", save_path=None):
     """
-    Plot time series dynamics with peace and conflict categories separated into two subplots
-    Both subplots share the same y-axis scale for easy comparison
+    Plot time series dynamics for all species in a single plot.
     """
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
-    # Get species indices for each category
-    peace_species = semantic_partition.category_indices['Hypercycle']
-    conflict_species = semantic_partition.category_indices['Autocatalytic_cycle']
+    fig, ax = plt.subplots(1, 1, figsize=(12, 6))
 
     time = time_series['Time'].values
 
-    # Calculate global min/max across all species for shared scale
-    all_species_indices = peace_species + conflict_species
-    all_values = []
-    for idx in all_species_indices:
-        species_name = species_list[idx]
-        all_values.extend(time_series[species_name].values)
-
-    y_min = min(all_values)
-    y_max = max(all_values)
-    y_margin = (y_max - y_min) * 0.05  # 5% margin
-    y_lim = (y_min - y_margin, y_max + y_margin)
-
-    # Peace species
-    ax = axes[0]
-    for idx in peace_species:
-        species_name = species_list[idx]
-        ax.plot(time, time_series[species_name], linewidth=2, label=species_name)
+    # Plot each species
+    for species_name in species_list:
+        if species_name in time_series.columns:
+            ax.plot(time, time_series[species_name], linewidth=2.5, label=species_name, marker='o', markersize=3, markevery=20)
 
     ax.set_xlabel('Time', fontsize=12)
     ax.set_ylabel('Concentration', fontsize=12)
-    ax.set_title('Peace Variables (SR, R, E, T)', fontsize=13, fontweight='bold', color='green')
-    ax.set_ylim(y_lim)
-    ax.legend(fontsize=10)
+    ax.set_title(title, fontsize=14, fontweight='bold')
+    ax.legend(fontsize=11, loc='best')
     ax.grid(True, alpha=0.3)
 
-    # Conflict species
-    ax = axes[1]
-    for idx in conflict_species:
-        species_name = species_list[idx]
-        ax.plot(time, time_series[species_name], linewidth=2, label=species_name)
-
-    ax.set_xlabel('Time', fontsize=12)
-    ax.set_ylabel('Concentration', fontsize=12)
-    ax.set_title('Conflict Variables (WR, DT, V)', fontsize=13, fontweight='bold', color='red')
-    ax.set_ylim(y_lim)
-    ax.legend(fontsize=10)
-    ax.grid(True, alpha=0.3)
-
-    # Overall title
-    plt.suptitle(title, fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
 
     if save_path:
@@ -122,13 +87,13 @@ def plot_dynamics_separated(time_series, semantic_partition, species_list, title
         print(f"Saved: {save_path}")
 
     plt.show()
-    return fig, axes
+    return fig, ax
 
 # ========================================
 # CONFIGURE KINETICS
 # ========================================
-
-rate_list = ['mak', 'mak','mak','mak','mak','mak','mak']
+# 11 reactions: r1-r8 (base + decay), r9-r10 (parasitic), r11 (rescue)
+rate_list = ['mak', 'mak', 'mak', 'mak', 'mak', 'mak', 'mak', 'mak', 'mak', 'mak', 'mak','mak']
 
 # rate_list = [
 #     'saturated',           # r1:  SR + R => E + SR (production saturates)
@@ -188,15 +153,42 @@ rate_list = ['mak', 'mak','mak','mak','mak','mak','mak']
 #k_resource_depletion = 0.02    # Resource consumption rate
 # Economy
 #_economic_decay = 0.02        # Economic output decay rate
-k0=10
-k1=0.15
-k2=0.1
-k3=0.1
-k4=0.01
-k5=0.01
-k6=0.01
-# Eigen_simple.txt has 7 reactions (r0-r6); each MAK entry needs a [k] list
-spec_vector=[[k0], [k1], [k2], [k3], [k4], [k5], [k6]]
+# Rate constants for 11 reactions
+k_production_l = 1   # r1: =>l
+k_autocatalysis = 1   # r2: l+a=>a+b
+k_synthesis_a = 1     # r3: l+b=>a
+k_catalysis = 1       # r4: a+c=>2c
+k_decay_l = 1         # r5: l=>
+k_decay_a = 0.2        # r6: a=>
+k_decay_b = 0.2        # r7: b=>
+k_decay_c = 0.2        # r8: c=>
+k_parasitism = 2     # r9: a+p=>2p
+k_decay_p = 0.2        # r10: p=>
+k_rescue = 2          # r11: c+p=>a+p
+k_give = 0.5
+l00 = 1
+a00 = 2
+b00 = 3
+c00 = 1
+p00 = 1
+
+tmaxs = 80
+nsteps =160
+# spec_vector for MAK kinetics: each reaction gets a [k] list
+spec_vector = [
+    [k_production_l],   # r1
+    [k_autocatalysis],  # r2
+    [k_synthesis_a],    # r3
+    [k_catalysis],      # r4
+    [k_decay_l],        # r5
+    [k_decay_a],        # r6
+    [k_decay_b],        # r7
+    [k_decay_c],        # r8
+    [k_parasitism],     # r9
+    [k_decay_p],        # r10
+    [k_rescue],         # r11  
+    [k_give]       # r12
+]
 
 # ==========================================
 # SPEC_VECTOR CONSTRUCTION
@@ -242,37 +234,123 @@ spec_vector=[[k0], [k1], [k2], [k3], [k4], [k5], [k6]]
 # SCENARIO 1: STABLE REGIME
 # ========================================
 print("\n" + "=" * 80)
-print("SCENARIO 1: Stable Productive Regime")
+print("SCENARIO 1: Stable Autopoietic Regime")
 print("=" * 80)
 
-# SCENARIO 1: STABLE PRODUCTIVE REGIME
-#[SR,R,E,WR,DT,T,V]
-# SR0=1.0
-# WR0=0.5
-# DT0=1.5
-# R0=0
-# E0=0
-# T0=0
-# V0=0
-f0=0
-a0=10
-p10=4
-p20=1
-x0_stable = [f0, a0, p10, p20]
-#x0_stable = SR0, R0, E0, WR0, DT0, T0, V0]
-# #print(f"  Total Population        = {x0_stable[0] + x0_stable[3] + x0_stable[4]}")
+# Species order: [l, a, b, c, p]
+l0_s1 = l00      # source metabolite
+a0_s1 = a00      # autocatalyst (self-replicating)
+b0_s1 = b00      # intermediate
+c0_s1 = 0.0      # catalyst (membrane-like)
+p0_s1 = 0.0      # parasite (low initial amount)
+x0_s1 = [l0_s1, a0_s1, b0_s1, c0_s1, p0_s1]
+title_s1 = f"Scenario 1: Stable Regime (l={l0_s1}, a={a0_s1}, b={b0_s1}, c={c0_s1}, p={p0_s1})"
 
-ts_stable, fv_stable = simulation(
+ts_s1, fv_s1 = simulation(
     rn,
     rate=rate_list,
     spec_vector=spec_vector,
-    x0=x0_stable,
-    t_span=(0, 200),
-    n_steps=400
-#    additional_laws=additional_laws
+    x0=x0_s1,
+    t_span=(0, tmaxs),
+    n_steps=nsteps
 )
 
+print(f"\nInitial state S1: {x0_s1}")
+print(f"Final state S1:\n{ts_s1.tail(1)}")
 
+# ========================================
+# SCENARIO 2: PERTURBED WITH PARASITE
+# ========================================
+print("\n" + "=" * 80)
+print("SCENARIO 2: Perturbed with High Parasite")
+print("=" * 80)
+
+# Species order: [l, a, b, c, p]
+l0_s2 = l00      # source metabolite
+a0_s2 = a00      # autocatalyst (self-replicating)
+b0_s2 = b00      # intermediate
+c0_s2 = 0      # catalyst (membrane-like)
+p0_s2 = p00      # parasite (high initial amount)
+x0_s2 = [l0_s2, a0_s2, b0_s2, c0_s2, p0_s2]
+title_s2 = f"Scenario 2: High Parasite (l={l0_s2}, a={a0_s2}, b={b0_s2}, c={c0_s2}, p={p0_s2})"
+
+ts_s2, fv_s2 = simulation(
+    rn,
+    rate=rate_list,
+    spec_vector=spec_vector,
+    x0=x0_s2,
+    t_span=(0, tmaxs),
+    n_steps=nsteps
+)
+
+print(f"\nInitial state S2: {x0_s2}")
+print(f"Final state S2:\n{ts_s2.tail(1)}")
+
+# ========================================
+# SCENARIO 3: RESCUE WITH CATALYST
+# ========================================
+print("\n" + "=" * 80)
+print("SCENARIO 3: Rescue with High Catalyst")
+print("=" * 80)
+
+# Species order: [l, a, b, c, p]
+l0_s3 = l00      # source metabolite
+a0_s3 = a00      # autocatalyst (self-replicating)
+b0_s3 = b00      # intermediate
+c0_s3 = c00      # catalyst (high - should rescue from parasite)
+p0_s3 = p00      # parasite (high initial amount)
+x0_s3 = [l0_s3, a0_s3, b0_s3, c0_s3, p0_s3]
+title_s3 = f"Scenario 3: Rescue with Catalyst (l={l0_s3}, a={a0_s3}, b={b0_s3}, c={c0_s3}, p={p0_s3})"
+
+ts_s3, fv_s3 = simulation(
+    rn,
+    rate=rate_list,
+    spec_vector=spec_vector,
+    x0=x0_s3,
+    t_span=(0, tmaxs),
+    n_steps=nsteps
+)
+
+print(f"\nInitial state S3: {x0_s3}")
+print(f"Final state S3:\n{ts_s3.tail(1)}")
+
+# ========================================
+# PLOT ALL THREE SCENARIOS
+# ========================================
+print("\n" + "=" * 80)
+print("PLOTTING RESULTS")
+print("=" * 80)
+
+print("\nPlotting Scenario 1...")
+plot_dynamics_single(
+    ts_s1,
+    species_list,
+    title=title_s1,
+    save_path="visualizations/plot_series_ode/scenario_1_stable_regime.png"
+)
+plt.close()
+
+print("\nPlotting Scenario 2...")
+plot_dynamics_single(
+    ts_s2,
+    species_list,
+    title=title_s2,
+    save_path="visualizations/plot_series_ode/scenario_2_high_parasite.png"
+)
+plt.close()
+
+print("\nPlotting Scenario 3...")
+plot_dynamics_single(
+    ts_s3,
+    species_list,
+    title=title_s3,
+    save_path="visualizations/plot_series_ode/scenario_3_rescue_catalyst.png"
+)
+plt.close()
+
+print("\n" + "=" * 80)
+print("All plots saved successfully!")
+print("=" * 80)
 # # PARAMETRIZED SIMULATION
 # time_series, flux_vector = simulation(
 #     rn, 
@@ -283,17 +361,7 @@ ts_stable, fv_stable = simulation(
 #     n_steps=200 
 # )
 
-# Plot with separated categories
-print("\nPlotting dynamics with separated peace/conflict categories...")
-plot_dynamics_separated(
-    ts_stable,
-    semantic_partition,
-    species_list,
-    title="Stable Regime Dynamics",
-    save_path="visualizations/plot_series_ode/stable_regime_separated.png"
-)
-print("\nFinal state:")
-print(ts_stable.tail(1))
+
 
 # # Extract last state and continue simulation with intervention
 # last_state = time_series[['G', 'R', 'V', 'N', 'P', 'F']].iloc[-1].values.tolist()

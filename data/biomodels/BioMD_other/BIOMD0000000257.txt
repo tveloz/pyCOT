@@ -1,0 +1,11 @@
+R0: S (S) + STU (STU) => STUS (STUS);
+R1: T (T) + STUS (STUS) => STUST (STUST);
+R2: STUST (STUST) => ST (ST) + STU (STU);
+R3: STU (STU) => ;
+R4: SU (SU) + ST (ST) => SUST (SUST);
+R5: U (U) + SUST (SUST) => SUSTU (SUSTU);
+R6: SUSTU (SUSTU) => STU (STU) + SU (SU);
+R7: SU (SU) => ;
+R8: U (U) + STUS (STUS) => STUSU (STUSU);
+R9: STUSU (STUSU) => STU (STU) + SU (SU);
+R10: ST (ST) => ;

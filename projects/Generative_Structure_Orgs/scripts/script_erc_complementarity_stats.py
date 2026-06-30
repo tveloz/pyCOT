@@ -46,22 +46,33 @@ import networkx as nx
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _PYCOT_ROOT = os.path.normpath(os.path.join(_SCRIPT_DIR, '..', '..', '..'))
 sys.path.insert(0, os.path.join(_PYCOT_ROOT, 'src'))
+sys.path.insert(0, _SCRIPT_DIR)
 
 from pyCOT.io.functions import read_txt
 from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_names
+from utils_ercs import load_ercs
 
 # -- Configuration -------------------------------------------------------------
-SCAN_FOLDERS = [
-    os.path.join(_PYCOT_ROOT, 'data', 'biomodels', 'biomodels_all_txt'),
-    # os.path.join(_PYCOT_ROOT, 'networks', 'testing', 'performance_benchmark'),
-    # os.path.join(_PYCOT_ROOT, 'networks', 'testing'),
-]
+_BIOMD = os.path.join(_PYCOT_ROOT, 'data', 'biomodels')
+SCAN_FOLDERS = {
+    os.path.join(_BIOMD, 'BioMD_metabolic'):       'BioMD_metabolic',
+    os.path.join(_BIOMD, 'BioMD_cell_cycle'):       'BioMD_cell_cycle',
+    os.path.join(_BIOMD, 'BioMD_circadian'):        'BioMD_circadian',
+    os.path.join(_BIOMD, 'BioMD_signaling'):        'BioMD_signaling',
+    os.path.join(_BIOMD, 'BioMD_gene_regulation'):  'BioMD_gene_regulation',
+    os.path.join(_BIOMD, 'BioMD_apoptosis'):        'BioMD_apoptosis',
+    os.path.join(_BIOMD, 'BioMD_immune'):           'BioMD_immune',
+    os.path.join(_BIOMD, 'BioMD_other'):            'BioMD_other',
+    os.path.join(_BIOMD, 'BiGG'):                   'BiGG',
+    os.path.join(_BIOMD, 'Other'):                  'Other',
+}
 
 OUT_DIR  = os.path.normpath(os.path.join(_SCRIPT_DIR, '..', 'outputs', 'complementarity_stats'))
 CSV_FILE = os.path.join(OUT_DIR, 'complementarity_stats.csv')
 
-MAX_REACTIONS = 250  # skip networks with more reactions than this (pre-ERC filter)
-MAX_ERCS      = 250  # skip networks with more than this many ERCs (post-ERC filter)
+MAX_REACTIONS = 1000  # skip networks with more reactions than this (pre-ERC filter)
+MAX_ERCS      = 900  # skip networks with more than this many ERCs (post-ERC filter)
+MIN_ERCS      = 4    # skip networks with fewer than this many ERCs (post-ERC filter)
 MAX_TIME_ERCS = 1200  # max seconds for ERC computation
 
 os.makedirs(OUT_DIR, exist_ok=True)
@@ -205,8 +216,10 @@ def compute_complementarity_stats(ercs, hierarchy, RN):
 # =============================================================================
 
 def collect_files(folders):
+    """folders is a dict {folder_path: dataset_label}.
+    Returns list of (abs_path, dataset_label) tuples, deduplicated by real path."""
     seen, files = set(), []
-    for folder in folders:
+    for folder, label in folders.items():
         if not os.path.isdir(folder):
             continue
         for fname in sorted(os.listdir(folder)):
@@ -216,7 +229,7 @@ def collect_files(folders):
             real = os.path.realpath(path)
             if real not in seen:
                 seen.add(real)
-                files.append(path)
+                files.append((path, label))
     return files
 
 
@@ -232,6 +245,7 @@ print(f"Found {len(all_files)} .txt files across {len(SCAN_FOLDERS)} folder(s)."
 # MAX_REACTIONS will automatically retry them on the next run.
 if os.path.exists(CSV_FILE):
     _existing = pd.read_csv(CSV_FILE)
+    _existing = _existing[_existing['n_ercs'] >= MIN_ERCS]
     already_done = set(_existing['file'].astype(str))
     print(f"Resuming: {len(already_done)} networks already cached in {CSV_FILE}")
 else:
@@ -241,7 +255,7 @@ else:
 records = []
 skipped = []
 
-for idx, fpath in enumerate(all_files):
+for idx, (fpath, dataset_label) in enumerate(all_files):
     fname = os.path.basename(fpath)
     if fname in already_done:
         print(f"[{idx+1}/{len(all_files)}] {fname}  — CACHED, skip")
@@ -260,17 +274,22 @@ for idx, fpath in enumerate(all_files):
             continue
 
         t0    = time.time()
-        ercs  = ERC.ERCs(RN)
+        ercs, _cached = load_ercs(fpath, RN, ERC)
         t_erc = time.time() - t0
 
         # Exclude E_∅ (empty closure)
         ercs  = [e for e in ercs if len(e.get_closure_names(RN)) > 0]
         n_ercs = len(ercs)
-        print(f"  {n_ercs} ERCs (E_∅ excluded)  ({t_erc:.1f}s)")
+        cache_tag = ' [cache]' if _cached else ''
+        print(f"  {n_ercs} ERCs (E_∅ excluded)  ({t_erc:.1f}s){cache_tag}")
 
         if n_ercs > MAX_ERCS:
             print(f"  SKIP: too many ERCs ({n_ercs} > {MAX_ERCS})")
             skipped.append((fname, f'too many ERCs: {n_ercs}'))
+            continue
+        if n_ercs < MIN_ERCS:
+            print(f"  SKIP: too few ERCs ({n_ercs} < {MIN_ERCS})")
+            skipped.append((fname, f'too few ERCs: {n_ercs}'))
             continue
         if t_erc > MAX_TIME_ERCS:
             print(f"  SKIP: ERC computation too slow ({t_erc:.1f}s)")
@@ -292,6 +311,7 @@ for idx, fpath in enumerate(all_files):
         n_pairs = n_ercs * (n_ercs - 1) // 2   # C(n,2)
         records.append({
             'file':       fname,
+            'dataset':    dataset_label,
             'n_species':  n_sp,
             'n_reactions': n_rx,
             'n_ercs':     n_ercs,

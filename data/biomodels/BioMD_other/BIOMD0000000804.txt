@@ -1,0 +1,6 @@
+R0: B (B) + T (T) => C (C) + B (B) + T (T);
+R1: C (C) + T (T) => B (B) + C (C) + T (T);
+R2: C (C) => T (T) + C (C);
+R3: C (C) => ;
+R4: B (B) => ;
+R5: T (T) => ;

@@ -1,0 +1,8 @@
+R0: M_Tumor_Cells (M_Tumor_Cells) => 2M_Tumor_Cells (M_Tumor_Cells);
+R1: 2M_Tumor_Cells (M_Tumor_Cells) + N_CTL (N_CTL) => M_Tumor_Cells (M_Tumor_Cells) + N_CTL (N_CTL);
+R2: N_CTL (N_CTL) + Z_THL (Z_THL) => 2N_CTL (N_CTL) + Z_THL (Z_THL);
+R3: N_CTL (N_CTL) => ;
+R4: N_CTL (N_CTL) + M_Tumor_Cells (M_Tumor_Cells) => M_Tumor_Cells (M_Tumor_Cells);
+R5: Z_THL (Z_THL) => 2Z_THL (Z_THL);
+R6: Z_THL (Z_THL) + N_CTL (N_CTL) => N_CTL (N_CTL);
+R7: M_Tumor_Cells (M_Tumor_Cells) => ;

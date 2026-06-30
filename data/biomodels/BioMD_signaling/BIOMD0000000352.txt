@@ -1,0 +1,12 @@
+R0: A (ARF) + I (Aux/IAA) => D_IA (Aux/IAA_ARF);
+R1: 2I (Aux/IAA) => D_II (Aux/IAA_Aux/IAA);
+R2: I (Aux/IAA) + aux (auxin) => aux (auxin);
+R3: A (ARF) => ;
+R4: D_IA (Aux/IAA_ARF) => ;
+R5: D_II (Aux/IAA_Aux/IAA) => ;
+R6: D_IA (Aux/IAA_ARF) + aux (auxin) => A (ARF) + aux (auxin);
+R7: D_II (Aux/IAA_Aux/IAA) + aux (auxin) => I (Aux/IAA) + aux (auxin);
+R8: R (mRNA) => ;
+R9: R (mRNA) => I (Aux/IAA) + R (mRNA);
+R10:  => A (ARF);
+R11: A (ARF) + D_IA (Aux/IAA_ARF) + I (Aux/IAA) => R (mRNA) + A (ARF) + D_IA (Aux/IAA_ARF) + I (Aux/IAA);

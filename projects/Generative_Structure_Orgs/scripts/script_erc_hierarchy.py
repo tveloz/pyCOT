@@ -60,7 +60,7 @@ RN_FILE = os.path.join(_PYCOT_ROOT, 'data', 'biomodels',
 # Uncomment to use the Farm network instead:
 #RN_FILE = os.path.join(_PYCOT_ROOT, 'networks', 'testing', 'Farm.txt')
 
-#RN_FILE = 'data\\Examples_tests\\testing\\ERC_synergy0.txt'
+RN_FILE = '../../networks/testing/LBCA.txt'
 
 # -- Visual parameters ---------------------------------------------------------
 NODE_SIZE_BASE  = 400   # minimum node area (matplotlib scatter units)

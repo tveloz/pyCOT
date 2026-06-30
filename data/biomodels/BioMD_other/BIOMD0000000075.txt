@@ -1,0 +1,8 @@
+R0: PI_PM (PI_PM) => PIP_PM (PIP_PM);
+R1: PIP2_PM (PIP2_PM) + PLC_act_PM (PLC_act_PM) => DAG_PM (DAG_PM) + IP3_Cyt (IP3_Cyt) + PLC_act_PM (PLC_act_PM);
+R2: PLC_PM (PLC_PM) + stim_PM (stim_PM) => PLC_act_PM (PLC_act_PM) + stim_PM (stim_PM);
+R3: PIP2_PHGFP_PM (PIP2_PHGFP_PM) + PLC_act_PM (PLC_act_PM) => PH_GFP_Cyt (PH_GFP_Cyt) + IP3_Cyt (IP3_Cyt) + DAG_PM (DAG_PM) + PLC_act_PM (PLC_act_PM);
+R4: PH_GFP_Cyt (PH_GFP_Cyt) + PIP2_PM (PIP2_PM) => PIP2_PHGFP_PM (PIP2_PHGFP_PM);
+R5: IP3_Cyt (IP3_Cyt) => ;
+R6: PIP_PM (PIP_PM) => PIP2_PM (PIP2_PM);
+R7: IP3_Cyt (IP3_Cyt) + PH_GFP_Cyt (PH_GFP_Cyt) => IP3_PHGFP_Cyt (IP3_PHGFP_Cyt);

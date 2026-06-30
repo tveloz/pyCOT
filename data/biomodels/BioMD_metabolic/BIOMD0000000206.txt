@@ -1,0 +1,11 @@
+R0: s1 (Glucose) + 2at (ATP) => s2 (F16P);
+R1: s2 (F16P) => 2s3 (Triose_Gly3Phos_DHAP);
+R2: s3 (Triose_Gly3Phos_DHAP) + na (NAD) => s4 (3PG) + at (ATP);
+R3: s4 (3PG) => s5 (Pyruvate) + at (ATP);
+R4: s5 (Pyruvate) => s6 (Acetaldehyde);
+R5: at (ATP) => ;
+R6: s3 (Triose_Gly3Phos_DHAP) => na (NAD);
+R7: s6o (extracellular acetaldehyde) => ;
+R8: s6 (Acetaldehyde) => s6o (extracellular acetaldehyde);
+R9: s6 (Acetaldehyde) => na (NAD);
+R10:  => s1 (Glucose);

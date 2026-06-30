@@ -1,0 +1,7 @@
+R0: CaER (CaER) + Ca_cyt (Ca_cyt) => 2Ca_cyt (Ca_cyt);
+R1: CaER (CaER) => Ca_cyt (Ca_cyt);
+R2: Ca_cyt (Ca_cyt) => CaER (CaER);
+R3: CaM (CaM) + Ca_cyt (Ca_cyt) => 2Ca_cyt (Ca_cyt);
+R4: 2Ca_cyt (Ca_cyt) => CaM (CaM) + Ca_cyt (Ca_cyt);
+R5: CaPr (CaPr) => Pr (Pr) + Ca_cyt (Ca_cyt);
+R6: Pr (Pr) + Ca_cyt (Ca_cyt) => CaPr (CaPr);

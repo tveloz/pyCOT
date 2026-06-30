@@ -1,0 +1,6 @@
+R0:  => Cyclin (Cyclin);
+R1: Cyclin (Cyclin) + Active_APC (Active APC) => Active_APC (Active APC);
+R2:  => Active_Cdc2_kinase (Active Cdc2 kinase);
+R3: Active_Cdc2_kinase (Active Cdc2 kinase) => ;
+R4:  => Active_APC (Active APC);
+R5: Active_APC (Active APC) => ;

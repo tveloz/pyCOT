@@ -1,0 +1,7 @@
+R0: TF (TF) + X (X) => Xa_Va (Xa_Va);
+R1: TF (TF) + X (X) + II (II) => TF (TF) + X (X) + IIa (IIa);
+R2: Xa_Va (Xa_Va) + II (II) => Xa_Va_II (Xa_Va_II);
+R3: Xa_Va_II (Xa_Va_II) => Xa_Va (Xa_Va) + mIIa (mIIa);
+R4: Xa_Va (Xa_Va) + mIIa (mIIa) => Xa_Va (Xa_Va) + IIa (IIa);
+R5: mIIa (mIIa) => mIIa_ATIII (mIIa_ATIII);
+R6: IIa (IIa) => IIa_ATIII (IIa_ATIII);

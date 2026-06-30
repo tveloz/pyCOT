@@ -1,0 +1,4 @@
+R0: Tumor_cells (Tumor_cells) => Expanding_CAR_T_cells (Expanding_CAR-T_cells) + Tumor_cells (Tumor_cells);
+R1: Expanding_CAR_T_cells (Expanding_CAR-T_cells) => ;
+R2:  => Tumor_cells (Tumor_cells);
+R3: Tumor_cells (Tumor_cells) + Expanding_CAR_T_cells (Expanding_CAR-T_cells) => Expanding_CAR_T_cells (Expanding_CAR-T_cells);

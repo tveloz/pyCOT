@@ -1,0 +1,9 @@
+R0: C3 (C3) + C3bBb (C3bBb) => C3b (C3b) + C3bBb (C3bBb);
+R1: C3b (C3b) + Factor_B (Factor_B) => C3bB_closed (C3bB_closed);
+R2: C3bB_closed (C3bB_closed) => C3bB_open (C3bB_open);
+R3: C3bB_open (C3bB_open) + Factor_D (Factor_D) => C3bBb (C3bBb) + Factor_D (Factor_D);
+R4: C3bBb (C3bBb) => C3b (C3b) + Bb (Bb);
+R5:  => C3 (C3);
+R6: C3 (C3) => ;
+R7:  => Factor_B (Factor_B);
+R8: Factor_B (Factor_B) => ;

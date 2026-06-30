@@ -1,0 +1,17 @@
+R0: Bmi1 (Bmi1) => Bmi1ubd (Bmi1ubd);
+R1: Bmi1ubd (Bmi1ubd) => Bmi1 (Bmi1);
+R2: R1B (R1B) => R1Bubd (R1Bubd);
+R3: R1Bubd (R1Bubd) + USP7tot (USP7tot) => R1B (R1B) + USP7tot (USP7tot);
+R4: Bmi1 (Bmi1) + R1B (R1B) => Z (Z);
+R5: Z (Z) => Zub (Zub);
+R6: Zub (Zub) + USP7tot (USP7tot) => Z (Z) + USP7tot (USP7tot);
+R7: Zub (Zub) => R1Buba (R1Buba) + Bmi1 (Bmi1);
+R8: R1B (R1B) => R1Bub (R1Bub);
+R9: R1Bub (R1Bub) + USP7tot (USP7tot) => R1B (R1B) + USP7tot (USP7tot);
+R10: R1Buba (R1Buba) + USP7tot (USP7tot) => R1B (R1B) + USP7tot (USP7tot);
+R11: H2A (H2A) + R1Bub (R1Bub) + Zub (Zub) + R1Buba (R1Buba) => H2Auba (H2Auba) + R1Bub (R1Bub) + Zub (Zub) + R1Buba (R1Buba);
+R12: H2Auba (H2Auba) => H2A (H2A);
+R13:  => R1B (R1B);
+R14: R1Bubd (R1Bubd) => ;
+R15:  => Bmi1 (Bmi1);
+R16: Bmi1ubd (Bmi1ubd) => ;

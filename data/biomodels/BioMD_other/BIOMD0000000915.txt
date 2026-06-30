@@ -1,0 +1,8 @@
+R0: p_1 (patient_1) => p_2 (patient_2);
+R1: p_2 (patient_2) => p_3 (patient_3);
+R2: p_3 (patient_3) => p_4 (patient_4);
+R3: p_4 (patient_4) => p_5 (patient_5);
+R4: p_5 (patient_5) => p_6 (patient_6);
+R5: p_6 (patient_6) => p_7 (patient_7);
+R6: p_7 (patient_7) => p_8 (patient_8);
+R7: p_0 (patient_0) => p_1 (patient_1);

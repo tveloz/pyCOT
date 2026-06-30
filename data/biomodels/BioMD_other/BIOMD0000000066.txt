@@ -1,0 +1,7 @@
+R0: atp (ATP) + asp (Aspartate) + thr (Threonine) => aspp (Aspartyl phosphate) + adp (ADP) + thr (Threonine);
+R1: nadph (NADPH) + aspp (Aspartyl phosphate) => nadp (NADP) + phos (Phos) + asa (Aspartate beta-semialdehyde);
+R2: nadph (NADPH) + asa (Aspartate beta-semialdehyde) + asp (Aspartate) + thr (Threonine) => hs (Homoserine) + nadp (NADP) + asp (Aspartate) + thr (Threonine);
+R3: hsp (O-Phospho-homoserine) => thr (Threonine) + phos (Phos);
+R4: hs (Homoserine) + atp (ATP) + thr (Threonine) => hsp (O-Phospho-homoserine) + adp (ADP) + thr (Threonine);
+R5: nadph (NADPH) => nadp (NADP);
+R6: atp (ATP) => adp (ADP) + phos (Phos);

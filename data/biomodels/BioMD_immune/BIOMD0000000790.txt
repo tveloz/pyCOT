@@ -1,0 +1,14 @@
+R0:  => T_1 (T_1);
+R1:  => T_2 (T_2);
+R2: T_1 (T_1) + E_1_Innate (E_1_Innate) => E_1_Innate (E_1_Innate);
+R3: T_1 (T_1) + E_2_Adaptive (E_2_Adaptive) => E_2_Adaptive (E_2_Adaptive);
+R4: T_1 (T_1) + T_2 (T_2) => T_2 (T_2);
+R5: T_2 (T_2) + T_1 (T_1) => T_1 (T_1);
+R6: T_2 (T_2) + E_1_Innate (E_1_Innate) => E_1_Innate (E_1_Innate);
+R7:  => E_1_Innate (E_1_Innate);
+R8: E_1_Innate (E_1_Innate) => ;
+R9: E_1_Innate (E_1_Innate) + T_1 (T_1) + T_2 (T_2) => T_1 (T_1) + T_2 (T_2);
+R10: T_1 (T_1) + T_2 (T_2) => E_1_Innate (E_1_Innate) + T_1 (T_1) + T_2 (T_2);
+R11: T_1 (T_1) + E_1_Innate (E_1_Innate) => E_2_Adaptive (E_2_Adaptive) + T_1 (T_1) + E_1_Innate (E_1_Innate);
+R12: E_2_Adaptive (E_2_Adaptive) + T_1 (T_1) => T_1 (T_1);
+R13: E_2_Adaptive (E_2_Adaptive) => ;

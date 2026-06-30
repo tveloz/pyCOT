@@ -1,0 +1,10 @@
+R0: ATP (ATP) + H2_HMPt (H2-HMPt) => AMP (AMP) + H2_HMPterinPP (H2-HMPterinPP);
+R1: p_ABA (p-ABA) + H2_HMPterinPP (H2-HMPterinPP) => PPi (PPi) + H2_Pteroate (H2-Pteroate);
+R2: L_Glutamate (L-Glutamate) + ATP (ATP) + H2_Pteroate (H2-Pteroate) => DHF (DHF) + ADP (ADP) + Phosphate (Phosphate);
+R3: THF (THF) + L_serine (L-serine) => CH2_THF (CH2-THF) + Glycine (Glycine);
+R4: DHF (DHF) + NADPH (NADPH) => NADP (NADP) + THF (THF);
+R5: CH2_THF (CH2-THF) => H2_HMPt (H2-HMPt) + p_ABA (p-ABA);
+R6:  => p_ABA (p-ABA);
+R7:  => H2_HMPt (H2-HMPt);
+R8: THF (THF) => ;
+R9: CH2_THF (CH2-THF) => ;

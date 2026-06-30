@@ -1,0 +1,4 @@
+R0: ATP (ATP) => AMP (AMP);
+R1: ATP (ATP) + AMP (AMP) => 2ADP (ADP);
+R2: ADP (ADP) => ATP (ATP) + Pyr (Pyr);
+R3: Pyr (Pyr) + NADH (NADH) => Lac (Lac);

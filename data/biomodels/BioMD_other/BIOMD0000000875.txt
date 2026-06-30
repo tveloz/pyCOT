@@ -1,0 +1,8 @@
+R0:  => T (T);
+R1: T (T) => ;
+R2: T (T) + V_I (V_I) => T_i (T*) + V_I (V_I);
+R3: T_i (T*) => ;
+R4: T_i (T*) => V_I (V_I) + T_i (T*);
+R5: T_i (T*) => V_NI (V_NI) + T_i (T*);
+R6: V_I (V_I) => ;
+R7: V_NI (V_NI) => ;

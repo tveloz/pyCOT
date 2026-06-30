@@ -1,0 +1,14 @@
+R0: 2species_3 (single intact chain urokinase-type plasminogen activator) + 2species_1 (plasminogen) => species_2 (plasmin) + 2species_3 (single intact chain urokinase-type plasminogen activator) + species_1 (plasminogen);
+R1: 2species_2 (plasmin) + 2species_3 (single intact chain urokinase-type plasminogen activator) => species_4 (two-chain urokinase-type plasminogen activator) + 2species_2 (plasmin) + species_3 (single intact chain urokinase-type plasminogen activator);
+R2: 2species_4 (two-chain urokinase-type plasminogen activator) + 2species_1 (plasminogen) => species_2 (plasmin) + 2species_4 (two-chain urokinase-type plasminogen activator) + species_1 (plasminogen);
+R3: 2species_3 (single intact chain urokinase-type plasminogen activator) => species_3 (single intact chain urokinase-type plasminogen activator);
+R4: 2species_1 (plasminogen) => species_1 (plasminogen);
+R5: 2species_2 (plasmin) => species_2 (plasmin);
+R6: 2species_4 (two-chain urokinase-type plasminogen activator) => species_4 (two-chain urokinase-type plasminogen activator);
+R7: 2species_2 (plasmin) + 2species_5 (x) + species_6 (x-plasmin) => 2species_6 (x-plasmin) + species_2 (plasmin) + species_5 (x);
+R8: 2species_6 (x-plasmin) => species_2 (plasmin) + species_6 (x-plasmin);
+R9: 2species_5 (x) => species_5 (x);
+R10: 2species_6 (x-plasmin) => species_6 (x-plasmin);
+R11:  => species_3 (single intact chain urokinase-type plasminogen activator);
+R12:  => species_1 (plasminogen);
+R13:  => species_5 (x);

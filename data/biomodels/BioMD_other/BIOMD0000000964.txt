@@ -1,0 +1,14 @@
+R0:  => Susceptible (Susceptible);
+R1: Exposed (Exposed) => Susceptible (Susceptible);
+R2: Susceptible (Susceptible) + Pathogen_0 (Pathogen) + Infected_Asymptomatic (Infected_Asymptomatic) + Infected_Symptomatic (Infected_Symptomatic) => Exposed (Exposed) + Pathogen_0 (Pathogen) + Infected_Asymptomatic (Infected_Asymptomatic) + Infected_Symptomatic (Infected_Symptomatic);
+R3: Susceptible (Susceptible) => ;
+R4: Exposed (Exposed) => ;
+R5: Exposed (Exposed) => Infected_Symptomatic (Infected_Symptomatic);
+R6: Exposed (Exposed) => Infected_Asymptomatic (Infected_Asymptomatic);
+R7: Infected_Symptomatic (Infected_Symptomatic) => ;
+R8: Infected_Asymptomatic (Infected_Asymptomatic) => ;
+R9: Infected_Symptomatic (Infected_Symptomatic) => Recovered (Recovered);
+R10: Infected_Asymptomatic (Infected_Asymptomatic) => Recovered (Recovered);
+R11: Recovered (Recovered) => ;
+R12: Infected_Asymptomatic (Infected_Asymptomatic) + Infected_Symptomatic (Infected_Symptomatic) => Pathogen_0 (Pathogen) + Infected_Asymptomatic (Infected_Asymptomatic) + Infected_Symptomatic (Infected_Symptomatic);
+R13: Pathogen_0 (Pathogen) => ;

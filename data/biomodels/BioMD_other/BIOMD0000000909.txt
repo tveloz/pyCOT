@@ -1,0 +1,8 @@
+R0:  => N (N);
+R1: N (N) + T (T) + u (u) => T (T) + u (u);
+R2:  => T (T);
+R3: T (T) + I (I) + N (N) + u (u) => I (I) + N (N) + u (u);
+R4: T (T) => I (I) + T (T);
+R5: I (I) + T (T) + u (u) => T (T) + u (u);
+R6:  => u (u);
+R7: u (u) => ;

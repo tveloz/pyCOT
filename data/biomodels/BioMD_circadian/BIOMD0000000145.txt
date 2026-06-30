@@ -1,0 +1,11 @@
+R0:  => Galpha_GTP (Galpha_GTP);
+R1:  => Galpha_GTP (Galpha_GTP);
+R2: Galpha_GTP (Galpha_GTP) => ;
+R3: Galpha_GTP (Galpha_GTP) => ;
+R4: PLC (PLC) => APLC (APLC) + PLC (PLC);
+R5: APLC (APLC) => ;
+R6: APLC (APLC) => IP3 (IP3) + APLC (APLC);
+R7: IP3 (IP3) => ;
+R8: Ca_ER (Calcium) => Ca_Cyt (Calcium);
+R9: Ca_Cyt (Calcium) => ;
+R10:  => Ca_Cyt (Calcium);

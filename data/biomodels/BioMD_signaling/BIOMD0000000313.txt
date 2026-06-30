@@ -1,0 +1,16 @@
+R0: Rec (Rec) + IL13 (IL13) => IL13_Rec (IL13_Rec) + IL13 (IL13);
+R1: Rec (Rec) => Rec_i (Rec_i);
+R2: Rec_i (Rec_i) => Rec (Rec);
+R3: IL13_Rec (IL13_Rec) + pJAK2 (pJAK2) => p_IL13_Rec (p_IL13_Rec) + pJAK2 (pJAK2);
+R4: JAK2 (JAK2) + IL13_Rec (IL13_Rec) + SOCS3 (SOCS3) => pJAK2 (pJAK2) + IL13_Rec (IL13_Rec) + SOCS3 (SOCS3);
+R5: JAK2 (JAK2) + p_IL13_Rec (p_IL13_Rec) + SOCS3 (SOCS3) => pJAK2 (pJAK2) + p_IL13_Rec (p_IL13_Rec) + SOCS3 (SOCS3);
+R6: p_IL13_Rec (p_IL13_Rec) => p_IL13_Rec_i (p_IL13_Rec_i);
+R7: p_IL13_Rec_i (p_IL13_Rec_i) => ;
+R8: pJAK2 (pJAK2) + SHP1 (SHP1) => JAK2 (JAK2) + SHP1 (SHP1);
+R9: STAT5 (STAT5) + pJAK2 (pJAK2) => pSTAT5 (pSTAT5) + pJAK2 (pJAK2);
+R10: pSTAT5 (pSTAT5) + SHP1 (SHP1) => STAT5 (STAT5) + SHP1 (SHP1);
+R11: DecoyR (DecoyR) + IL13 (IL13) => IL13_DecoyR (IL13_DecoyR) + IL13 (IL13);
+R12: pSTAT5 (pSTAT5) => SOCS3mRNA (SOCS3mRNA) + pSTAT5 (pSTAT5);
+R13: SOCS3mRNA (SOCS3mRNA) => SOCS3 (SOCS3) + SOCS3mRNA (SOCS3mRNA);
+R14: SOCS3 (SOCS3) => ;
+R15: pSTAT5 (pSTAT5) => CD274mRNA (CD274mRNA) + pSTAT5 (pSTAT5);

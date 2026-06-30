@@ -1,0 +1,11 @@
+R0:  => T_Tumor_Cells (T_Tumor_Cells);
+R1: T_Tumor_Cells (T_Tumor_Cells) + L_CD8_T_Cells (L_CD8_T_Cells) => L_CD8_T_Cells (L_CD8_T_Cells);
+R2: T_Tumor_Cells (T_Tumor_Cells) => ;
+R3: D_Dendritic_Cells (D_Dendritic_Cells) + H_CD4_T_Cells (H_CD4_T_Cells) => L_CD8_T_Cells (L_CD8_T_Cells) + D_Dendritic_Cells (D_Dendritic_Cells) + H_CD4_T_Cells (H_CD4_T_Cells);
+R4: L_CD8_T_Cells (L_CD8_T_Cells) + T_Tumor_Cells (T_Tumor_Cells) => T_Tumor_Cells (T_Tumor_Cells);
+R5: L_CD8_T_Cells (L_CD8_T_Cells) => ;
+R6:  => D_Dendritic_Cells (D_Dendritic_Cells);
+R7: D_Dendritic_Cells (D_Dendritic_Cells) + L_CD8_T_Cells (L_CD8_T_Cells) => L_CD8_T_Cells (L_CD8_T_Cells);
+R8:  => D_Dendritic_Cells (D_Dendritic_Cells);
+R9:  => H_CD4_T_Cells (H_CD4_T_Cells);
+R10: H_CD4_T_Cells (H_CD4_T_Cells) + L_CD8_T_Cells (L_CD8_T_Cells) => L_CD8_T_Cells (L_CD8_T_Cells);

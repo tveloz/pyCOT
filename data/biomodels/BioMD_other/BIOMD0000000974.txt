@@ -1,0 +1,4 @@
+R0: Susceptible (Susceptible) + Infected (Infected) + Total_population (Total_population) => Exposed (Exposed) + Infected (Infected) + Total_population (Total_population);
+R1: Exposed (Exposed) => Infected (Infected);
+R2: Infected (Infected) => Recovered (Recovered);
+R3: Infected (Infected) => Deceased (Deceased);

@@ -1,0 +1,12 @@
+R0: X (LacI mRNA) => ;
+R1: Y (TetR mRNA) => ;
+R2: Z (cI mRNA) => ;
+R3: X (LacI mRNA) => PX (LacI protein) + X (LacI mRNA);
+R4: Y (TetR mRNA) => PY (TetR protein) + Y (TetR mRNA);
+R5: Z (cI mRNA) => PZ (cI protein) + Z (cI mRNA);
+R6: PX (LacI protein) => ;
+R7: PY (TetR protein) => ;
+R8: PZ (cI protein) => ;
+R9: PZ (cI protein) => X (LacI mRNA) + PZ (cI protein);
+R10: PX (LacI protein) => Y (TetR mRNA) + PX (LacI protein);
+R11: PY (TetR protein) => Z (cI mRNA) + PY (TetR protein);

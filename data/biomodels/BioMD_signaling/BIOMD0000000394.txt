@@ -1,0 +1,10 @@
+R0: s23 (Raf_minus_1) + s22 (Akt) + s29 (RKIP) + s124 (Ras) + s33 (14_minus_3_minus_3) + s31 (PP2A) => s24 (Raf_minus_1) + s22 (Akt) + s29 (RKIP) + s124 (Ras) + s33 (14_minus_3_minus_3) + s31 (PP2A);
+R1: s25 (MEK1_minus_2) + s24 (Raf_minus_1) => s26 (MEK1_minus_2) + s24 (Raf_minus_1);
+R2: s29 (RKIP) + s127 (PKC) => s30 (RKIP) + s127 (PKC);
+R3: s27 (ERK1_minus_2) + s26 (MEK1_minus_2) => s28 (ERK1_minus_2) + s26 (MEK1_minus_2);
+R4: s28 (ERK1_minus_2) => s34 (Mitogenesis_br_Differentiation);
+R5: 2s123 (EGFR) + s3 (EGF) => s129 (EGFR) + s3 (EGF);
+R6: s127 (PKC) + s144 (Complex_br_(EGFR/../_br_GAP)) => s127 (PKC) + s144 (Complex_br_(EGFR/../_br_GAP));
+R7: s21 (Akt) + s144 (Complex_br_(EGFR/../_br_GAP)) => s22 (Akt) + s144 (Complex_br_(EGFR/../_br_GAP));
+R8: s124 (Ras) + s125 (GDP) + s144 (Complex_br_(EGFR/../_br_GAP)) => s124 (Ras) + s126 (GTP) + s144 (Complex_br_(EGFR/../_br_GAP));
+R9: s129 (EGFR) + s147 (Complex(Grb2/../PLC)) + s142 (erlotinib) => s144 (Complex_br_(EGFR/../_br_GAP)) + s142 (erlotinib);

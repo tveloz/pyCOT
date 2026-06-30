@@ -1,0 +1,2 @@
+R0: species_0 (S) + species_2 (E1) => species_1 (X1) + species_2 (E1);
+R1: species_1 (X1) + species_3 (E2) => species_4 (P) + species_3 (E2);

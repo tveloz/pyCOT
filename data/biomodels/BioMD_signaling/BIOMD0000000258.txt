@@ -1,0 +1,4 @@
+R0: alpha (alpha) => beta (beta);
+R1: beta (beta) + gamma (gamma) => alpha (alpha) + gamma (gamma);
+R2: beta (beta) + alpha (alpha) => gamma (gamma) + alpha (alpha);
+R3: gamma (gamma) => beta (beta);

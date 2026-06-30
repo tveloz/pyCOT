@@ -1,0 +1,6 @@
+R0:  => P (Virus Pathogenicity (P));
+R1: P (Virus Pathogenicity (P)) + D (Antiviral Immune defense (D)) => D (Antiviral Immune defense (D));
+R2: P (Virus Pathogenicity (P)) => D (Antiviral Immune defense (D)) + P (Virus Pathogenicity (P));
+R3: D (Antiviral Immune defense (D)) => ;
+R4:  => I (Inflammation (I));
+R5: I (Inflammation (I)) => ;

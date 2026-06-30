@@ -1,0 +1,11 @@
+R0:  => S (Susceptible Individuals (S));
+R1: I (Infected Individuals (I)) => S (Susceptible Individuals (S));
+R2: S (Susceptible Individuals (S)) + I (Infected Individuals (I)) + M (Message (M)) => E (Exposed Individuals (E)) + I (Infected Individuals (I)) + M (Message (M));
+R3: S (Susceptible Individuals (S)) => ;
+R4: E (Exposed Individuals (E)) => I (Infected Individuals (I));
+R5: E (Exposed Individuals (E)) => ;
+R6: I (Infected Individuals (I)) => ;
+R7: S (Susceptible Individuals (S)) => M (Message (M)) + S (Susceptible Individuals (S));
+R8: E (Exposed Individuals (E)) => M (Message (M)) + E (Exposed Individuals (E));
+R9: I (Infected Individuals (I)) => M (Message (M)) + I (Infected Individuals (I));
+R10: M (Message (M)) => ;

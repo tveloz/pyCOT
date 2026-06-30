@@ -1,0 +1,3 @@
+R0:  => Monoaminergic__MA__voltage (Monoaminergic (MA) voltage);
+R1:  => Ventrolateral_preopticarea__VLPO__voltage (Ventrolateral preopticarea (VLPO) voltage);
+R2:  => Somnogen_level_H (Somnogen level H);

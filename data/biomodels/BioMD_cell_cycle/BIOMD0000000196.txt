@@ -1,0 +1,13 @@
+R0:  => x1 (cyclin);
+R1: x1 (cyclin) + x2 (free CDK) => Pre_MPF (Pre_MPF);
+R2: x1 (cyclin) + x6 (APC_P) => x6 (APC_P);
+R3: x3 (MPF) + x6 (APC_P) => x2 (free CDK) + x6 (APC_P);
+R4: Pre_MPF (Pre_MPF) + x4 (cdc25_P) => x3 (MPF) + x4 (cdc25_P);
+R5: x3 (MPF) + x5 (Wee1) => Pre_MPF (Pre_MPF) + x5 (Wee1);
+R6: y4 (cdc25) + m (cell_mass) + x3 (MPF) => x4 (cdc25_P) + m (cell_mass) + x3 (MPF);
+R7: x4 (cdc25_P) => y4 (cdc25);
+R8: y5 (Wee1_P) => x5 (Wee1);
+R9: x5 (Wee1) + x3 (MPF) + m (cell_mass) => y5 (Wee1_P) + x3 (MPF) + m (cell_mass);
+R10: y6 (APC) + m (cell_mass) + x3 (MPF) => x6 (APC_P) + m (cell_mass) + x3 (MPF);
+R11: x6 (APC_P) => y6 (APC);
+R12:  => m (cell_mass);

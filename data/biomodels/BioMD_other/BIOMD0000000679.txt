@@ -1,0 +1,8 @@
+R0: K_T (K_T) => phi_I (phi_I) + K_T (K_T);
+R1: phi_R (phi_R) => phi_I (phi_I) + phi_R (phi_R);
+R2: phi_I (phi_I) => phi_R (phi_R) + phi_I (phi_I);
+R3: phi_I (phi_I) => ;
+R4: K_T (K_T) => phi_R (phi_R) + K_T (K_T);
+R5: phi_R (phi_R) => ;
+R6: phi_I (phi_I) => T (T) + phi_I (phi_I);
+R7: T (T) => ;

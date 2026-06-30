@@ -102,3 +102,60 @@ hierarchy_visualize_html(
     ],
     filename="hierarchy_bf.html"
 )
+
+# ========================================
+# 6. RN VISUALIZATION WITH SPECIES COLORING
+# ========================================
+# rn_visualize_html accepts lst_color_spcs as a list of (color, [species, ...])
+# tuples.  When a species belongs to multiple groups the LAST matching entry
+# wins, so list higher-priority groups last.
+#
+# Three options are provided; uncomment the one you want.
+
+# ---- helper: union of a list of sets ----
+def _species_union(list_of_sets):
+    result = set()
+    for s in list_of_sets:
+        result |= s
+    return result
+
+# ---- Option A: auto-derive groups from brute-force results ---------------
+# orange = in at least one closure
+# yellow = in at least one semi-organisation (overrides orange)
+# green  = in at least one full organisation  (overrides yellow)
+all_closure_species = sorted(_species_union(all_closures_sets))
+all_ssm_species     = sorted(_species_union(semi_org_sets))
+all_org_species     = sorted(_species_union(org_sets))
+
+rn_visualize_html(
+    rn,
+    lst_color_spcs=[
+        ("orange", all_closure_species),
+        ("yellow", all_ssm_species),
+        ("green",  all_org_species),
+    ],
+    filename="rn_colored_auto.html",
+)
+
+# ---- Option B: manual species groups -------------------------------------
+# Define any number of named colour groups.  Edit species names and colours
+# to match your network.
+#
+# custom_groups = [
+#     ("red",    ["species_A", "species_B"]),
+#     ("blue",   ["species_C", "species_D"]),
+#     ("purple", ["species_E"]),
+# ]
+# rn_visualize_html(rn, lst_color_spcs=custom_groups,
+#                   filename="rn_colored_custom.html")
+
+# ---- Option C: highlight species of one specific organisation ------------
+# Pick by index into org_sets (0-based).
+#
+# if org_sets:
+#     idx = 0
+#     rn_visualize_html(
+#         rn,
+#         lst_color_spcs=[("green", sorted(org_sets[idx]))],
+#         filename=f"rn_org{idx}.html",
+#     )

@@ -1,0 +1,10 @@
+R0: V (V) => ;
+R1:  => nK (nK);
+R2:  => hNaP (hNaP);
+R3:  => hH (hH);
+R4:  => mLVA (mLVA);
+R5:  => hLVA (hLVA);
+R6:  => mBK (mBK);
+R7:  => Ca (Ca);
+R8:  => nHVK (nHVK);
+R9: Ca (Ca) => ;

@@ -1,0 +1,6 @@
+R0: MDM2cyt (MDM2cyt) => p53 (p53) + MDM2cyt (MDM2cyt);
+R1: p53 (p53) => ;
+R2: p53 (p53) => MDM2cyt (MDM2cyt) + p53 (p53);
+R3: MDM2cyt (MDM2cyt) => MDM2nuc (MDM2nuc);
+R4: MDM2cyt (MDM2cyt) => ;
+R5: MDM2nuc (MDM2nuc) => ;

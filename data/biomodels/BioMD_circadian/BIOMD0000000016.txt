@@ -1,0 +1,10 @@
+R0: EmptySet (EmptySet) + Pn (nuclear PER) => M (PER mRNA) + Pn (nuclear PER);
+R1: EmptySet (EmptySet) + M (PER mRNA) => P0 (unphosphorylated PER) + M (PER mRNA);
+R2: P0 (unphosphorylated PER) => P1 (monophosphorylated PER);
+R3: P1 (monophosphorylated PER) => P0 (unphosphorylated PER);
+R4: P1 (monophosphorylated PER) => P2 (biphosphorylated PER);
+R5: P2 (biphosphorylated PER) => P1 (monophosphorylated PER);
+R6: P2 (biphosphorylated PER) => Pn (nuclear PER);
+R7: Pn (nuclear PER) => P2 (biphosphorylated PER);
+R8: M (PER mRNA) => EmptySet (EmptySet);
+R9: P2 (biphosphorylated PER) => EmptySet (EmptySet);

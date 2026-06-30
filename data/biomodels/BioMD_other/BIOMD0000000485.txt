@@ -1,0 +1,4 @@
+R0: ES (ES) + 3X (X) => 4X (X);
+R1: 4X (X) => ES (ES) + 3X (X);
+R2: ES (ES) => X (X);
+R3: 2X (X) => ES (ES) + X (X);

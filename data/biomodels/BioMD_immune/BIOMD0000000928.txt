@@ -1,0 +1,13 @@
+R0:  => solution3 (Fragments);
+R1: solution2 (MMP) => solution2 (MMP) + solution3 (Fragments);
+R2: solution3 (Fragments) => ;
+R3:  => solution2 (MMP);
+R4: solution0 (p-Cytokines) => solution0 (p-Cytokines) + solution2 (MMP);
+R5: solution2 (MMP) => ;
+R6: solution0 (p-Cytokines) => solution0 (p-Cytokines) + solution1 (a-Cytokines);
+R7: solution3 (Fragments) => solution1 (a-Cytokines) + solution3 (Fragments);
+R8: solution1 (a-Cytokines) => ;
+R9: solution1 (a-Cytokines) => solution0 (p-Cytokines) + solution1 (a-Cytokines);
+R10: solution0 (p-Cytokines) + solution1 (a-Cytokines) => 2solution0 (p-Cytokines) + solution1 (a-Cytokines);
+R11: solution1 (a-Cytokines) + solution3 (Fragments) => solution0 (p-Cytokines) + solution1 (a-Cytokines) + solution3 (Fragments);
+R12: solution0 (p-Cytokines) => ;

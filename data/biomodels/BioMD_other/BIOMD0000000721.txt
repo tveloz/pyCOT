@@ -1,0 +1,10 @@
+R0: Osteoblasts__B (Osteoblasts (B)) + Osteocytes__S (Osteocytes (S)) => 2Osteocytes__S (Osteocytes (S));
+R1: Osteocytes__S (Osteocytes (S)) => Pre_Osteoblasts__P (Pre-Osteoblasts (P)) + Osteocytes__S (Osteocytes (S));
+R2: Osteocytes__S (Osteocytes (S)) => Pre_Osteoblasts__P (Pre-Osteoblasts (P)) + Osteocytes__S (Osteocytes (S));
+R3: Pre_Osteoblasts__P (Pre-Osteoblasts (P)) + Osteoclasts__C (Osteoclasts (C)) => Osteoblasts__B (Osteoblasts (B)) + Osteoclasts__C (Osteoclasts (C));
+R4: Pre_Osteoblasts__P (Pre-Osteoblasts (P)) => ;
+R5: Osteoblasts__B (Osteoblasts (B)) => ;
+R6: Osteocytes__S (Osteocytes (S)) + Pre_Osteoblasts__P (Pre-Osteoblasts (P)) + Osteoblasts__B (Osteoblasts (B)) => Osteoclasts__C (Osteoclasts (C)) + Osteocytes__S (Osteocytes (S)) + Pre_Osteoblasts__P (Pre-Osteoblasts (P)) + Osteoblasts__B (Osteoblasts (B));
+R7: Osteoclasts__C (Osteoclasts (C)) => ;
+R8: Bone_volume__z (Bone volume (z)) + Osteoclasts__C (Osteoclasts (C)) => Osteoclasts__C (Osteoclasts (C));
+R9: Osteoblasts__B (Osteoblasts (B)) => Bone_volume__z (Bone volume (z)) + Osteoblasts__B (Osteoblasts (B));

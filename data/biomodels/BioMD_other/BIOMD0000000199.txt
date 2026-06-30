@@ -1,0 +1,10 @@
+R0: FeIII (FeIII) + NADPH (NADPH) => FeII (FeII) + NADPplus (NADPplus);
+R1: FeII (FeII) + O2 (O2) => FeII_O2 (FeII_O2);
+R2: FeII_O2 (FeII_O2) => FeIII_star (FeIII_star);
+R3: FeIII_star (FeIII_star) + NADPH (NADPH) => FeII_star (FeII_star) + NADPplus (NADPplus);
+R4: FeII_star (FeII_star) + O2 (O2) => FeII_star_O2 (FeII_star_O2);
+R5: FeII_star_O2 (FeII_star_O2) => FeIII_NO (FeIII_NO) + citrulline (citruline);
+R6: FeIII_NO (FeIII_NO) => FeIII (FeIII) + NO (NO);
+R7: FeIII_NO (FeIII_NO) + NADPH (NADPH) => FeII_NO (FeII_NO) + NADPplus (NADPplus);
+R8: FeII_NO (FeII_NO) => FeII (FeII) + NO (NO);
+R9: FeII_NO (FeII_NO) + O2 (O2) => FeIII (FeIII) + NO3 (NO3);

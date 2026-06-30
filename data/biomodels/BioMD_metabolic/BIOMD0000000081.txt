@@ -1,0 +1,15 @@
+R0: ATP_C (ATP_C) + PIP_M (PIP_M) => PIP2_M (PIP2_M);
+R1: ip3_C (IP3_C) => ;
+R2: KCNQsites_M (KCNQsites_M) + PIP2_M (PIP2_M) => PIP2xKCNQ_M (PIP2xKCNQ_M);
+R3: GGTPgS_M (GGTPgS_M) + Mg2_C (Mg2_C) => GGTPgSMg_M (GGTPgSMg_M) + Mg2_C (Mg2_C);
+R4: GGTPMg_M (GGTPMg_M) => GGDP_M (GGDP_M);
+R5: G_M (G_M) + GTP_C (GTP_C) => GGTP_M (GGTP_M) + GTP_C (GTP_C);
+R6: GTPgS_C (GTPgS_C) + G_M (G_M) => GGTPgS_M (GGTPgS_M);
+R7: G_M (G_M) + GDPbS_C (GDPbS_C) => GGDPbS_M (GGDPbS_M);
+R8: GGTP_M (GGTP_M) + Mg2_C (Mg2_C) => GGTPMg_M (GGTPMg_M) + Mg2_C (Mg2_C);
+R9: GGDP_M (GGDP_M) + oxoM_EX (oxoM_EX) => GDP_C (GDP_C) + G_M (G_M) + oxoM_EX (oxoM_EX);
+R10: PIP2_M (PIP2_M) => PIP_M (PIP_M);
+R11: PIP2_M (PIP2_M) => ip3_C (IP3_C);
+R12: AlF4_C (AIF4_C) + GGDP_M (GGDP_M) => GGDPAlF4_M (GGDPAIF4_M);
+R13: ATP_C (ATP_C) + PI_M (PI_M) => PIP_M (PIP_M);
+R14: GGDPAlF4_M (GGDPAIF4_M) + Mg2_C (Mg2_C) => GGDPAlF4Mg_M (GGDPAIF4Mg_M) + Mg2_C (Mg2_C);

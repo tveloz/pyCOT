@@ -1,0 +1,4 @@
+R0:  => CDK1_active (CDK1_active);
+R1: CDK1_active (CDK1_active) + APC_active (APC_active) => APC_active (APC_active);
+R2: CDK1_active (CDK1_active) => APC_active (APC_active) + CDK1_active (CDK1_active);
+R3: APC_active (APC_active) => ;

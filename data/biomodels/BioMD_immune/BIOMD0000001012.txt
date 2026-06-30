@@ -1,0 +1,7 @@
+R0: Leukaemic_B_cells (Leukaemic_B_cells) + B_cells_healthy (B_cells_healthy) => CAR_T_cells (CAR_T-cells) + Leukaemic_B_cells (Leukaemic_B_cells) + B_cells_healthy (B_cells_healthy);
+R1: CAR_T_cells (CAR_T-cells) => ;
+R2:  => Leukaemic_B_cells (Leukaemic_B_cells);
+R3: Leukaemic_B_cells (Leukaemic_B_cells) + CAR_T_cells (CAR_T-cells) => CAR_T_cells (CAR_T-cells);
+R4: B_cells_healthy (B_cells_healthy) + CAR_T_cells (CAR_T-cells) => CAR_T_cells (CAR_T-cells);
+R5: B_cell_progenitors (B_cell_progenitors) + CAR_T_cells (CAR_T-cells) => B_cells_healthy (B_cells_healthy) + CAR_T_cells (CAR_T-cells);
+R6:  => B_cell_progenitors (B_cell_progenitors);

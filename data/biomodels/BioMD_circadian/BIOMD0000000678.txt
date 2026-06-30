@@ -1,0 +1,4 @@
+R0: NFAT_phosphorylated (NFAT_phosphorylated) + stimulus (stimulus) => NFAT_dephosphorylated (NFAT_dephosphorylated) + stimulus (stimulus);
+R1: NFAT_dephosphorylated (NFAT_dephosphorylated) => NFAT_phosphorylated (NFAT_phosphorylated);
+R2: NFAT_dephosphorylated (NFAT_dephosphorylated) => NFAT_transported (NFAT_transported);
+R3: NFAT_transported (NFAT_transported) => NFAT_phosphorylated (NFAT_phosphorylated);

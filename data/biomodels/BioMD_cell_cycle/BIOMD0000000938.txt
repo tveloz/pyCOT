@@ -1,0 +1,8 @@
+R0:  => Cdk (Cdk);
+R1: Cdk (Cdk) => ;
+R2: Cdk (Cdk) + Anaphase_promoting_complex_Phosphorylated (Anaphase_promoting_complex_Phosphorylated) + Securin (Securin) => Anaphase_promoting_complex_Phosphorylated (Anaphase_promoting_complex_Phosphorylated) + Securin (Securin);
+R3: Cdk (Cdk) + Anaphase_promoting_complex (Anaphase_promoting_complex) => Anaphase_promoting_complex_Phosphorylated (Anaphase_promoting_complex_Phosphorylated) + Cdk (Cdk) + Anaphase_promoting_complex (Anaphase_promoting_complex);
+R4: Anaphase_promoting_complex_Phosphorylated (Anaphase_promoting_complex_Phosphorylated) => ;
+R5:  => Securin (Securin);
+R6: Securin (Securin) => ;
+R7: Securin (Securin) + Anaphase_promoting_complex_Phosphorylated (Anaphase_promoting_complex_Phosphorylated) + Cdk (Cdk) => Anaphase_promoting_complex_Phosphorylated (Anaphase_promoting_complex_Phosphorylated) + Cdk (Cdk);

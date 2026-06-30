@@ -1,0 +1,15 @@
+R0:  => T (T);
+R1: T (T) + M1 (M1) + C (C) + F_beta (F_beta) => M1 (M1) + C (C) + F_beta (F_beta);
+R2: M2 (M2) + T (T) + F_beta (F_beta) => C (C) + M2 (M2) + T (T) + F_beta (F_beta);
+R3: C (C) => ;
+R4:  => C (C);
+R5:  => F_beta (F_beta);
+R6: T (T) => F_beta (F_beta) + T (T);
+R7: F_beta (F_beta) => ;
+R8: C (C) => F_gamma (F_gamma) + C (C);
+R9: F_gamma (F_gamma) => ;
+R10:  => M1 (M1);
+R11:  => M1 (M1);
+R12: M1 (M1) => ;
+R13:  => M2 (M2);
+R14: M2 (M2) => ;

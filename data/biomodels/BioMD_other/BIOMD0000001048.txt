@@ -1,0 +1,6 @@
+R0: Ttum (Ttum) => Tplas (Tplas);
+R1: Tplas (Tplas) => ;
+R2: Tplas (Tplas) => Tnew (Tnew) + Tplas (Tplas);
+R3:  => Tnew (Tnew);
+R4:  => Ttum (Ttum);
+R5: Tplas (Tplas) + Tnew (Tnew) => Tnew (Tnew);

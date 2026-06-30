@@ -1,0 +1,5 @@
+R0: TF1 (TF1) => TF1 (TF1) + miR (miR);
+R1: miR (miR) => Sink (Sink);
+R2: TF1 (TF1) => TF1 (TF1) + TF1target_mRNA (TF1target_mRNA);
+R3: TF1target_mRNA (TF1target_mRNA) => Sink (Sink);
+R4: TF1target_mRNA (TF1target_mRNA) + miR (miR) => Sink (Sink) + miR (miR);

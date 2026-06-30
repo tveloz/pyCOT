@@ -1,0 +1,11 @@
+R0:  => Pneumococci___P (Pneumococci  (P));
+R1: Pneumococci___P (Pneumococci  (P)) + Debris__D (Debris (D)) + Neutrophils__N (Neutrophils (N)) => Debris__D (Debris (D)) + Neutrophils__N (Neutrophils (N));
+R2: Susceptible_epithelial_cells__EU (Susceptible epithelial cells (EU)) + Pneumococci___P (Pneumococci  (P)) => Pneumococci___P (Pneumococci  (P));
+R3: Pneumococci___P (Pneumococci  (P)) + Susceptible_epithelial_cells__EU (Susceptible epithelial cells (EU)) => Epithelial_cells_with_bacteria_attached__Ea (Epithelial cells with bacteria attached (Ea)) + Pneumococci___P (Pneumococci  (P)) + Susceptible_epithelial_cells__EU (Susceptible epithelial cells (EU));
+R4: Epithelial_cells_with_bacteria_attached__Ea (Epithelial cells with bacteria attached (Ea)) => ;
+R5: Epithelial_cells_with_bacteria_attached__Ea (Epithelial cells with bacteria attached (Ea)) + Neutrophils__N (Neutrophils (N)) + Pneumococci___P (Pneumococci  (P)) => proinflammatory_cytokine__C (proinflammatory cytokine (C)) + Epithelial_cells_with_bacteria_attached__Ea (Epithelial cells with bacteria attached (Ea)) + Neutrophils__N (Neutrophils (N)) + Pneumococci___P (Pneumococci  (P));
+R6: proinflammatory_cytokine__C (proinflammatory cytokine (C)) => ;
+R7: proinflammatory_cytokine__C (proinflammatory cytokine (C)) => Neutrophils__N (Neutrophils (N)) + proinflammatory_cytokine__C (proinflammatory cytokine (C));
+R8: Neutrophils__N (Neutrophils (N)) + Pneumococci___P (Pneumococci  (P)) => Pneumococci___P (Pneumococci  (P));
+R9: Neutrophils__N (Neutrophils (N)) + Pneumococci___P (Pneumococci  (P)) + Epithelial_cells_with_bacteria_attached__Ea (Epithelial cells with bacteria attached (Ea)) => Debris__D (Debris (D)) + Neutrophils__N (Neutrophils (N)) + Pneumococci___P (Pneumococci  (P)) + Epithelial_cells_with_bacteria_attached__Ea (Epithelial cells with bacteria attached (Ea));
+R10: Debris__D (Debris (D)) => ;

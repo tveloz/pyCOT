@@ -1,0 +1,15 @@
+R0: C3 (C3) + C3bBb (C3bBb) => C3b (C3b) + C3bBb (C3bBb);
+R1: C3b (C3b) + Factor_B (Factor_B) => C3bB_closed (C3bB_closed);
+R2: C3bB_closed (C3bB_closed) => C3bB_open (C3bB_open);
+R3: C3bB_open (C3bB_open) + Factor_D (Factor_D) => C3bBb (C3bBb) + Factor_D (Factor_D);
+R4: C3bBb (C3bBb) + Factor_H (Factor_H) => C3bBbH (C3bBbH);
+R5: C3bBbH (C3bBbH) => C3b (C3b) + Bb (Bb) + Factor_H (Factor_H);
+R6: C3bBb (C3bBb) => C3b (C3b) + Bb (Bb);
+R7: C3b (C3b) + Factor_H (Factor_H) => C3bH (C3bH);
+R8: C3bH (C3bH) + Factor_I (Factor_I) => iC3b (iC3b) + Factor_H (Factor_H) + Factor_I (Factor_I);
+R9:  => C3 (C3);
+R10: C3 (C3) => ;
+R11:  => Factor_B (Factor_B);
+R12: Factor_B (Factor_B) => ;
+R13:  => Factor_H (Factor_H);
+R14: Factor_H (Factor_H) => ;

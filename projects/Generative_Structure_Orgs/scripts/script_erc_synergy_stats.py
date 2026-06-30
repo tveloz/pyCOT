@@ -44,25 +44,35 @@ import networkx as nx
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 _PYCOT_ROOT = os.path.normpath(os.path.join(_SCRIPT_DIR, '..', '..', '..'))
 sys.path.insert(0, os.path.join(_PYCOT_ROOT, 'src'))
+sys.path.insert(0, _SCRIPT_DIR)
 
 from pyCOT.io.functions import read_txt
 from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_names
+from utils_ercs import load_ercs
 
 # -- Configuration -------------------------------------------------------------
-SCAN_FOLDERS = [
-    os.path.join(_PYCOT_ROOT, 'data', 'biomodels', 'biomodels_all_txt')
-    #os.path.join(_PYCOT_ROOT, 'networks', 'testing', 'performance_benchmark'),
-    #os.path.join(_PYCOT_ROOT, 'networks', 'testing'),
-    #os.path.join(_PYCOT_ROOT, 'networks', 'FarmVariants'),
-]
+_BIOMD = os.path.join(_PYCOT_ROOT, 'data', 'biomodels')
+SCAN_FOLDERS = {
+    os.path.join(_BIOMD, 'BioMD_metabolic'):       'BioMD_metabolic',
+    os.path.join(_BIOMD, 'BioMD_cell_cycle'):       'BioMD_cell_cycle',
+    os.path.join(_BIOMD, 'BioMD_circadian'):        'BioMD_circadian',
+    os.path.join(_BIOMD, 'BioMD_signaling'):        'BioMD_signaling',
+    os.path.join(_BIOMD, 'BioMD_gene_regulation'):  'BioMD_gene_regulation',
+    os.path.join(_BIOMD, 'BioMD_apoptosis'):        'BioMD_apoptosis',
+    os.path.join(_BIOMD, 'BioMD_immune'):           'BioMD_immune',
+    os.path.join(_BIOMD, 'BioMD_other'):            'BioMD_other',
+    os.path.join(_BIOMD, 'BiGG'):                   'BiGG',
+    os.path.join(_BIOMD, 'Other'):                  'Other',
+}
 
 OUT_DIR  = os.path.normpath(os.path.join(_SCRIPT_DIR, '..', 'outputs', 'synergy_stats'))
 CSV_FILE = os.path.join(OUT_DIR, 'synergy_stats.csv')
 
-MAX_REACTIONS  = 250  # skip networks with more reactions than this (pre-ERC filter)
-MAX_ERCS       = 250  # skip networks with more than this many ERCs (post-ERC filter)
-MAX_ERCS_3SYN  = 100   # only compute ternary synergies for networks this size or smaller
-MAX_TIME_ERCS  = 1200  # max seconds for ERC computation per network
+MAX_REACTIONS  = 1000 # skip networks with more reactions than this (pre-ERC filter)
+MAX_ERCS       = 900  # skip networks with more than this many ERCs (post-ERC filter)
+MIN_ERCS       = 4    # skip networks with fewer than this many ERCs (post-ERC filter)
+MAX_ERCS_3SYN  = 900   # only compute ternary synergies for networks this size or smaller
+MAX_TIME_ERCS  = 600  # max seconds for ERC computation per network
 
 os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -412,8 +422,10 @@ def compute_synergy_stats(ercs, hierarchy, RN):
 # ===========================================================================
 
 def collect_files(folders):
+    """folders is a dict {folder_path: dataset_label}.
+    Returns list of (abs_path, dataset_label) tuples, deduplicated by real path."""
     seen, files = set(), []
-    for folder in folders:
+    for folder, label in folders.items():
         if not os.path.isdir(folder):
             continue
         for fname in sorted(os.listdir(folder)):
@@ -423,7 +435,7 @@ def collect_files(folders):
             real = os.path.realpath(path)
             if real not in seen:
                 seen.add(real)
-                files.append(path)
+                files.append((path, label))
     return files
 
 
@@ -435,11 +447,22 @@ all_files = collect_files(SCAN_FOLDERS)
 print(f"Found {len(all_files)} .txt files across {len(SCAN_FOLDERS)} folders.")
 
 # Load existing CSV so already-computed networks are not reprocessed.
-# Only rows that were successfully computed are in the CSV; previously
-# filtered/skipped networks are not, so raising MAX_REACTIONS will
-# automatically retry them on the next run.
+# Networks where ternary synergy was previously skipped (syn3_computed=False)
+# but now fall within MAX_ERCS_3SYN are excluded from the cache so they get
+# reprocessed to fill in the ternary columns.
 if os.path.exists(CSV_FILE):
     _existing = pd.read_csv(CSV_FILE)
+    _existing = _existing[_existing['n_ercs'] >= MIN_ERCS]
+    if 'syn3_computed' in _existing.columns:
+        needs_ternary = (
+            (~_existing['syn3_computed'].astype(bool)) &
+            (_existing['n_ercs'] <= MAX_ERCS_3SYN)
+        )
+        n_requeue = int(needs_ternary.sum())
+        if n_requeue:
+            print(f"Re-queuing {n_requeue} networks where ternary was previously skipped "
+                  f"but n_ercs <= {MAX_ERCS_3SYN} now.")
+        _existing = _existing[~needs_ternary]
     already_done = set(_existing['file'].astype(str))
     print(f"Resuming: {len(already_done)} networks already cached in {CSV_FILE}")
 else:
@@ -449,7 +472,7 @@ else:
 records = []
 skipped = []
 
-for idx, fpath in enumerate(all_files):
+for idx, (fpath, dataset_label) in enumerate(all_files):
     fname = os.path.basename(fpath)
     if fname in already_done:
         print(f"[{idx+1}/{len(all_files)}] {fname}  — CACHED, skip")
@@ -468,22 +491,22 @@ for idx, fpath in enumerate(all_files):
             continue
 
         t0 = time.time()
-        ercs = ERC.ERCs(RN)
+        ercs, _cached = load_ercs(fpath, RN, ERC)
         t_ercs = time.time() - t0
 
         # Filter out E_∅ (empty-closure ERC).
-        # generators() always adds clos(∅) as the first entry; for networks
-        # without inflow reactions this produces an ERC with an empty closure.
-        # The paper (Def 14) notes E_∅ is "redundant to every generator" and
-        # excluded from all generative analysis.  Counting it inflates n_ercs
-        # above n_reactions for networks where every reaction has a unique support.
         ercs = [e for e in ercs if len(e.get_closure_names(RN)) > 0]
         n_ercs = len(ercs)
-        print(f"  {n_ercs} ERCs (E_∅ excluded)  ({t_ercs:.1f}s)")
+        cache_tag = ' [cache]' if _cached else ''
+        print(f"  {n_ercs} ERCs (E_∅ excluded)  ({t_ercs:.1f}s){cache_tag}")
 
         if n_ercs > MAX_ERCS:
             print(f"  SKIP: too many ERCs ({n_ercs} > {MAX_ERCS})")
             skipped.append((fname, f'too many ERCs: {n_ercs}'))
+            continue
+        if n_ercs < MIN_ERCS:
+            print(f"  SKIP: too few ERCs ({n_ercs} < {MIN_ERCS})")
+            skipped.append((fname, f'too few ERCs: {n_ercs}'))
             continue
         if t_ercs > MAX_TIME_ERCS:
             print(f"  SKIP: ERC computation too slow ({t_ercs:.1f}s)")
@@ -512,6 +535,7 @@ for idx, fpath in enumerate(all_files):
         n_triples = n_ercs * (n_ercs - 1) * (n_ercs - 2) // 6  # C(n,3)
         records.append({
             'file':         fname,
+            'dataset':      dataset_label,
             'n_species':    n_sp,
             'n_reactions':  n_rx,
             'n_ercs':       n_ercs,

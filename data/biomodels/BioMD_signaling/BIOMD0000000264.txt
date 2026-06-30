@@ -1,0 +1,15 @@
+R0: EGF (EGF) + EGFR (EGFR) => EGF_EGFR (EGF_EGFR);
+R1: pEGFR (pEGFR) + Akt (Akt) => pEGFR_Akt (pEGFR_Akt);
+R2: pEGFR_Akt (pEGFR_Akt) => pEGFR (pEGFR) + pAkt (pAkt);
+R3: pEGFR (pEGFR) => ;
+R4: pAkt (pAkt) + S6 (S6) => pAkt_S6 (pAkt_S6);
+R5: pAkt_S6 (pAkt_S6) => pAkt (pAkt) + pS6 (pS6);
+R6: pAkt (pAkt) => Akt (Akt);
+R7: pS6 (pS6) => S6 (S6);
+R8: pro_EGFR (pro_EGFR) => EGFR (EGFR);
+R9: EGF_EGFR (EGF_EGFR) => pEGFR (pEGFR);
+R10: EGFR (EGFR) => ;
+R11: Inhibitor (Inhibitor) + EGFR (EGFR) => EGFR_i (EGFR_i);
+R12: Inhibitor (Inhibitor) + EGF_EGFR (EGF_EGFR) => EGF_EGFR_i (EGF_EGFR_i);
+R13: EGF (EGF) + EGFR_i (EGFR_i) => EGF_EGFR_i (EGF_EGFR_i);
+R14: EGFR_i (EGFR_i) => ;

@@ -1,0 +1,8 @@
+R0:  => T (T);
+R1: T (T) + VI (VI) => VI (VI);
+R2: VI (VI) + T (T) => I (I) + VI (VI) + T (T);
+R3: I (I) => ;
+R4: I (I) => VI (VI) + I (I);
+R5: VI (VI) => ;
+R6: I (I) => VNI (VNI) + I (I);
+R7: VNI (VNI) => ;

@@ -1,0 +1,9 @@
+R0:  => C_Uninfected_CD4 (C_Uninfected_CD4);
+R1: C_Uninfected_CD4 (C_Uninfected_CD4) => ;
+R2: I_Infected_CD4 (I_Infected_CD4) => ;
+R3: F_CTL (F_CTL) => ;
+R4: V_Virus (V_Virus) => ;
+R5: C_Uninfected_CD4 (C_Uninfected_CD4) + V_Virus (V_Virus) => I_Infected_CD4 (I_Infected_CD4) + V_Virus (V_Virus);
+R6: I_Infected_CD4 (I_Infected_CD4) + F_CTL (F_CTL) => F_CTL (F_CTL);
+R7: C_Uninfected_CD4 (C_Uninfected_CD4) + V_Virus (V_Virus) => F_CTL (F_CTL) + C_Uninfected_CD4 (C_Uninfected_CD4) + V_Virus (V_Virus);
+R8: I_Infected_CD4 (I_Infected_CD4) => V_Virus (V_Virus) + I_Infected_CD4 (I_Infected_CD4);

@@ -1,0 +1,10 @@
+R0: susceptible (susceptible) => exposed (exposed);
+R1: exposed (exposed) => symptomatic (symptomatic);
+R2: exposed (exposed) => asymptomatic (asymptomatic);
+R3: symptomatic (symptomatic) => detected (detected) + detected_cumulative (detected_cumulative);
+R4: asymptomatic (asymptomatic) => detected (detected) + detected_cumulative (detected_cumulative);
+R5: symptomatic (symptomatic) => recovered (recovered);
+R6: asymptomatic (asymptomatic) => recovered (recovered);
+R7: detected (detected) => recovered (recovered);
+R8: symptomatic (symptomatic) => deceased (deceased);
+R9: detected (detected) => deceased (deceased);

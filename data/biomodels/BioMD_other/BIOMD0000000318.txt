@@ -1,0 +1,17 @@
+R0:  => MC (Myc);
+R1:  => CD (CycD);
+R2: MC (Myc) => EF (E2F) + MC (Myc);
+R3: EF (E2F) => CE (CycE) + EF (E2F);
+R4: MC (Myc) => CD (CycD) + MC (Myc);
+R5:  => RB (Rb);
+R6: RE (Rb-E2F complex) + CD (CycD) + CE (CycE) => EF (E2F) + RP (phosphorylated Rb) + CD (CycD) + CE (CycE);
+R7: EF (E2F) + RB (Rb) => RE (Rb-E2F complex);
+R8: RB (Rb) + CD (CycD) + CE (CycE) => RP (phosphorylated Rb) + CD (CycD) + CE (CycE);
+R9: RP (phosphorylated Rb) => RB (Rb);
+R10: MC (Myc) => ;
+R11: EF (E2F) => ;
+R12: CE (CycE) => ;
+R13: CD (CycD) => ;
+R14: RB (Rb) => ;
+R15: RP (phosphorylated Rb) => ;
+R16: RE (Rb-E2F complex) => ;

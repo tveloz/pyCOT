@@ -1,0 +1,7 @@
+R0: L (Ligand) + R (Receptor) => RL (Receptor-Ligand);
+R1:  => R (Receptor);
+R2: R (Receptor) => ;
+R3: Gd (G-alpha-GDP) + Gbg (Free levels of G-beta-gamma) => G (Inactive heterotrimeric G-protein);
+R4: G (Inactive heterotrimeric G-protein) + RL (Receptor-Ligand) => Ga (G-alpha-GTP) + Gbg (Free levels of G-beta-gamma) + RL (Receptor-Ligand);
+R5: RL (Receptor-Ligand) => ;
+R6: Ga (G-alpha-GTP) => Gd (G-alpha-GDP);

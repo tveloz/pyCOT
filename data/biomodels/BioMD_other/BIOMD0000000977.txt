@@ -1,0 +1,15 @@
+R0: Susceptible (Susceptible) + Infected (Infected) => Susceptible_quarantined (Susceptible_quarantined) + Infected (Infected);
+R1: Infected (Infected) => Recovered (Recovered);
+R2: Susceptible_quarantined (Susceptible_quarantined) => Susceptible (Susceptible);
+R3: Susceptible (Susceptible) => ;
+R4: Susceptible_quarantined (Susceptible_quarantined) => ;
+R5: Susceptible (Susceptible) + Infected (Infected) => Asymptomatic (Asymptomatic) + Infected (Infected);
+R6: Susceptible (Susceptible) + Infected (Infected) => Exposed_quarantined (Infected_quarantined) + Infected (Infected);
+R7: Asymptomatic (Asymptomatic) => Infected (Infected);
+R8: Asymptomatic (Asymptomatic) => Recovered (Recovered);
+R9: Asymptomatic (Asymptomatic) => ;
+R10: Infected (Infected) => ;
+R11: Infected (Infected) => Exposed_quarantined (Infected_quarantined);
+R12: Exposed_quarantined (Infected_quarantined) => Recovered (Recovered);
+R13: Exposed_quarantined (Infected_quarantined) => ;
+R14: Recovered (Recovered) => ;

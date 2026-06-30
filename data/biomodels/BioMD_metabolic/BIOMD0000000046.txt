@@ -1,0 +1,15 @@
+R0: NADH (NADH) + O2 (O2) => H2O2 (H2O2) + NAD (NAD);
+R1: per3 (per3) + H2O2 (H2O2) => coI (coI);
+R2: ArH (ArH) + coI (coI) => Ar (Ar) + coII (coII);
+R3: coII (coII) + ArH (ArH) => per3 (per3) + Ar (Ar);
+R4: NADrad (NADrad) + O2 (O2) => NAD (NAD) + super (super);
+R5: per3 (per3) + super (super) => coIII (coIII);
+R6: 2super (super) => H2O2 (H2O2) + O2 (O2);
+R7: NADrad (NADrad) + coIII (coIII) => NAD (NAD) + coI (coI);
+R8: 2NADrad (NADrad) => NAD2 (NAD2);
+R9: per3 (per3) + NADrad (NADrad) => per2 (per2) + NAD (NAD);
+R10: per2 (per2) + O2 (O2) => coIII (coIII);
+R11: NADHres (NADHres) => NADH (NADH);
+R12: O2g (O2g) => O2 (O2);
+R13: O2 (O2) => O2g (O2g);
+R14: NADH (NADH) + Ar (Ar) => NADrad (NADrad) + ArH (ArH);

@@ -1,0 +1,9 @@
+R0: Target_cells (Target_cells) + Virions (Virions) => Infected_cells (Infected_cells) + Virions (Virions);
+R1: Target_cells (Target_cells) + IFN (IFN) => Refractory_cells (Refractory_cells) + IFN (IFN);
+R2: Infected_cells (Infected_cells) + IFN (IFN) => Infected_cells_antiviral (Infected_cells_antiviral) + IFN (IFN);
+R3: Infected_cells (Infected_cells) => ;
+R4: Infected_cells_antiviral (Infected_cells_antiviral) => ;
+R5: Infected_cells (Infected_cells) + Infected_cells_antiviral (Infected_cells_antiviral) => Virions (Virions) + Infected_cells (Infected_cells) + Infected_cells_antiviral (Infected_cells_antiviral);
+R6: Infected_cells (Infected_cells) + Infected_cells_antiviral (Infected_cells_antiviral) => IFN (IFN) + Infected_cells (Infected_cells) + Infected_cells_antiviral (Infected_cells_antiviral);
+R7: Virions (Virions) => ;
+R8: IFN (IFN) => ;

@@ -1,0 +1,17 @@
+R0: 2species_1 (mRNA) + 2species_2 (miRNA_1) => species_4 (duplex_1) + species_1 (mRNA) + species_2 (miRNA_1);
+R1: 2species_1 (mRNA) + 2species_3 (miRNA_2) => species_5 (duplex_2) + species_1 (mRNA) + species_3 (miRNA_2);
+R2: 2species_1 (mRNA) + 2species_2 (miRNA_1) + 2species_3 (miRNA_2) => species_6 (triplex) + species_1 (mRNA) + species_2 (miRNA_1) + species_3 (miRNA_2);
+R3: 2species_7 (TF_mRNA) => species_1 (mRNA) + 2species_7 (TF_mRNA);
+R4: 2species_8 (TF_miRNA_1) => species_2 (miRNA_1) + 2species_8 (TF_miRNA_1);
+R5: 2species_9 (TF_miRNA_2) => species_3 (miRNA_2) + 2species_9 (TF_miRNA_2);
+R6: 2species_1 (mRNA) => species_1 (mRNA);
+R7: 2species_2 (miRNA_1) => species_2 (miRNA_1);
+R8: 2species_3 (miRNA_2) => species_3 (miRNA_2);
+R9: 2species_4 (duplex_1) => species_2 (miRNA_1) + species_1 (mRNA) + species_4 (duplex_1);
+R10: 2species_5 (duplex_2) => species_3 (miRNA_2) + species_1 (mRNA) + species_5 (duplex_2);
+R11: 2species_6 (triplex) => species_2 (miRNA_1) + species_3 (miRNA_2) + species_1 (mRNA) + species_6 (triplex);
+R12: 2species_4 (duplex_1) => species_4 (duplex_1);
+R13: 2species_5 (duplex_2) => species_5 (duplex_2);
+R14: 2species_6 (triplex) => species_6 (triplex);
+R15: 2species_1 (mRNA) => species_10 (protein) + 2species_1 (mRNA);
+R16: 2species_10 (protein) => species_10 (protein);

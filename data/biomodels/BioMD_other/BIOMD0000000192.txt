@@ -1,0 +1,9 @@
+R0: RanGDP_nuc (RanGDP_nuc) + RCC1 (RCC1) => RCC1_RanGDP (RCC1_RanGDP);
+R1: RCC1_RanGDP (RCC1_RanGDP) => RCC1_Ran (RCC1_Ran) + GDP (GDP);
+R2: RCC1_Ran (RCC1_Ran) + GTP (GTP) => RCC1_RanGTP (RCC1_RanGTP);
+R3: RCC1_RanGTP (RCC1_RanGTP) => RanGTP_nuc (RanGTP_nuc) + RCC1 (RCC1);
+R4: RanGTP_nuc (RanGTP_nuc) => RanGTP_cy (RanGTP_cy);
+R5: RanGDP_nuc (RanGDP_nuc) => RanGDP_cy (RanGDP_cy);
+R6: RanGTP_cy (RanGTP_cy) + RanBP1 (RanBP1) => RanGTP_RanBP1 (RanGTP_RanBP1);
+R7: RanGTP_RanBP1 (RanGTP_RanBP1) + RanGAP (RanGAP) => RanGDP_cy (RanGDP_cy) + RanBP1 (RanBP1) + RanGAP (RanGAP);
+R8: RanGTP_cy (RanGTP_cy) + RanGAP (RanGAP) => RanGDP_cy (RanGDP_cy) + RanGAP (RanGAP);

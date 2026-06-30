@@ -1,0 +1,16 @@
+R0: DFG (DFG) => E1 (E1);
+R1: DFG (DFG) => E2 (E2);
+R2: DFG (DFG) => Gly (Gly) + Cn (Cn);
+R3: E1 (E1) => Gly (Gly) + _3DG (_3DG);
+R4: _3DG (_3DG) => Cn (Cn);
+R5: _3DG (_3DG) => FA (FA);
+R6: E2 (E2) => Gly (Gly) + _1DG (_1DG);
+R7: _1DG (_1DG) => Cn (Cn);
+R8: _1DG (_1DG) => AA (AA);
+R9: E1 (E1) => Gly (Gly) + Man (Man);
+R10: E1 (E1) => Gly (Gly) + Glu (Glu);
+R11: Man (Man) => Glu (Glu);
+R12: Glu (Glu) => _3DG (_3DG);
+R13: Gly (Gly) + Cn (Cn) => Mel (Mel);
+R14: Cn (Cn) => AA (AA) + FA (FA) + MG (MG);
+R15: E2 (E2) => Gly (Gly) + Fru (Fru);

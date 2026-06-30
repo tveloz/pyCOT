@@ -1,0 +1,7 @@
+R0:  => BCG (BCG);
+R1: BCG (BCG) + Tumor_infected_cells (Tumor_infected_cells) => Effector_cells (Effector_cells) + BCG (BCG) + Tumor_infected_cells (Tumor_infected_cells);
+R2: Effector_cells (Effector_cells) + Tumor_infected_cells (Tumor_infected_cells) => Tumor_infected_cells (Tumor_infected_cells);
+R3:  => Tumor_uninfected_cells (Tumor_uninfected_cells);
+R4: Tumor_uninfected_cells (Tumor_uninfected_cells) + BCG (BCG) => Tumor_infected_cells (Tumor_infected_cells);
+R5: Tumor_infected_cells (Tumor_infected_cells) + Effector_cells (Effector_cells) => Effector_cells (Effector_cells);
+R6: BCG (BCG) + Effector_cells (Effector_cells) => Effector_cells (Effector_cells);

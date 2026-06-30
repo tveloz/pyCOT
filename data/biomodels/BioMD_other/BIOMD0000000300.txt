@@ -1,0 +1,10 @@
+R0:  => species_1 (Htot);
+R1: species_1 (Htot) => ;
+R2: species_1 (Htot) + species_8 (Ptot) + species_11 (O2) + species_10 (HP) => species_8 (Ptot) + species_11 (O2) + species_10 (HP);
+R3:  => species_2 (H);
+R4: species_2 (H) => ;
+R5: species_2 (H) + species_8 (Ptot) + species_11 (O2) + species_10 (HP) => species_8 (Ptot) + species_11 (O2) + species_10 (HP);
+R6: species_2 (H) + species_7 (Ftot) + species_11 (O2) + species_9 (HF) => species_7 (Ftot) + species_11 (O2) + species_9 (HF);
+R7:  => species_3 (A);
+R8: species_3 (A) => ;
+R9: species_3 (A) + species_7 (Ftot) + species_11 (O2) + species_5 (Atot) => species_7 (Ftot) + species_11 (O2) + species_5 (Atot);

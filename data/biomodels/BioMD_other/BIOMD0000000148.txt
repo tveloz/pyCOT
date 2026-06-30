@@ -1,0 +1,6 @@
+R0: x2 (Osteoblast) => x1 (Osteoclast) + x2 (Osteoblast);
+R1: x1 (Osteoclast) => ;
+R2: x1 (Osteoclast) => x2 (Osteoblast) + x1 (Osteoclast);
+R3: x2 (Osteoblast) => ;
+R4: z (Bone mass) + x1 (Osteoclast) + x1_bar (Steady state osteoclast) => x1 (Osteoclast) + x1_bar (Steady state osteoclast);
+R5: x2 (Osteoblast) + x2_bar (Steady state osteoblast) => z (Bone mass) + x2 (Osteoblast) + x2_bar (Steady state osteoblast);

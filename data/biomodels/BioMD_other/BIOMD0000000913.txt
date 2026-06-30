@@ -1,0 +1,12 @@
+R0:  => T (T);
+R1: T (T) + N (N) + M (M) => N (N) + M (M);
+R2: C (C) + T (T) + I (I) => L (L) + C (C) + T (T) + I (I);
+R3: L (L) + T (T) + M (M) => T (T) + M (M);
+R4: T (T) => N (N) + T (T);
+R5: N (N) + T (T) + M (M) => T (T) + M (M);
+R6:  => C (C);
+R7: C (C) + M (M) => M (M);
+R8: T (T) + L (L) => I (I) + T (T) + L (L);
+R9: I (I) => ;
+R10:  => M (M);
+R11: M (M) => ;

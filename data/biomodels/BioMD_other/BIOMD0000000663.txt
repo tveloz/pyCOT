@@ -1,0 +1,9 @@
+R0: v (v_free_virus) => x (x_Tcell_infected) + v (v_free_virus);
+R1: x (x_Tcell_infected) + v (v_free_virus) + y (y_Tcell_uninfected) => v (v_free_virus) + y (y_Tcell_uninfected);
+R2: x (x_Tcell_infected) => ;
+R3: x (x_Tcell_infected) + v (v_free_virus) => y (y_Tcell_uninfected) + v (v_free_virus);
+R4: v (v_free_virus) => y (y_Tcell_uninfected) + v (v_free_virus);
+R5: y (y_Tcell_uninfected) + v (v_free_virus) + x (x_Tcell_infected) => v (v_free_virus) + x (x_Tcell_infected);
+R6: y (y_Tcell_uninfected) => ;
+R7: y (y_Tcell_uninfected) => v (v_free_virus) + y (y_Tcell_uninfected);
+R8: v (v_free_virus) => ;

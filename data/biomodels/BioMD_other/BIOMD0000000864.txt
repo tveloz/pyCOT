@@ -1,0 +1,9 @@
+R0: miR_gene (miR_gene) + TF1 (TF1) => miR_gene_TF1 (miR_gene_TF1);
+R1: miR_gene_TF1 (miR_gene_TF1) => miR_gene (miR_gene) + TF1 (TF1);
+R2: miR_gene_TF1 (miR_gene_TF1) => miR_gene_TF1 (miR_gene_TF1) + miR (miR);
+R3: miR (miR) => Sink (Sink);
+R4: Signal (Signal) => Signal (Signal) + TF1_mRNA (TF1_mRNA);
+R5: TF1_mRNA (TF1_mRNA) => Sink (Sink);
+R6: TF1_mRNA (TF1_mRNA) + miR (miR) => miR (miR);
+R7: TF1_mRNA (TF1_mRNA) => TF1_mRNA (TF1_mRNA) + TF1 (TF1);
+R8: TF1 (TF1) => Sink (Sink);

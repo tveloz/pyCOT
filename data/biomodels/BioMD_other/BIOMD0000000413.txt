@@ -1,0 +1,9 @@
+R0: auxin (auxin) + TIR1 (TIR1) => auxinTIR1 (auxinTIR1);
+R1: auxinTIR1 (auxinTIR1) => auxin (auxin) + TIR1 (TIR1);
+R2: auxinTIR1 (auxinTIR1) + VENUS (VENUS) => auxinTIR1VENUS (auxinTIR1VENUS);
+R3: auxinTIR1VENUS (auxinTIR1VENUS) => auxinTIR1 (auxinTIR1) + VENUS (VENUS);
+R4: auxinTIR1VENUS (auxinTIR1VENUS) => auxinTIR1 (auxinTIR1);
+R5:  => auxin (auxin);
+R6: auxin (auxin) => ;
+R7:  => VENUS (VENUS);
+R8: VENUS (VENUS) => ;

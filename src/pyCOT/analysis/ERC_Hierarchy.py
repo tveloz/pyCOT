@@ -138,7 +138,15 @@ class ERC:
     def get_closure(self, RN):
         """Get closure with simple caching"""
         if self._closure is None:
-            self._closure = closure(RN, self.min_generators[0])
+            gen = self.min_generators[0]
+            # Stub objects loaded from cache (e.g. _S from utils_ercs) carry only
+            # .name and lack .index, which breaks RN.get_prod_from_species.  Resolve
+            # them to proper Species objects before entering closure().
+            proper_gen = [
+                RN.get_species(sp.name) if not hasattr(sp, 'index') else sp
+                for sp in gen
+            ]
+            self._closure = closure(RN, proper_gen)
             self._closure_names = set(species_list_to_names(self._closure))
         return self._closure
     

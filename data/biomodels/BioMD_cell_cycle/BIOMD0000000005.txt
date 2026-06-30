@@ -1,0 +1,9 @@
+R0: M (p-cyclin_cdc2) => C2 (cdc2k) + YP (p-cyclin);
+R1: C2 (cdc2k) => CP (cdc2k-P);
+R2: CP (cdc2k-P) => C2 (cdc2k);
+R3: CP (cdc2k-P) + Y (cyclin) => pM (p-cyclin_cdc2-p);
+R4: M (p-cyclin_cdc2) => pM (p-cyclin_cdc2-p);
+R5: EmptySet (EmptySet) => Y (cyclin);
+R6: Y (cyclin) => EmptySet (EmptySet);
+R7: YP (p-cyclin) => EmptySet (EmptySet);
+R8: pM (p-cyclin_cdc2-p) + CT (total_cdc2) => M (p-cyclin_cdc2) + CT (total_cdc2);

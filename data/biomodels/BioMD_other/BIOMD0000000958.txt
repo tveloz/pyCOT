@@ -1,0 +1,12 @@
+R0: Susceptible (Susceptible) + Infectious (Infectious) + Hospitalised (Hospitalised) + Super_spreaders (Super_spreaders) => Exposed (Exposed) + Infectious (Infectious) + Hospitalised (Hospitalised) + Super_spreaders (Super_spreaders);
+R1: Exposed (Exposed) => Asymptomatic (Asymptomatic);
+R2: Exposed (Exposed) => Super_spreaders (Super_spreaders);
+R3: Exposed (Exposed) => Infectious (Infectious);
+R4: Super_spreaders (Super_spreaders) => Fatalities (Fatalities);
+R5: Super_spreaders (Super_spreaders) => Hospitalised (Hospitalised);
+R6: Super_spreaders (Super_spreaders) => Recovered (Recovered);
+R7: Infectious (Infectious) => Fatalities (Fatalities);
+R8: Infectious (Infectious) => Hospitalised (Hospitalised);
+R9: Infectious (Infectious) => Recovered (Recovered);
+R10: Hospitalised (Hospitalised) => Recovered (Recovered);
+R11: Hospitalised (Hospitalised) => Fatalities (Fatalities);

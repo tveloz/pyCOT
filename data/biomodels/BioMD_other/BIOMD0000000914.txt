@@ -1,0 +1,9 @@
+R0: VAC (VAC) => ;
+R1: VAC (VAC) => TRAN (TRAN) + VAC (VAC);
+R2: TRAN (TRAN) => ;
+R3: TRAN (TRAN) => SVAC (SVAC) + TRAN (TRAN);
+R4: SVAC (SVAC) => ;
+R5:  => Ts (Ts);
+R6: Ts (Ts) + REG (REG) + SVAC (SVAC) => REG (REG) + SVAC (SVAC);
+R7: Ts (Ts) => REG (REG) + Ts (Ts);
+R8: REG (REG) => ;

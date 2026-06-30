@@ -1,0 +1,4 @@
+R0: GLC (intracellular glucose) => G6P_F6P (G6P_F6P);
+R1: G6P_F6P (G6P_F6P) + F6P (fructose-6-phosphate) => FBP (fructose-1,6-biphosphate) + F6P (fructose-6-phosphate);
+R2: FBP (fructose-1,6-biphosphate) + G3P (glyceraldehyde--phosphate) + DHAP (dihydroxyacetone-phosphate) => 2DHAP_G3P (DHAP-G3P pool) + G3P (glyceraldehyde--phosphate) + DHAP (dihydroxyacetone-phosphate);
+R3: DHAP_G3P (DHAP-G3P pool) + G3P (glyceraldehyde--phosphate) => G3P (glyceraldehyde--phosphate);

@@ -1,0 +1,17 @@
+R0:  => species_0000001 (O2*-);
+R1: species_0000001 (O2*-) + species_0000002 (Cu(II)ZnSOD) => ;
+R2: species_0000001 (O2*-) => species_0000006 (H2O2) + species_0000002 (Cu(II)ZnSOD);
+R3: species_0000001 (O2*-) + species_0000007 (LOO*) => species_0000009 (LOOH);
+R4: species_0000001 (O2*-) + species_0000006 (H2O2) => 2species_0000008 (HO*);
+R5: species_0000006 (H2O2) + species_0000002 (Cu(II)ZnSOD) => 2species_0000008 (HO*) + species_0000002 (Cu(II)ZnSOD);
+R6: species_0000006 (H2O2) + species_0000017 (Cat) => species_0000017 (Cat);
+R7: species_0000008 (HO*) => ;
+R8:  => species_0000011 (L*) + species_0000006 (H2O2);
+R9: species_0000008 (HO*) => species_0000011 (L*);
+R10: species_0000009 (LOOH) => ;
+R11:  => species_0000002 (Cu(II)ZnSOD);
+R12: species_0000002 (Cu(II)ZnSOD) => ;
+R13: species_0000011 (L*) => species_0000007 (LOO*);
+R14: species_0000007 (LOO*) => species_0000011 (L*) + species_0000009 (LOOH);
+R15: 2species_0000007 (LOO*) => ;
+R16: species_0000001 (O2*-) => ;

@@ -1,0 +1,9 @@
+R0: Methionine (Methionine) => AdoMet (AdoMet);
+R1: Methionine (Methionine) => AdoMet (AdoMet);
+R2: AdoMet (AdoMet) => AdoHcy (AdoHcy);
+R3: AdoMet (AdoMet) => AdoHcy (AdoHcy);
+R4: AdoHcy (AdoHcy) => Homocysteine (Homocysteine);
+R5: Homocysteine (Homocysteine) + _5mTHF (5mTHF) => Methionine (Methionine);
+R6: Homocysteine (Homocysteine) + AdoMet (AdoMet) + AdoHcy (AdoHcy) => Methionine (Methionine) + AdoMet (AdoMet) + AdoHcy (AdoHcy);
+R7: Homocysteine (Homocysteine) + AdoMet (AdoMet) + AdoHcy (AdoHcy) => Cystathionine (Cystathionine) + AdoMet (AdoMet) + AdoHcy (AdoHcy);
+R8: Metin (Metin) => Methionine (Methionine);

@@ -1,0 +1,11 @@
+R0: IC3 (IC3) => IC2 (IC2);
+R1: IC2 (IC2) => IF (IF);
+R2: IF (IF) => IM1 (IM1);
+R3: IM1 (IM1) => IM2 (IM2);
+R4: C3 (C3) => IC3 (IC3);
+R5: C2 (C2) => C3 (C3);
+R6: C2 (C2) => IC2 (IC2);
+R7: C1 (C1) => C2 (C2);
+R8: C1 (C1) => IF (IF);
+R9: IF (IF) => O (open states);
+R10: O (open states) => C1 (C1);

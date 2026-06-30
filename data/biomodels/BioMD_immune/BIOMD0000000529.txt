@@ -1,0 +1,12 @@
+R0: w (w) + IRF7Pn (IRF7Pn) => IFNb_mRNA (IFNb_mRNA) + IRF7Pn (IRF7Pn);
+R1: w (w) + IFNb_mRNA (IFNb_mRNA) => IFNb_env (IFNb_env) + IFNb_mRNA (IFNb_mRNA);
+R2: w (w) + STAT (STAT) => STATP2n (STATP2n) + STAT (STAT);
+R3: w (w) + STATP2n (STATP2n) => SOCS1m (SOCS1m) + STATP2n (STATP2n);
+R4: w (w) + STATP2n (STATP2n) + IRF7Pn (IRF7Pn) => IRF7m (IRF7m) + STATP2n (STATP2n) + IRF7Pn (IRF7Pn);
+R5: w (w) + IRF7m (IRF7m) => IRF7Pn (IRF7Pn) + IRF7m (IRF7m);
+R6: w (w) + IRF7Pn (IRF7Pn) => IFNa_mRNA (IFNa_mRNA) + IRF7Pn (IRF7Pn);
+R7: w (w) + IFNa_mRNA (IFNa_mRNA) => IFNa_env (IFNa_env) + IFNa_mRNA (IFNa_mRNA);
+R8: w (w) + TNFenv (TNFenv) => TNFam (TNFam) + TNFenv (TNFenv);
+R9: w (w) + TNFam (TNFam) => TNFenv (TNFenv) + TNFam (TNFam);
+R10: w (w) + STATP2n (STATP2n) => STATm (STATm) + STATP2n (STATP2n);
+R11: w (w) + STATm (STATm) => STAT (STAT) + STATm (STATm);

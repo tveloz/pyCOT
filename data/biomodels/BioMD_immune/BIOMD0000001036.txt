@@ -1,0 +1,6 @@
+R0: Tumor_cells (Tumor_cells) + IL_2 (IL-2) => Effector_cells (Effector_cells) + Tumor_cells (Tumor_cells) + IL_2 (IL-2);
+R1: Effector_cells (Effector_cells) => ;
+R2:  => Tumor_cells (Tumor_cells);
+R3: Tumor_cells (Tumor_cells) + Effector_cells (Effector_cells) => Effector_cells (Effector_cells);
+R4: Effector_cells (Effector_cells) + Tumor_cells (Tumor_cells) => IL_2 (IL-2) + Effector_cells (Effector_cells) + Tumor_cells (Tumor_cells);
+R5: IL_2 (IL-2) => ;

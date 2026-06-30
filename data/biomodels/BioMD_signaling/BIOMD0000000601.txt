@@ -1,0 +1,3 @@
+R0: mw40a96ef6_32da_46d1_9712_4f53f60bad43 (Ca_i_Total) + mwe1a0a651_d2d5_4f75_8d45_9336c60eb9a6 (Ca_i) => mwd805cc43_4a96_472f_a894_c119a6aa895f (Ca_SR_Total) + mwe1a0a651_d2d5_4f75_8d45_9336c60eb9a6 (Ca_i);
+R1: mwd805cc43_4a96_472f_a894_c119a6aa895f (Ca_SR_Total) + mw447078ee_8bc8_4358_abcd_ade10dba93b0 (Ca_SR) + mwe1a0a651_d2d5_4f75_8d45_9336c60eb9a6 (Ca_i) => mw40a96ef6_32da_46d1_9712_4f53f60bad43 (Ca_i_Total) + mw447078ee_8bc8_4358_abcd_ade10dba93b0 (Ca_SR) + mwe1a0a651_d2d5_4f75_8d45_9336c60eb9a6 (Ca_i);
+R2: mw40a96ef6_32da_46d1_9712_4f53f60bad43 (Ca_i_Total) + mwe1a0a651_d2d5_4f75_8d45_9336c60eb9a6 (Ca_i) => mwe1a0a651_d2d5_4f75_8d45_9336c60eb9a6 (Ca_i);

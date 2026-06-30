@@ -1,0 +1,7 @@
+R0: NO (NO) + sGCfast (sGCfast) => NO_sGCfast (NO_sGCfast);
+R1: NO_sGCfast (NO_sGCfast) => NO_sGCfast_6coord (NO_sGCfast_6coord);
+R2: NO_sGCfast_6coord (NO_sGCfast_6coord) => NO_sGCfast_5coord (NO_sGCfast_5coord);
+R3: NO (NO) + sGCslow (sGCslow) => NO_sGCslow (NO_sGCslow);
+R4: NO_sGCslow (NO_sGCslow) => NO_sGCslow_6coord (NO_sGCslow_6coord);
+R5: NO (NO) + NO_sGCslow_6coord (NO_sGCslow_6coord) => NO_sGCslow_6coord_NO_int (NO_sGCslow_6coord_NO_int);
+R6: NO_sGCslow_6coord_NO_int (NO_sGCslow_6coord_NO_int) => NO_sGCslow_5coord (NO_sGCslow_5coord);

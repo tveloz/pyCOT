@@ -1,0 +1,4 @@
+R0: II (II) => M (M);
+R1: M (M) => IIa (IIa);
+R2: II (II) => P2 (P2);
+R3: P2 (P2) => IIa (IIa);

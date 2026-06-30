@@ -1,0 +1,10 @@
+R0:  => Normal_Th_cells (Normal Th cells);
+R1: Normal_Th_cells (Normal Th cells) => ;
+R2: Normal_Th_cells (Normal Th cells) + Pathogen_Virus (Pathogen Virus) => Single_Infected_Th_Cells (Single Infected Th Cells) + Pathogen_Virus (Pathogen Virus);
+R3: Single_Infected_Th_Cells (Single Infected Th Cells) => ;
+R4: Single_Infected_Th_Cells (Single Infected Th Cells) + Recombinant_Virus (Recombinant Virus) => Double_Infected_Th_Cells (Double Infected Th Cells) + Recombinant_Virus (Recombinant Virus);
+R5: Single_Infected_Th_Cells (Single Infected Th Cells) => Pathogen_Virus (Pathogen Virus) + Single_Infected_Th_Cells (Single Infected Th Cells);
+R6: Double_Infected_Th_Cells (Double Infected Th Cells) => ;
+R7: Double_Infected_Th_Cells (Double Infected Th Cells) => Recombinant_Virus (Recombinant Virus) + Double_Infected_Th_Cells (Double Infected Th Cells);
+R8: Pathogen_Virus (Pathogen Virus) => ;
+R9: Recombinant_Virus (Recombinant Virus) => ;

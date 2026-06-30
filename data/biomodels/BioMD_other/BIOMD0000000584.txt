@@ -1,0 +1,14 @@
+R0:  => proSLS1 (proSLS1);
+R1: 2proSLS1 (proSLS1) => proSLS1 (proSLS1);
+R2: 2LAMDAR (LAMDAR) => proLAMDAR (proLAMDAR) + 2LAMDAR (LAMDAR);
+R3: 2proLAMDAR (proLAMDAR) => proLAMDAR (proLAMDAR);
+R4: 2IPTG (IPTG) + 2ia1_ActiveTF (ia1_ActiveTF) => ia1_InactiveTF (ia1_InactiveTF) + IPTG (IPTG) + ia1_ActiveTF (ia1_ActiveTF);
+R5: 2ia1_InactiveTF (ia1_InactiveTF) => IPTG (IPTG) + ia1_ActiveTF (ia1_ActiveTF) + ia1_InactiveTF (ia1_InactiveTF);
+R6: 2AUR1 (AUR1) => proAUR1 (proAUR1) + 2AUR1 (AUR1);
+R7: 2proAUR1 (proAUR1) => proAUR1 (proAUR1);
+R8: 2TETR (TETR) => proTETR (proTETR) + 2TETR (TETR);
+R9: 2proTETR (proTETR) => proTETR (proTETR);
+R10: 2SLS4 (SLS4) => proSLS4 (proSLS4) + 2SLS4 (SLS4);
+R11: 2proSLS4 (proSLS4) => proSLS4 (proSLS4);
+R12: 2LACI (LACI) => proLACI (proLACI) + 2LACI (LACI);
+R13: 2proLACI (proLACI) => proLACI (proLACI);

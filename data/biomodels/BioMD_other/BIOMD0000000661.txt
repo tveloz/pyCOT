@@ -1,0 +1,17 @@
+R0: T (T-cells (T)) + m (Tumour cells (m)) + Lm (mFasL (Lm)) + RT (FasR (RT)) => m (Tumour cells (m)) + Lm (mFasL (Lm)) + RT (FasR (RT));
+R1: m (Tumour cells (m)) + T (T-cells (T)) + LT (mFasL (LT)) + Rm (FasR (Rm)) => T (T-cells (T)) + LT (mFasL (LT)) + Rm (FasR (Rm));
+R2: SL (sFasL (SL)) => ;
+R3:  => Lm (mFasL (Lm));
+R4:  => RT (FasR (RT));
+R5:  => Rm (FasR (Rm));
+R6: RT (FasR (RT)) => ;
+R7: Rm (FasR (Rm)) => ;
+R8: T (T-cells (T)) + m (Tumour cells (m)) => LT (mFasL (LT)) + T (T-cells (T)) + m (Tumour cells (m));
+R9: RT (FasR (RT)) + SL (sFasL (SL)) => SL (sFasL (SL));
+R10: Rm (FasR (Rm)) + SL (sFasL (SL)) => SL (sFasL (SL));
+R11: LT (mFasL (LT)) => ;
+R12: Lm (mFasL (Lm)) => ;
+R13: LT (mFasL (LT)) + m (Tumour cells (m)) + T (T-cells (T)) + Rm (FasR (Rm)) => m (Tumour cells (m)) + T (T-cells (T)) + Rm (FasR (Rm));
+R14: Lm (mFasL (Lm)) + m (Tumour cells (m)) + T (T-cells (T)) + RT (FasR (RT)) => m (Tumour cells (m)) + T (T-cells (T)) + RT (FasR (RT));
+R15: Lm (mFasL (Lm)) + m (Tumour cells (m)) + LT (mFasL (LT)) + T (T-cells (T)) => SL (sFasL (SL)) + Lm (mFasL (Lm)) + m (Tumour cells (m)) + LT (mFasL (LT)) + T (T-cells (T));
+R16: SL (sFasL (SL)) + Rm (FasR (Rm)) + m (Tumour cells (m)) + RT (FasR (RT)) + T (T-cells (T)) => Rm (FasR (Rm)) + m (Tumour cells (m)) + RT (FasR (RT)) + T (T-cells (T));

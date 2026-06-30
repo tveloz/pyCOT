@@ -1,0 +1,6 @@
+R0: Rim11 (Rim11) => 2Rim11 (Rim11);
+R1: Rim11 (Rim11) => pUme6 (pUme6) + Rim11 (Rim11);
+R2: Ime1 (Ime1) + pSok2 (pSok2) => 2pSok2 (pSok2) + Ime1 (Ime1);
+R3: pSok2 (pSok2) + Rim11 (Rim11) + Ime2 (Ime2) => Ime1 (Ime1) + pSok2 (pSok2) + Rim11 (Rim11) + Ime2 (Ime2);
+R4: Ime1 (Ime1) + Rim11 (Rim11) + pIme1 (pIme1) => 2pIme1 (pIme1) + Ime1 (Ime1) + Rim11 (Rim11);
+R5: pUme6 (pUme6) + pIme1 (pIme1) => Ime2 (Ime2) + pUme6 (pUme6) + pIme1 (pIme1);
