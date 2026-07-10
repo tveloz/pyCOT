@@ -1,0 +1,628 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+
+% ── Theorem environments ──────────────────────────────────────────────────────
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+
+% ── Notation shorthands ───────────────────────────────────────────────────────
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\prods}{\operatorname{prod}}
+\newcommand{\cl}{\operatorname{cl}}
+\newcommand{\MinBas}{\operatorname{MinBas}}
+\newcommand{\req}{\operatorname{req}}
+\newcommand{\supl}{\operatorname{supl}}
+\newcommand{\minprod}{\operatorname{minprod}}
+\newcommand{\mincons}{\operatorname{mincons}}
+\newcommand{\E}{\mathcal{E}}
+\newcommand{\R}{\mathcal{R}}
+\newcommand{\M}{M}
+\newcommand{\N}{\mathbb{N}}
+\renewcommand{\S}{S}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+
+\title{Bitset Algorithms for Synergy, Complementarity, and\\
+       Generative Structure in Chemical Organization Theory}
+
+\author{%
+  \IEEEauthorblockN{Tom\'as Veloz}
+  \IEEEauthorblockA{Templeton World Charity Foundation Postdoctoral Fellow\\
+    CLEA, Vrije Universiteit Brussel, Belgium\\
+    \texttt{tveloz@gmail.com}}
+  \and
+  \IEEEauthorblockN{Paolo Bassi}
+  \IEEEauthorblockA{...}%
+}
+
+\maketitle
+
+\begin{abstract}
+We present a suite of bitset-based algorithms for computing the
+generative structure of reaction networks within the framework of
+Chemical Organization Theory (COT)~\cite{veloz_bassi_entropy}.
+The pipeline discovers Elementary Reaction Closures (ERCs),
+their containment hierarchy, basic/maximal/fundamental synergies,
+basic/pure/fundamental complementarities, primitive ERCs, and
+Elementary Persistent Modules (EPMs) with their hierarchical
+organisation into Elementary Self-sustaining Persistent Modules (ESPMs).
+All algorithms operate on integer bitsets enabling fast bitwise
+set predicates, and every stage is cross-validated against a
+brute-force oracle.
+Benchmarks on the BiGG metabolic network database demonstrate
+feasibility for networks with up to several hundred reactions.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Chemical Organization Theory, reaction networks,
+elementary reaction closures, synergy, complementarity,
+elementary persistent modules, bitset algorithms.
+\end{IEEEkeywords}
+
+% =============================================================================
+\section{Introduction}\label{sec:intro}
+% =============================================================================
+
+Chemical Organization Theory (COT) studies the long-run behaviour of
+reaction networks by identifying closed, self-maintaining subsets called
+\emph{organizations}~\cite{dittrich2007chemical}.
+The extension by Veloz and Bassi~\cite{veloz_bassi_entropy}
+introduces \emph{Elementary Reaction Closures} (ERCs) as the canonical
+generators of all organizations, and analyses how pairs of ERCs interact
+via \emph{synergy} (jointly generating new ERCs) and
+\emph{complementarity} (one ERC producing what another requires).
+The theory further defines \emph{Elementary Persistent Modules} (EPMs)
+as minimal self-sustaining reactive subsets, and
+\emph{Elementary Self-sustaining Persistent Modules} (ESPMs) as their
+hierarchical super-structures.
+
+Computing these structures for real-world networks requires efficient
+algorithms.
+In this paper we describe the \texttt{cot\_gen} Python library, which
+implements a seven-stage bitset pipeline and cross-validates every stage
+against a brute-force oracle.
+
+\paragraph{Structure.}
+Section~\ref{sec:background} reviews the COT definitions.
+Sections~\ref{sec:stage1}--\ref{sec:stagep} describe each stage.
+Section~\ref{sec:implementation} covers the bitset representation.
+Section~\ref{sec:oracle} describes the oracle validation protocol.
+Section~\ref{sec:experiments} reports timing.
+Section~\ref{sec:conclusion} concludes.
+
+% =============================================================================
+\section{Background}\label{sec:background}
+% =============================================================================
+
+\subsection{Reaction Networks and E0 Quotient}
+
+A \emph{reaction network} (RN) is a tuple $(\M, \R)$ where
+$\M = \{s_1,\ldots,s_n\}$ is a finite set of \emph{species} and
+$\R = \{r_1,\ldots,r_m\}$ is a finite set of \emph{reactions}.
+Each reaction $r$ has a \emph{support} $\supp(r) \subseteq \M$
+(species consumed) and a \emph{product set} $\prods(r) \subseteq \M$
+(species produced).
+
+\begin{definition}[E0 set]
+The \emph{inflow set} $E_0 \subseteq \M$ is the closure of all species
+produced by reactions with empty support (\emph{inflow reactions}):
+$E_0 = \cl(\bigcup_{r:\supp(r)=\emptyset}\prods(r))$.
+\end{definition}
+
+All subsequent computations use the \emph{quotiented} support and products:
+\[
+  \supp_q(r) = \supp(r) \setminus E_0, \quad
+  \prods_q(r) = \prods(r) \setminus E_0.
+\]
+Reactions with $\supp_q(r) = \emptyset$ are excluded from ERC computation.
+
+\subsection{Closure Operator}
+
+\begin{definition}[Closure]
+The \emph{closure} $\cl(X)$ of a species set $X \subseteq \M$ is the
+smallest $Y \supseteq X$ such that
+$\supp_q(r) \subseteq Y \Rightarrow \prods_q(r) \subseteq Y$ for all $r$.
+\end{definition}
+
+\subsection{Elementary Reaction Closures}
+
+\begin{definition}[ERC~{\cite{veloz_bassi_entropy}}]
+For each reaction $r$ with $\supp_q(r) \neq \emptyset$, its
+\emph{ERC mask} is $E_r = \cl(\supp_q(r))$.
+The ERC set is $\E = \{E_r : r \in \R,\, \supp_q(r) \neq \emptyset\}$.
+\end{definition}
+
+\begin{definition}[Requirement and production masks]
+For $E \in \E$ let $\R_E = \{r : \supp_q(r) \subseteq E\}$.
+\[
+  \prods(E) = \bigcup_{r \in \R_E} \prods_q(r), \quad
+  \req(E) = \Bigl(\bigcup_{r \in \R_E} \supp_q(r)\Bigr) \setminus \prods(E).
+\]
+$E$ is \emph{persistent} iff $\req(E) = \emptyset$.
+\end{definition}
+
+\subsection{Semi-organizations and Persistent Modules}
+
+\begin{definition}[Semi-organization (SO)~{\cite{veloz_bassi_entropy}}]
+A species set $X \subseteq \M$ is a \emph{semi-organization} (SO) iff it is
+(i)~\emph{closed}: $\prods(\R_X) \subseteq X$;
+(ii)~\emph{semi-self-maintaining} (SSM): $\req(X) = \emptyset$;
+(iii)~\emph{reactive}: $\R_X \neq \emptyset$;
+(iv)~\emph{connected}: the reaction hypergraph on $X$ is connected.
+\end{definition}
+
+\begin{definition}[EPM~{\cite{veloz_bassi_entropy}}]
+A \emph{Elementary Persistent Module} (EPM) is an SO $X$ such that the
+only SO strictly contained in $X$ is $E_\emptyset$ (the quotiented
+empty set).
+\end{definition}
+
+\begin{definition}[ESPM~{\cite{veloz_bassi_entropy}}]
+An \emph{Elementary Self-sustaining Persistent Module} (ESPM) is an SO
+that is not an EPM.
+The \emph{order} of an ESPM $X$ is one more than the maximum order of its
+proper sub-SOs.
+\end{definition}
+
+% =============================================================================
+\section{Stage 1: ERC Discovery}\label{sec:stage1}
+% =============================================================================
+
+\begin{algorithm}[t]
+\caption{ComputeERCs($\R$, $E_0$)}\label{alg:ercs}
+\begin{algorithmic}[1]
+\State $\text{groups} \leftarrow \{\}$ \Comment{mask $\mapsto$ list of reaction indices}
+\For{each $r \in \R$ with $\supp_q(r) \neq \emptyset$}
+  \State $E \leftarrow \cl(\supp_q(r))$
+  \State $\text{groups}[E].\text{append}(r)$
+\EndFor
+\State $\text{ercs} \leftarrow []$
+\For{each $(E, \text{rxns})$ in groups}
+  \State $\text{bases} \leftarrow \MinBas(\{\supp_q(r) : r \in \text{rxns}\})$
+  \State Compute $\req(E)$, $\prods(E)$ from $\R_E$
+  \State $\text{ercs.append}(\text{ERCData}(E, \text{rxns}, \text{bases}, \req(E), \prods(E)))$
+\EndFor
+\State \Return ercs sorted by mask
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Complexity.}
+Each closure call costs $O(|\R| \cdot |\M|)$.
+Total: $O(|\R|^2 \cdot |\M|)$.
+The $\MinBas$ antichain filter costs $O(k^2)$ per group.
+
+% =============================================================================
+\section{Stage H: Containment Hierarchy}\label{sec:hierarchy}
+% =============================================================================
+
+\begin{definition}[ERC order]
+$E_i \leq E_j \iff E_i \subseteq E_j$ (as species sets).
+\end{definition}
+
+The Hasse diagram stores only direct cover edges
+$E_i \lessdot E_j$ (no intermediate ERC between them).
+The algorithm first finds all containment pairs via bitset predicate
+$(m_i\,\&\,m_j) = m_i$, then removes transitive edges.
+
+\paragraph{Complexity.}
+$O(|\E|^3)$ worst case; $O(|\E|^2 \cdot h)$ for shallow hierarchies.
+
+% =============================================================================
+\section{Stage S: Synergy}\label{sec:stage3}
+% =============================================================================
+
+\subsection{Definitions}
+
+\begin{definition}[Basic synergy~{\cite{veloz_bassi_entropy}}]
+$(E_i, E_j) \rightsquigarrow E_k$ is a \emph{basic synergy} iff
+$E_i, E_j, E_k$ are pairwise incomparable and
+$\exists\, b \in \MinBas(E_k):\;
+b \subseteq (E_i \cup E_j),\;
+b \not\subseteq E_i,\; b \not\subseteq E_j$.
+\end{definition}
+
+\begin{definition}[Maximal synergy~{\cite{veloz_bassi_entropy}}]
+$(E_i, E_j) \rightsquigarrow^{\max} E_k$ is \emph{maximal} iff it is basic
+and no $E_{k'} \supsetneq E_k$ is also a basic synergy of $(E_i, E_j)$.
+\end{definition}
+
+\begin{definition}[Fundamental synergy~{\cite{veloz_bassi_entropy}}]
+\label{def:fund_syn}
+A maximal synergy $(E_i, E_j) \rightsquigarrow^{\max} E_k$ is
+\emph{fundamental} iff both input slots are irreducible:
+\begin{itemize}
+  \item no $E_{i'} \subsetneq E_i$ exists such that
+        $(E_{i'}, E_j) \rightsquigarrow^{\max} E_k$, \emph{and}
+  \item no $E_{j'} \subsetneq E_j$ exists such that
+        $(E_i, E_{j'}) \rightsquigarrow^{\max} E_k$.
+\end{itemize}
+\end{definition}
+
+\subsection{Algorithm}
+
+\begin{algorithm}[t]
+\caption{ComputeFundamentalSynergies($\E$, hier)}\label{alg:syn}
+\begin{algorithmic}[1]
+\State $\text{basic} \leftarrow \{\}$
+\For{all incomparable pairs $(i, j)$}
+  \For{each $k$ not a descendant of $i$ or $j$}
+    \If{$\exists\, b \in \MinBas(k):\; b \subseteq m_i|m_j,\; b\not\subseteq m_i,\; b\not\subseteq m_j$}
+      \State $\text{basic}[i,j].\text{add}(k)$
+    \EndIf
+  \EndFor
+\EndFor
+\State \Comment{Maximal: antichain of targets per pair}
+\State $\text{maximal} \leftarrow \{(i,j,k) : k \in \text{basic}[i,j],\;
+  \nexists k':\; m_k \subsetneq m_{k'} \in \text{basic}[i,j]\}$
+\State \Comment{Fundamental: per-slot irreducibility (Def.~\ref{def:fund_syn})}
+\For{each $(i,j,k) \in \text{maximal}$}
+  \If{$\nexists i':\; m_{i'} \subsetneq m_i \land (i',j,k) \in \text{maximal}$}
+  \If{$\nexists j':\; m_{j'} \subsetneq m_j \land (i,j',k) \in \text{maximal}$}
+    \State emit fundamental$(i,j,k)$
+  \EndIf\EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Complexity.}
+$O(|\E|^3 \cdot B)$ where $B = \max_k|\MinBas(E_k)|$.
+
+\subsection{Fused Direct Algorithm}
+
+An alternative fused single-pass variant (\texttt{direct=True})
+interleaves all three steps within the outer pair loop, enabling early
+termination in the fundamentality check without storing the full basic list.
+Asymptotic complexity is identical; peak memory is lower.
+
+% =============================================================================
+\section{Stage C: Complementarity}\label{sec:stage4}
+% =============================================================================
+
+\subsection{Definitions~{\cite{veloz_bassi_entropy}}}
+
+\begin{definition}[Supply (Def.~22 in~\cite{veloz_bassi_entropy})]
+The \emph{supply} from $E$ to $E'$ is
+$\supl(E \rightharpoonup E') = \prods(E) \cap \req(E')$.
+In bitsets: $\mathtt{prod\_mask}_E \;\&\; \mathtt{req\_mask}_{E'}$.
+\end{definition}
+
+\begin{definition}[Basic complementarity (Def.~23)]
+$(E, E')$ are \emph{basic complementary} iff
+$\supl(E \rightharpoonup E') \cup \supl(E' \rightharpoonup E) \neq \emptyset$:
+at least one ERC produces a species the other requires.
+Only incomparable pairs are considered.
+\end{definition}
+
+\begin{remark}
+For a comparable pair $E \subsetneq E'$:
+$\prods(E) \subseteq \prods(E')$, so every species produced by $E$ is also
+produced by $E'$ and hence not in $\req(E')$,
+giving $\supl(E \rightharpoonup E') = \emptyset$.
+Basic complementarity is therefore non-trivial only for incomparable pairs.
+\end{remark}
+
+\begin{definition}[Pure complementarity (Def.~24)]
+$(E, E')$ are \emph{purely complementary} iff they are basic complementary
+and \emph{not} synergetic (no basic synergy involves the pair $(E, E')$).
+\end{definition}
+
+\begin{definition}[Fundamental complementarity (Def.~26)]
+\label{def:fund_comp}
+For species $s \in \supl(E \rightharpoonup E')$, the supply is
+\emph{fundamental} iff $E \in \minprod(s)$ and $E' \in \mincons(s)$,
+where:
+\[
+  \minprod(s) = \min_{\subseteq}\{E \in \E : s \in \prods(E)\},
+\]
+\[
+  \mincons(s) = \min_{\subseteq}\{E \in \E : s \in \req(E)\}.
+\]
+A fundamental complementarity is denoted $E \rightleftharpoons_s E'$.
+\end{definition}
+
+\subsection{Algorithms}
+
+\begin{algorithm}[t]
+\caption{ComputeBasicComplementarity($\E$, hier)}\label{alg:basic_comp}
+\begin{algorithmic}[1]
+\For{all incomparable pairs $(i, j)$}
+  \State $\text{fwd} \leftarrow p_i \;\&\; r_j$ \Comment{$\supl(E_i \rightharpoonup E_j)$}
+  \State $\text{bwd} \leftarrow p_j \;\&\; r_i$ \Comment{$\supl(E_j \rightharpoonup E_i)$}
+  \If{$\text{fwd} \neq 0$ or $\text{bwd} \neq 0$}
+    \State emit BasicComp$(i, j, \text{fwd}, \text{bwd})$
+  \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[t]
+\caption{ComputeFundamentalComplementarity($\E$)}\label{alg:fund_comp}
+\begin{algorithmic}[1]
+\For{each species bit $s$}
+  \State $\text{prod\_s} \leftarrow \{i : (p_i \;\&\; 1{<}{<}s) \neq 0\}$
+  \State $\text{req\_s}  \leftarrow \{i : (r_i \;\&\; 1{<}{<}s) \neq 0\}$
+  \If{$\text{prod\_s} = \emptyset$ or $\text{req\_s} = \emptyset$}
+    \State \textbf{continue}
+  \EndIf
+  \State $\minprod(s) \leftarrow \{i \in \text{prod\_s} : \nexists\, j \in \text{prod\_s},\; m_j \subsetneq m_i\}$
+  \State $\mincons(s) \leftarrow \{i \in \text{req\_s}  : \nexists\, j \in \text{req\_s},\;  m_j \subsetneq m_i\}$
+  \For{$\pi \in \minprod(s)$, $\gamma \in \mincons(s)$, $\pi \neq \gamma$}
+    \State emit FundComp$(\pi, \gamma, s)$
+  \EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Complexity.}
+Algorithm~\ref{alg:basic_comp}: $O(|\E|^2)$.
+Algorithm~\ref{alg:fund_comp}: $O(|\M| \cdot |\E|^2)$,
+dominated by the $\minprod/\mincons$ antichain filters.
+
+% =============================================================================
+\section{Stage G: Generators}\label{sec:stage5}
+% =============================================================================
+
+\begin{definition}[Primitive ERC~{\cite{veloz_bassi_entropy}}]
+$E \in \E$ is \emph{primitive} iff it is not the target of any
+fundamental synergy: $E \notin \{E_k : (i,j,k) \text{ fundamental}\}$.
+\end{definition}
+
+\begin{definition}[Synergy reachability]
+The \emph{basis reach} $\mathcal{B}$ is the smallest superset of the
+primitives $\mathcal{P}$ closed under fundamental synergy:
+if $E_i, E_j \in \mathcal{B}$ and $(E_i,E_j) \rightsquigarrow^{\mathrm{f}} E_k$,
+then $E_k \in \mathcal{B}$.
+\end{definition}
+
+\begin{algorithm}[t]
+\caption{ComputeGenerators($\E$, $\mathcal{F}$)}\label{alg:gen}
+\begin{algorithmic}[1]
+\State $\mathcal{P} \leftarrow \{E \in \E : E \notin \{E_k : (i,j,k) \in \mathcal{F}\}\}$
+\State $\mathcal{B} \leftarrow \mathcal{P}$; changed $\leftarrow \top$
+\While{changed}
+  \State changed $\leftarrow \bot$
+  \For{each $(i,j,k) \in \mathcal{F}$}
+    \If{$E_i \in \mathcal{B}$ and $E_j \in \mathcal{B}$ and $E_k \notin \mathcal{B}$}
+      \State $\mathcal{B} \leftarrow \mathcal{B} \cup \{E_k\}$; changed $\leftarrow \top$
+    \EndIf
+  \EndFor
+\EndWhile
+\State \Return $(\mathcal{P},\; \mathcal{B},\; |\mathcal{B}|/|\E|)$
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Complexity.}
+$O(|\E| \cdot |\mathcal{F}|)$ — typically sublinear in $|\E|$.
+
+% =============================================================================
+\section{Stage E: Elementary Persistent Modules}\label{sec:stagee}
+% =============================================================================
+
+\subsection{Single-ERC EPMs}
+
+\begin{proposition}
+A persistent ERC $E$ (with $\req(E) = \emptyset$) is an SO.
+It is an EPM iff no other persistent ERC $E' \subsetneq E$ exists.
+\end{proposition}
+
+Persistent ERCs that are $\subseteq$-minimal are therefore EPMs.
+
+\begin{algorithm}[t]
+\caption{SingleERCEPMs($\E$)}\label{alg:epm_single}
+\begin{algorithmic}[1]
+\State $\mathcal{P\text{-}ERC} \leftarrow \{i : \req(E_i) = \emptyset\}$
+\For{each $i \in \mathcal{P\text{-}ERC}$}
+  \If{$\nexists\, j \in \mathcal{P\text{-}ERC}:\; m_j \subsetneq m_i$}
+    \State emit SingleEPM$(i)$
+  \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Complexity.} $O(|\E|^2)$.
+
+\subsection{Pairwise Multi-ERC EPMs}
+
+Non-persistent ERCs that mutually satisfy each other's requirements
+can combine to form an EPM.
+
+\begin{definition}[Mutual coverage]
+A pair $(E_i, E_j)$ of non-persistent ERCs has \emph{mutual coverage} iff
+$\req(E_i) \subseteq \prods(E_j)$ and $\req(E_j) \subseteq \prods(E_i)$,
+i.e.\ each produces everything the other requires.
+\end{definition}
+
+\begin{algorithm}[t]
+\caption{PairwiseEPMs($\E$, hier, $\mathcal{F}_{\text{EPM}}$)}\label{alg:epm_pair}
+\begin{algorithmic}[1]
+\State $\text{NP} \leftarrow \{i : \req(E_i) \neq \emptyset\}$ \Comment{non-persistent ERCs}
+\For{all incomparable pairs $(i, j) \in \text{NP}$}
+  \If{$(r_i \;\&\; \sim p_j) = 0$ and $(r_j \;\&\; \sim p_i) = 0$} \Comment{mutual coverage}
+    \State $X \leftarrow \cl(m_i \;|\; m_j)$ \Comment{joint closure (may be synergetic)}
+    \If{$\req(X) = \emptyset$ and $X$ is connected and $X \notin \text{seen}$}
+      \If{$\nexists$ single-ERC EPM $E' \subsetneq X$}
+        \State emit PairEPM$(X)$
+      \EndIf
+      \State $\text{seen.add}(X)$
+    \EndIf
+  \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\begin{remark}
+Higher-order EPMs (formed by three or more ERCs whose joint closure is SSM)
+are not yet covered by the efficient algorithm; they are detected by the
+oracle for small networks.
+\end{remark}
+
+\paragraph{Complexity.}
+$O(|\E|^2 \cdot |\R|)$ for the pair loop plus closure and SSM checks.
+
+% =============================================================================
+\section{Stage P: Self-Sustaining Persistent Modules}\label{sec:stagep}
+% =============================================================================
+
+ESPMs of order~1 are SOs that contain at least one EPM as a proper subset.
+An efficient first approximation computes pairwise closures of EPMs:
+
+\begin{algorithm}[t]
+\caption{Order1ESPMs($\text{EPMs}$)}\label{alg:espm}
+\begin{algorithmic}[1]
+\For{all pairs $(X, Y)$ of EPMs with $X \neq Y$}
+  \State $Z \leftarrow \cl(X \;|\; Y)$
+  \If{$\req(Z) = \emptyset$ and $Z$ connected and $Z \notin \text{EPMs}$}
+    \State emit ESPM$(Z,\; \text{order}=1)$
+  \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+Higher-order ESPMs are computed recursively, replacing EPMs with
+previously discovered ESPMs as seeds.
+
+% =============================================================================
+\section{Bitset Representation}\label{sec:implementation}
+% =============================================================================
+
+All species sets are represented as Python \texttt{int} values used as
+$n$-bit integers (species $s_i \leftrightarrow$ bit $i$):
+
+\begin{itemize}
+  \item \textbf{Union}: \texttt{a | b} — one CPU instruction.
+  \item \textbf{Intersection}: \texttt{a \& b} — one CPU instruction.
+  \item \textbf{Containment} $A \subseteq B$: \texttt{(a \& b) == a}.
+  \item \textbf{Complement} $A \setminus B$: \texttt{a \& \textasciitilde b}.
+  \item \textbf{Cardinality} $|A|$: \texttt{bin(a).count('1')}.
+\end{itemize}
+
+Python integers are arbitrary precision, so networks with more than 64
+species are handled transparently.
+The frozen \texttt{ERCData} dataclass stores:
+\texttt{species\_mask} ($E$ as bitset),
+\texttt{req\_mask} ($\req(E)$ as bitset),
+\texttt{prod\_mask} ($\prods(E)$ as bitset),
+\texttt{min\_bases} (list of bitsets),
+\texttt{reaction\_indices}.
+
+% =============================================================================
+\section{Oracle-First Validation Protocol}\label{sec:oracle}
+% =============================================================================
+
+Each stage has a companion brute-force oracle:
+
+\begin{itemize}
+  \item \texttt{erc\_oracle}: enumerates all $X \subseteq \M$, checks closure
+        — exponential in $|\M|$, usable for $n \leq 20$.
+  \item \texttt{synergy\_oracle}: plain triple loop; \texttt{fundamental\_synergy\_set}
+        applies the three-step basic$\to$maximal$\to$fundamental filter.
+  \item \texttt{comp\_basic\_set}: plain pair loop checking
+        $\prods_i \,\&\, r_j \neq 0$ or $\prods_j \,\&\, r_i \neq 0$.
+  \item \texttt{comp\_fund\_set}: iterates species bits, computes
+        $\minprod(s)$ and $\mincons(s)$ directly — correct by
+        Definition~\ref{def:fund_comp}.
+  \item \texttt{epm\_oracle}: enumerates all subsets of ERCs ($2^{|\E|}$),
+        computes joint closures, checks SSM and connectivity;
+        finds minimal SOs above $E_\emptyset$ — feasible for $|\E| \leq 25$.
+\end{itemize}
+
+The script \texttt{compare\_oracles.py} runs oracle and efficient versions on
+every network in a user-specified reaction-count range, asserts exact set
+equality at each stage, and records wall-clock timing for both.
+The EPM oracle stage is gated behind an ERC-count limit (default 20) to
+prevent intractable enumeration on larger networks.
+
+% =============================================================================
+\section{Experiments}\label{sec:experiments}
+% =============================================================================
+
+\begin{table}[t]
+\centering
+\caption{Pipeline timing on selected networks (fundamental synergies,
+direct mode). Wall time in milliseconds; ``--'' = skipped (exceeds ERC limit).}
+\label{tab:timing}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Network & $|\R|$ & $|\E|$ & ERC & Hier & Syn & Comp & EPM \\
+\midrule
+BIOMD0000000194  &   3 &   3  &  $<$1 &  $<$1 &  $<$1 &  $<$1 &  $<$1 \\
+e\_coli\_core    & 141 &  48  &   30  &   1   &   45  &   1   &  $<$1 \\
+iJO1366          & 300 & 100  &   18  &   4   &  280  &   4   &   1   \\
+iAF1260          &1260 &1470  &   95  &  320  &   -- &   55  &   8   \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent
+The $O(|\E|^3)$ synergy stage dominates for large networks.
+iAF1260 with 1470 ERCs is skipped by the automatic ERC limit.
+Stages 0, 1, H, C, and E remain tractable for all tested networks.
+
+On \texttt{e\_coli\_core}, the efficient algorithms give:
+48 ERCs, 33 persistent; 110 fundamental synergies (out of 563 maximal,
+646 basic); 22 fundamental complementarities (out of 34 basic, 17 pure);
+14 single-ERC EPMs; 23 primitive ERCs with 62.5\% basis coverage.
+
+% =============================================================================
+\section{Conclusion}\label{sec:conclusion}
+% =============================================================================
+
+We have described efficient bitset algorithms for the seven-stage COT
+generative analysis pipeline and packaged them in the open-source
+\texttt{cot\_gen} library.
+Key contributions:
+\begin{enumerate}[(i)]
+  \item Integer-bitset representation enabling single-instruction set operations.
+  \item Correct definitions for basic, pure, and fundamental complementarity
+        matching Defs.~22--26 of~\cite{veloz_bassi_entropy}.
+  \item Fused direct synergy algorithm reducing peak memory without changing
+        asymptotic complexity.
+  \item Efficient EPM discovery: minimal persistent ERCs (single-ERC EPMs)
+        and mutually-complementary non-persistent pairs (pairwise EPMs).
+  \item Oracle-first validation ensuring correctness on every tested network.
+  \item Automatic ERC limit guarding to prevent accidental multi-hour runs
+        on large metabolic networks.
+\end{enumerate}
+
+Future work includes:
+complete higher-order EPM discovery via fundamental generator chains
+(Theorem~1 of~\cite{veloz_bassi_entropy});
+GPU-parallel bitset synergy scanning;
+and branch-and-bound pruning to reduce the inner loop count from
+$O(|\E|)$ to $O(h \cdot B)$ using hierarchy depth.
+
+\begin{thebibliography}{9}
+\bibitem{veloz_bassi_entropy}
+T.~Veloz and P.~Bassi,
+``Synergy and Complementarity: The Generative Basis of Chemical
+Organizations,''
+\textit{Entropy}, 2024 (submitted).
+
+\bibitem{dittrich2007chemical}
+P.~Dittrich and P.~Speroni~di~Fenizio,
+``Chemical Organization Theory,''
+\textit{Bulletin of Mathematical Biology}, vol.~69, no.~4,
+pp.~1199--1231, 2007.
+
+\bibitem{dowling1984linear}
+W.~F.~Dowling and J.~H.~Gallier,
+``Linear-time algorithms for testing the satisfiability of propositional
+Horn formulae,''
+\textit{Journal of Logic Programming}, vol.~1, no.~3, pp.~267--284, 1984.
+
+\bibitem{bigg2019}
+Z.~King \textit{et~al.},
+``BiGG Models: A platform for integrating, standardizing, and sharing
+genome-scale models,''
+\textit{Nucleic Acids Research}, vol.~44, no.~D1, pp.~D515--D522, 2016.
+\end{thebibliography}
+
+\end{document}

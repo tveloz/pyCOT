@@ -2,19 +2,18 @@
 """
 script_erc_hierarchy_tree_viz.py
 =================================
-Scatter plot: ERC hierarchy tree depth vs. branching.
+Scatter plot: ERC hierarchy tree depth vs. network ERC count.
 
 Unit of observation: ONE TREE (connected component of the ERC hierarchy forest).
 A single reaction network is a FOREST that may contain several trees; each tree
 with >= 3 ERC nodes contributes one point to the plot.
 
-  X    = tree depth     (longest root-to-leaf path within the tree)
-  Y    = mean branching (mean out-degree of non-leaf nodes = avg children
-                         per internal ERC node)
-  Size = number of ERC nodes in the tree
+  X    = network ERC count  (n_ercs, log scale)
+  Y    = tree depth         (longest root-to-leaf path, log scale)
+  Size = mean branching     (mean out-degree of non-leaf ERC nodes;
+                             b=1 → tiny, b=3 → large)
 
 Groups: BioModels (red circles), BiGG (dark blue stars).
-Horizontal jitter added because depth is an integer.
 
 Outputs:
   outputs/forest_stats/per_tree_stats.csv
@@ -158,12 +157,13 @@ for folder, dataset_label in SCAN_FOLDERS.items():
                     'dataset':   dataset_label,
                     'group':     assign_group(dataset_label),
                     'n_nodes':   n_nodes,
+                    'n_ercs':    len(ercs),   # network-level total ERCs
                     'depth':     depth,
                     'branching': round(branching, 4),
                 })
                 n_qualifying += 1
 
-            print(f"  {fname}: {len(ercs)} ERCs → {n_qualifying} qualifying trees")
+            print(f"  {fname}: {len(ercs)} ERCs -> {n_qualifying} qualifying trees")
 
         except Exception as exc:
             print(f"  ERR {fname}: {exc}")
@@ -172,29 +172,60 @@ df = pd.DataFrame(records)
 df.to_csv(CSV_OUT, index=False)
 print(f"\nSaved {len(df)} tree records to {CSV_OUT}")
 print()
-print(df[['n_nodes', 'depth', 'branching']].describe().round(3).to_string())
+print(df[['n_ercs', 'n_nodes', 'depth', 'branching']].describe().round(3).to_string())
 print()
 print(f"Depth distribution:\n{df['depth'].value_counts().sort_index().to_string()}")
+print()
+# Quick correlation table
+import scipy.stats as _sc
+for _c1, _c2 in [('depth', 'branching'), ('n_ercs', 'depth'), ('n_ercs', 'branching')]:
+    _r, _p = _sc.pearsonr(df[_c1], df[_c2])
+    print(f"  r({_c1}, {_c2}) = {_r:+.3f}  p={_p:.2e}")
 
 
-# ── Plot ──────────────────────────────────────────────────────────────────────
+# ── Plot: X = n_ercs (log), Y = depth (log), size = branching ────────────────
 
 GROUP_STYLE = {
-    'BioModels': {'color': '#E74C3C', 'marker': 'o', 'label': 'BioModels'},
-    'BiGG':      {'color': '#2C3E50', 'marker': '*', 'label': 'BiGG'},
-    'Other':     {'color': '#7F8C8D', 'marker': 's', 'label': 'Other'},
+    'BioModels': {'color': '#E74C3C', 'marker': 'o', 'label': 'BioModels', 'lw': 0.3},
+    'BiGG':      {'color': '#2C3E50', 'marker': '*', 'label': 'BiGG',      'lw': 1.5},
+    'Other':     {'color': '#7F8C8D', 'marker': 's', 'label': 'Other',     'lw': 0.3},
 }
 
-# Size: scale logarithmically with n_nodes
-n_min = df['n_nodes'].min()
-n_max = df['n_nodes'].max()
-log_min = np.log(n_min)
-log_max = np.log(max(n_max, n_min + 1))
 
-def node_size(n):
-    """Map n_nodes -> scatter marker area (pts²). Range: 30–500."""
-    t = (np.log(np.asarray(n, dtype=float)) - log_min) / max(log_max - log_min, 1)
-    return 30 + 470 * t
+def branching_size(b):
+    """Marker area from mean branching.  b=1->15, b=1.5->57, b=2->135, b=3->354."""
+    b = np.asarray(b, dtype=float)
+    return np.maximum(15.0, 15.0 + 120.0 * (b - 1.0) ** 1.5)
+
+
+# ── Per-tree depth scaling fit: depth ~ A * n_nodes^gamma ────────────────────
+from scipy import stats as _stats
+_mask_fit = (df['n_nodes'] > 0) & (df['depth'] > 0)
+_lx_f = np.log10(df.loc[_mask_fit, 'n_nodes'].astype(float))
+_ly_f = np.log10(df.loc[_mask_fit, 'depth'].astype(float))
+_sl, _ic, _r_f, _p_f, _se_f = _stats.linregress(_lx_f, _ly_f)
+_A_fit  = 10 ** _ic
+_gamma  = _sl
+_ci_gam = 1.96 * _se_f
+print(f"\nDepth scaling: depth ~ {_A_fit:.3f} * n_nodes^{_gamma:.3f}"
+      f"  R2={_r_f**2:.3f}  p={_p_f:.2e}  CI: {_gamma:.3f}+/-{_ci_gam:.3f}")
+
+# ── Binned medians of depth by n_nodes (log-spaced, per tree) ─────────────────
+_edges = np.logspace(np.log10(df['n_nodes'].min()),
+                     np.log10(df['n_nodes'].max() * 1.001), 8)
+_bin_rows = []
+for _lo, _hi in zip(_edges[:-1], _edges[1:]):
+    _idx = (df['n_nodes'] >= _lo) & (df['n_nodes'] < _hi)
+    if _idx.sum() < 3:
+        continue
+    _sd = df.loc[_idx, 'depth']
+    _bin_rows.append({
+        'x':   float(np.sqrt(_lo * _hi)),
+        'med': float(_sd.median()),
+        'q25': float(_sd.quantile(0.25)),
+        'q75': float(_sd.quantile(0.75)),
+        'n':   int(_idx.sum()),
+    })
 
 np.random.seed(42)
 
@@ -209,57 +240,78 @@ for grp, sty in GROUP_STYLE.items():
     sub = df[df['group'] == grp]
     if len(sub) == 0:
         continue
-    jitter = np.random.normal(0, 0.18, size=len(sub))
-    x = sub['depth'].values + jitter
-    y = sub['branching'].values
-    s = node_size(sub['n_nodes'].values)
+    # Multiplicative jitter on x (log scale); small additive jitter on y (linear scale)
+    _xj = sub['n_nodes'].values.astype(float) * np.exp(np.random.normal(0, 0.05, len(sub)))
+    _yj = sub['depth'].values.astype(float) + np.random.normal(0, 0.12, len(sub))
+    _s  = branching_size(sub['branching'].values)
+    ax.scatter(_xj, _yj,
+               s=_s, c=sty['color'], marker=sty['marker'],
+               alpha=0.50, edgecolors='white', linewidths=sty['lw'],
+               zorder=3)
 
-    ax.scatter(x, y,
-               s=s, c=sty['color'], marker=sty['marker'],
-               alpha=0.55, edgecolors='white', linewidths=0.3,
-               zorder=3, label=sty['label'])
+# ── Fit curve ─────────────────────────────────────────────────────────────────
+_n_range = np.logspace(np.log10(df['n_nodes'].min()), np.log10(df['n_nodes'].max()), 300)
+_d_range = _A_fit * _n_range ** _gamma
+_lbl_fit = (f'Fit: $d = {_A_fit:.2f}\\cdot |\\mathcal{{E}}_T|^{{{_gamma:.2f}}}$'
+            f'  ($R^2 = {_r_f**2:.2f}$)')
+_fit_h, = ax.plot(_n_range, _d_range, color='#111111', lw=2.5, ls='--',
+                   zorder=6, label=_lbl_fit)
 
-# ── Depth tick marks at integer positions ────────────────────────────────────
-depth_vals = sorted(df['depth'].unique())
-ax.set_xticks(depth_vals)
-ax.set_xticklabels([str(d) for d in depth_vals], fontsize=_FCK)
-ax.tick_params(axis='y', labelsize=_FCK)
+# ── Binned medians +/- IQR ────────────────────────────────────────────────────
+from matplotlib.lines import Line2D as _L2D
+for _row in _bin_rows:
+    _fill = _row['n'] >= 10
+    ax.errorbar(_row['x'], _row['med'],
+                yerr=[[max(_row['med'] - _row['q25'], 0)],
+                      [max(_row['q75'] - _row['med'], 0)]],
+                fmt='D', color='#555555',
+                ms=int(7 * FONT_SCALE * 0.6),
+                lw=1.8 * FONT_SCALE * 0.5,
+                capsize=4 * FONT_SCALE * 0.5,
+                elinewidth=1.5 * FONT_SCALE * 0.5,
+                mfc='#555555' if _fill else 'white',
+                mec='#555555', mew=1.5,
+                zorder=7)
+_bm_h = _L2D([0], [0], marker='D', color='#555555', ms=8, lw=0,
+             mfc='#555555', mec='#555555',
+             label='Median $\\pm$ IQR per bin\n(hollow: $n < 10$ networks)')
 
-ax.set_xlabel('Tree depth  (longest root-to-leaf path within the tree)', fontsize=_FL)
-ax.set_ylabel('Mean branching  (avg children per internal ERC node)', fontsize=_FL)
+# ── Axes ──────────────────────────────────────────────────────────────────────
+ax.set_xscale('log')
+ax.set_yscale('linear')
+ax.set_xlabel('Number of ERCs in tree  ($|\\mathcal{E}_T|$)', fontsize=_FL)
+ax.set_ylabel('Tree depth  (longest root-to-leaf path)', fontsize=_FL)
 ax.set_title(
-    f'ERC hierarchy: depth vs. branching per tree  '
-    f'({len(df)} trees from {df["file"].nunique()} networks,  '
-    f'$\\geq {MIN_NODES}$ nodes)',
+    f'ERC hierarchy: depth scales with tree size  '
+    f'({len(df)} trees, {df["file"].nunique()} networks;  '
+    f'point size $\\propto$ branching)',
     fontsize=_FT, fontweight='bold',
 )
+ax.tick_params(labelsize=_FCK)
 
-# ── Size legend ───────────────────────────────────────────────────────────────
-size_ticks = [3, 10, 50, 200]
-size_ticks = [v for v in size_ticks if v <= n_max]
-size_handles = [
-    ax.scatter([], [], s=node_size(v), c='#888888', alpha=0.7,
-               edgecolors='white', lw=0.3, label=f'{v} ERCs')
-    for v in size_ticks
-]
-
-# ── Group legend ──────────────────────────────────────────────────────────────
-group_handles = [
-    Line2D([0], [0],
-           marker=sty['marker'], color='w',
-           markerfacecolor=sty['color'], markeredgecolor='white',
+# ── Group + fit legend (upper left) ──────────────────────────────────────────
+_grp_handles = [
+    Line2D([0], [0], marker=sty['marker'], color='w',
+           markerfacecolor=sty['color'], markeredgecolor=sty['color'],
            markersize=9, label=sty['label'])
     for grp, sty in GROUP_STYLE.items()
     if grp in df['group'].values
 ]
-
-leg1 = ax.legend(handles=group_handles,
-                 title='Database', title_fontsize=_FLG,
-                 fontsize=_FLG, loc='upper right', framealpha=0.90)
+leg1 = ax.legend(handles=_grp_handles + [_fit_h, _bm_h],
+                 title='Database / Fit', title_fontsize=_FLG,
+                 fontsize=_FLG, loc='upper left', framealpha=0.90)
 ax.add_artist(leg1)
-ax.legend(handles=size_handles,
-          title='Tree size (ERCs)', title_fontsize=_FLG,
-          fontsize=_FLG, loc='upper left', framealpha=0.90)
+
+# ── Branching size legend (lower right) ──────────────────────────────────────
+_b_ticks = [1.0, 1.5, 2.0, 3.0]
+_sz_handles = [
+    ax.scatter([], [], s=branching_size(b), c='#888888', alpha=0.7,
+               edgecolors='white', lw=0.3, label=f'$b = {b:.1f}$')
+    for b in _b_ticks
+]
+ax.legend(handles=_sz_handles,
+          title='Mean branching  ($b$)', title_fontsize=_FLG,
+          fontsize=_FLG, loc='lower right', framealpha=0.90)
 
 ax.grid(True, alpha=0.20, which='both')
 ax.spines['top'].set_visible(False)

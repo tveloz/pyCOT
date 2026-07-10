@@ -25,8 +25,8 @@ mplcursors = "^0.6"
 pytest = "^8.2.2"
 
 [tool.pytest.ini_options]
-testpaths = ["src/pyCOT/tests"]
-pythonpath = ["src"]
+testpaths = ["src/pyCOT/tests", "projects/COT_fundamental_Generators/tests"]
+pythonpath = ["src", "projects/COT_fundamental_Generators"]
 
 [build-system]
 requires = ["poetry-core"]
