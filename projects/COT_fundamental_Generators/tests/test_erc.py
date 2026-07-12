@@ -28,6 +28,8 @@ HOW TO RUN
   Option A — VS Code play button:  click ▶ on this file.
   Option B — terminal:  python -m pytest tests/test_erc.py -v -s
 """
+from __future__ import annotations
+import pytest
 
 # ── CONFIGURATION ─────────────────────────────────────────────────────────────
 # Filter: run only tests whose name contains this string.
@@ -40,9 +42,6 @@ FILTER = ""
 # Show print output from inside test functions (e.g. ERC details for BIOMD237)
 VERBOSE = True
 # ─────────────────────────────────────────────────────────────────────────────
-
-from __future__ import annotations
-import pytest
 
 from cot_gen.erc         import compute_ercs
 from cot_gen.io_pyCOT    import build_rndata

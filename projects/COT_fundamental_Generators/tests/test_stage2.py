@@ -33,6 +33,10 @@ HOW TO RUN
   Option B — terminal:  python -m pytest tests/test_stage2.py -v -s
 """
 
+from __future__ import annotations
+import pytest
+from itertools import combinations
+
 # ── CONFIGURATION ─────────────────────────────────────────────────────────────
 # Filter: run only tests whose name contains this string.
 # Leave empty ("") to run ALL tests.
@@ -42,10 +46,6 @@ FILTER = ""
 # Show print output from inside tests (e.g. synergy counts for BIOMD237)
 VERBOSE = True
 # ─────────────────────────────────────────────────────────────────────────────
-
-from __future__ import annotations
-import pytest
-from itertools import combinations
 
 from cot_gen.hierarchy  import build_hierarchy
 from cot_gen.synergy    import compute_synergies, compute_basic_synergies

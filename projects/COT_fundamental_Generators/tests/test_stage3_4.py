@@ -7,13 +7,16 @@
 WHAT IT CHECKS
 --------------
   PART 1 — Complementarity  (cot_gen/complementarity.py):
-    1a. Oracle vs optimised — exact set equality on all gold networks.
-    1b. No complementarity when all ERC pairs are comparable.
-    1c. GOLD2 specific known results: pair (E_s0s1, E_s2s3) has Type 1 and Type 3.
-    1d. Custom networks with hand-crafted Type 1 and Type 3 results.
-    1e. Mathematical invariants:
-        • All reported pairs are incomparable.
-        • Type 2 is always empty (subsumed by Type 1 — see paper for proof).
+    1a. Oracle vs optimised — exact set equality on all gold networks
+        (basic complementarity and fundamental complementarity separately).
+    1b. No complementarity when there's only one ERC, or all ERC pairs
+        are comparable.
+    1c. Custom network with a genuine (bidirectional) basic + pure +
+        fundamental complementarity pair, and GOLD2's synergy-driven case
+        where the whole-network requirement drops via a fundamental synergy
+        rather than via any direct ERC-pair supply (so basic == False even
+        though the module as a whole becomes more self-sufficient).
+    1d. Mathematical invariants: all reported pairs are incomparable.
 
   PART 2 — Generators  (cot_gen/generators.py):
     2a. Gold network results (GOLD1: single primitive, GOLD2: two primitives +
@@ -42,6 +45,10 @@ HOW TO RUN
   Option B — terminal:  python -m pytest tests/test_stage3_4.py -v -s
 """
 
+from __future__ import annotations
+import pytest
+from itertools import combinations   # noqa: F401 (used by hypothesis tests)
+
 # ── CONFIGURATION ─────────────────────────────────────────────────────────────
 # Filter: run only tests whose name contains this string.
 # Leave empty ("") to run ALL tests in this file.
@@ -52,18 +59,14 @@ FILTER = ""
 VERBOSE = True
 # ─────────────────────────────────────────────────────────────────────────────
 
-from __future__ import annotations
-import pytest
-from itertools import combinations   # noqa: F401 (used by hypothesis tests)
-
 from cot_gen.erc              import compute_ercs
 from cot_gen.hierarchy        import build_hierarchy
 from cot_gen.synergy          import compute_synergies
-from cot_gen.complementarity  import compute_complementarities, CompTuple   # noqa: F401
+from cot_gen.complementarity  import compute_complementarities
 from cot_gen.generators       import compute_generators, reachable_from, primitive_ercs
 from cot_gen.metanetwork      import build_metanetwork
 from cot_gen.cot_types        import RNData
-from oracles.complementarity_oracle import comp_oracle, comp_set as oracle_comp_set
+from oracles.complementarity_oracle import comp_basic_set, comp_fund_set
 from tests.gold_networks import ALL_GOLD, GOLD1_LOOP, GOLD2_HIERARCHY, GOLD5_NONPERSISTENT
 
 
@@ -106,7 +109,9 @@ def _all_stages(net):
 
 def _two_loops_ercs():
     """
-    Two independent loops → two incomparable persistent ERCs → Type 3.
+    Two independent loops → two incomparable, already-persistent ERCs with
+    zero complementarity of any kind (neither has a nonempty req, so supl()
+    is trivially empty in both directions — Def 22).
     Species: s0(0), s1(1), s2(2), s3(3)
     r0: s0→s1, r1: s1→s0  →  ERC_0={s0,s1}, req=∅, prod={s0,s1}
     r2: s2→s3, r3: s3→s2  →  ERC_1={s2,s3}, req=∅, prod={s2,s3}
@@ -119,17 +124,20 @@ def _two_loops_ercs():
     return compute_ercs(rnd)
 
 
-def _type1_ercs():
+def _direct_complementarity_ercs():
     """
-    Two ERCs with shared requirements → Type 1.
-    r0: {s0,s1}→{s2}  →  ERC_0={s0,s1,s2}, req={s0,s1}
-    r1: {s1,s3}→{s2}  →  ERC_1={s1,s2,s3}, req={s1,s3}
-    Joint covers both: joint_req=∅ < req_0+req_1=4 → Type 1.
+    Two ERCs with a genuine, bidirectional DIRECT supply relation (Def 22),
+    no synergy at all — the cleanest case for basic == pure == fundamental.
+    Species: a(0), f(1), p(2), b(3).
+    r0: f+a -> 2a+p   ERC_A = clos{f,a} = {a,f,p}, req={f}, prod={a,p}
+    r1: p+b -> 2b+f   ERC_B = clos{p,b} = {b,f,p}, req={p}, prod={b,f}
+    A supplies p (A's prod) to B's req; B supplies f (B's prod) to A's req.
+    Neither reaction's support spans both ERCs, so there is no synergy.
     """
     rnd = _build_rndata(
-        4, ["s0","s1","s2","s3"],
-        supp=[0b0011, 0b1010],   # {s0,s1}=3, {s1,s3}=10
-        prod=[0b0100, 0b0100],   # both produce s2=4
+        4, ["a", "f", "p", "b"],
+        supp=[0b0011, 0b1100],   # r0: {f,a}={1,0}=0b0011  r1: {p,b}={2,3}=0b1100
+        prod=[0b0101, 0b1010],   # r0: {a,p}={0,2}=0b0101  r1: {b,f}={3,1}=0b1010
     )
     return compute_ercs(rnd)
 
@@ -139,13 +147,29 @@ def _type1_ercs():
 # ══════════════════════════════════════════════════════════════════════════════
 
 @pytest.mark.parametrize("net", ALL_GOLD, ids=[n.name for n in ALL_GOLD])
-def test_comp_oracle_vs_opt_gold(net):
-    """compute_complementarities must match comp_oracle exactly on every gold network."""
+def test_comp_basic_oracle_vs_opt_gold(net):
+    """compute_complementarities(...).basic must match the brute-force oracle."""
     ercs = _build_ercs_from_gold(net)
     hier = build_hierarchy(ercs)
 
-    orc = oracle_comp_set(ercs)
-    opt = {(c.i, c.j, c.comp_type, c.direction) for c in compute_complementarities(ercs, hier).all}
+    orc = comp_basic_set(ercs)
+    opt = {(c.i, c.j, c.fwd_supply, c.bwd_supply)
+           for c in compute_complementarities(ercs, hier).basic}
+
+    assert opt == orc, (
+        f"[{net.name}] mismatch:\n  opt only: {opt-orc}\n  oracle only: {orc-opt}"
+    )
+
+
+@pytest.mark.parametrize("net", ALL_GOLD, ids=[n.name for n in ALL_GOLD])
+def test_comp_fundamental_oracle_vs_opt_gold(net):
+    """compute_complementarities(...).fundamental must match the brute-force oracle."""
+    ercs = _build_ercs_from_gold(net)
+    hier = build_hierarchy(ercs)
+
+    orc = comp_fund_set(ercs)
+    opt = {(c.prod_idx, c.cons_idx, c.species)
+           for c in compute_complementarities(ercs, hier).fundamental}
 
     assert opt == orc, (
         f"[{net.name}] mismatch:\n  opt only: {opt-orc}\n  oracle only: {orc-opt}"
@@ -166,80 +190,65 @@ def test_comp_empty_on_comparable_pair():
     assert len(comp) == 0
 
 
-def test_comp_gold2_type1():
-    """
-    GOLD2 pair (E_s0s1, E_s2s3): joint_req=0 < req_i+req_j → Type 1.
-    """
-    ercs = _build_ercs_from_gold(GOLD2_HIERARCHY)
-    comp = compute_complementarities(ercs, build_hierarchy(ercs))
-
-    masks   = {e.species_mask: idx for idx, e in enumerate(ercs)}
-    i_s0s1  = masks[0b0011]
-    i_s2s3  = masks[0b1100]
-    i_p, j_p = min(i_s0s1, i_s2s3), max(i_s0s1, i_s2s3)
-
-    assert (i_p, j_p) in {(c.i, c.j) for c in comp.type1}, (
-        f"Expected Type 1 for ({i_p},{j_p}), got {comp.type1}"
-    )
-
-
-def test_comp_gold2_type3():
-    """
-    GOLD2 pair (E_s0s1, E_s2s3): E_s2s3 extends E_s0s1's production → Type 3.
-    """
-    ercs = _build_ercs_from_gold(GOLD2_HIERARCHY)
-    comp = compute_complementarities(ercs, build_hierarchy(ercs))
-
-    masks   = {e.species_mask: idx for idx, e in enumerate(ercs)}
-    i_s0s1  = masks[0b0011]
-    i_s2s3  = masks[0b1100]
-    i_p, j_p = min(i_s0s1, i_s2s3), max(i_s0s1, i_s2s3)
-
-    assert any(c.i == i_p and c.j == j_p for c in comp.type3), (
-        f"Expected Type 3 for ({i_p},{j_p}), got {comp.type3}"
-    )
-
-
-def test_comp_two_loops_type3():
-    """Two independent persistent loops → Type 3 (both directions) only."""
+def test_comp_two_loops_empty():
+    """Two independent, already-persistent ERCs → zero complementarity (any kind)."""
     ercs = _two_loops_ercs()
     hier = build_hierarchy(ercs)
     comp = compute_complementarities(ercs, hier)
 
     assert len(ercs) == 2
     assert not hier.is_comparable(0, 1)
-    assert len(comp.type3) == 1, f"Expected 1 Type-3, got {comp.type3}"
-    assert len(comp.type1) == 0
-    assert comp.type3[0].direction == 0   # both directions hold simultaneously
+    assert len(comp.basic) == 0
+    assert len(comp.fundamental) == 0
 
 
-def test_comp_type1_example():
-    """Custom Type-1 network: shared requirement covered by joint closure."""
-    ercs = _type1_ercs()
+def test_comp_direct_bidirectional():
+    """
+    Custom network: E_A and E_B directly, bidirectionally complementary
+    (Def 22) with no synergy — basic, pure, and fundamental all fire in
+    both directions.
+    """
+    ercs = _direct_complementarity_ercs()
     hier = build_hierarchy(ercs)
-    comp = compute_complementarities(ercs, hier)
+    syn  = compute_synergies(ercs, hier, level="fundamental")
+    comp = compute_complementarities(ercs, hier, syn_result=syn)
 
     assert len(ercs) == 2
     assert not hier.is_comparable(0, 1)
-    assert len(comp.type1) >= 1
+    assert len(syn.fundamental) == 0, "this network is constructed to have no synergy"
+
+    assert len(comp.basic) == 1
+    pair = comp.basic[0]
+    assert pair.fwd_supply and pair.bwd_supply, "supply must be bidirectional"
+    assert pair.is_pure, "no synergy present -> basic complementarity must be pure"
+    assert len(comp.pure) == 1
+    assert len(comp.fundamental) == 2, "one fundamental relation per direction"
 
 
-def test_comp_type1_oracle_vs_opt_custom():
-    ercs = _type1_ercs()
+def test_comp_gold2_synergy_driven_reduction_is_not_basic():
+    """
+    GOLD2: joining E1={s0,s1} and E2={s2,s3} strictly reduces the combined
+    requirement (req(E1)∪req(E2)={s3} down to req(E3)=∅), but only because
+    the join activates a NEW reaction (r2, a fundamental synergy) that
+    neither ERC could fire alone -- neither ERC directly supplies a species
+    the other requires (E1's prod={s0,s1} misses s3; E2's prod={s2} misses
+    nothing E1 needs since req(E1)=∅).  So this pair must have zero basic
+    complementarity even though the whole module became more self-sufficient.
+    """
+    ercs = _build_ercs_from_gold(GOLD2_HIERARCHY)
     hier = build_hierarchy(ercs)
-    orc  = oracle_comp_set(ercs)
-    opt  = {(c.i, c.j, c.comp_type, c.direction)
-            for c in compute_complementarities(ercs, hier).all}
-    assert opt == orc
+    syn  = compute_synergies(ercs, hier, level="fundamental")
+    comp = compute_complementarities(ercs, hier, syn_result=syn)
 
+    masks  = {e.species_mask: idx for idx, e in enumerate(ercs)}
+    i_e1   = masks[0b0011]
+    i_e2   = masks[0b1100]
+    pair   = (min(i_e1, i_e2), max(i_e1, i_e2))
 
-def test_comp_two_loops_oracle_vs_opt():
-    ercs = _two_loops_ercs()
-    hier = build_hierarchy(ercs)
-    orc  = oracle_comp_set(ercs)
-    opt  = {(c.i, c.j, c.comp_type, c.direction)
-            for c in compute_complementarities(ercs, hier).all}
-    assert opt == orc
+    assert len(syn.fundamental) >= 1, "GOLD2 is constructed to have a fundamental synergy"
+    assert pair not in {(c.i, c.j) for c in comp.basic}, (
+        "requirement reduction here comes from synergy, not direct ERC-pair supply"
+    )
 
 
 @pytest.mark.parametrize("net", ALL_GOLD, ids=[n.name for n in ALL_GOLD])
@@ -249,26 +258,10 @@ def test_comp_only_incomparable_pairs(net):
     hier = build_hierarchy(ercs)
     comp = compute_complementarities(ercs, hier)
 
-    for c in comp.all:
+    for c in comp.basic:
         assert not hier.is_comparable(c.i, c.j), (
             f"[{net.name}] comparable pair ({c.i},{c.j}) has complementarity"
         )
-
-
-@pytest.mark.parametrize("net", ALL_GOLD, ids=[n.name for n in ALL_GOLD])
-def test_comp_type2_always_empty_gold(net):
-    """
-    Type 2 is mathematically unreachable:
-    req_i ∩ req_j ≠ ∅  always implies  |joint_req| < |req_i|+|req_j|  → Type 1 fires first.
-    """
-    ercs = _build_ercs_from_gold(net)
-    comp = compute_complementarities(ercs, build_hierarchy(ercs))
-    assert len(comp.type2) == 0, f"[{net.name}] unexpected Type-2: {comp.type2}"
-
-
-def test_comp_type2_always_empty_custom():
-    ercs = _two_loops_ercs()
-    assert len(compute_complementarities(ercs, build_hierarchy(ercs)).type2) == 0
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -443,7 +436,7 @@ def test_metanetwork_node_fields(net):
 def test_metanetwork_edge_list_types(net):
     """All edge rel_type values must be in the known set."""
     valid = {"hasse", "syn_basic", "syn_maximal", "syn_fundamental",
-             "comp_type1", "comp_type2", "comp_type3"}
+             "comp_basic", "comp_fundamental"}
     ercs, hier, syn, comp, gen = _all_stages(net)
     mn = build_metanetwork(ercs, hier, syn, comp, gen)
     for edge in mn.to_edge_list():
@@ -463,10 +456,9 @@ def test_metanetwork_stats_consistent(net):
     assert s["n_basic_syn"]       == len(syn.basic)
     assert s["n_maximal_syn"]     == len(syn.maximal)
     assert s["n_fundamental_syn"] == len(syn.fundamental)
-    assert s["n_comp_type1"]      == len(comp.type1)
-    assert s["n_comp_type2"]      == len(comp.type2)
-    assert s["n_comp_type3"]      == len(comp.type3)
-    assert s["n_comp_total"]      == len(comp)
+    assert s["n_comp_basic"]       == len(comp.basic)
+    assert s["n_comp_pure"]        == len(comp.pure)
+    assert s["n_comp_fundamental"] == len(comp.fundamental)
     assert s["n_primitives"]      == len(gen.primitive_indices)
     assert 0.0 <= s["coverage"]   <= 1.0
     assert s["n_persistent_ercs"] + s["n_non_persistent"] == s["n_ercs"]
@@ -494,7 +486,7 @@ def test_metanetwork_biomd237(biomd237_rndata):
 
     s = mn.stats()
     print(f"\nBIOMD237: {s['n_ercs']} ERCs | {s['n_fundamental_syn']} fundamental syn | "
-          f"{s['n_comp_total']} comp | {s['n_primitives']} primitives | "
+          f"{s['n_comp_fundamental']} comp | {s['n_primitives']} primitives | "
           f"coverage={s['coverage']:.1%}")
     assert s["n_ercs"] > 0
     assert s["coverage"] >= 0.0

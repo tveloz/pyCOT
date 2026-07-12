@@ -39,6 +39,13 @@ for _p in (_proj, os.path.join(_repo, "src")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
+# The verbose EPM/ESPM traversal prints Unicode (checkmarks, arrows) that a
+# cp1252 Windows console can't encode; force UTF-8 so this script runs from
+# plain cmd.exe as well as UTF-8-aware terminals.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8")
+
 # ── Imports (do not edit) ─────────────────────────────────────────────────────
 from pyCOT.io.functions      import read_txt
 from cot_gen.io_pyCOT        import build_rndata

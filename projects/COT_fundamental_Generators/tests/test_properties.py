@@ -49,6 +49,8 @@ TUNING
   Increase MAX_EXAMPLES below to find rarer failures (slower).
   Decrease to speed up development runs.
 """
+from __future__ import annotations
+import pytest
 
 # ── CONFIGURATION ─────────────────────────────────────────────────────────────
 # Filter: run only tests whose name contains this string.
@@ -62,9 +64,6 @@ VERBOSE = True
 # More examples → higher confidence, but slower.
 MAX_EXAMPLES = 300
 # ─────────────────────────────────────────────────────────────────────────────
-
-from __future__ import annotations
-import pytest
 
 try:
     from hypothesis import given, settings, HealthCheck

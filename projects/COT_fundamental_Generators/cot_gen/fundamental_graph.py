@@ -132,6 +132,7 @@ class FundamentalGraph:
         # ── Hierarchy (reuse frozensets from HierarchyData) ───────────────
         self.ancestors   = hier.ancestors    # ancestors[i]   = frozenset of strict supersets
         self.descendants = hier.descendants  # descendants[i] = frozenset of strict subsets
+        self.parents     = hier.parents      # parents[i]     = direct covers of i (Hasse edges)
 
         # ── Fundamental synergy edges ──────────────────────────────────────
         # syn_from[i] = [(other, target), ...]
@@ -147,48 +148,98 @@ class FundamentalGraph:
         # comp_by_species[species_bit] = [prod_erc_idx, ...]
         # Meaning: for species s missing from the current state, these are the
         # ⊆-minimal ERCs that produce s.
+        #
+        # comp_consumers_by_species[species_bit] = [cons_erc_idx, ...]
+        # Meaning: for species s already produced by the current state, these
+        # are the ⊆-minimal ERCs that require s externally (Def 26, consumer
+        # side).  Used by Mode-2 to grow an already-SSM module outward via
+        # complementarity: attaching cons_erc_idx does not close any open
+        # requirement (there is none — the module is already SSM) but adds
+        # productive novelty by discharging cons_erc_idx's own requirement
+        # for s "for free".
         comp_by_species: dict[int, list[int]] = {}
+        comp_consumers_by_species: dict[int, list[int]] = {}
         seen: set[tuple[int, int]] = set()
+        seen_cons: set[tuple[int, int]] = set()
         for fc in comp_result.fundamental:
             key = (fc.species, fc.prod_idx)
             if key not in seen:
                 seen.add(key)
                 comp_by_species.setdefault(fc.species, []).append(fc.prod_idx)
+            ckey = (fc.species, fc.cons_idx)
+            if ckey not in seen_cons:
+                seen_cons.add(ckey)
+                comp_consumers_by_species.setdefault(fc.species, []).append(fc.cons_idx)
         self.comp_by_species = comp_by_species
+        self.comp_consumers_by_species = comp_consumers_by_species
 
     # -----------------------------------------------------------------------
     # Synergy Horn propagation
     # -----------------------------------------------------------------------
 
-    def erc_syn_close(self, current_set: frozenset, new_indices) -> frozenset:
+    def erc_syn_close(self, current_sp: int, new_indices) -> tuple[frozenset, int]:
         """
-        Propagate synergy implications when new_indices join current_set.
+        Propagate synergy implications when new_indices join a state with
+        species coverage current_sp.
 
-        When ERC j is newly added and (j, other) → target is a fundamental
-        synergy with other already in current_set (or in implied), then target
-        is also implied.  Propagation continues until no new ERCs are implied.
+        Firing test (Lemma "Ignition", companion paper): a fundamental synergy
+        (i, j) → k fires once species_mask[i] AND species_mask[j] are both
+        ⊆ the state's species coverage — NOT once i and j are literally ERC
+        *indices* present in erc_set.  These differ whenever a bigger ERC is
+        in the state (e.g. via a vertical lift) that species-wise dominates
+        the minimal reactant ERC i without i itself ever being an explicit
+        member: species_mask[i] ⊆ species_mask[bigger] ⊆ sp(state) is enough
+        to ignite i, even though i ∉ erc_set.  Testing ERC-index membership
+        instead of a species-subset test under-fires in exactly that case,
+        silently leaving the state's species/req/prod out of sync with its
+        true (reaction-level) closure — a reaction whose support becomes
+        covered would then never contribute its product.
 
         This is Horn propagation on the synergy hyperedge graph:
-          clause: (i ∈ S) ∧ (j ∈ S) → (k ∈ S)
+          clause: (species_mask[i] ⊆ sp) ∧ (species_mask[j] ⊆ sp) → (k ∈ S)
+
+        Lookup keys are seeded not just from new_indices but also from their
+        hierarchy descendants: a descendant d of a newly added ERC e has
+        species_mask[d] ⊆ species_mask[e] ⊆ sp by construction, so d is
+        ignited too and may itself be the minimal reactant half of some
+        registered fundamental synergy (indexed under d, not under e).
 
         Parameters
         ----------
-        current_set  : frozenset — ERCs already in the state before this addition
-        new_indices  : iterable[int] — ERCs being added now
+        current_sp  : int — species bitmask already covered before this addition
+        new_indices : iterable[int] — ERCs being added now
 
         Returns
         -------
-        frozenset — new_indices ∪ all transitively implied ERCs
+        (implied, sp)
+          implied : frozenset — new_indices ∪ all transitively implied targets
+          sp      : int — species coverage after adding implied's species
         """
         implied = set(new_indices)
-        queue   = list(new_indices)
+        sp = current_sp
+        for i in new_indices:
+            sp |= self.species_mask[i]
+
+        queue: list[int] = []
+        for e in new_indices:
+            queue.append(e)
+            queue.extend(self.descendants[e])
+
+        seen_lookup: set[int] = set()
         while queue:
             j = queue.pop()
+            if j in seen_lookup:
+                continue
+            seen_lookup.add(j)
             for (other, target) in self.syn_from.get(j, []):
-                if target not in implied and (other in current_set or other in implied):
+                if target in implied:
+                    continue
+                if (self.species_mask[other] & sp) == self.species_mask[other]:
                     implied.add(target)
+                    sp |= self.species_mask[target]
                     queue.append(target)
-        return frozenset(implied)
+                    queue.extend(self.descendants[target])
+        return frozenset(implied), sp
 
     # -----------------------------------------------------------------------
     # State construction
@@ -246,7 +297,7 @@ class FundamentalGraph:
         -------
         New DFSState with all four fields updated.
         """
-        implied = self.erc_syn_close(state.erc_set, [new_idx])
+        implied, _ = self.erc_syn_close(state.sp, [new_idx])
 
         add_req  = 0
         add_prod = 0

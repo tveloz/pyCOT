@@ -788,16 +788,59 @@ def compute_espm(
 
         stats_k: dict = {'mode2_seeds': 0}
 
-        # ── Mode-2: find outward synergy seeds from each current SO ──────
-        # For each SO state: iterate its ERC-set (not all n_ercs!).
-        # Find synergy partners E_j outside the SO and extend.
+        # ── Mode-2: find outward growth seeds from each current SO ───────
+        # For each SO state: iterate its ERC-set (not all n_ercs!) and try
+        # the three fundamental extension moves that can grow an already-SSM
+        # module (req == 0, so nothing is "needed" — growth is exploratory):
+        #
+        #   (a) Horizontal — synergy: E_j outside the SO forms a fundamental
+        #       synergy with some E_i already in the SO.
+        #   (b) Horizontal — complementarity (consumer side): E_j outside the
+        #       SO fundamentally requires a species the SO already produces.
+        #       (Mode-1's Option A only ever attaches *producers* of an open
+        #       requirement; an SSM state has no open requirement, so the
+        #       inverse — attaching *consumers* of what is already produced —
+        #       is the move that discovers e.g. M1/M2 in the worked example.)
+        #   (c) Vertical lift: replace/absorb E_i already in the SO with a
+        #       direct hierarchy ancestor E_a (E_a ⊋ E_i).  E_a already
+        #       incorporates every reaction of E_i (and hence of the SO's
+        #       other constituents built on E_i), so this is just another
+        #       extend_state() call — no separate "absorb" bookkeeping is
+        #       needed.  This discovers e.g. M3 in the worked example, which
+        #       is unreachable via (a)/(b) because E_a is dominated by E_i as
+        #       a producer/consumer and therefore never appears as a
+        #       *fundamental* complementarity partner itself.
         mode2_seeds: list[DFSState] = []
         for so_state in current_layer:
             for i in so_state.erc_set:
+                # (a) synergy partners
                 for (j, _) in g.syn_from.get(i, []):
                     if j in so_state.erc_set:
                         continue  # E_j already in SO
                     ext_state = g.extend_state(so_state, j)
+                    if ext_state.sp not in visited_sp:
+                        mode2_seeds.append(ext_state)
+                        stats_k['mode2_seeds'] = stats_k.get('mode2_seeds', 0) + 1
+
+                # (c) vertical lift: direct hierarchy ancestors of E_i
+                for a in g.parents[i]:
+                    if a in so_state.erc_set:
+                        continue
+                    if (g.species_mask[a] & so_state.sp) == g.species_mask[a]:
+                        continue  # E_a already fully covered
+                    ext_state = g.extend_state(so_state, a)
+                    if ext_state.sp not in visited_sp:
+                        mode2_seeds.append(ext_state)
+                        stats_k['mode2_seeds'] = stats_k.get('mode2_seeds', 0) + 1
+
+            # (b) complementarity consumers of species already produced
+            for s_bit in _bits(so_state.prod):
+                for cons_idx in g.comp_consumers_by_species.get(s_bit, []):
+                    if cons_idx in so_state.erc_set:
+                        continue
+                    if (g.species_mask[cons_idx] & so_state.sp) == g.species_mask[cons_idx]:
+                        continue  # already fully covered
+                    ext_state = g.extend_state(so_state, cons_idx)
                     if ext_state.sp not in visited_sp:
                         mode2_seeds.append(ext_state)
                         stats_k['mode2_seeds'] = stats_k.get('mode2_seeds', 0) + 1
@@ -868,3 +911,47 @@ def compute_espm(
         leaf_masks_by_order=leaf_masks_by_order,
         stats_by_order=stats_by_order,
     )
+
+
+# ---------------------------------------------------------------------------
+# Public API — latent join (on demand, NOT searched by compute_epms/compute_espm)
+# ---------------------------------------------------------------------------
+
+def latent_join(rn, X: int, Y: int) -> int | None:
+    """
+    Reconstruct the join of two persistent modules X, Y on demand.
+
+    compute_epms / compute_espm deliberately never search for pure "latent"
+    joins: unions of already-persistent modules that share no synergy and no
+    complementarity (e.g. two persistent ERCs that merely overlap in one
+    shared, never-required species).  Lemma req_containment guarantees such a
+    join is automatically SSM whenever X and Y are, so there is nothing to
+    "discover" by search — it can always be recomputed for O(1) closures on
+    request instead of being enumerated ahead of time.  This is what keeps
+    the ESPM search confined to the generated core (Sosgen) rather than all
+    of Sos, which is exponentially larger for disjoint/loosely-connected
+    modules (see companion paper, Latent–generated factorization).
+
+    Parameters
+    ----------
+    rn : RNData
+    X, Y : int — species bitmasks of two already-known persistent modules
+
+    Returns
+    -------
+    int | None
+        The species bitmask of clos(X ∪ Y) if that closure is itself a
+        genuine persistent module (closed, SSM, connected, reactive);
+        None otherwise (e.g. X and Y are disconnected, or the join
+        activates a reaction that leaves an unmet requirement).
+    """
+    from .closure import build_inv_idx, closure_opt, is_ssm
+
+    inv_idx = build_inv_idx(rn.supp_q, rn.n_species)
+    joined = closure_opt(rn.supp_q, rn.prod_q, X | Y, inv_idx)
+
+    if not is_ssm(rn.supp_q, rn.prod_q, joined):
+        return None
+    if not _is_connected(rn.supp_q, rn.prod_q, rn.n_reactions, rn.n_species, joined):
+        return None
+    return joined

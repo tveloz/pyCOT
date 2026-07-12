@@ -17,7 +17,11 @@
       "Bash(pip show:*)",
       "Read(//c/Users/hp/.claude/projects/c--Users-hp-Dropbox-Public-AcademicWork-Europe-CLEA-Postdocs-TempletonPostdoc-sftw-pyCOT/memory/**)",
       "Read(//c/Users/hp/Dropbox/Public/AcademicWork/papers/Submitted/GenerativeStructuresOrganizations/current_submission_BMB/Generative_Structure_Closed_Sets_200526/**)",
-      "Bash(grep \"\\\\.txt$\")"
+      "Bash(grep \"\\\\.txt$\")",
+      "Bash(python -m pytest projects/COT_fundamental_Generators/tests/test_stage3_4.py -q)",
+      "Bash(python -m pytest projects/COT_fundamental_Generators/tests/test_epm.py -v)",
+      "Bash(timeout 90 python projects/COT_fundamental_Generators/scripts/run_network.py)",
+      "Bash(timeout 280 python projects/COT_fundamental_Generators/scripts/run_network.py)"
     ],
     "deny": [],
     "ask": [],
