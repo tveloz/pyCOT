@@ -36,8 +36,10 @@ FundamentalGraph.make_seed_state(i) -> DFSState
 FundamentalGraph.extend_state(state, new_idx) -> DFSState
     Add one ERC (plus all synergy implications) and return the new state.
 
-FundamentalGraph.erc_syn_close(current_set, new_indices) -> frozenset
-    Horn propagation: find all ERCs implied by adding new_indices to current_set.
+FundamentalGraph.erc_syn_close(current_sp, new_indices) -> (frozenset, int)
+    Horn propagation: find all ERCs implied by adding new_indices, given the
+    species already covered (current_sp); returns the implied ERC set and
+    the resulting species coverage.
 """
 from __future__ import annotations
 from dataclasses import dataclass
@@ -102,7 +104,8 @@ class FundamentalGraph:
     Unified ERC adjacency graph combining hierarchy + synergy + complementarity.
 
     Nodes     : ERC indices 0..n-1
-    Syn edges : fundamental synergy hyperedges (i,j)→k, stored bidirectionally
+    Syn edges : fundamental synergy hyperedges (i,j)→k, one entry per
+                (reactant-pair, target) triple, stored bidirectionally
     Comp edges: fundamental complementarity, indexed by species bit
     Node data : req_mask, prod_mask, species_mask, is_persistent per ERC
 
@@ -137,7 +140,29 @@ class FundamentalGraph:
         # ── Fundamental synergy edges ──────────────────────────────────────
         # syn_from[i] = [(other, target), ...]
         # Meaning: if BOTH i and other are in erc_set, then target is implied.
-        # Stored symmetrically: (i,j)→k gives entries in both syn_from[i] and syn_from[j].
+        # Stored symmetrically: (i,j)→k gives entries in both syn_from[i] and
+        # syn_from[j].
+        #
+        # NOTE on a tried-and-reverted optimization: a single incomparable
+        # pair (E_i, E_j) can have several simultaneous fundamental synergy
+        # targets (Emax(E,E') is in general an antichain, not a singleton —
+        # e.g. on BIOMD0000000237, 59 fundamental synergies reduce to only 53
+        # distinct pairs).  Aggregating syn_from by partner (one entry per
+        # pair, carrying a tuple/frozenset of targets) looked like a clear
+        # win — fewer redundant extend_state() calls for the small minority
+        # of multi-target pairs — but measured, on a genome-scale network
+        # (iNJ661, 712 ERCs, 3697 fundamental synergies), as ~50% *slower*
+        # overall (a controlled same-process A/B: ~13s unaggregated vs
+        # ~19-20s aggregated, across several attempted micro-optimizations
+        # of the aggregated form). The reason: ~98% of pairs have exactly
+        # one target, so the aggregated form's extra per-entry cost (a
+        # richer 3-tuple, an inner loop even over a single-element
+        # container) is paid on nearly every entry, while its benefit only
+        # applies to the small minority of multi-target pairs — a net loss
+        # in CPython at this call volume (tens of millions of iterations).
+        # Kept unaggregated here for that reason; the explorer (which is not
+        # in the hot path) aggregates self.syn.fundamental by pair on its
+        # own for display purposes — see cot_gen/explorer.py.
         syn_from: dict[int, list[tuple[int, int]]] = {}
         for st in syn_result.fundamental:
             syn_from.setdefault(st.i, []).append((st.j, st.k))

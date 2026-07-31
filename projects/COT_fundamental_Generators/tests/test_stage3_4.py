@@ -268,12 +268,18 @@ def test_comp_only_incomparable_pairs(net):
 # PART 2: GENERATORS
 # ══════════════════════════════════════════════════════════════════════════════
 
-def test_generators_empty_net():
-    """GOLD4 (no ERCs): empty GeneratorResult with coverage = 1.0."""
+def test_generators_e0_only_net():
+    """GOLD4 (E0 is the sole ERC): E0 is the sole primitive, coverage = 1.0.
+
+    E0 is never the target of a fundamental synergy (see erc.py's module
+    docstring: no other ERC's req_mask can ever name an E0 species, so
+    nothing ever "supplies" it), so it's trivially primitive here, same
+    shape as test_generators_single_erc below.
+    """
     from tests.gold_networks import GOLD4_INFLOW
     ercs, hier, syn, comp, gen = _all_stages(GOLD4_INFLOW)
-    assert gen.primitive_indices == []
-    assert gen.basis_reach == frozenset()
+    assert gen.primitive_indices == [0]
+    assert gen.basis_reach == frozenset({0})
     assert gen.coverage == 1.0
     assert gen.is_complete()
 

@@ -126,7 +126,10 @@ GOLD3_MINBAS = GoldNet(
 #
 # E0 = closure({a}) = {a, b} (r1 fires immediately)
 # supp_q: r0 → 0 (inflow), r1 → {a}&~E0 = 0 (a is in E0)
-# All reactions have supp_q=0 → no ERCs.
+# All reactions have supp_q=0 → no NON-TRIVIAL (quotiented-closure) ERCs.
+# compute_ercs additionally injects E0 itself as a P-ERC (species_mask=0b11,
+# min_bases=[], persistent) whenever E0_mask != 0 -- see erc.py's module
+# docstring -- so this network now has exactly that one ERC.
 #
 GOLD4_INFLOW = GoldNet(
     name="inflow_E0",
@@ -135,8 +138,10 @@ GOLD4_INFLOW = GoldNet(
     supp=[0b00, 0b01],
     prod=[0b01, 0b10],
     E0_mask=0b11,              # both a and b in E0
-    expected_ercs=[],          # no non-trivial ERCs
-    note="Everything in E0 — no ERCs",
+    expected_ercs=[
+        (0b11, 0, True),       # E0 itself: 0 min_bases, persistent
+    ],
+    note="Everything in E0 — E0 itself is the sole ERC",
 )
 
 

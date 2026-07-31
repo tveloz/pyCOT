@@ -7,6 +7,8 @@ compute_ercs(rn_data, counters=None) -> list[ERCData]
     Stage-1 main function.  For every non-trivial quotiented reaction r
     (supp_q[r] ≠ 0), compute erc_mask = closure_opt(supp_q[r]).
     Group reactions by their ERC.  For each group compute MinBas and req/prod.
+    Also injects one extra ERC for E0 (the closure of the inflow), when
+    E0_mask != 0 — see _e0_erc() below.
     Returns ERCData objects sorted by species_mask (smallest first).
 
     Metrics emitted (via counters, all prefixed "erc."):
@@ -22,6 +24,31 @@ Key assertions:
   • MinBas forms an antichain (no element ⊆ another)
 
 See oracles/erc_oracle.py for the brute-force reference.
+
+E0 as a P-ERC
+-------------
+E0 (the closure of the union of all inflow species) is, by construction,
+always closed and always semi-self-maintaining (req_mask == 0 relative to
+the RAW network: the only reactions "active" within E0 are the inflows
+themselves, which consume nothing). It is therefore always a genuine
+persistent ERC in its own right whenever the network has an inflow — this
+was previously left unrepresented, since every OTHER ERC is computed via
+QUOTIENTED closure (supp_q/prod_q, which strip E0's species out entirely),
+so E0's own species never appeared as their own ERC/EPM node.
+
+E0 does not disqualify, or get disqualified by, any other ERC's
+elementary/EPM status: every other ERC's species_mask lives in the
+quotiented (E0-excluded) index space, so E0's bits are structurally never
+set in any other ERC's mask — the two live in disjoint parts of the
+bitset. That is the right behavior, not an approximation: E0's species are
+unconditionally available, so no other ERC's req_mask can ever name one
+(nothing is ever "missing" an E0 species), which is exactly why E0 never
+participates in synergy or complementarity either (see synergy.py /
+complementarity.py — both operate purely on quotiented req/prod masks).
+E0 is "elementary in a generative sense" relative to every other ERC: the
+only persistent ERC any other one could be said to contain is E0 itself,
+and that containment doesn't count against being elementary, since E0 is
+free by construction.
 """
 from __future__ import annotations
 
@@ -78,6 +105,39 @@ def _req_prod(supp_q: Sequence[int], prod_q: Sequence[int], mask: int):
             agg_prod |= p
     req = agg_supp & ~agg_prod
     return req, agg_prod, scans
+
+
+# ---------------------------------------------------------------------------
+# E0 as a P-ERC (see module docstring)
+# ---------------------------------------------------------------------------
+
+def _e0_erc(rn_data: RNData, erc_id: int) -> ERCData:
+    """
+    Build the ERCData for E0 (the closure of the union of all inflow
+    species). Always persistent (req_mask=0) and always closed, by
+    construction of E0_mask itself (see cot_types.RNData / io_pyCOT).
+
+    min_bases=[] deliberately, not [0]: E0 needs no reactant precondition
+    at all, and an empty min_bases list makes every existing invariant
+    check in _assert_erc_invariants (all of which are `for b in
+    e.min_bases: ...` loops) hold vacuously, correctly — no special-casing
+    needed. closure_opt (which computes ordinary ERCs' closures over
+    QUOTIENTED supp_q/prod_q) cannot reconstruct E0_mask from any non-empty
+    base anyway, since E0's species are exactly what quotienting strips out.
+    """
+    e0 = rn_data.E0_mask
+    reaction_indices = [
+        r for r in range(rn_data.n_reactions)
+        if (rn_data.supp_raw[r] & ~e0) == 0
+    ]
+    return ERCData(
+        erc_id=erc_id,
+        species_mask=e0,
+        reaction_indices=reaction_indices,
+        min_bases=[],
+        req_mask=0,
+        prod_mask=e0,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -142,22 +202,32 @@ def compute_ercs(
     total_req_prod_scans = 0
     total_min_bases = 0
 
-    for erc_id, (erc_mask, (r_indices, supports)) in enumerate(
-        sorted(erc_groups.items())   # sort by mask for determinism
-    ):
+    for erc_mask, (r_indices, supports) in sorted(erc_groups.items()):
         min_bases = _minimal_subset(supports)
         req_mask, prod_mask, scans = _req_prod(supp_q, prod_q, erc_mask)
         total_req_prod_scans += scans
         total_min_bases += len(min_bases)
 
         ercs.append(ERCData(
-            erc_id=erc_id,
+            erc_id=-1,   # reassigned below, once E0 (if any) is in the list
             species_mask=erc_mask,
             reaction_indices=r_indices,
             min_bases=min_bases,
             req_mask=req_mask,
             prod_mask=prod_mask,
         ))
+
+    # E0 (see module docstring): always closed, always persistent, never
+    # disqualifies or is disqualified by any other ERC's elementary status
+    # (disjoint quotiented bitset). Injected here, not among erc_groups
+    # above, since it isn't discovered via closure_opt over supp_q/prod_q
+    # at all -- it's read directly off rn_data.E0_mask.
+    if rn_data.E0_mask != 0:
+        ercs.append(_e0_erc(rn_data, erc_id=-1))
+
+    ercs.sort(key=lambda e: e.species_mask)
+    for erc_id, e in enumerate(ercs):
+        e.erc_id = erc_id
 
     if counters is not None:
         counters.inc("erc.min_bases_total", total_min_bases)

@@ -265,9 +265,16 @@ def test_epm_espm_oracle_vs_opt_gold(net):
     if not ercs:
         pytest.skip(f"{net.name} has no ERCs")
     _, _, _, _, epm, espm = _run_pipeline(rn)
-    _assert_matches_oracle_modulo_latent_joins(
-        rn, ercs, set(epm.all_epm_masks), set(espm.all_so_masks)
-    )
+    # compute_epms additionally reports E0 itself as an extra EPM whenever
+    # E0_mask != 0 (erc.py's module docstring) -- a deliberate departure
+    # from Def 29's original "E_∅ = ∅" convention, which epm_oracle/
+    # espm_oracle still encode literally (E0-alone fails their own
+    # _is_reactive check, by construction, since inflow reactions have
+    # supp_q=0). Excluded here rather than taught to the oracle, same as
+    # test_erc.py's test_erc_oracle_vs_opt_gold.
+    got_epm = {m for m in epm.all_epm_masks if m != rn.E0_mask}
+    got_all = {m for m in espm.all_so_masks if m != rn.E0_mask}
+    _assert_matches_oracle_modulo_latent_joins(rn, ercs, got_epm, got_all)
 
 
 # ---------------------------------------------------------------------------

@@ -21,13 +21,41 @@
       "Bash(python -m pytest projects/COT_fundamental_Generators/tests/test_stage3_4.py -q)",
       "Bash(python -m pytest projects/COT_fundamental_Generators/tests/test_epm.py -v)",
       "Bash(timeout 90 python projects/COT_fundamental_Generators/scripts/run_network.py)",
-      "Bash(timeout 280 python projects/COT_fundamental_Generators/scripts/run_network.py)"
+      "Bash(timeout 280 python projects/COT_fundamental_Generators/scripts/run_network.py)",
+      "Bash(python -m py_compile projects/COT_fundamental_Generators/scripts/run_all_networks.py)",
+      "Bash(timeout 120 python /c/Users/hp/AppData/Local/Temp/claude/c--Users-hp-Dropbox-Public-AcademicWork-Europe-CLEA-Postdocs-TempletonPostdoc-sftw-pyCOT/2926b496-3a84-472d-96f4-372c6d9f17b8/scratchpad/test_run_all.py)",
+      "Bash(python - /c/Users/hp/AppData/Local/Temp/claude/c--Users-hp-Dropbox-Public-AcademicWork-Europe-CLEA-Postdocs-TempletonPostdoc-sftw-pyCOT/2926b496-3a84-472d-96f4-372c6d9f17b8/scratchpad/test_run_all.py)",
+      "Bash(python -c \"import pyvis; print\\(pyvis.__version__\\)\")",
+      "Bash(python \"/c/Users/hp/AppData/Local/Temp/claude/c--Users-hp-Dropbox-Public-AcademicWork-Europe-CLEA-Postdocs-TempletonPostdoc-sftw-pyCOT/2926b496-3a84-472d-96f4-372c6d9f17b8/scratchpad/test_explorer.py\")",
+      "Bash(timeout 30 python projects/COT_fundamental_Generators/scripts/explore_fundamental_graph.py)",
+      "Bash(python -m py_compile projects/COT_fundamental_Generators/cot_gen/explorer.py)",
+      "WebFetch(domain:www.ncbi.nlm.nih.gov)",
+      "WebFetch(domain:r.jina.ai)",
+      "WebFetch(domain:arxiv.org)",
+      "WebFetch(domain:pmc.ncbi.nlm.nih.gov)",
+      "Bash(python3 -)",
+      "Bash(xargs -I{} echo {})",
+      "Bash(timeout 180 python3 -)",
+      "Bash(python3 run_genome_scale_explore.py)",
+      "Bash(python3 run_maxraf_decomp_sweep.py)",
+      "Bash(python3 analyze_ecoli_core_hierarchy.py)",
+      "Bash(echo \"launched pid $!\")",
+      "Bash(cat /tmp/hierarchy_analysis.log; echo \"---\"; ps aux 2>/dev/null | grep python3 | grep -v grep)",
+      "Read(//tmp/**)",
+      "Bash(while ps *)",
+      "Bash(python3 survey_fragile_circuit_branching.py)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 run_ecoli_inflow_outflow_grid.py)",
+      "Bash(rm -f test_compile_wrapper.tex test_compile_wrapper.aux test_compile_wrapper.log test_compile_wrapper.pdf test_compile_wrapper.out *)",
+      "Bash(pdflatex -interaction=nonstopmode -halt-on-error decomposing_RAF_v4.tex)",
+      "Bash(echo \"EXIT=$?\")"
     ],
     "deny": [],
     "ask": [],
     "additionalDirectories": [
       "c:\\Users\\hp\\Dropbox\\Public\\AcademicWork\\Europe\\CLEA\\Postdocs\\TempletonPostdoc\\sftw\\pyCOT\\src\\pyCOT",
-      "C:\\Users\\hp\\Dropbox\\Public\\AcademicWork\\papers\\Submitted\\GenerativeStructuresOrganizations\\current_submission_BMB\\Generative_Structure_Closed_Sets_200526"
+      "C:\\Users\\hp\\Dropbox\\Public\\AcademicWork\\papers\\Submitted\\GenerativeStructuresOrganizations\\current_submission_BMB\\Generative_Structure_Closed_Sets_200526",
+      "C:\\Users\\hp\\Dropbox\\Public\\AcademicWork\\Europe\\CLEA\\Postdocs\\TempletonPostdoc\\sftw\\pyCOT\\projects\\RAF_Comparison\\paper"
     ]
   }
 }

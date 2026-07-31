@@ -394,20 +394,45 @@ class OrganizationHierarchy:
 # ============================================================================
 # SELF-MAINTENANCE VERIFICATION
 # ============================================================================
-def minimize_sv(S, epsilon=1e-9, method='highs', margin=1e-9):
+def minimize_sv(S, epsilon=1e-6, method='highs', margin=1e-9):
     """
-    Check self-maintenance: is there v ≥ 0, sum(v) = n_reactions, with S·v ≥ -margin?
+    Check self-maintenance: is there v ≥ epsilon (componentwise), sum(v) = n_reactions,
+    with S·v ≥ -margin?
 
-    Mathematical condition (COT): ∃ v ≥ 0 such that S·v ≥ 0.
-    Numerically: S·v ≥ -margin  (margin very small, default 1e-9).
+    Mathematical condition (COT, Def 2.4 / flux cone V(X)): X is self-maintaining
+    iff there exists v with v_r > 0 STRICTLY for every r in R_X (every reaction
+    triggered by X — i.e. every reaction whose reactants lie in X — and S·v ≥ 0.
+    A reaction in R_X is not optional: if its reactants are present, it is part
+    of the sub-network and must be assigned a genuinely positive rate, not "off".
 
     Key design choices:
-      - v ≥ 0, NOT v ≥ epsilon: individual reactions are allowed to have zero flux.
-        This is required by the COT definition — not all reactions need to fire.
-      - sum(v) = n_reactions: normalization prevents the trivial v = 0 solution.
-      - S·v ≥ -margin: small negative tolerance replaces the wrong S·v ≥ +margin,
-        which previously caused zero-sum exchange pairs (e.g. C/X) to fail
-        even though they satisfy the mathematical condition with net = 0.
+      - v ≥ epsilon, NOT v ≥ 0: every reaction in R_X gets a strictly positive
+        floor. Letting a triggered reaction sit at v_r = 0 (an earlier version
+        of this function did, via bounds=(0, None)) lets the LP silently
+        "switch off" reactions whose reactants are present but whose own
+        consumption would break feasibility — e.g. a pure decay/outflow
+        reaction `s -> ∅` for a species s that is otherwise only regenerated
+        catalytically (net zero) elsewhere: with v_r allowed to be 0, the
+        solver happily sets the decay's flux to zero and never notices s is
+        actually being drained, wrongly reporting self-maintenance. Caught via
+        networks/FarmVariants/Farm.txt: 'infr' has a decay reaction (R16) whose
+        only counter-source (R17) needs 'farmer'; without this floor, a species
+        set containing infr but not farmer was (wrongly) reported as an
+        elementary organization, with R16 sitting at flux 0 in the witness.
+      - epsilon default (1e-6) is deliberately >> margin default (1e-9): if the
+        two are close, a forced-positive drain of size ~epsilon can be absorbed
+        by the -margin slack on the Sv >= -margin constraint, silently
+        reintroducing the same bug at the numerical level. Verified empirically
+        on the Farm.txt case above: epsilon=1e-9 or 1e-7 (too close to
+        margin=1e-9) still wrongly reports self-maintaining; epsilon=1e-6 or
+        larger correctly reports infeasible.
+      - sum(v) = n_reactions: normalization prevents comparing across
+        different overall flux scales; combined with v >= epsilon this still
+        leaves a nonempty box whenever n_reactions * epsilon <= n_reactions,
+        i.e. always (epsilon <= 1), so it does not by itself create infeasibility.
+      - S·v ≥ -margin: small negative tolerance (not S·v ≥ +margin, which
+        wrongly rejects exactly-balanced net-zero exchange pairs, e.g. a
+        catalyst appearing on both sides of a reaction with equal coefficient).
     """
     S_array = np.asarray(S)
     n_species, n_reactions = S_array.shape
@@ -425,8 +450,10 @@ def minimize_sv(S, epsilon=1e-9, method='highs', margin=1e-9):
     A_eq = np.ones((1, n_reactions))
     b_eq = [float(n_reactions)]
 
-    # v ≥ 0 — reactions may be off; not all must fire
-    bounds = [(0, None) for _ in range(n_reactions)]
+    # v ≥ epsilon — every reaction of R_X is triggered and MUST fire at a
+    # genuinely positive rate (Def 2.4); it is not optional just because its
+    # own consumption might otherwise break feasibility.
+    bounds = [(epsilon, None) for _ in range(n_reactions)]
 
     try:
         result = linprog(c, A_ub=A_ub, b_ub=b_ub, A_eq=A_eq, b_eq=b_eq,
@@ -489,10 +516,10 @@ def minimize_sv(S, epsilon=1e-9, method='highs', margin=1e-9):
 #         return [False, None]
 
 
-def check_self_maintenance(species_set, RN, epsilon=1e-7):
+def check_self_maintenance(species_set, RN, epsilon=1e-6):
     """
     Check if a set of species is self-maintaining using linear programming.
-    
+
     Parameters
     ----------
     species_set : list of Species
@@ -500,7 +527,9 @@ def check_self_maintenance(species_set, RN, epsilon=1e-7):
     RN : ReactionNetwork
         The reaction network
     epsilon : float
-        Minimum flux for active reactions
+        Minimum flux for active (triggered) reactions — must stay >> minimize_sv's
+        margin (1e-9) or the strict-positivity floor can be numerically absorbed
+        by the Sv >= -margin slack; see minimize_sv's docstring.
         
     Returns
     -------
@@ -536,7 +565,7 @@ def check_self_maintenance(species_set, RN, epsilon=1e-7):
         return (False, None, None)
 
 
-def diagnose_self_maintenance(species_set, RN, epsilon=1e-7):
+def diagnose_self_maintenance(species_set, RN, epsilon=1e-6):
     """
     Return a human-readable diagnosis of the self-maintenance status of a
     species set.

@@ -1,26 +1,43 @@
 """
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║  run_network.py — Full COT generative-structure pipeline on one network     ║
+║  run_network.py — Full COT generative-structure pipeline + deep report      ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 WHAT IT DOES
 ------------
 Runs all stages of the COT analysis on a single reaction network:
 
-  Stage 0  Load the network file and build the internal RNData structure.
-  Stage 1  Discover all ERCs: closures, minimal bases, req/prod masks.
-  Stage H  Build the ERC containment hierarchy (Hasse diagram).
-  Stage S  Compute basic → maximal → fundamental synergies.
-  Stage C  Compute complementarities (basic, pure, fundamental per paper Defs 22–26).
-  Stage G  Identify primitive ERCs and generative basis (synergy reachability).
-  Stage E  Compute EPMs (minimal persistent modules, paper Def 29).
+  Stage 0   Load the network file and build the internal RNData structure.
+  Stage 1   Discover all ERCs: closures, minimal bases, req/prod masks.
+  Stage H   Build the ERC containment hierarchy (Hasse diagram).
+  Stage S   Compute basic → maximal → fundamental synergies.
+  Stage C   Compute complementarities (basic, pure, fundamental per paper Defs 22–26).
+  Stage H2  Deep hierarchy statistics (levels, degree distributions) +
+            the maxSemiOrganization (RAF-style, computed directly, see
+            cot_gen/max_semiorg.py -- millisecond-scale global upper bound).
+  Stage G   Identify primitive ERCs and generative basis (synergy reachability).
+  Stage E   Compute EPMs, WITH generative-degeneracy statistics recorded
+            during the same traversal (how much do different candidate
+            paths converge onto the same closure -- see the Pareto/
+            power-law check in cot_gen/deep_report.py).
+  Stage ES  Compute ESPMs, WITH per-order provenance (how many of each
+            order's new semi-organizations came from a synergy move, a
+            complementarity move, a vertical lift, or were already found
+            directly by Mode-1's own DFS before any Mode-2 growth step).
 
 WHAT IT OUTPUTS
 ---------------
   • Per-stage counts and wall-clock time (printed to console).
   • MetaNetwork summary: ERCs, hierarchy, synergy, complementarity, generators, EPMs.
-  • Up to 10 sample fundamental synergies (species names shown).
-  • Up to 10 sample fundamental complementarities.
+  • A deep-report folder (outputs/deep_report/<network>/) with:
+      hierarchy_overview.html   -- whole ERC hierarchy, all fundamental relations
+      epm_hierarchy.html        -- same hierarchy, EPMs highlighted
+      so_lattice.html           -- Hasse diagram of every discovered semi-organization
+      epm_degeneracy.png        -- convergence histogram / rank-frequency / Lorenz curve
+      espm_degeneracy.png       -- same, for the ESPM (Mode-2) traversal
+      espm_composition.png      -- per-order stacked bar: synergy / complementarity /
+                                    vertical lift / carryover
+      order_sizes.png           -- species-count distribution per order
 
 HOW TO RUN
 ----------
@@ -32,6 +49,7 @@ HOW TO RUN
 # ── Path setup (do not edit) ──────────────────────────────────────────────────
 from __future__ import annotations
 import os, sys, time
+from tkinter import NE
 _here = os.path.dirname(os.path.abspath(__file__))
 _proj = os.path.normpath(os.path.join(_here, ".."))
 _repo = os.path.normpath(os.path.join(_here, "..", "..", ".."))
@@ -57,6 +75,15 @@ from cot_gen.generators      import compute_generators
 from cot_gen.epm             import compute_epms, compute_espm
 from cot_gen.metanetwork     import build_metanetwork
 from cot_gen.metrics         import Counters
+from cot_gen.max_semiorg     import compute_max_semiorganization, max_semiorganization_species
+from cot_gen.deep_report     import (
+    compute_hierarchy_stats, compute_epms_instrumented, compute_espm_instrumented,
+    build_so_lattice,
+)
+from cot_gen.deep_report_viz import (
+    plot_hierarchy_overview, plot_so_lattice, plot_degeneracy,
+    plot_espm_composition, plot_order_size_distribution,
+)
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  CONFIGURATION — edit this block, then press Play                          ║
@@ -70,10 +97,22 @@ NETWORK   = "e_coli_core"
 #NETWORK  = "BMID000000141754_url"
 #NETWORK  = "BIOMD0000000185"
 #NETWORK  = "iMM1415" $4000 reactions!
-#NETWORK  = "iMM904" 
-NETWORK  = "iND750" 
-NETWORK  = "iNF517" 
-NETWORK  = "iNJ661" 
+#NETWORK  = "iMM904" #(2072 reaction)
+#NETWORK  = "iND750" #(1702 reactions)
+#NETWORK  = "iNF517"
+#NETWORK  = "iNJ661"     # genome-scale -- ESPM enumeration is not yet fast enough to
+#NETWORK  = "iAF692"     # finish at these sizes; the Stage H2 maxSemiOrganization
+                          # (a few ms) still works fine even here, but set
+                          # COMPUTE_ESPM = False (or a low ESPM_MAX_ORDER) if you pick one.
+#NETWORK  = "iSBO_1134"      #(3240 reactions)                      
+#NETWORK  = "iSDY_1059"     #(3182 reactions)                          
+#NETWORK  = "iSFV_1184"    #(3279 reactions)                           
+#NETWORK  = "iSF_1195"    #(3900 reactions)
+#NETWORK   = "data\\Examples_tests\\LUCA\\KEGG_data.txt"
+#NETWORK = "BIOMD0000000183" #(352 REACTIONS)
+#NETWORK= "iAB_RBC_283"       #(645 REACTIONS) 
+#NETWORK = "iIT341" #(737 REACTIONS)
+
 SHOW_LIST = False
 
 # ── Synergy algorithm selection ───────────────────────────────────────────────
@@ -99,7 +138,15 @@ COMPUTE_EPM = True
 
 # ── Compute ESPMs (requires COMPUTE_EPM = True and synergy/comp available) ────
 COMPUTE_ESPM = True
-ESPM_MAX_ORDER = 0   # stop extending after this order
+ESPM_MAX_ORDER = 50   # stop extending after this order
+
+# ── Deep report (hierarchy stats, degeneracy, EPM/SO-lattice visualizations) ──
+# Requires COMPUTE_EPM = True; the ESPM-order breakdown additionally requires
+# COMPUTE_ESPM = True. Set to False to skip (falls back to plain compute_epms/
+# compute_espm with no extra instrumentation or plots).
+DEEP_REPORT = True
+DEEP_REPORT_DIR = os.path.join(_here, "..", "outputs", "deep_report")
+DEEP_REPORT_MAX_HIERARCHY_NODES = 250   # cap for the whole-network hierarchy plot
 
 # ── Verification ─────────────────────────────────────────────────────────────
 VERIFY = True
@@ -111,7 +158,7 @@ RESULTS_CSV = os.path.join(_here, "..", "outputs", "cot_results.csv")
 # ║  Script body — no need to edit below this line                             ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
-_DATA_ROOT = os.path.join(_repo, "data", "biomodels")
+_DATA_ROOT = os.path.join(_repo, "data", "biochemical_databases","biomodels_all_txt")
 
 def _discover_networks() -> dict[str, str]:
     seen: dict[str, tuple[str, int]] = {}
@@ -310,6 +357,35 @@ print(f"  Pure          : {len(comp.pure)}  (basic and not synergetic)")
 print(f"  Fundamental   : {len(comp.fundamental)}")
 print(f"  Wall time     : {sc_ms:.1f} ms")
 
+# ── Stage H2: Deep hierarchy statistics + maxSemiOrganization ────────────────
+sh2_ms = 0.0
+hstats = None
+max_so_active = None
+max_so_species = 0
+if DEEP_REPORT and syn_fund is not None:
+    print(f"\n[Stage H2] Deep hierarchy statistics + maxSemiOrganization...")
+    t0 = time.perf_counter()
+    hstats = compute_hierarchy_stats(ercs, hier, syn_fund, comp)
+    print(f"  Containment levels    : {hstats.n_levels}")
+    print(f"  ERC size (species)    : min={min(hstats.sizes)} "
+          f"median={sorted(hstats.sizes)[len(hstats.sizes)//2]} max={max(hstats.sizes)}")
+    print(f"  Synergy degree        : mean={sum(hstats.syn_degree)/max(len(hstats.syn_degree),1):.2f}  "
+          f"max={max(hstats.syn_degree, default=0)}")
+    print(f"  Complementarity degree: mean_out={sum(hstats.comp_out_degree)/max(len(hstats.comp_out_degree),1):.2f}  "
+          f"mean_in={sum(hstats.comp_in_degree)/max(len(hstats.comp_in_degree),1):.2f}")
+    print(f"  Distinct synergy pairs: {hstats.n_distinct_syn_pairs}  "
+          f"(vs {hstats.n_fundamental_syn} fundamental synergy triples -- "
+          f"{hstats.n_fundamental_syn - hstats.n_distinct_syn_pairs} pairs have >1 target)")
+
+    max_so_active, max_rounds = compute_max_semiorganization(ercs)
+    max_so_species = max_semiorganization_species(ercs, max_so_active)
+    sh2_ms = (time.perf_counter() - t0) * 1000
+    print(f"  maxSemiOrganization    : {len(max_so_active)}/{len(ercs)} ERCs survive "
+          f"({bin(max_so_species).count('1')} species), {max_rounds} pruning rounds")
+    print(f"  Wall time              : {sh2_ms:.1f} ms")
+else:
+    print(f"\n[Stage H2] Skipped (DEEP_REPORT=False or synergy not computed).")
+
 # ── Stage G: Generators ───────────────────────────────────────────────────────
 sg_ms = 0.0
 gen   = None
@@ -328,10 +404,14 @@ else:
 # ── Stage E: EPMs ─────────────────────────────────────────────────────────────
 se_ms = 0.0
 epm   = None
+epm_deg = None
 if COMPUTE_EPM:
     print(f"\n[Stage E] Computing EPMs (paper Def 29, adjacency traversal)...")
     t0  = time.perf_counter()
-    epm = compute_epms(rn, ercs, hier, syn_result=syn_fund, comp_result=comp, verbose=True)
+    if DEEP_REPORT:
+        epm, epm_deg = compute_epms_instrumented(ercs, hier, syn_fund, comp)
+    else:
+        epm = compute_epms(rn, ercs, hier, syn_result=syn_fund, comp_result=comp, verbose=True)
     se_ms = (time.perf_counter() - t0) * 1000
 
     st1 = epm.stats
@@ -343,18 +423,32 @@ if COMPUTE_EPM:
     print(f"  Comp extensions  : {st1.get('comp_extensions', 0)}")
     print(f"  Syn  extensions  : {st1.get('syn_extensions', 0)}")
     print(f"  Wall time        : {se_ms:.1f} ms")
+    if epm_deg is not None:
+        dsum = epm_deg.summary()
+        if dsum.get("n_branching_states", 0) > 0:
+            print(f"  --- generative degeneracy (Mode-1) ---")
+            print(f"  Branching states : {dsum['n_branching_states']}")
+            print(f"  Mean convergence : {dsum['mean_ratio']:.3f}  (1.0 = no convergence, "
+                  f"lower = more candidates collapse onto the same closure)")
+            print(f"  Gini coefficient : {dsum['gini']:.3f}   Top-20% share: {dsum['top20_share']:.1%}")
 else:
     print(f"\n[Stage E] Skipped (COMPUTE_EPM = False).")
 
 # ── Stage ES: ESPMs ───────────────────────────────────────────────────────────
 ses_ms = 0.0
 espm   = None
+espm_deg = None
+move_counts_by_order = {}
 if COMPUTE_ESPM and epm is not None and syn_fund is not None:
     print(f"\n[Stage ES] Computing ESPMs (paper Def 31, Mode-2 extension)...")
     print(f"  EPMs (order 0)   : {len(epm.all_epm_masks)}")
     t0   = time.perf_counter()
-    espm = compute_espm(rn, ercs, hier, syn_fund, comp, epm,
-                        max_order=ESPM_MAX_ORDER, verbose=True)
+    if DEEP_REPORT:
+        espm, move_counts_by_order, espm_deg = compute_espm_instrumented(
+            ercs, hier, syn_fund, comp, epm, max_order=ESPM_MAX_ORDER)
+    else:
+        espm = compute_espm(rn, ercs, hier, syn_fund, comp, epm,
+                            max_order=ESPM_MAX_ORDER, verbose=True)
     ses_ms = (time.perf_counter() - t0) * 1000
 
     total_espm = espm.total_espm()
@@ -362,12 +456,86 @@ if COMPUTE_ESPM and epm is not None and syn_fund is not None:
     print(f"  --- order totals ---")
     for ord_k, masks in sorted(espm.espm_by_order.items()):
         lk = espm.leaf_masks_by_order.get(ord_k, [])
-        print(f"  ESPMs order {ord_k:<3}  : {len(masks):5d}  (leaves: {len(lk)})")
+        line = f"  ESPMs order {ord_k:<3}  : {len(masks):5d}  (leaves: {len(lk)})"
+        mc = move_counts_by_order.get(ord_k)
+        if mc is not None:
+            line += (f"   [synergy:{mc.synergy} complementarity:{mc.complementarity} "
+                     f"vertical_lift:{mc.vertical_lift} carryover:{mc.carryover}]")
+        print(line)
     print(f"  Total ESPMs      : {total_espm}  (max order: {max_ord})")
     print(f"  All SOs          : {len(espm.all_so_masks)}")
     print(f"  Wall time        : {ses_ms:.1f} ms")
+    if espm_deg is not None:
+        dsum = espm_deg.summary()
+        if dsum.get("n_branching_states", 0) > 0:
+            print(f"  --- generative degeneracy (Mode-2) ---")
+            print(f"  Branching states : {dsum['n_branching_states']}")
+            print(f"  Mean convergence : {dsum['mean_ratio']:.3f}")
+            print(f"  Gini coefficient : {dsum['gini']:.3f}   Top-20% share: {dsum['top20_share']:.1%}")
 elif COMPUTE_ESPM:
     print(f"\n[Stage ES] Skipped (EPM or synergy not available).")
+
+# ── Stage V: Deep-report visualizations ───────────────────────────────────────
+sv_ms = 0.0
+deep_report_files: list[str] = []
+if DEEP_REPORT and hstats is not None and epm is not None:
+    print(f"\n[Stage V] Generating deep-report visualizations...")
+    t0 = time.perf_counter()
+    out_dir = os.path.join(DEEP_REPORT_DIR, NET_ID)
+    os.makedirs(out_dir, exist_ok=True)
+
+    p = plot_hierarchy_overview(
+        ercs, hier, syn_fund, comp, hstats, os.path.join(out_dir, "hierarchy_overview.html"),
+        max_nodes=DEEP_REPORT_MAX_HIERARCHY_NODES, title=f"{NET_ID} — ERC hierarchy")
+    deep_report_files.append(p)
+
+    epm_ercs = set()
+    for m in epm.all_epm_masks:
+        for i, e in enumerate(ercs):
+            if (e.species_mask & m) == e.species_mask:
+                epm_ercs.add(i)
+    p = plot_hierarchy_overview(
+        ercs, hier, syn_fund, comp, hstats, os.path.join(out_dir, "epm_hierarchy.html"),
+        highlight_ercs=epm_ercs, highlight_label="EPM member",
+        max_nodes=DEEP_REPORT_MAX_HIERARCHY_NODES, title=f"{NET_ID} — EPMs within the ERC hierarchy")
+    deep_report_files.append(p)
+
+    if epm_deg is not None:
+        p = plot_degeneracy(epm_deg, os.path.join(out_dir, "epm_degeneracy.png"),
+                             title=f"{NET_ID} — EPM (Mode-1) generative degeneracy")
+        if p:
+            deep_report_files.append(p)
+
+    if espm is not None:
+        so_lattice = build_so_lattice(espm.all_so_masks, epm._so_order)
+
+        p = plot_so_lattice(so_lattice, rn, os.path.join(out_dir, "so_lattice.html"),
+                             title=f"{NET_ID} — Semi-organization lattice")
+        deep_report_files.extend(p)
+
+        if espm_deg is not None:
+            p = plot_degeneracy(espm_deg, os.path.join(out_dir, "espm_degeneracy.png"),
+                                 title=f"{NET_ID} — ESPM (Mode-2) generative degeneracy")
+            if p:
+                deep_report_files.append(p)
+
+        if move_counts_by_order:
+            p = plot_espm_composition(move_counts_by_order, os.path.join(out_dir, "espm_composition.png"),
+                                       title=f"{NET_ID} — ESPM construction by order")
+            if p:
+                deep_report_files.append(p)
+
+        p = plot_order_size_distribution(so_lattice, os.path.join(out_dir, "order_sizes.png"),
+                                          title=f"{NET_ID} — Semi-organization sizes by order")
+        if p:
+            deep_report_files.append(p)
+
+    sv_ms = (time.perf_counter() - t0) * 1000
+    print(f"  Wrote {len(deep_report_files)} files to {os.path.relpath(out_dir, _repo)}")
+    print(f"  Wall time        : {sv_ms:.1f} ms")
+else:
+    if DEEP_REPORT:
+        print(f"\n[Stage V] Skipped (EPM stage did not run).")
 
 # ── Sample fundamental synergies ──────────────────────────────────────────────
 if syn_fund is not None and syn_fund.fundamental:
@@ -405,15 +573,26 @@ if espm is not None:
     print(f"  All SOs:           {len(espm.all_so_masks)}")
 
 # ── Timing summary ────────────────────────────────────────────────────────────
-total_ms = s1_ms + sh_ms + ss_ms + ss_bf_ms + sc_ms + sg_ms + se_ms + ses_ms
+total_ms = s1_ms + sh_ms + ss_ms + ss_bf_ms + sc_ms + sh2_ms + sg_ms + se_ms + ses_ms + sv_ms
 _s_timing = (f"S-hier {ss_ms:.0f}ms | S-brute {ss_bf_ms:.0f}ms"
              if USE_ERC_HIERARCHY and USE_ERC_BRUTE_FORCE
              else f"S {ss_ms:.0f}ms")
 print(f"\n{SEP}")
 print(f"Total pipeline: {total_ms/1000:.2f}s  "
       f"(ERC {s1_ms:.0f}ms | H {sh_ms:.0f}ms | "
-      f"{_s_timing} | C {sc_ms:.0f}ms | G {sg_ms:.0f}ms | "
-      f"E {se_ms:.0f}ms | ES {ses_ms:.0f}ms)")
+      f"{_s_timing} | C {sc_ms:.0f}ms | H2 {sh2_ms:.0f}ms | G {sg_ms:.0f}ms | "
+      f"E {se_ms:.0f}ms | ES {ses_ms:.0f}ms | V {sv_ms:.0f}ms)")
+if max_so_active is not None:
+    print(f"maxSemiOrganization: {len(max_so_active)}/{len(ercs)} ERCs, "
+          f"{bin(max_so_species).count('1')} species  (computed in {sh2_ms:.1f}ms total for Stage H2)")
+
+# ── Deep-report file listing ──────────────────────────────────────────────────
+if deep_report_files:
+    print(f"\n{SEP}")
+    print(f"DEEP REPORT — {len(deep_report_files)} files")
+    print(SEP)
+    for p in deep_report_files:
+        print(f"  {os.path.relpath(p, _repo)}")
 
 # ── Save to CSV ───────────────────────────────────────────────────────────────
 if RESULTS_CSV:

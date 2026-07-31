@@ -129,6 +129,15 @@ def test_erc_oracle_vs_opt_gold(net):
     ercs_opt    = compute_ercs(rnd)
     ercs_oracle = compute_ercs_oracle(list(supp_q), list(prod_q))
 
+    # compute_ercs additionally injects E0 as its own P-ERC when E0_mask != 0
+    # (see erc.py's module docstring) -- a deterministic, non-algorithmic
+    # addition read directly off rn_data.E0_mask, not discovered via closure
+    # over supp_q/prod_q. compute_ercs_oracle has no E0_mask parameter at all
+    # and isn't meant to grow one: it's the brute-force reference for the
+    # closure-discovery algorithm specifically, so it's excluded here rather
+    # than taught to duplicate the injection.
+    ercs_opt = [e for e in ercs_opt if e.species_mask != net.E0_mask]
+
     masks_opt = sorted(e.species_mask for e in ercs_opt)
     masks_orc = sorted(e["species_mask"] for e in ercs_oracle)
     assert masks_opt == masks_orc, (

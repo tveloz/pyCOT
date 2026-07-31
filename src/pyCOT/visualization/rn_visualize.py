@@ -1,5 +1,6 @@
 from collections import Counter
 from collections import defaultdict
+import graphviz
 from graphviz import Digraph
 from IPython.display import Image
 # from PIL import Image
@@ -634,8 +635,15 @@ def rn_visualize_png_in_out(
         else:
             dot.edge(str(src), str(dst), label=label, color=color)
 
-    # Renderizar en la ruta especificada (graphviz añadirá automáticamente .png)
-    dot.render(filepath, format='png', cleanup=True)
+    # Renderizar en la ruta especificada (graphviz añadirá automáticamente .png).
+    # The default png renderer (pango/cairo) has a known Windows bug where it
+    # fails with "failure to create cairo surface: out of memory" on some
+    # layouts regardless of available RAM. Fall back to the gd renderer,
+    # which doesn't share that bug, if the default one crashes.
+    try:
+        dot.render(filepath, format='png', cleanup=True)
+    except graphviz.backend.execute.CalledProcessError:
+        dot.render(filepath, format='png', renderer='gd', cleanup=True)
     full_path = os.path.abspath(f"{filepath}.png")
     print(f"Reaction network saved as: {full_path}")
 

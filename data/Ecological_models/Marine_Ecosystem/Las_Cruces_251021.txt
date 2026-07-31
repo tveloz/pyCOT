@@ -1,0 +1,94 @@
+### **1. INFLOW OF BASAL SPECIES
+R0: => S; 
+#R1: 2S => K_SR;
+#R2: S => M_SR;
+#R3: S => A_S;
+#
+##
+### **2. REPRODUCTION**
+R4a: K_S + 2S=>K_S + K_SR;
+R4b: K_SR + 2S => 2K_SR;
+R5a: M_S + S => M_S + M_SR;
+R5b: M_SR + S => 2M_SR;
+R6: A_S + S => 2A_S;
+##
+### **3. DEATH OF BASAL SPECIES
+R7a: K_S + H1_hR=> 2S + H1_h;
+R7b: K_S + H1_fR=> 2S + H1_f;
+R7c: K_S + H2_hR => 2S + H2_h;
+R7d: K_S + H2_fR => 2S + H2_f;
+R8a: M_S + H2_hR => S + H2_h;
+R8b: M_S + H2_fR => 2S + H2_f;
+R8c: M_SR => S ;
+R9: A_S => S;
+#
+##
+### **4. REFUGE UTILIZATION - Large Herbivore (H1)**
+R15: H1_f + K_SR => H1_fR + K_S;
+R17: H1_h + K_SR => H1_hR + K_S;
+#
+##
+##### **5. REFUGE UTILIZATION - Small Herbivore (H2)**
+R19: H2_f + K_SR => H2_fR + K_S;
+R20: H2_f + M_SR => H2_fR + M_S;
+R21: H2_h + K_SR => H2_hR + K_S;
+R22: H2_h + M_SR => H2_hR + M_S;
+#
+##
+##### **6. HERBIVORES LEAVING REFUGE**
+R23: K_S + H1_hR => H1_h + K_SR;
+R24: 2M_S + H1_hR => H1_h + 2M_SR;
+R25: K_S + H1_fR => H1_f + K_SR;
+R26: 2M_S + H1_fR => H1_f + 2M_SR;
+R27: K_S + H2_hR => H2_h + K_SR;
+R28: M_S + H2_hR => H2_h + M_SR;
+R29: K_S + H2_fR => H2_f + K_SR;
+R30: M_S + H2_fR => H2_f + M_SR;
+#
+##
+##### **7. FEEDING - Dietary Preferences**
+R31a: H1_h + K_SR => H1_f + 2S;
+R31b: H1_h + K_S + H1_hR => H1_f + 2S + H1_h;
+R31c: H1_h + K_S + H1_fR => 2H1_f;
+R33: H1_h + A_S => H1_f + S;
+R34: H2_h + A_S => H2_f + S;
+R35: H2_h + K_SR => H2_f + 2S;
+R36a: H2_h + K_S + H1_fR=> H2_f + 2S + H1_f;
+R36b: H2_h + K_S + H1_hR=> H2_f + 2S + H1_h;
+#
+##
+##### **8. HERBIVORE METABOLISM**
+R37: H1_fR => H1_hR;
+R38: H2_fR => H2_hR;
+#
+##
+### **9. HERBIVORE REPRODUCTION**
+R39: H1_fR => H1_fR + H1_hR;
+R40: H2_fR => H2_fR + H2_hR;
+#
+##
+### **10. PREDATION**
+R41: P + H1_h => 1.3P;
+R42: P + H1_f => 1.3P;
+R43: P + H2_h => 1.15P;
+R44: P + H2_f => 1.15P;
+R45: P + M_SR => 1.2P; 
+R46: P + M_S + H2_hR => 1.2P + H2_h;
+R47: P + M_S + H2_fR => 1.2P + H2_f;     
+#
+##
+### **11. PREDATOR DEATH**
+R48: P => 0;
+#
+##
+### **12. BULLDOZING**
+R49: H1_h + M_SR => H1_h + S;
+R50a: H1_h + M_S + H2_fR=> H1_h + S + H2_f;
+R50b: H1_h + M_S + H2_hR=> H1_h + S + H2_h;
+R51: H1_h + K_SR => H1_h + 2S;
+R52a: H1_h + K_S + H1_hR=> H1_h + 2S + H1_h;
+R52b: H1_h + K_S + H1_fR=> H1_h + 2S + H1_f;
+R52c: H1_h + K_S + H2_hR=> H1_h + 2S + H2_h;
+R52d: H1_h + K_S + H2_fR=> H1_h + 2S + H2_f;
+R53: H1_h + A_S => H1_h + S;
+R54: H2_h + A_S => H2_h + S;

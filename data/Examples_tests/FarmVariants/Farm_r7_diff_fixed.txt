@@ -1,0 +1,17 @@
+R1: =>water;
+R2: cows+infr+grass+water => cows+infr+dung+milk;
+R3: dung => worms+fertilizer;
+R4: infr + chickens + worms + water => infr + chickens + eggs + fertilizer;
+R5: infr + chickens + grain => infr + chickens + eggs + fertilizer;
+R6: grass + water + fertilizer  => 2 grass;
+R7: infr + eggs + water + worms =>  infr + chickens + fertilizer;
+R8: infr + fertilizer + water + grain => infr + 10 grain + straw;
+R9: infr + straw + cows + water  => milk + cows + infr;
+R10: eggs+farmer=>money+farmer;
+R11: milk+farmer=>money+farmer;
+R12: grain+farmer=>money+farmer;
+R13: straw+farmer=>money+farmer;
+R14: chickens+farmer=>money+farmer;
+R15: worms=>;
+R16: infr=>;
+R17: money+farmer+infr=>farmer+2infr

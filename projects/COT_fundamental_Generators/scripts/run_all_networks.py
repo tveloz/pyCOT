@@ -32,8 +32,8 @@ for _p in (_proj, os.path.join(_repo, "src")):
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
 MIN_REACTIONS  = 100        # skip networks with fewer reactions (0 = no limit)
-MAX_REACTIONS  = 3000      # skip networks with more reactions (0 = no limit)
-MAX_ERCS       = 3000      # skip synergy if more ERCs than this (0 = no limit)
+MAX_REACTIONS  = 1000      # skip networks with more reactions (0 = no limit)
+MAX_ERCS       = 1000      # skip synergy if more ERCs than this (0 = no limit)
 COMPUTE_ESPM   = True
 ESPM_MAX_ORDER = 3000
 
@@ -45,7 +45,7 @@ OUTPUT_XLS  = os.path.join(_here, "..", "outputs", "cot_results.xlsx")
 
 # Optional: restrict to one subfolder of data/biomodels/
 # e.g. "biomodels_interesting" or "" for all
-DATA_SUBFOLDER = "biomodels_interesting"
+DATA_SUBFOLDER = "BiGG"
 
 # ╔══════════════════════════════════════════════════════════════════════════╝
 
@@ -102,7 +102,10 @@ def _fast_reaction_count(path: str) -> int:
 def run_one(name: str, path: str) -> dict:
     """
     Run the full pipeline on one network.
-    Writes the result row to RESULTS_CSV immediately (so partial runs recover).
+    Writes the result row to RESULTS_CSV immediately (so partial runs
+    recover) UNLESS the network exceeds MIN/MAX_REACTIONS or MAX_ERCS, in
+    which case nothing is computed and no row is written -- only networks
+    actually computed end up in the CSV.
     Returns the row dict (used for console summary and XLS).
     """
     timing: dict[str, float] = {}
@@ -111,15 +114,16 @@ def run_one(name: str, path: str) -> dict:
 
     try:
         # ── Fast reaction pre-check ──────────────────────────────────────
+        # Exceeding MIN/MAX_REACTIONS means this network falls outside the
+        # scope of this run entirely: don't compute anything, don't write a
+        # row.  Only the console summary (built from this returned dict)
+        # ever sees it.
         if MIN_REACTIONS > 0 or MAX_REACTIONS > 0:
             n_rxn = _fast_reaction_count(path)
             if (MIN_REACTIONS > 0 and n_rxn < MIN_REACTIONS) or \
                (MAX_REACTIONS > 0 and n_rxn > MAX_REACTIONS):
-                status = "skipped_rxn"
-                row = make_row(name, None, None, None, None, None, None,
-                               timing, status=status)
-                update_results_csv(RESULTS_CSV, row)
-                return row
+                return {"name": name, "reactions": n_rxn, "status": "skipped_rxn",
+                        "_written": False}
 
         # ── Load ──────────────────────────────────────────────────────────
         t0 = time.perf_counter()
@@ -137,7 +141,14 @@ def run_one(name: str, path: str) -> dict:
             row = make_row(name, rn, ercs_list, None, None, None, None,
                            timing, status=status)
             update_results_csv(RESULTS_CSV, row)
+            row["_written"] = True
             return row
+
+        # Exceeding MAX_ERCS also puts the whole network outside scope:
+        # skip the rest of the pipeline and don't write a (degraded) row.
+        if MAX_ERCS > 0 and len(ercs_list) > MAX_ERCS:
+            return {"name": name, "reactions": rn.n_reactions, "ercs": len(ercs_list),
+                    "status": "skipped_ercs", "_written": False}
 
         # ── Hierarchy ─────────────────────────────────────────────────────
         t0 = time.perf_counter()
@@ -145,13 +156,9 @@ def run_one(name: str, path: str) -> dict:
         timing["hier"] = (time.perf_counter() - t0) * 1000
 
         # ── Synergy ───────────────────────────────────────────────────────
-        if MAX_ERCS > 0 and len(ercs_list) > MAX_ERCS:
-            status = "syn_skipped"
-            timing["syn"] = 0.0
-        else:
-            t0 = time.perf_counter()
-            syn_fund = compute_synergies_basis_first(ercs_list, hier)
-            timing["syn"] = (time.perf_counter() - t0) * 1000
+        t0 = time.perf_counter()
+        syn_fund = compute_synergies_basis_first(ercs_list, hier)
+        timing["syn"] = (time.perf_counter() - t0) * 1000
 
         # ── Complementarity ───────────────────────────────────────────────
         t0 = time.perf_counter()
@@ -194,6 +201,7 @@ def run_one(name: str, path: str) -> dict:
     row = make_row(name, rn, ercs_list, syn_fund, comp, epm, espm,
                    timing, status=status)
     update_results_csv(RESULTS_CSV, row)
+    row["_written"] = True
     return row
 
 
@@ -282,10 +290,11 @@ def main() -> None:
         espms  = row.get("n_espms",    "-")
         t_tot  = float(row.get("t_total_ms", 0))
         status = row.get("status", "?")
+        note   = "" if row.get("_written") else "  (not written to CSV)"
 
         print(f"  {str(rxn):>5}  {str(ercs):>5}  "
               f"{str(epms):>7}  {str(espms):>7}  "
-              f"{t_tot/1000:>8.2f}s  [{status}]")
+              f"{t_tot/1000:>8.2f}s  [{status}]{note}")
 
     # ── Excel export ──────────────────────────────────────────────────────
     if OUTPUT_XLS and HAS_OPENPYXL and os.path.exists(RESULTS_CSV):
@@ -295,11 +304,15 @@ def main() -> None:
         print("\nSkipping Excel output (openpyxl not installed).")
 
     # ── Summary ───────────────────────────────────────────────────────────
-    ok      = sum(1 for r in all_rows if r.get("status") == "ok")
-    skipped = sum(1 for r in all_rows if "skip" in str(r.get("status", "")))
-    errors  = len(all_rows) - ok - skipped
+    ok        = sum(1 for r in all_rows if r.get("status") == "ok")
+    skipped   = sum(1 for r in all_rows if "skip" in str(r.get("status", "")))
+    errors    = len(all_rows) - ok - skipped
+    written   = sum(1 for r in all_rows if r.get("_written"))
+    not_written = len(all_rows) - written
     print(f"\nDone: {ok} ok  {skipped} skipped  {errors} errors"
           f"  (of {len(all_rows)} total)")
+    print(f"CSV rows written: {written}  "
+          f"(outside MIN/MAX_REACTIONS or MAX_ERCS, not written: {not_written})")
     print(f"CSV: {RESULTS_CSV}")
 
 
