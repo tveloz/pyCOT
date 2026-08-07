@@ -1,0 +1,5 @@
+order,n_new_this_round,cumulative_espm_total,cumulative_elapsed_s,wall_clock_timestamp
+1,322,510,0.46,2026-08-05 15:25:21
+2,5423,4574,23.74,2026-08-05 15:25:44
+1,322,510,0.42,2026-08-05 22:44:08
+2,5423,4574,20.76,2026-08-05 22:44:28

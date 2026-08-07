@@ -1,0 +1,17 @@
+species_bit,species_name,block_count
+63,Ga_GTP_a_PDE_a_Ga_GTP (Ga_GTP_a_PDE_a_Ga_GTP),2
+61,PDE_a_Ga_GTP (PDE_a_Ga_GTP),2
+30,R6_Arr (R6_Arr),1
+29,R5_Arr (R5_Arr),1
+28,R4_Arr (R4_Arr),1
+27,R3_Arr (R3_Arr),1
+26,R2_Arr (R2_Arr),1
+25,R1_Arr (R1_Arr),1
+24,Arr (Arr),1
+72,Arr_di (Arr_di),1
+65,RGS_Ga_GTP_a_PDE_a_Ga_GTP (RGS_Ga_GTP_a_PDE_a_Ga_GTP),1
+67,RGS_PDE_a_Ga_GTP (RGS_PDE_a_Ga_GTP),1
+60,PDE_Ga_GTP (PDE_Ga_GTP),1
+58,Gbg (Gbg),1
+66,Ga_GDP (Ga_GDP),1
+57,Ga_GTP (Ga_GTP),1

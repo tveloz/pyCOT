@@ -100,7 +100,7 @@ NETWORK   = "e_coli_core"
 #NETWORK  = "iMM904" #(2072 reaction)
 #NETWORK  = "iND750" #(1702 reactions)
 #NETWORK  = "iNF517"
-#NETWORK  = "iNJ661"     # genome-scale -- ESPM enumeration is not yet fast enough to
+NETWORK  = "iNJ661"     # genome-scale -- ESPM enumeration is not yet fast enough to
 #NETWORK  = "iAF692"     # finish at these sizes; the Stage H2 maxSemiOrganization
                           # (a few ms) still works fine even here, but set
                           # COMPUTE_ESPM = False (or a low ESPM_MAX_ORDER) if you pick one.

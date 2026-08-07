@@ -1,0 +1,26 @@
+species_bit,species_name,block_count
+11,X (X),10
+4,IX (IX),6
+9,VII (VII),5
+33,VII_TF (VII_TF),4
+2,VIIIa (VIIIa),2
+15,Va (Va),2
+29,APC (APC),2
+34,Xa_TFPI (Xa_TFPI),2
+23,XF (XF),2
+17,Va_Xa (Va_Xa),2
+50,TAT (TAT),1
+6,IXa (IXa),1
+45,IXa_ATIII_Heparin (IXa_ATIII_Heparin),1
+12,Xa (Xa),1
+44,Xa_ATIII_Heparin (Xa_ATIII_Heparin),1
+43,IIa_ATIII_Heparin (IIa_ATIII_Heparin),1
+35,VIIa_TF_Xa_TFPI (VIIa_TF_Xa_TFPI),1
+10,VIIa (VIIa),1
+32,VIIa_TF (VIIa_TF),1
+28,IIa_Tmod (IIa_Tmod),1
+27,PC (PC),1
+24,D (D),1
+22,XIIIa (XIIIa),1
+16,II (II),1
+13,IXa_VIIIa (IXa_VIIIa),1
