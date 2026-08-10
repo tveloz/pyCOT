@@ -87,11 +87,11 @@ _espmrisk_spec.loader.exec_module(espm_risk_analysis)
 DATA_DIR = 'data/biochemical_databases/biomodels_all_txt'  # BiGG networks (bigg_*.txt) -- see discover_networks()
 MIN_REACTIONS = 50     # skip networks smaller than this (0 = no lower bound)
 MAX_REACTIONS = 1000
-PER_RUN_TIME_BUDGET_S = 30.0   # 5 minutes max, per (network, config) run
-ESPM_TIME_BUDGET_S = 30.0      # separate budget for the ESPM stage (see below);
+PER_RUN_TIME_BUDGET_S = 3000.0   # 5 minutes max, per (network, config) run
+ESPM_TIME_BUDGET_S = 3000.0      # separate budget for the ESPM stage (see below);
                                  # enforced by hard process kill, not internal checks
-ESPM_MAX_ORDER = 20
-ESPM_EXTERNAL_KILL_GRACE_S = 300.0  # extra time beyond ESPM_TIME_BUDGET_S before the
+ESPM_MAX_ORDER = 100
+ESPM_EXTERNAL_KILL_GRACE_S = 3000.0  # extra time beyond ESPM_TIME_BUDGET_S before the
                                      # external hard-kill fires -- the internal deadline
                                      # (checked once per BFS round) needs room to finish
                                      # whatever round is in flight and checkpoint cleanly;

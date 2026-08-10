@@ -1,234 +1,313 @@
 species_bit,species_name,block_count
-414,MNXM1102191__64__MNXC3 (CDP),346
-238,MNXM1104056__64__MNXC3 (alpha-D-ribose 5-phosphate),336
-15,MNXM738702__64__MNXC3 (NADPH),335
-533,MNXM1104522__64__MNXC3 (N(1)-(5-phospho-beta-D-ribosyl)glycinamide),254
-560,MNXM418__64__MNXC3 (O-acetyl-L-serine),249
-50,MNXM124865__64__MNXC3 (hydrogen sulfide),247
-212,MNXM738068__64__MNXC3 (L-cysteine),242
-158,MNXM144__64__MNXC3 (beta-alanine),230
-416,MNXM1103718__64__MNXC3 (CTP),223
-160,MNXM734864__64__MNXC3 ((R)-pantothenate),220
-159,MNXM593__64__MNXC3 ((R)-pantoate),214
-454,MNXM1102072__64__MNXC3 ((S)-S-adenosyl-L-methionine),191
-605,"MNXM6894__64__MNXC3 (4-ketofructose 1,6-bisphosphate)",183
-521,MNXM1102376__64__MNXC3 ((6S)-10-formyltetrahydrofolate),177
-363,"MNXM730763__64__MNXC3 ((1S,2R)-1-C-(indol-3-yl)glycerol 3-phosphate)",154
-340,MNXM1104453__64__MNXC3 (5-phospho-alpha-D-ribose 1-diphosphate),140
-318,MNXM1103553__64__MNXC3 (GTP),129
-415,MNXM1102128__64__MNXC3 (UDP),116
-449,MNXM877__64__MNXC3 (adenosylcob(III)yrate),112
-229,MNXM1697__64__MNXC3 ((R)-1-aminopropan-2-yl phosphate),111
-270,"MNXM892__64__MNXC3 ((2R)-2,3-bisphosphoglycerate)",111
-17,WATER__64__MNXC3 (H2O),102
-426,MNXM1104310__64__MNXC3 (dTDP-4-dehydro-beta-L-rhamnose),94
-44,MNXM83__64__MNXC3 (isopentenyl diphosphate),90
-128,MNXM152__64__MNXC3 (dTDP),88
-570,MNXM1105941__64__MNXC3 (myo-inositol),88
-610,MNXM1105098__64__MNXC3 (5-hydroxybenzimidazole),87
-192,MNXM555__64__MNXC3 (quinolinate),87
-247,MNXM662__64__MNXC3 (thiamine phosphate),85
-198,MNXM270__64__MNXC3 (riboflavin),85
-127,MNXM274__64__MNXC3 (nicotinate),85
-259,MNXM414__64__MNXC3 (uroporphyrinogen III),84
-534,"MNXM734__64__MNXC3 ((2R)-2,3-dihydroxy-3-methylbutanoate)",83
-615,MNXM465__64__MNXC3 (N-carbamoyl-L-aspartate),77
-439,MNXM731472__64__MNXC3 (UDP-N-acetyl-3-O-(1-carboxyvinyl)-alpha-D-glucosamine),73
-5,MNXM3__64__MNXC3 (ATP),71
-3,MNXM1__64__MNXC3 (H(+)),71
-392,"MNXM1102150__64__MNXC3 ((6R)-5,10-methylene-5,6,7,8-tetrahydrofolate)",71
-6,MNXM729302__64__MNXC3 (NH4(+)),69
-603,MNXM1102294__64__MNXC3 (2-hydroxy-3-oxobutyl phosphate),67
-224,"MNXM1103734__64__MNXC3 (2,5-diamino-6-hydroxy-4-(5-phosphoribosylamino)-pyrimidine)",66
-547,MNXM959__64__MNXC3 (2-dehydropantoate),65
-187,MNXM75__64__MNXC3 (acetaldehyde),65
-614,"MNXM1107754__64__MNXC3 (6,7-Dimethyl-8-(1-D-ribityl)lumazine)",63
-70,MNXM10__64__MNXC3 (NADH),62
-78,MNXM361__64__MNXC3 (L-aspartate 4-semialdehyde),61
-69,MNXM8__64__MNXC3 (NAD(+)),60
-531,MNXM1094062__64__MNXC3 (O-phospho-L-serine),59
-613,MNXM732620__64__MNXC3 (H2O2),58
-14,MNXM20__64__MNXC3 (2-oxoglutarate),55
-620,MNXM1137717__64__MNXC3 (1D-myo-inositol 1-phosphate),51
-367,MNXM96998__64__MNXC3 (Ferredoxin (reduced) 2[4Fe-4S]),50
-417,MNXM737787__64__MNXC3 (L-serine),47
-559,MNXM280__64__MNXC3 (acetyl phosphate),44
-97,MNXM731835__64__MNXC3 ((S)-lactate),42
-597,"MNXM90612__64__MNXC3 (CDP-2,3-digeranylgeranyl-sn-glycerol)",40
-623,"MNXM6863__64__MNXC3 (4,5-diketo-6-deoxyfructose 1-phosphate)",39
-544,MNXM1103365__64__MNXC3 (5-amino-1-(5-phospho-beta-D-ribosyl)imidazole-4-carboxamide),39
-513,"MNXM6780__64__MNXC3 (3,7-dideoxy-D-threo-hepto-2-amino-6-ulosonate)",39
-357,MNXM1105057__64__MNXC3 ((R)-mevalonate),36
-169,MNXM735771__64__MNXC3 ((R)-4&apos_-phosphopantothenate),36
-10,MNXM9__64__MNXC3 (phosphate),36
-381,MNXM1104188__64__MNXC3 (GDP-alpha-D-mannose),34
-96,MNXM23__64__MNXC3 (pyruvate),33
-578,MNXM1104880__64__MNXC3 (adenosylcob(III)inamide phosphate),33
-387,MNXM741322__64__MNXC3 (L-Methionyl-tRNA (Met)),33
-7,MNXM741173__64__MNXC3 (L-glutamate),30
-458,MNXM1107940__64__MNXC3 (Dihydroneopterin monophosphate),30
-20,MNXM727062__64__MNXC3 (sn-glycerol 1-phosphate),29
-162,MNXM541__64__MNXC3 (3-phosphooxypyruvate),29
-598,MNXM91139__64__MNXC3 (CDP-2-O-(3&apos_-hydroxy)geranyl-3-O-geranyl-sn-glycerol),27
-552,MNXM1108016__64__MNXC3 (nicotinate beta-D-ribonucleotide),27
-322,MNXM735034__64__MNXC3 (Coenzyme ferredoxin 420-2 (oxidized)),27
-599,"MNXM91060__64__MNXC3 (2,3-di-O-geranylgeranyl-sn-glyceroserine)",26
-495,MNXM499659__64__MNXC3 (cobalt-precorrin-2),26
-496,MNXM741457__64__MNXC3 (Cobalt-precorrin 3),26
-497,MNXM732835__64__MNXC3 (Cobalt-precorrin 4),26
-408,MNXM729421__64__MNXC3 (1-(5-Phosphoribosyl)-AMP),26
-47,MNXM60__64__MNXC3 (hydrogencarbonate),25
-556,MNXM1106156__64__MNXC3 (propanoyl-CoA),25
-225,"MNXM114350__64__MNXC3 (7,8-dihydronepterin 2&apos_ 3&apos_-cyclicphosphate)",25
-568,MNXM1104563__64__MNXC3 (phenylacetyl-CoA),24
-475,MNXM168__64__MNXC3 (adenine),24
-141,MNXM344__64__MNXC3 (dGTP),23
-134,MNXM286__64__MNXC3 (dATP),23
-132,MNXM360__64__MNXC3 (dCTP),23
-502,MNXM736806__64__MNXC3 (Cobalt-precorrin 5),23
-252,MNXM153__64__MNXC3 (3-(4-hydroxyphenyl)pyruvate),23
-514,MNXM737103__64__MNXC3 (5-amino-6-(D-ribitylamino)uracil),23
-545,MNXM732866__64__MNXC3 (3-methyl-2-oxobutanoate),22
-279,"MNXM1106095__64__MNXC3 (beta-D-fructose 1,6-bisphosphate)",21
-527,MNXM1105858__64__MNXC3 (D-glucose 6-phosphate),21
-583,"MNXM1103622__64__MNXC3 (N6-(1,2-Dicarboxyethyl)-AMP)",21
-512,MNXM6948__64__MNXC3 (6-deoxy-5-ketomannitol 1-phosphate),21
-409,MNXM728132__64__MNXC3 (1-(5-Phosphoribosyl)-ATP),21
-551,MNXM1103300__64__MNXC3 (deamido-NAD(+)),20
-27,MNXM1280__64__MNXC3 (L-glutamyl 5-phosphate),20
-269,MNXM1104529__64__MNXC3 (UDP-N-acetyl-alpha-D-glucosamine),17
-421,MNXM739346__64__MNXC3 (Precorrin 2),17
-296,MNXM1108206__64__MNXC3 (L-aspartate),16
-289,"MNXM480__64__MNXC3 ((S)-2,3,4,5-tetrahydrodipicolinate)",15
-647,MNXM1177__64__MNXC3 (4-phospho-L-aspartate),14
-175,MNXM73__64__MNXC3 (phosphoenolpyruvate),14
-508,MNXM235__64__MNXC3 (orotate),14
-362,MNXM1101868__64__MNXC3 (IMP),13
-526,MNXM1093051__64__MNXC3 (L-glutamate 5-semialdehyde),13
-490,MNXM1101263__64__MNXC3 (Coenzyme F390 (guanosine)),13
-489,MNXM1103503__64__MNXC3 (Coenzyme F390 (adenosine)),13
-400,MNXM741334__64__MNXC3 (Thioredoxin),13
-278,MNXM1107898__64__MNXC3 (beta-D-fructose 6-phosphate),13
-677,MNXM617__64__MNXC3 (folate),12
-233,MNXM1105732__64__MNXC3 (L-alanine),12
-586,MNXM727687__64__MNXC3 (6-carboxyhexanoyl-CoA),12
+78,MNXM361__64__MNXC3 (L-aspartate 4-semialdehyde),133773
+392,"MNXM1102150__64__MNXC3 ((6R)-5,10-methylene-5,6,7,8-tetrahydrofolate)",83764
+269,MNXM1104529__64__MNXC3 (UDP-N-acetyl-alpha-D-glucosamine),81299
+53,MNXM1108018__64__MNXC3 (H2),64783
+454,MNXM1102072__64__MNXC3 ((S)-S-adenosyl-L-methionine),63555
+521,MNXM1102376__64__MNXC3 ((6S)-10-formyltetrahydrofolate),57496
+597,"MNXM90612__64__MNXC3 (CDP-2,3-digeranylgeranyl-sn-glycerol)",57338
+44,MNXM83__64__MNXC3 (isopentenyl diphosphate),54480
+153,MNXM1105060__64__MNXC3 ((S)-1-pyrroline-5-carboxylate),48339
+50,MNXM124865__64__MNXC3 (hydrogen sulfide),44872
+527,MNXM1105858__64__MNXC3 (D-glucose 6-phosphate),43596
+9,MNXM40333__64__MNXC3 (ADP),42910
+105,MNXM671__64__MNXC3 (methyl-coenzyme M),42520
+348,MNXM114363__64__MNXC3 (Heterodisulfide),41706
+416,MNXM1103718__64__MNXC3 (CTP),40926
+414,MNXM1102191__64__MNXC3 (CDP),36806
+600,"MNXM6669__64__MNXC3 (2,3-di-O-geranyl-sn-glycero-1-phospho-myo-inositol)",34166
+531,MNXM1094062__64__MNXC3 (O-phospho-L-serine),33896
+545,MNXM732866__64__MNXC3 (3-methyl-2-oxobutanoate),33586
+0,MNXM01__64__MNXC2 (PMF),31933
+360,MNXM739518__64__MNXC3 (O Acetyl L homoserine),31447
+340,MNXM1104453__64__MNXC3 (5-phospho-alpha-D-ribose 1-diphosphate),31170
+260,MNXM234__64__MNXC3 (dUMP),31048
+417,MNXM737787__64__MNXC3 (L-serine),30831
+27,MNXM1280__64__MNXC3 (L-glutamyl 5-phosphate),30381
+279,"MNXM1106095__64__MNXC3 (beta-D-fructose 1,6-bisphosphate)",29015
+569,MNXM1104155__64__MNXC3 (GDP-4-dehydro-alpha-D-rhamnose),27972
+384,MNXM123__64__MNXC3 (L-homocysteine),26693
+526,MNXM1093051__64__MNXC3 (L-glutamate 5-semialdehyde),26691
+408,MNXM729421__64__MNXC3 (1-(5-Phosphoribosyl)-AMP),26023
+318,MNXM1103553__64__MNXC3 (GTP),25842
+544,MNXM1103365__64__MNXC3 (5-amino-1-(5-phospho-beta-D-ribosyl)imidazole-4-carboxamide),25747
+381,MNXM1104188__64__MNXC3 (GDP-alpha-D-mannose),25396
+387,MNXM741322__64__MNXC3 (L-Methionyl-tRNA (Met)),25226
+100,MNXM1106164__64__MNXC3 (L-lysine),24971
+570,MNXM1105941__64__MNXC3 (myo-inositol),24920
+426,MNXM1104310__64__MNXC3 (dTDP-4-dehydro-beta-L-rhamnose),23868
+20,MNXM727062__64__MNXC3 (sn-glycerol 1-phosphate),23823
+383,"MNXM1104393__64__MNXC3 ((6S)-5-methyl-5,6,7,8-tetrahydrofolate)",23779
+344,"MNXM3586__64__MNXC3 (7,8-dihydromethanopterin)",23762
+46,MNXM13__64__MNXC3 (CO2),23250
+347,"MNXM7299__64__MNXC3 (Didemethylated 7,8-dihydromethanopterin)",23034
+2,MNXM01__64__MNXC3 (PMF),22732
+14,MNXM20__64__MNXC3 (2-oxoglutarate),22575
+326,MNXM1137670__64__MNXC3 (D-glucose),21869
+620,MNXM1137717__64__MNXC3 (1D-myo-inositol 1-phosphate),21554
+439,MNXM731472__64__MNXC3 (UDP-N-acetyl-3-O-(1-carboxyvinyl)-alpha-D-glucosamine),21505
+421,MNXM739346__64__MNXC3 (Precorrin 2),20523
+647,MNXM1177__64__MNXC3 (4-phospho-L-aspartate),20152
+541,"MNXM7544__64__MNXC3 (Monomethylated 7,8-dihydromethanoterin)",20090
+415,MNXM1102128__64__MNXC3 (UDP),19269
+470,MNXM1104702__64__MNXC3 (UDP-alpha-D-glucose),18415
+157,MNXM735079__64__MNXC3 (4 Hydroxyphenylacetyl CoA),18397
+385,"MNXM1103936__64__MNXC3 ((6S)-5,6,7,8-tetrahydrofolate)",18163
+409,MNXM728132__64__MNXC3 (1-(5-Phosphoribosyl)-ATP),17498
+366,MNXM735464__64__MNXC3 (S-2-(indol-3-yl)acetyl-CoA),17304
+23,MNXM731428__64__MNXC3 (sn-3-O-(geranylgeranyl)glycerol 1-phosphate),17145
+584,"MNXM5438__64__MNXC3 (2,3-O-phytanyl-sn-glycero-1-phospho-myo-inositol)",16452
+605,"MNXM6894__64__MNXC3 (4-ketofructose 1,6-bisphosphate)",16379
+6,MNXM729302__64__MNXC3 (NH4(+)),15848
+560,MNXM418__64__MNXC3 (O-acetyl-L-serine),15481
+175,MNXM73__64__MNXC3 (phosphoenolpyruvate),15383
+534,"MNXM734__64__MNXC3 ((2R)-2,3-dihydroxy-3-methylbutanoate)",15368
+212,MNXM738068__64__MNXC3 (L-cysteine),15312
+498,MNXM736811__64__MNXC3 (Cobalt-precorrin 6),15275
+296,MNXM1108206__64__MNXC3 (L-aspartate),15137
+357,MNXM1105057__64__MNXC3 ((R)-mevalonate),14913
+187,MNXM75__64__MNXC3 (acetaldehyde),14840
+259,MNXM414__64__MNXC3 (uroporphyrinogen III),14626
+314,MNXM38238__64__MNXC3 (5-methyltetrahydrosarcinapterin),14128
+518,"MNXM7580__64__MNXC3 (N5,N10-methylene-5,6,7,8-tetrahydromethanopterin)",13270
+70,MNXM10__64__MNXC3 (NADH),13044
+191,MNXM77__64__MNXC3 (dihydroxyacetone phosphate),12747
+128,MNXM152__64__MNXC3 (dTDP),12523
+289,"MNXM480__64__MNXC3 ((S)-2,3,4,5-tetrahydrodipicolinate)",12396
+8,MNXM37__64__MNXC3 (L-glutamine),12153
+282,"MNXM807__64__MNXC3 ((S)-2,3-dihydrodipicolinate)",12136
+134,MNXM286__64__MNXC3 (dATP),11954
+141,MNXM344__64__MNXC3 (dGTP),11833
+132,MNXM360__64__MNXC3 (dCTP),11770
+434,MNXM735090__64__MNXC3 (indole),11639
+5,MNXM3__64__MNXC3 (ATP),11580
+159,MNXM593__64__MNXC3 ((R)-pantoate),11528
+15,MNXM738702__64__MNXC3 (NADPH),11482
+456,MNXM1102167__64__MNXC3 (S-adenosyl-L-homocysteine),11087
+562,"MNXM1103517__64__MNXC3 (Cyclic 2,3-bisphospho-D-glycerate)",11086
+513,"MNXM6780__64__MNXC3 (3,7-dideoxy-D-threo-hepto-2-amino-6-ulosonate)",11063
+610,MNXM1105098__64__MNXC3 (5-hydroxybenzimidazole),10790
+158,MNXM144__64__MNXC3 (beta-alanine),10539
+97,MNXM731835__64__MNXC3 ((S)-lactate),10270
+161,MNXM727604__64__MNXC3 ((2R)-3-phosphoglycerate),10142
+465,MNXM90960__64__MNXC3 (Co(2+)),10113
+160,MNXM734864__64__MNXC3 ((R)-pantothenate),10008
+533,MNXM1104522__64__MNXC3 (N(1)-(5-phospho-beta-D-ribosyl)glycinamide),9631
+552,MNXM1108016__64__MNXC3 (nicotinate beta-D-ribonucleotide),9616
+599,"MNXM91060__64__MNXC3 (2,3-di-O-geranylgeranyl-sn-glyceroserine)",9598
+556,MNXM1106156__64__MNXC3 (propanoyl-CoA),9582
+568,MNXM1104563__64__MNXC3 (phenylacetyl-CoA),9577
+270,"MNXM892__64__MNXC3 ((2R)-2,3-bisphosphoglycerate)",9530
+247,MNXM662__64__MNXC3 (thiamine phosphate),9401
+602,"MNXM529__64__MNXC3 (meso-2,6-diaminoheptanedioate)",9046
+151,MNXM291__64__MNXC3 (oxalate),9002
+547,MNXM959__64__MNXC3 (2-dehydropantoate),8896
+169,MNXM735771__64__MNXC3 ((R)-4&apos_-phosphopantothenate),8778
+224,"MNXM1103734__64__MNXC3 (2,5-diamino-6-hydroxy-4-(5-phosphoribosylamino)-pyrimidine)",8535
+45,MNXM6807__64__MNXC3 (3-hydroxy-farnesyl diphosphate),8157
+238,MNXM1104056__64__MNXC3 (alpha-D-ribose 5-phosphate),8093
+603,MNXM1102294__64__MNXC3 (2-hydroxy-3-oxobutyl phosphate),8054
+129,MNXM394__64__MNXC3 (dTTP),7910
+225,"MNXM114350__64__MNXC3 (7,8-dihydronepterin 2&apos_ 3&apos_-cyclicphosphate)",7831
+186,MNXM726339__64__MNXC3 (sulfite),7819
+458,MNXM1107940__64__MNXC3 (Dihydroneopterin monophosphate),7788
+278,MNXM1107898__64__MNXC3 (beta-D-fructose 6-phosphate),7653
+615,MNXM465__64__MNXC3 (N-carbamoyl-L-aspartate),7607
+162,MNXM541__64__MNXC3 (3-phosphooxypyruvate),7579
+249,MNXM1094289__64__MNXC3 (thiosulfate),7578
+598,MNXM91139__64__MNXC3 (CDP-2-O-(3&apos_-hydroxy)geranyl-3-O-geranyl-sn-glycerol),7286
+578,MNXM1104880__64__MNXC3 (adenosylcob(III)inamide phosphate),7206
+43,MNXM6808__64__MNXC3 (3-hydroxy-geranyl diphsophate),7193
+110,MNXM738804__64__MNXC3 (L-methionine),7142
+21,"MNXM728266__64__MNXC3 ((2E,6E,10E)-geranylgeranyl diphosphate)",7076
+320,MNXM1103285__64__MNXC3 (GDP),6960
+367,MNXM96998__64__MNXC3 (Ferredoxin (reduced) 2[4Fe-4S]),6581
+613,MNXM732620__64__MNXC3 (H2O2),6495
+184,MNXM91223__64__MNXC3 (L-sulfolactyl phosphate),6278
+330,MNXM89983__64__MNXC3 (Coenzyme ferredoxin 420-2 (reduced)),6189
+106,MNXM46__64__MNXC3 (oxaloacetate),5645
+423,MNXM726711__64__MNXC3 (Fe(2+)),5544
+17,WATER__64__MNXC3 (H2O),5392
+69,MNXM8__64__MNXC3 (NAD(+)),5281
+362,MNXM1101868__64__MNXC3 (IMP),5204
+369,MNXM96997__64__MNXC3 (Ferredoxin (oxidized) 2[4Fe-4S]),5006
+80,MNXM1334__64__MNXC3 (O-phospho-L-homoserine),4923
+572,MNXM2888__64__MNXC3 ((2S)-2-phospholactate),4872
+623,"MNXM6863__64__MNXC3 (4,5-diketo-6-deoxyfructose 1-phosphate)",4744
+218,MNXM172__64__MNXC3 (succinate semialdehyde),4720
+223,"MNXM32364__64__MNXC3 (1,4-diphenylbenzene)",4706
+449,MNXM877__64__MNXC3 (adenosylcob(III)yrate),4675
+356,MNXM1104235__64__MNXC3 ((3S)-hydroxy-3-methylglutaryl-CoA),4617
+370,MNXM132__64__MNXC3 (dimethylallyl diphosphate),4579
+287,MNXM1105949__64__MNXC3 (dTDP-alpha-D-glucose),4558
+618,"MNXM1106785__64__MNXC3 (2,3-O-phytanyl-sn-glycero-1-phosphoserine)",4524
+229,MNXM1697__64__MNXC3 ((R)-1-aminopropan-2-yl phosphate),4497
+525,"MNXM1103344__64__MNXC3 ((2E,6E)-farnesyl diphosphate)",4475
+506,MNXM6809__64__MNXC3 (3-hydroxy-geranylgeranyl diphosphate),4442
+606,MNXM100__64__MNXC3 ((2E)-geranyl diphosphate),4436
+614,"MNXM1107754__64__MNXC3 (6,7-Dimethyl-8-(1-D-ribityl)lumazine)",4283
+594,MNXM1103447__64__MNXC3 ((S)-3-methyl-2-oxopentanoate),4281
+559,MNXM280__64__MNXC3 (acetyl phosphate),4253
+192,MNXM555__64__MNXC3 (quinolinate),4201
+431,MNXM114285__64__MNXC3 (2-oxooctanedioic acid),4160
+182,MNXM1265__64__MNXC3 (3-phosphoshikimate),4080
+306,"MNXM91113__64__MNXC3 (7,8-dihydropterin-6-ylmethyl-4-(B-D-ribofuranosyl) aminobenzene 5&apos_-phosphate)",4067
+346,MNXM733232__64__MNXC3 ((S)-2-Hydroxyglutarate),3733
+57,"MNXM6960__64__MNXC3 (7,8-dihydropterin-6-ylmethyl-1-(4-aminophenyl)-1-deoxy-5-[1-A-D-ribofuranosyl 5&apos_-diphosphate]-D-ribitol)",3709
+422,MNXM740871__64__MNXC3 (sirohydrochlorin),3644
+508,MNXM235__64__MNXC3 (orotate),3439
+467,MNXM421__64__MNXC3 (4-aminobenzoate),3390
+202,MNXM7577__64__MNXC3 (N1-(5-Phospho-alpha-D-ribosyl)-5-hydroxybenzimidazole),3327
+305,"MNXM727068__64__MNXC3 ((7,8-dihydropterin-6-yl)methyl diphosphate)",3303
+413,"MNXM740983__64__MNXC3 (alpha-D-ribose 1,5-bisphosphate)",3292
+611,"MNXM1106710__64__MNXC3 (D-Ribulose 1,5-bisphosphate)",3285
+288,MNXM1104509__64__MNXC3 (dTDP-4-dehydro-6-deoxy-alpha-D-glucose),3277
+152,MNXM39__64__MNXC3 (formate),3258
+418,MNXM741553__64__MNXC3 (L-tryptophan),3194
+331,MNXM731032__64__MNXC3 (L-Glutamyl-tRNA(Glu)),2939
+233,MNXM1105732__64__MNXC3 (L-alanine),2926
+586,MNXM727687__64__MNXC3 (6-carboxyhexanoyl-CoA),2793
+493,MNXM337__64__MNXC3 (chorismate),2786
+183,MNXM1365__64__MNXC3 (5-O-(1-carboxyvinyl)-3-phosphoshikimate),2785
+200,MNXM145__64__MNXC3 (D-ribulose 5-phosphate),2776
+683,MNXM7529__64__MNXC3 (Methyl-3-hydroxyl diphosphate),2755
+338,MNXM731066__64__MNXC3 (GDP-4-dehydro-beta-L-fucose),2748
+127,MNXM274__64__MNXC3 (nicotinate),2736
+198,MNXM270__64__MNXC3 (riboflavin),2592
+325,MNXM738130__64__MNXC3 (Glycogen),2589
+507,MNXM91919__64__MNXC3 (2-O-(3&apos_-hydroxy)geranyl-3-O-geranyl-sn-glycerol),2564
+505,MNXM91176__64__MNXC3 (Digeranylgeranylglyceryl phosphate),2483
+373,MNXM1106762__64__MNXC3 (L-Leucine),2454
+499,MNXM733199__64__MNXC3 (Cobalt-dihydro-precorrin 6),2331
+131,MNXM452__64__MNXC3 (dUTP),2305
+178,MNXM1455__64__MNXC3 (1-(2-carboxyphenylamino)-1-deoxy-D-ribulose 5-phosphate),2297
+204,MNXM5452__64__MNXC3 (2-sulfomethyl-L-thioproline),2101
+406,MNXM733934__64__MNXC3 ((R)-5-diphosphomevalonate),2088
+58,"MNXM6962__64__MNXC3 (7,8-dihydropterin-6-ylmethyl-1-(4-aminophenyl)-1-deoxy-5-[1-A-D-ribofuranosyl 5&apos_-triphosphate]-D-ribitol)",2056
+7,MNXM741173__64__MNXC3 (L-glutamate),1927
+402,MNXM729076__64__MNXC3 (thioredoxin disulfide),1893
+475,MNXM168__64__MNXC3 (adenine),1699
+322,MNXM735034__64__MNXC3 (Coenzyme ferredoxin 420-2 (oxidized)),1566
+55,"MNXM6963__64__MNXC3 (7,8-dihydropterin-6-ylmethyl-1-(4-aminophenyl)-1-deoxy-D-ribitol)",1509
+551,MNXM1103300__64__MNXC3 (deamido-NAD(+)),1436
+677,MNXM617__64__MNXC3 (folate),1324
+304,MNXM114345__64__MNXC3 (4-(B-D-ribofuranosyl)aminobenzene 5&apos_-phosphate),1282
+660,"MNXM6671__64__MNXC3 (2,3-di-O-geranyl-sn-glycerol-1-phospho-3&apos_-sn-glycerol phosphate)",1278
+173,MNXM730898__64__MNXC3 (N-[(R)-4-phosphopantothenoyl]-L-cysteine),1269
+583,"MNXM1103622__64__MNXC3 (N6-(1,2-Dicarboxyethyl)-AMP)",1230
+502,MNXM736806__64__MNXC3 (Cobalt-precorrin 5),1215
+327,MNXM1106065__64__MNXC3 (D-glucopyranose 1-phosphate),1209
+3,MNXM1__64__MNXC3 (H(+)),1192
+98,MNXM142__64__MNXC3 (L-threonine),1158
+313,"MNXM1462__64__MNXC3 (5,6,7,8-tetrahydrosarcinapterin)",1098
+400,MNXM741334__64__MNXC3 (Thioredoxin),1083
+72,MNXM960__64__MNXC3 (4-methyl-5-(2-phosphooxyethyl)-thiazole),1046
+495,MNXM499659__64__MNXC3 (cobalt-precorrin-2),1018
+512,MNXM6948__64__MNXC3 (6-deoxy-5-ketomannitol 1-phosphate),1012
+252,MNXM153__64__MNXC3 (3-(4-hydroxyphenyl)pyruvate),966
+496,MNXM741457__64__MNXC3 (Cobalt-precorrin 3),923
+497,MNXM732835__64__MNXC3 (Cobalt-precorrin 4),923
+294,MNXM739527__64__MNXC3 (L-arginine),808
+682,"MNXM1974__64__MNXC3 (1-deoxy-D-threo-hexo-2,5-diulose 6-phosphate)",771
+40,MNXM27__64__MNXC3 (Na(+)),658
+388,MNXM738283__64__MNXC3 ((R)-5-phosphomevalonate),635
+123,MNXM444__64__MNXC3 (dimethyl sulfide),624
+168,MNXM1101289__64__MNXC3 (4-amino-2-methyl-5-(diphosphooxymethyl)pyrimidine),581
+172,MNXM405__64__MNXC3 (5-aminolevulinate),536
+332,MNXM1453__64__MNXC3 ((S)-4-amino-5-oxopentanoate),534
+16,MNXM5__64__MNXC3 (NADP(+)),502
+648,"MNXM91856__64__MNXC3 (2,3-di-O-geranyl-sn-glycerol-1-phospho-3&apos_-sn-glycerol)",487
+177,MNXM1489__64__MNXC3 (N-(5-phospho-beta-D-ribosyl)anthranilate),437
+99,MNXM1492__64__MNXC3 (O-phospho-L-threonine),435
+290,MNXM1104899__64__MNXC3 (4-amino-5-hydroxymethyl-2-methylpyrimidine),423
+407,MNXM737312__64__MNXC3 (prephenate),407
+628,MNXM192__64__MNXC3 (4-aminobutanoate),393
+363,"MNXM730763__64__MNXC3 ((1S,2R)-1-C-(indol-3-yl)glycerol 3-phosphate)",349
+514,MNXM737103__64__MNXC3 (5-amino-6-(D-ribitylamino)uracil),338
+76,MNXM554__64__MNXC3 (porphobilinogen),283
+77,MNXM547__64__MNXC3 (hydroxymethylbilane),281
+494,MNXM726637__64__MNXC3 (CO),278
+47,MNXM60__64__MNXC3 (hydrogencarbonate),258
+361,MNXM732487__64__MNXC3 (hypoxanthine),236
+195,MNXM4856__64__MNXC3 ((R)-trihomocitrate),233
+84,MNXM1456__64__MNXC3 (3-(imidazol-4-yl)-2-oxopropyl phosphate),218
+22,MNXM11__64__MNXC3 (diphosphate),201
+10,MNXM9__64__MNXC3 (phosphate),199
+107,MNXM1107192__64__MNXC3 ((S)-malate),198
+481,MNXM726864__64__MNXC3 ((S)-8-amino-7-oxononanoate),185
+96,MNXM23__64__MNXC3 (pyruvate),184
+205,MNXM5937__64__MNXC3 (sulfoethylcysteine),177
+193,MNXM4571__64__MNXC3 ((R)-dihomocitrate),143
+686,MNXM90774__64__MNXC3 (2 5 diamino 6 ribitylamino 4 3H pyrimidinone 5 phosphate),141
+585,MNXM7560__64__MNXC3 (N-Acetyl-D-glucosaminyl archaetidylinositol),139
+635,MNXM328__64__MNXC3 (agmatine),127
+489,MNXM1103503__64__MNXC3 (Coenzyme F390 (adenosine)),127
+490,MNXM1101263__64__MNXC3 (Coenzyme F390 (guanosine)),123
+447,MNXM1103847__64__MNXC3 ((2S)-2-acetolactate),119
+146,MNXM732471__64__MNXC3 (L-citrulline),117
+345,"MNXM1103755__64__MNXC3 (5,6,7,8-tetrahydromethanopterin)",104
+66,MNXM1107769__64__MNXC3 (L-histidine),87
+486,MNXM1107821__64__MNXC3 (L-asparagine),62
+167,MNXM1104391__64__MNXC3 (4-amino-2-methyl-5-(phosphooxymethyl)pyrimidine),52
+277,MNXM728322__64__MNXC3 (5-carboxyamino-1-(5-phospho-D-ribosyl)imidazole),46
+38,MNXM27__64__MNXC2 (Na(+)),38
+650,MNXM1178__64__MNXC3 (5-amino-6-(5-phospho-D-ribitylamino)uracil),28
+271,"MNXM162740__64__MNXC3 (5-Formyl-5,6,7,8-tetrahydromethanopterin)",17
+342,MNXM1101285__64__MNXC3 (GMP),13
+274,MNXM1105983__64__MNXC3 (5-amino-1-(5-phospho-beta-D-ribosyl)imidazole),12
+323,MNXM5686__64__MNXC3 (Coenzyme ferredoxin 420-3),12
+535,MNXM5687__64__MNXC3 (Coenzyme ferredoxin 420-4),12
+536,MNXM5688__64__MNXC3 (Coenzyme ferredoxin 420-5),12
+537,MNXM5689__64__MNXC3 (Coenzyme ferredoxin 420-6),12
 79,MNXM353__64__MNXC3 (L-homoserine),11
-413,"MNXM740983__64__MNXC3 (alpha-D-ribose 1,5-bisphosphate)",11
-447,MNXM1103847__64__MNXC3 ((2S)-2-acetolactate),10
-46,MNXM13__64__MNXC3 (CO2),10
-611,"MNXM1106710__64__MNXC3 (D-Ribulose 1,5-bisphosphate)",10
-23,MNXM731428__64__MNXC3 (sn-3-O-(geranylgeranyl)glycerol 1-phosphate),10
-465,MNXM90960__64__MNXC3 (Co(2+)),10
-294,MNXM739527__64__MNXC3 (L-arginine),9
-602,"MNXM529__64__MNXC3 (meso-2,6-diaminoheptanedioate)",9
-98,MNXM142__64__MNXC3 (L-threonine),8
-594,MNXM1103447__64__MNXC3 ((S)-3-methyl-2-oxopentanoate),8
-8,MNXM37__64__MNXC3 (L-glutamine),7
-431,MNXM114285__64__MNXC3 (2-oxooctanedioic acid),7
-600,"MNXM6669__64__MNXC3 (2,3-di-O-geranyl-sn-glycero-1-phospho-myo-inositol)",7
-648,"MNXM91856__64__MNXC3 (2,3-di-O-geranyl-sn-glycerol-1-phospho-3&apos_-sn-glycerol)",7
-182,MNXM1265__64__MNXC3 (3-phosphoshikimate),7
-434,MNXM735090__64__MNXC3 (indole),7
+377,"MNXM732222__64__MNXC3 (7,8-didemethyl-8-hydroxy-5-deazariboflavin)",10
+242,MNXM796__64__MNXC3 (dimethylamine),10
+376,MNXM2126__64__MNXC3 ((2S)-lactyl-2-diphospho-5&apos_-guanosine),9
+116,MNXM255__64__MNXC3 (methylamine),9
+319,MNXM1106054__64__MNXC3 (oxidized coenzyme F420-0),8
 359,"MNXM728662__64__MNXC3 (6-hydroxymethyl-7,8-dihydropterin)",6
-290,MNXM1104899__64__MNXC3 (4-amino-5-hydroxymethyl-2-methylpyrimidine),6
-260,MNXM234__64__MNXC3 (dUMP),6
 130,MNXM572__64__MNXC3 (dUDP),6
-493,MNXM337__64__MNXC3 (chorismate),6
-628,MNXM192__64__MNXC3 (4-aminobutanoate),6
-320,MNXM1103285__64__MNXC3 (GDP),5
-200,MNXM145__64__MNXC3 (D-ribulose 5-phosphate),5
-498,MNXM736811__64__MNXC3 (Cobalt-precorrin 6),5
-183,MNXM1365__64__MNXC3 (5-O-(1-carboxyvinyl)-3-phosphoshikimate),5
-418,MNXM741553__64__MNXC3 (L-tryptophan),5
-273,MNXM1094916__64__MNXC3 (2-formamido-N(1)-(5-O-phospho-beta-D-ribosyl)acetamidine),4
-167,MNXM1104391__64__MNXC3 (4-amino-2-methyl-5-(phosphooxymethyl)pyrimidine),4
-618,"MNXM1106785__64__MNXC3 (2,3-O-phytanyl-sn-glycero-1-phosphoserine)",4
-370,MNXM132__64__MNXC3 (dimethylallyl diphosphate),4
-606,MNXM100__64__MNXC3 ((2E)-geranyl diphosphate),4
-572,MNXM2888__64__MNXC3 ((2S)-2-phospholactate),4
-562,"MNXM1103517__64__MNXC3 (Cyclic 2,3-bisphospho-D-glycerate)",4
-525,"MNXM1103344__64__MNXC3 ((2E,6E)-farnesyl diphosphate)",4
-314,MNXM38238__64__MNXC3 (5-methyltetrahydrosarcinapterin),4
-223,"MNXM32364__64__MNXC3 (1,4-diphenylbenzene)",4
-178,MNXM1455__64__MNXC3 (1-(2-carboxyphenylamino)-1-deoxy-D-ribulose 5-phosphate),4
-195,MNXM4856__64__MNXC3 ((R)-trihomocitrate),4
-129,MNXM394__64__MNXC3 (dTTP),4
-407,MNXM737312__64__MNXC3 (prephenate),4
-406,MNXM733934__64__MNXC3 ((R)-5-diphosphomevalonate),3
-274,MNXM1105983__64__MNXC3 (5-amino-1-(5-phospho-beta-D-ribosyl)imidazole),3
+321,MNXM732474__64__MNXC3 (Coenzyme ferredoxin 420-1),6
+273,MNXM1094916__64__MNXC3 (2-formamido-N(1)-(5-O-phospho-beta-D-ribosyl)acetamidine),5
+196,MNXM5673__64__MNXC3 (cis-trihomoaconitic acid),4
 477,MNXM1107675__64__MNXC3 (1-aminopropan-2-ol),3
-9,MNXM40333__64__MNXC3 (ADP),3
-456,MNXM1102167__64__MNXC3 (S-adenosyl-L-homocysteine),3
-319,MNXM1106054__64__MNXC3 (oxidized coenzyme F420-0),3
-321,MNXM732474__64__MNXC3 (Coenzyme ferredoxin 420-1),3
-323,MNXM5686__64__MNXC3 (Coenzyme ferredoxin 420-3),3
-535,MNXM5687__64__MNXC3 (Coenzyme ferredoxin 420-4),3
-536,MNXM5688__64__MNXC3 (Coenzyme ferredoxin 420-5),3
-537,MNXM5689__64__MNXC3 (Coenzyme ferredoxin 420-6),3
-486,MNXM1107821__64__MNXC3 (L-asparagine),3
-584,"MNXM5438__64__MNXC3 (2,3-O-phytanyl-sn-glycero-1-phospho-myo-inositol)",3
-402,MNXM729076__64__MNXC3 (thioredoxin disulfide),3
-660,"MNXM6671__64__MNXC3 (2,3-di-O-geranyl-sn-glycerol-1-phospho-3&apos_-sn-glycerol phosphate)",2
+350,MNXM5819__64__MNXC3 (Methanophenazine (oxidized)),3
+103,MNXM399__64__MNXC3 (coenzyme M),3
+241,MNXM1094294__64__MNXC3 (trimethylamine),3
+694,MNXM7196__64__MNXC3 (Coenzyme f430 precursor 3),2
 149,MNXM730__64__MNXC3 (N-acetyl-L-glutamate),2
+627,MNXM3883__64__MNXC3 (7-Mercaptoheptanoylthreonine),2
 174,MNXM373__64__MNXC3 ((R)-4&apos_-phosphopantetheine),2
 589,MNXM1104543__64__MNXC3 (3&apos_-dephospho-CoA),2
 478,MNXM26__64__MNXC3 (acetate),2
 111,MNXM159__64__MNXC3 (2-oxobutanoate),2
-518,"MNXM7580__64__MNXC3 (N5,N10-methylene-5,6,7,8-tetrahydromethanopterin)",2
-16,MNXM5__64__MNXC3 (NADP(+)),2
-21,"MNXM728266__64__MNXC3 ((2E,6E,10E)-geranylgeranyl diphosphate)",2
-470,MNXM1104702__64__MNXC3 (UDP-alpha-D-glucose),2
-467,MNXM421__64__MNXC3 (4-aminobenzoate),2
-694,MNXM7196__64__MNXC3 (Coenzyme f430 precursor 3),1
+693,MNXM7195__64__MNXC3 (Coenzyme F430 precursor 2),2
+661,MNXM91918__64__MNXC3 (2-O-(3&apos_-hydroxy)geranyl-3-O-geranyl-sn-glycerol-1-phospho-3&apos_-sn-glycerol phosphate),2
 695,"MNXM6645__64__MNXC3 (15,17-seco-F430-17-acid)",1
-686,MNXM90774__64__MNXC3 (2 5 diamino 6 ribitylamino 4 3H pyrimidinone 5 phosphate),1
-388,MNXM738283__64__MNXC3 ((R)-5-phosphomevalonate),1
-683,MNXM7529__64__MNXC3 (Methyl-3-hydroxyl diphosphate),1
-682,"MNXM1974__64__MNXC3 (1-deoxy-D-threo-hexo-2,5-diulose 6-phosphate)",1
 673,MNXM731166__64__MNXC2 (Cu(2+)),1
 658,MNXM733186__64__MNXC2 (Cd(2+)),1
 656,MNXM7191__64__MNXC3 (Cob(I)alamin-HBI),1
-191,MNXM77__64__MNXC3 (dihydroxyacetone phosphate),1
-635,MNXM328__64__MNXC3 (agmatine),1
 293,MNXM737340__64__MNXC3 (fumarate),1
-585,MNXM7560__64__MNXC3 (N-Acetyl-D-glucosaminyl archaetidylinositol),1
 462,MNXM741357__64__MNXC3 (Cobyrinate),1
 448,MNXM735499__64__MNXC3 (Adenosyl cobyrinate diamide),1
 328,MNXM731042__64__MNXC3 (L-Glutamyl-tRNA(Gln)),1
-627,MNXM3883__64__MNXC3 (7-Mercaptoheptanoylthreonine),1
 298,MNXM304__64__MNXC3 (biotin),1
 581,MNXM1105760__64__MNXC3 (adenosine),1
-110,MNXM738804__64__MNXC3 (L-methionine),1
-342,MNXM1101285__64__MNXC3 (GMP),1
-57,"MNXM6960__64__MNXC3 (7,8-dihydropterin-6-ylmethyl-1-(4-aminophenyl)-1-deoxy-5-[1-A-D-ribofuranosyl 5&apos_-diphosphate]-D-ribitol)",1
 180,MNXM1408__64__MNXC3 (5-[(5-phospho-1-deoxy-D-ribulos-1-ylimino)methylamino]-1-(5-phospho-beta-D-ribosyl)imidazole-4-carboxamide),1
-326,MNXM1137670__64__MNXC3 (D-glucose),1
-277,MNXM728322__64__MNXC3 (5-carboxyamino-1-(5-phospho-D-ribosyl)imidazole),1
 144,MNXM138__64__MNXC3 (carbamoyl phosphate),1
 601,MNXM1107753__64__MNXC3 (citrate),1
-507,MNXM91919__64__MNXC3 (2-O-(3&apos_-hydroxy)geranyl-3-O-geranyl-sn-glycerol),1
-505,MNXM91176__64__MNXC3 (Digeranylgeranylglyceryl phosphate),1
 596,MNXM1104756__64__MNXC3 (cob(I)alamin),1
 588,MNXM188__64__MNXC3 (anthranilate),1
 203,MNXM7578__64__MNXC3 (N1-(alpha-D-ribosyl)-5-hydroxybenzimidazole),1
 579,MNXM1101279__64__MNXC3 (adenosylcob(III)inamide-GDP),1
-0,MNXM01__64__MNXC2 (PMF),1
 102,MNXM1106164__64__MNXC2 (L-lysine),1
-347,"MNXM7299__64__MNXC3 (Didemethylated 7,8-dihydromethanopterin)",1
-541,"MNXM7544__64__MNXC3 (Monomethylated 7,8-dihydromethanoterin)",1
-313,"MNXM1462__64__MNXC3 (5,6,7,8-tetrahydrosarcinapterin)",1
 510,"MNXM6779__64__MNXC3 (3,7-dideoxy-D-threo-hepto-2,6-diulosonate)",1
-506,MNXM6809__64__MNXC3 (3-hydroxy-geranylgeranyl diphosphate),1
-43,MNXM6808__64__MNXC3 (3-hydroxy-geranyl diphsophate),1
-369,MNXM96997__64__MNXC3 (Ferredoxin (oxidized) 2[4Fe-4S]),1
-494,MNXM726637__64__MNXC3 (CO),1
-360,MNXM739518__64__MNXC3 (O Acetyl L homoserine),1
-305,"MNXM727068__64__MNXC3 ((7,8-dihydropterin-6-yl)methyl diphosphate)",1
 461,MNXM728587__64__MNXC3 (Cobalt-precorrin 8),1
 453,"MNXM730300__64__MNXC3 (a 7,8-dihydroneopterin)",1
-196,MNXM5673__64__MNXC3 (cis-trihomoaconitic acid),1
-287,MNXM1105949__64__MNXC3 (dTDP-alpha-D-glucose),1
-288,MNXM1104509__64__MNXC3 (dTDP-4-dehydro-6-deoxy-alpha-D-glucose),1
-422,MNXM740871__64__MNXC3 (sirohydrochlorin),1
-423,MNXM726711__64__MNXC3 (Fe(2+)),1
-385,"MNXM1103936__64__MNXC3 ((6S)-5,6,7,8-tetrahydrofolate)",1
+324,MNXM1104065__64__MNXC3 (alpha-D-glucosamine 6-phosphate),1
+291,BIOMASS__64__MNXC3 (BIOMASS),1
+179,MNXM1397__64__MNXC3 (1-(5-phospho-beta-D-ribosyl)-5-[(5-phospho-beta-D-ribosylamino)methylideneamino]imidazole-4-carboxamide),1
+94,MNXM1602__64__MNXC3 ((2S)-2-isopropyl-3-oxosuccinate),1
+104,MNXM729800__64__MNXC3 (methanol),1
+83,MNXM1422__64__MNXC3 (D-erythro-1-(imidazol-4-yl)glycerol 3-phosphate),1
+81,MNXM118__64__MNXC3 (putrescine),1
