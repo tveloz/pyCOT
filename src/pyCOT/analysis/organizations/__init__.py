@@ -3,7 +3,7 @@ pyCOT.analysis.organizations — Genome-scale organization computation.
 
 Implements the theory from Veloz & Bassi (2025) "Synergy and Complementarity:
 The Generative Basis of Chemical Organizations", ported from the
-projects/COT_fundamental_Generators/cot_gen research prototype into the
+projects/COT_Fundamental_Generators_Exploration/cot_gen research prototype into the
 core library as its canonical, actively-maintained home.
 
 Pipeline (see organizations.py for the full narrative):

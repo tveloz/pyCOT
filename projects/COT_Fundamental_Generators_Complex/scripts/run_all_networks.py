@@ -13,7 +13,7 @@ installed.
 CONFIGURATION
 -------------
 Edit the block below, then run:
-    python projects/COT_fundamental_Generators/scripts/run_all_networks.py
+    python projects/COT_Fundamental_Generators_Complex/scripts/run_all_networks.py
 """
 
 # ── Path setup ────────────────────────────────────────────────────────────────

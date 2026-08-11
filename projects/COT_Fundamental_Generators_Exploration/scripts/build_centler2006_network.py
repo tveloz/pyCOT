@@ -16,7 +16,7 @@ Output: one .txt file per scenario (pyCOT reaction-network format), in
   data/Examples_tests/Centler2006_EcoliSugar/centler_{scenario}.txt
 
 Usage (from repo root):
-    python projects/COT_fundamental_Generators/scripts/build_centler2006_network.py
+    python projects/COT_Fundamental_Generators_Exploration/scripts/build_centler2006_network.py
 
 See reproduce_centler2006.py for computing the organization hierarchy on
 these networks and comparing against the paper's Fig 1.1 / Table 1.1.

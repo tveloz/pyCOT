@@ -38,9 +38,9 @@ HOW TO RUN
 ----------
   1. Edit the CONFIGURATION section below (pick a network, EPM vs ESPM).
   2. Press ▶ (play) in VS Code, or run:
-       python projects/COT_fundamental_Generators/scripts/degeneracy_analysis.py
+       python projects/COT_Fundamental_Generators_Exploration/scripts/degeneracy_analysis.py
   3. Console prints summary stats; a PNG + CSV are written to
-       projects/COT_fundamental_Generators/outputs/degeneracy/<network>/
+       projects/COT_Fundamental_Generators_Exploration/outputs/degeneracy/<network>/
 """
 
 # ── Path setup (do not edit) ──────────────────────────────────────────────────

@@ -16,7 +16,7 @@ took ~52 minutes on a 92-species, 23-ERC network; compute_organizations
 solves the same network — and reproduces the same published organizations,
 species-for-species — in under 2 seconds; validated this way against all
 five scenarios of Centler et al. 2006's E. coli sugar-metabolism model,
-see projects/COT_fundamental_Generators/scripts/reproduce_centler2006.py).
+see projects/COT_Fundamental_Generators_Exploration/scripts/reproduce_centler2006.py).
 
 Everything below this point is kept for backward compatibility (existing
 scripts that import ElementarySO / Organization / OrganizationHierarchy /

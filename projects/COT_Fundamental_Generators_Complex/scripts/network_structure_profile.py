@@ -33,14 +33,14 @@ Deliberately stops here -- no EPM/ESPM/organization computation. The output
 of this script is meant to inform WHICH inflow/outflow scenarios are worth
 testing next (that's a separate, later step).
 
-Outputs, per network, in projects/COT_fundamental_Generators/outputs/network_profile/<name>/:
+Outputs, per network, in projects/COT_Fundamental_Generators_Complex/outputs/network_profile/<name>/:
   report.md            -- human-readable summary of both steps
   erc_table.csv         -- one row per ERC: req_size, prod_size, erc_size, is_persistent
   req_prod_histogram.png
   synergy_complementarity_degree_histogram.png
 
 Usage (from repo root):
-    python projects/COT_fundamental_Generators/scripts/network_structure_profile.py <path_to_network.txt> [network_name]
+    python projects/COT_Fundamental_Generators_Complex/scripts/network_structure_profile.py <path_to_network.txt> [network_name]
 
 Or import and call profile_network(path, name) from another script.
 """
@@ -63,7 +63,7 @@ from pyCOT.analysis.organizations.hierarchy import build_hierarchy
 from pyCOT.analysis.organizations.synergy import compute_synergies_basis_first
 from pyCOT.analysis.organizations.complementarity import compute_complementarities
 
-OUT_ROOT = os.path.join(_repo_root, 'projects', 'COT_fundamental_Generators', 'outputs', 'network_profile')
+OUT_ROOT = os.path.join(_repo_root, 'projects', 'COT_Fundamental_Generators_Complex', 'outputs', 'network_profile')
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -79,7 +79,19 @@ def _parse_raw_inflow_outflow(path: str) -> tuple[set[str], set[str]]:
     ignores comments after ';'.
     """
     inflow, outflow = set(), set()
-    term_re = re.compile(r'(?:\d+(?:\.\d+)?\s+)?([A-Za-z_][A-Za-z0-9_\'\[\]]*)')
+    # Coefficient prefix is optional and its separating space is optional
+    # too, e.g. "2 UFPT" (space-separated) and "2UFPT" (compact notation,
+    # common in SBML-derived BioModels conversions) must both strip to
+    # species "UFPT". A \s+ (space required) version was missing the
+    # compact case entirely, silently dropping the reactant term and thus
+    # misclassifying reactions like "2UFPT (UFPT) => UFPT (UFPT)" (a decay
+    # reaction) as if they had an empty left side (a true inflow) --
+    # confirmed on BIOMD0000000446, which reported 27 "explicit inflow
+    # species" via this scan even though only 13 reactions have a genuinely
+    # empty left side; the real computation (build_rndata/compute_ercs,
+    # which uses pyCOT's actual parser, not this lightweight text scan) was
+    # never affected by this -- only this diagnostic's own species_in().
+    term_re = re.compile(r'(?:\d+(?:\.\d+)?\s*)?([A-Za-z_][A-Za-z0-9_\'\[\]]*)')
 
     def species_in(side: str) -> list[str]:
         side = side.strip()

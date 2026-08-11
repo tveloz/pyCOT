@@ -67,7 +67,7 @@ import tempfile
 
 _here = os.path.dirname(os.path.abspath(__file__))
 _proj = os.path.normpath(os.path.join(_here, ".."))
-_cot_gen_proj = os.path.normpath(os.path.join(_here, "..", "..", "COT_fundamental_Generators"))
+_cot_gen_proj = os.path.normpath(os.path.join(_here, "..", "..", "COT_Fundamental_Generators_Exploration"))
 _repo = os.path.normpath(os.path.join(_here, "..", "..", ".."))
 for _p in (_proj, _cot_gen_proj, os.path.join(_repo, "src")):
     if _p not in sys.path:

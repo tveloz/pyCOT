@@ -14,8 +14,8 @@ from __future__ import annotations
 import os
 import sys
 
-# Layout: pyCOT/projects/COT_fundamental_Generators/benchmarks/
-# _proj = .../COT_fundamental_Generators/  (cot_gen + oracles importable from here)
+# Layout: pyCOT/projects/COT_Fundamental_Generators_Complex/benchmarks/
+# _proj = .../COT_Fundamental_Generators_Complex/  (cot_gen + oracles importable from here)
 # _repo = .../pyCOT/                       (pyCOT importable from _repo/src)
 _here = os.path.dirname(os.path.abspath(__file__))
 _proj = os.path.normpath(os.path.join(_here, ".."))

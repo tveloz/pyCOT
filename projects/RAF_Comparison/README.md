@@ -23,7 +23,7 @@ else it needs:
 | What | Where | Used for |
 |---|---|---|
 | Reaction-network I/O (`pyCOT.io`) | `src/pyCOT/` | reading the `.txt` network files |
-| ERC / hierarchy / synergy / EPM / ESPM engine (`cot_gen`) | `projects/COT_fundamental_Generators/` | enumerating the full semi-organization lattice (Veloz, "Computing chemical organizations efficiently using a minimal generative structure", submitted 2026) |
+| ERC / hierarchy / synergy / EPM / ESPM engine (`cot_gen`) | `projects/COT_Fundamental_Generators_Exploration/` | enumerating the full semi-organization lattice (Veloz, "Computing chemical organizations efficiently using a minimal generative structure", submitted 2026) |
 | E/F/fragile-circuit decomposition + Hasse-diagram plotting (`decomp`) | `projects/Decomposition_Theorem/` | the paper's decomposition theorem and every Hasse-diagram figure |
 
 Scripts here add all three sibling folders to `sys.path` at import time,

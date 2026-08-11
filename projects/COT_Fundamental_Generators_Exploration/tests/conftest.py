@@ -14,8 +14,8 @@ import sys
 
 import pytest
 
-# Layout: pyCOT/projects/COT_fundamental_Generators/tests/
-# _proj = .../COT_fundamental_Generators/  (cot_gen + oracles importable from here)
+# Layout: pyCOT/projects/COT_Fundamental_Generators_Exploration/tests/
+# _proj = .../COT_Fundamental_Generators_Exploration/  (cot_gen + oracles importable from here)
 # _repo = .../pyCOT/                       (pyCOT importable from _repo/src, data from _repo/data)
 _here = os.path.normpath(os.path.dirname(os.path.abspath(__file__)))
 _proj = os.path.normpath(os.path.join(_here, ".."))

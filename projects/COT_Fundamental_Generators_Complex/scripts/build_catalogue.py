@@ -19,7 +19,7 @@ WHAT IT OUTPUTS
                                  (green ≤100 | yellow ≤500 | orange ≤2000 | red >2000)
                                - Frozen header row and auto-filter.
 
-  Both files are written to the COT_fundamental_Generators/ project folder.
+  Both files are written to the COT_Fundamental_Generators_Complex/ project folder.
   The CSV can be passed to compare_oracles.py and run_network.py via the
   CATALOGUE_CSV setting to speed up network discovery.
 
@@ -27,7 +27,7 @@ HOW TO RUN
 ----------
   1. (Optional) edit the CONFIGURATION section below.
   2. Press ▶ (play) in VS Code, or run:
-       python projects/COT_fundamental_Generators/scripts/build_catalogue.py
+       python projects/COT_Fundamental_Generators_Complex/scripts/build_catalogue.py
 """
 
 # ── Path setup (do not edit) ──────────────────────────────────────────────────
@@ -57,7 +57,7 @@ CSV_ONLY = False
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 _DATA_ROOT = os.path.join(_repo, "data", "biomodels")
-_OUT_DIR   = _proj   # projects/COT_fundamental_Generators/
+_OUT_DIR   = _proj   # projects/COT_Fundamental_Generators_Complex/
 
 # ── Discover all .txt files ───────────────────────────────────────────────────
 def _discover() -> list[tuple[str, str, str]]:

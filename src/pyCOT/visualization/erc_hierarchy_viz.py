@@ -12,7 +12,7 @@ interactive graph:
   - blue dashed  : fundamental complementarities (producer ERC -> consumer
                     ERC, labeled with the species being supplied)
 
-Ported from projects/COT_fundamental_Generators/cot_gen/deep_report.py and
+Ported from projects/COT_Fundamental_Generators_Exploration/cot_gen/deep_report.py and
 deep_report_viz.py (compute_hierarchy_stats + plot_hierarchy_overview),
 trimmed to just the hierarchy/relations visualization (the degeneracy-
 tracking and SO-lattice plotting in the original stay in that project,

@@ -52,7 +52,7 @@ E. coli sugar model: Glcex/Lacex/Glyex have this property (the paper's own
 text: "the remaining species that do not decay are... Glcex, Lacex, and
 Glyex"), and without this extension step the pipeline finds only 1 of the
 4 published organizations per scenario (verified against the paper -- see
-projects/COT_fundamental_Generators/scripts/reproduce_centler2006.py for
+projects/COT_Fundamental_Generators_Exploration/scripts/reproduce_centler2006.py for
 the original, network-specific diagnosis this generalizes).
 
 This module detects such species automatically (no reaction has them as
@@ -107,13 +107,42 @@ def _free_candidate_species(rn_data) -> list[int]:
     return candidates
 
 
-def _extend_with_free_species(so_masks: set[int], rn_data, free_candidates: list[int]) -> set[int]:
+def _extend_with_free_species(so_masks: set[int], rn_data, free_candidates: list[int],
+                               *, exhaustive_cap: int = 10) -> set[int]:
     """
-    For every semi-organization mask in so_masks, try adding every subset
-    of free_candidates not already present; keep those that don't trigger
-    any new reaction (structural closure check only -- LP verification
-    happens later, in compute_organizations' Stage 6, for every mask this
-    returns).
+    For every semi-organization mask in so_masks, try adding subsets of
+    free_candidates not already present; keep those that don't trigger any
+    new reaction (structural closure check only -- LP verification happens
+    later, in compute_organizations' Stage 6, for every mask this returns).
+
+    Two regimes, chosen per base mask by how many free candidates are
+    actually missing from it:
+
+      missing <= exhaustive_cap: full power-set enumeration (exact -- this
+        is what was validated against Centler et al. 2006, where every
+        scenario has <= 3 free candidates).
+
+      missing > exhaustive_cap: reduced search -- test each candidate
+        singly, then test the union of every candidate that individually
+        passed, in ONE more check. Confirmed necessary, not theoretical:
+        e_coli_core (a real, tiny 72-species BiGG network, nothing exotic)
+        has 15 free candidates. Full power-set enumeration there produces
+        2^15 = 32768 candidate closures PER base semi-organization, which
+        measured out to 67158 total extensions, 458 seconds, and 14610
+        downstream "organizations" for a 72-species network -- correct
+        under the theory (each independently-addable free species really
+        does double the count) but not a usable default, and not what
+        Centler's own paper's scale ever exercised.
+
+    This is a genuine completeness trade-off above the cap: a "mixed"
+    subset where candidate A is only safe to add together with B (neither
+    alone, only the pair) would be missed if A or B individually fails the
+    singleton test. Singles + the will-conservatively-fail-if-any-single-
+    conflicts union check is deliberately biased toward "report the
+    common, structurally-clean cases fast" over "enumerate every
+    mathematically valid but combinatorially exploding variant" -- flag
+    this in reports on networks that hit the reduced regime (see
+    OrganizationsResult.stats['n_free_candidates_over_cap']).
     """
     if not free_candidates:
         return set(so_masks)
@@ -122,17 +151,40 @@ def _extend_with_free_species(so_masks: set[int], rn_data, free_candidates: list
     extended = set(so_masks)
     for base in list(so_masks):
         missing = [c for c in free_candidates if not (base >> c) & 1]
-        for r in range(1, len(missing) + 1):
-            for combo in itertools.combinations(missing, r):
-                add_mask = 0
-                for c in combo:
-                    add_mask |= 1 << c
-                candidate = base | add_mask
+        if not missing:
+            continue
+
+        if len(missing) <= exhaustive_cap:
+            for r in range(1, len(missing) + 1):
+                for combo in itertools.combinations(missing, r):
+                    add_mask = 0
+                    for c in combo:
+                        add_mask |= 1 << c
+                    candidate = base | add_mask
+                    if candidate in extended:
+                        continue
+                    closed = closure_opt(rn_data.supp_q, rn_data.prod_q, candidate, inv_idx)
+                    if closed == candidate:
+                        extended.add(candidate)
+        else:
+            safe_singles = []
+            for c in missing:
+                candidate = base | (1 << c)
                 if candidate in extended:
+                    safe_singles.append(c)
                     continue
                 closed = closure_opt(rn_data.supp_q, rn_data.prod_q, candidate, inv_idx)
                 if closed == candidate:
                     extended.add(candidate)
+                    safe_singles.append(c)
+            if len(safe_singles) > 1:
+                union_mask = base
+                for c in safe_singles:
+                    union_mask |= 1 << c
+                if union_mask not in extended:
+                    closed = closure_opt(rn_data.supp_q, rn_data.prod_q, union_mask, inv_idx)
+                    if closed == union_mask:
+                        extended.add(union_mask)
     return extended
 
 
@@ -375,6 +427,7 @@ def compute_organizations(
     n_extended = len(all_masks) - len(raw_so_masks)
     stats['n_free_candidate_species'] = len(free_candidates)
     stats['n_free_species_extensions'] = n_extended
+    stats['n_free_candidates_over_cap'] = len(free_candidates) > 10
     if verbose and n_extended:
         print(f"[organizations] Stage 4.5: free-species extension added "
               f"{n_extended} candidate sets ({len(free_candidates)} "

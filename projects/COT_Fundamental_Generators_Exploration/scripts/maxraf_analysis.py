@@ -49,7 +49,7 @@ version wired into the actual search (once validated).
 HOW TO RUN
 ----------
   1. Edit NETWORK below.
-  2. Run: python projects/COT_fundamental_Generators/scripts/maxraf_analysis.py
+  2. Run: python projects/COT_Fundamental_Generators_Exploration/scripts/maxraf_analysis.py
 """
 
 from __future__ import annotations

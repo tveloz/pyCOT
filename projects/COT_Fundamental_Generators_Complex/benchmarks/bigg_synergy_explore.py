@@ -46,7 +46,9 @@ import os, sys, time
 _here = os.path.dirname(os.path.abspath(__file__))
 _proj = os.path.normpath(os.path.join(_here, ".."))
 _repo = os.path.normpath(os.path.join(_here, "..", "..", ".."))
-for _p in (_proj, os.path.join(_repo, "src")):
+# cot_gen (deep_report/metanetwork/etc.) lives in the sibling Exploration project
+_sibling_proj = os.path.normpath(os.path.join(_repo, "projects", "COT_Fundamental_Generators_Exploration"))
+for _p in (_proj, _sibling_proj, os.path.join(_repo, "src")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 

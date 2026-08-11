@@ -28,7 +28,7 @@ Produces, in analysis_output/:
                                  the cross-organism "critical needs" view
 
 Usage (run from the pyCOT repository root):
-    python projects/COT_fundamental_Generators/scripts/analyze_sweep.py
+    python projects/COT_Fundamental_Generators_Complex/scripts/analyze_sweep.py
 """
 import os
 import glob

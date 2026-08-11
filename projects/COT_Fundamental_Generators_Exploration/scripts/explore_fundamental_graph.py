@@ -38,7 +38,7 @@ HOW TO RUN
 ----------
   1. Edit the CONFIGURATION section below (pick a network).
   2. Press ▶ (play) in VS Code, or run:
-       python projects/COT_fundamental_Generators/scripts/explore_fundamental_graph.py
+       python projects/COT_Fundamental_Generators_Exploration/scripts/explore_fundamental_graph.py
   3. At the ">>>" prompt, try (for example):
        gx.describe(0)
        gx.neighbors(0, radius=2)

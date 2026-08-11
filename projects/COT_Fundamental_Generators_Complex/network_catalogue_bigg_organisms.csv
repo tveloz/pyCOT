@@ -1,0 +1,109 @@
+bigg_id,organism,reaction_count,metabolite_count,txt_path
+e_coli_core,Escherichia coli str. K-12 substr. MG1655,95,72,data/biochemical_databases/BiGG/bigg_e_coli_core.txt
+iAB_RBC_283,Homo sapiens,469,342,data/biochemical_databases/BiGG/bigg_iAB_RBC_283.txt
+iIS312,Trypanosoma cruzi Dm28c,519,606,data/biochemical_databases/BiGG/bigg_iIS312.txt
+iIS312_Amastigote,Trypanosoma cruzi Dm28c,519,606,data/biochemical_databases/BiGG/bigg_iIS312_Amastigote.txt
+iIS312_Epimastigote,Trypanosoma cruzi Dm28c,519,606,data/biochemical_databases/BiGG/bigg_iIS312_Epimastigote.txt
+iIS312_Trypomastigote,Trypanosoma cruzi Dm28c,520,606,data/biochemical_databases/BiGG/bigg_iIS312_Trypomastigote.txt
+iIT341,Helicobacter pylori 26695,554,485,data/biochemical_databases/BiGG/bigg_iIT341.txt
+iLJ478,Thermotoga maritima MSB8,652,570,data/biochemical_databases/BiGG/bigg_iLJ478.txt
+iAF692,Methanosarcina barkeri str. Fusaro,690,628,data/biochemical_databases/BiGG/bigg_iAF692.txt
+iSB619,Staphylococcus aureus subsp. aureus N315,743,655,data/biochemical_databases/BiGG/bigg_iSB619.txt
+iNF517,Lactococcus lactis subsp. cremoris MG1363,754,650,data/biochemical_databases/BiGG/bigg_iNF517.txt
+iHN637,Clostridium ljungdahlii DSM 13528,785,698,data/biochemical_databases/BiGG/bigg_iHN637.txt
+iJB785,Synechococcus elongatus PCC 7942,849,768,data/biochemical_databases/BiGG/bigg_iJB785.txt
+iJN678,Synechocystis sp. PCC 6803,863,795,data/biochemical_databases/BiGG/bigg_iJN678.txt
+iAT_PLT_636,Homo sapiens,1008,738,data/biochemical_databases/BiGG/bigg_iAT_PLT_636.txt
+iCN718,Acinetobacter baumannii AYE,1015,888,data/biochemical_databases/BiGG/bigg_iCN718.txt
+iNJ661,Mycobacterium tuberculosis H37Rv,1025,825,data/biochemical_databases/BiGG/bigg_iNJ661.txt
+iSynCJ816,Synechocystis sp. PCC 6803,1044,928,data/biochemical_databases/BiGG/bigg_iSynCJ816.txt
+iJN746,Pseudomonas putida KT2440,1054,907,data/biochemical_databases/BiGG/bigg_iJN746.txt
+iAM_Pb448,Plasmodium berghei,1067,903,data/biochemical_databases/BiGG/bigg_iAM_Pb448.txt
+iAM_Pc455,Plasmodium cynomolgi strain B,1074,907,data/biochemical_databases/BiGG/bigg_iAM_Pc455.txt
+iJR904,Escherichia coli str. K-12 substr. MG1655,1075,761,data/biochemical_databases/BiGG/bigg_iJR904.txt
+iAM_Pv461,Plasmodium vivax Sal-1,1078,909,data/biochemical_databases/BiGG/bigg_iAM_Pv461.txt
+iAM_Pk459,Plasmodium knowlesi strain H,1079,909,data/biochemical_databases/BiGG/bigg_iAM_Pk459.txt
+iAM_Pf480,Plasmodium falciparum 3D7,1083,909,data/biochemical_databases/BiGG/bigg_iAM_Pf480.txt
+iEK1008,Mycobacterium tuberculosis H37Rv,1226,998,data/biochemical_databases/BiGG/bigg_iEK1008.txt
+iCN900,Clostridioides difficile 630,1229,885,data/biochemical_databases/BiGG/bigg_iCN900.txt
+iYO844,Bacillus subtilis subsp. subtilis str. 168,1250,990,data/biochemical_databases/BiGG/bigg_iYO844.txt
+iND750,Saccharomyces cerevisiae S288C,1266,1059,data/biochemical_databases/BiGG/bigg_iND750.txt
+iAF987,Geobacter metallireducens GS-15,1285,1109,data/biochemical_databases/BiGG/bigg_iAF987.txt
+iYS854,Staphylococcus aureus subsp. aureus USA300_TCH1516,1455,1335,data/biochemical_databases/BiGG/bigg_iYS854.txt
+iMM904,Saccharomyces cerevisiae S288C,1577,1226,data/biochemical_databases/BiGG/bigg_iMM904.txt
+iPC815,Yersinia pestis CO92,1961,1552,data/biochemical_databases/BiGG/bigg_iPC815.txt
+iRC1080,Chlamydomonas reinhardtii,2191,1706,data/biochemical_databases/BiGG/bigg_iRC1080.txt
+iYL1228,Klebsiella pneumoniae subsp. pneumoniae MGH 78578,2262,1658,data/biochemical_databases/BiGG/bigg_iYL1228.txt
+iAF1260,Escherichia coli str. K-12 substr. MG1655,2382,1668,data/biochemical_databases/BiGG/bigg_iAF1260.txt
+iAF1260b,Escherichia coli str. K-12 substr. MG1655,2388,1668,data/biochemical_databases/BiGG/bigg_iAF1260b.txt
+iSDY_1059,Shigella dysenteriae Sd197,2539,1888,data/biochemical_databases/BiGG/bigg_iSDY_1059.txt
+STM_v1_0,Salmonella enterica subsp. enterica serovar Typhimurium str. LT2,2545,1802,data/biochemical_databases/BiGG/bigg_STM_v1_0.txt
+iJO1366,Escherichia coli str. K-12 substr. MG1655,2583,1805,data/biochemical_databases/BiGG/bigg_iJO1366.txt
+iSbBS512_1146,Shigella boydii CDC 3083-94,2591,1910,data/biochemical_databases/BiGG/bigg_iSbBS512_1146.txt
+iSBO_1134,Shigella boydii Sb227,2591,1908,data/biochemical_databases/BiGG/bigg_iSBO_1134.txt
+iS_1188,Shigella flexneri 2a str. 2457T,2619,1914,data/biochemical_databases/BiGG/bigg_iS_1188.txt
+iSFV_1184,Shigella flexneri 5 str. 8401,2621,1917,data/biochemical_databases/BiGG/bigg_iSFV_1184.txt
+iSF_1195,Shigella flexneri 2a str. 301,2630,1917,data/biochemical_databases/BiGG/bigg_iSF_1195.txt
+iSFxv_1172,Shigella flexneri 2002017,2638,1918,data/biochemical_databases/BiGG/bigg_iSFxv_1172.txt
+iSSON_1240,Shigella sonnei Ss046,2693,1936,data/biochemical_databases/BiGG/bigg_iSSON_1240.txt
+iECH74115_1262,Escherichia coli O157:H7 str. EC4115,2694,1918,data/biochemical_databases/BiGG/bigg_iECH74115_1262.txt
+iE2348C_1286,Escherichia coli O127:H6 str. E2348/69,2703,1919,data/biochemical_databases/BiGG/bigg_iE2348C_1286.txt
+iG2583_1286,Escherichia coli O55:H7 str. CB9615,2704,1919,data/biochemical_databases/BiGG/bigg_iG2583_1286.txt
+iECED1_1282,Escherichia coli ED1a,2706,1929,data/biochemical_databases/BiGG/bigg_iECED1_1282.txt
+iECSP_1301,Escherichia coli O157:H7 str. TW14359,2712,1920,data/biochemical_databases/BiGG/bigg_iECSP_1301.txt
+iML1515,Escherichia coli str. K-12 substr. MG1655,2712,1877,data/biochemical_databases/BiGG/bigg_iML1515.txt
+iEC042_1314,Escherichia coli 042,2714,1926,data/biochemical_databases/BiGG/bigg_iEC042_1314.txt
+iECNA114_1301,Escherichia coli NA114,2718,1927,data/biochemical_databases/BiGG/bigg_iECNA114_1301.txt
+iECs_1301,Escherichia coli O157:H7 str. Sakai,2720,1923,data/biochemical_databases/BiGG/bigg_iECs_1301.txt
+iECIAI39_1322,Escherichia coli IAI39,2721,1953,data/biochemical_databases/BiGG/bigg_iECIAI39_1322.txt
+iZ_1308,Escherichia coli O157:H7 str. EDL933,2721,1923,data/biochemical_databases/BiGG/bigg_iZ_1308.txt
+iUTI89_1310,Escherichia coli UTI89,2725,1940,data/biochemical_databases/BiGG/bigg_iUTI89_1310.txt
+ic_1306,Escherichia coli CFT073,2726,1936,data/biochemical_databases/BiGG/bigg_ic_1306.txt
+iEC1344_C,Escherichia coli C,2726,1934,data/biochemical_databases/BiGG/bigg_iEC1344_C.txt
+iLF82_1304,Escherichia coli LF82,2726,1938,data/biochemical_databases/BiGG/bigg_iLF82_1304.txt
+iECOK1_1307,Escherichia coli IHE3034,2729,1941,data/biochemical_databases/BiGG/bigg_iECOK1_1307.txt
+iECS88_1305,Escherichia coli S88,2729,1942,data/biochemical_databases/BiGG/bigg_iECS88_1305.txt
+iECABU_c1320,Escherichia coli ABU 83972,2731,1942,data/biochemical_databases/BiGG/bigg_iECABU_c1320.txt
+iAPECO1_1312,Escherichia coli APEC O1,2735,1942,data/biochemical_databases/BiGG/bigg_iAPECO1_1312.txt
+iNRG857_1313,Escherichia coli O83:H1 str. NRG 857C,2735,1943,data/biochemical_databases/BiGG/bigg_iNRG857_1313.txt
+iUMN146_1321,Escherichia coli UM146,2735,1942,data/biochemical_databases/BiGG/bigg_iUMN146_1321.txt
+iECP_1309,Escherichia coli 536,2739,1941,data/biochemical_databases/BiGG/bigg_iECP_1309.txt
+iEC1356_Bl21DE3,Escherichia coli BL21(DE3),2740,1918,data/biochemical_databases/BiGG/bigg_iEC1356_Bl21DE3.txt
+iECUMN_1333,Escherichia coli UMN026,2740,1935,data/biochemical_databases/BiGG/bigg_iECUMN_1333.txt
+iB21_1397,Escherichia coli BL21(DE3),2741,1943,data/biochemical_databases/BiGG/bigg_iB21_1397.txt
+iBWG_1329,Escherichia coli BW2952,2741,1949,data/biochemical_databases/BiGG/bigg_iBWG_1329.txt
+iECD_1391,Escherichia coli BL21(DE3),2741,1943,data/biochemical_databases/BiGG/bigg_iECD_1391.txt
+iECDH10B_1368,Escherichia coli str. K-12 substr. DH10B,2742,1947,data/biochemical_databases/BiGG/bigg_iECDH10B_1368.txt
+iECSF_1327,Escherichia coli SE15,2742,1951,data/biochemical_databases/BiGG/bigg_iECSF_1327.txt
+iEcSMS35_1347,Escherichia coli SMS-3-5,2746,1947,data/biochemical_databases/BiGG/bigg_iEcSMS35_1347.txt
+iECB_1328,Escherichia coli B str. REL606,2748,1951,data/biochemical_databases/BiGG/bigg_iECB_1328.txt
+iECBD_1354,Escherichia coli 'BL21-Gold(DE3)pLysS AG',2748,1952,data/biochemical_databases/BiGG/bigg_iECBD_1354.txt
+iEcDH1_1363,Escherichia coli DH1,2750,1949,data/biochemical_databases/BiGG/bigg_iEcDH1_1363.txt
+iEcHS_1320,Escherichia coli HS,2753,1963,data/biochemical_databases/BiGG/bigg_iEcHS_1320.txt
+iECDH1ME8569_1439,Escherichia coli DH1,2755,1950,data/biochemical_databases/BiGG/bigg_iECDH1ME8569_1439.txt
+iEC1349_Crooks,Escherichia coli ATCC 8739,2756,1946,data/biochemical_databases/BiGG/bigg_iEC1349_Crooks.txt
+iEC55989_1330,Escherichia coli 55989,2756,1953,data/biochemical_databases/BiGG/bigg_iEC55989_1330.txt
+iETEC_1333,Escherichia coli ETEC H10407,2756,1962,data/biochemical_databases/BiGG/bigg_iETEC_1333.txt
+iEC1372_W3110,Escherichia coli str. K-12 substr. W3110,2758,1918,data/biochemical_databases/BiGG/bigg_iEC1372_W3110.txt
+iECO103_1326,Escherichia coli O103:H2 str. 12009,2758,1958,data/biochemical_databases/BiGG/bigg_iECO103_1326.txt
+iY75_1357,Escherichia coli str. K-12 substr. W3110,2759,1953,data/biochemical_databases/BiGG/bigg_iY75_1357.txt
+iECO111_1330,Escherichia coli O111:H- str. 11128,2760,1959,data/biochemical_databases/BiGG/bigg_iECO111_1330.txt
+iEcE24377_1341,Escherichia coli O139:H28 str. E24377A,2763,1972,data/biochemical_databases/BiGG/bigg_iEcE24377_1341.txt
+iEC1364_W,Escherichia coli W,2764,1927,data/biochemical_databases/BiGG/bigg_iEC1364_W.txt
+iECIAI1_1343,Escherichia coli IAI1,2765,1968,data/biochemical_databases/BiGG/bigg_iECIAI1_1343.txt
+iEcolC_1368,Escherichia coli ATCC 8739,2768,1969,data/biochemical_databases/BiGG/bigg_iEcolC_1368.txt
+iECSE_1348,Escherichia coli SE11,2768,1957,data/biochemical_databases/BiGG/bigg_iECSE_1348.txt
+iUMNK88_1353,Escherichia coli UMNK88,2777,1969,data/biochemical_databases/BiGG/bigg_iUMNK88_1353.txt
+iEKO11_1354,Escherichia coli KO11FL,2778,1972,data/biochemical_databases/BiGG/bigg_iEKO11_1354.txt
+iEC1368_DH5a,Escherichia coli DH5[alpha],2779,1951,data/biochemical_databases/BiGG/bigg_iEC1368_DH5a.txt
+iECO26_1355,Escherichia coli O26:H11 str. 11368,2780,1965,data/biochemical_databases/BiGG/bigg_iECO26_1355.txt
+iECW_1372,Escherichia coli W,2782,1973,data/biochemical_databases/BiGG/bigg_iECW_1372.txt
+iWFL_1372,Escherichia coli W,2782,1973,data/biochemical_databases/BiGG/bigg_iWFL_1372.txt
+iJN1463,Pseudomonas putida KT2440,2927,2153,data/biochemical_databases/BiGG/bigg_iJN1463.txt
+iYS1720,Salmonella pan-reactome,3357,2436,data/biochemical_databases/BiGG/bigg_iYS1720.txt
+iMM1415,Mus musculus,3726,2775,data/biochemical_databases/BiGG/bigg_iMM1415.txt
+RECON1,Homo sapiens,3741,2766,data/biochemical_databases/BiGG/bigg_RECON1.txt
+iCHOv1_DG44,Cricetulus griseus,3942,2751,data/biochemical_databases/BiGG/bigg_iCHOv1_DG44.txt
+iLB1027_lipid,Phaeodactylum tricornutum CCAP 1055/1,4456,2172,data/biochemical_databases/BiGG/bigg_iLB1027_lipid.txt
+iCHOv1,Cricetulus griseus,6663,4456,data/biochemical_databases/BiGG/bigg_iCHOv1.txt
+Recon3D,Homo sapiens,10600,5835,data/biochemical_databases/BiGG/bigg_Recon3D.txt

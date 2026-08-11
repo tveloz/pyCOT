@@ -22,7 +22,7 @@ HOW TO RUN
 ----------
   1. Edit the CONFIGURATION section below.
   2. Press ▶ (play) in VS Code, or run:
-       python projects/COT_fundamental_Generators/scripts/compare_oracles.py
+       python projects/COT_Fundamental_Generators_Exploration/scripts/compare_oracles.py
 """
 
 # ── Path setup ────────────────────────────────────────────────────────────────
@@ -64,7 +64,7 @@ NETWORK_FILTER = "all"
 EPM_ERC_LIMIT = 20
 
 # ── Catalogue ─────────────────────────────────────────────────────────────────
-CATALOGUE_CSV = "projects/COT_fundamental_Generators/network_catalogue.csv"
+CATALOGUE_CSV = "projects/COT_Fundamental_Generators_Complex/network_catalogue.csv"
 
 # ── Output ────────────────────────────────────────────────────────────────────
 OUTPUT_CSV = "compare_oracles_results.csv"

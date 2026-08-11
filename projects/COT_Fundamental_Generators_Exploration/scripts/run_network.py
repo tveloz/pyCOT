@@ -43,7 +43,7 @@ HOW TO RUN
 ----------
   1. Edit the CONFIGURATION section below.
   2. Press ▶ (play) in VS Code, or run:
-       python projects/COT_fundamental_Generators/scripts/run_network.py
+       python projects/COT_Fundamental_Generators_Exploration/scripts/run_network.py
 """
 
 # ── Path setup (do not edit) ──────────────────────────────────────────────────
@@ -94,13 +94,14 @@ from cot_gen.deep_report_viz import (
 # Or a direct path to a .txt file.
 # Set SHOW_LIST = True to print all available network names.
 NETWORK   = "e_coli_core"
+NETWORK= "BIOMD0000000446"
 #NETWORK  = "BMID000000141754_url"
 #NETWORK  = "BIOMD0000000185"
 #NETWORK  = "iMM1415" $4000 reactions!
 #NETWORK  = "iMM904" #(2072 reaction)
 #NETWORK  = "iND750" #(1702 reactions)
 #NETWORK  = "iNF517"
-NETWORK  = "iNJ661"     # genome-scale -- ESPM enumeration is not yet fast enough to
+#NETWORK  = "iNJ661"     # genome-scale -- ESPM enumeration is not yet fast enough to
 #NETWORK  = "iAF692"     # finish at these sizes; the Stage H2 maxSemiOrganization
                           # (a few ms) still works fine even here, but set
                           # COMPUTE_ESPM = False (or a low ESPM_MAX_ORDER) if you pick one.

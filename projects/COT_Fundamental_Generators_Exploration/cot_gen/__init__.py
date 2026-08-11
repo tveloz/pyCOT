@@ -1,5 +1,5 @@
 """
-cot_gen — COT_fundamental_Generators-specific reporting/exploration tools.
+cot_gen — COT_Fundamental_Generators_Exploration-specific reporting/exploration tools.
 
 The core generative-organization engine (types, closure, ERC discovery,
 hierarchy, synergy, complementarity, fundamental graph, EPM/ESPM search,

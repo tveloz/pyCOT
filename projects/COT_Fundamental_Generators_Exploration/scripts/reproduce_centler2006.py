@@ -64,8 +64,8 @@ and the project notes on what a genome-scale-appropriate approach would
 need to look like.
 
 Usage (from repo root):
-    python projects/COT_fundamental_Generators/scripts/build_centler2006_network.py   # once
-    python projects/COT_fundamental_Generators/scripts/reproduce_centler2006.py
+    python projects/COT_Fundamental_Generators_Exploration/scripts/build_centler2006_network.py   # once
+    python projects/COT_Fundamental_Generators_Exploration/scripts/reproduce_centler2006.py
 """
 import sys, os, time, json, itertools
 
@@ -79,7 +79,7 @@ from pyCOT.analysis.SORN_Generators import is_semi_self_maintaining
 from pyCOT.analysis.ERC_Hierarchy import closure
 
 NET_DIR = os.path.join(_repo_root, 'data', 'Examples_tests', 'Centler2006_EcoliSugar')
-OUT_DIR = os.path.join(_repo_root, 'projects', 'COT_fundamental_Generators', 'outputs', 'centler2006_reproduction')
+OUT_DIR = os.path.join(_repo_root, 'projects', 'COT_Fundamental_Generators_Exploration', 'outputs', 'centler2006_reproduction')
 os.makedirs(OUT_DIR, exist_ok=True)
 
 SCENARIOS = ['starvation', 'glucose', 'lactose', 'glycerol', 'all_sugars']
