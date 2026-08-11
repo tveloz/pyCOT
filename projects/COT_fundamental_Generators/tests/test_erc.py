@@ -43,8 +43,8 @@ FILTER = ""
 VERBOSE = True
 # ─────────────────────────────────────────────────────────────────────────────
 
-from cot_gen.erc         import compute_ercs
-from cot_gen.io_pyCOT    import build_rndata
+from pyCOT.analysis.organizations.erc         import compute_ercs
+from pyCOT.analysis.organizations.io_pyCOT    import build_rndata
 from oracles.erc_oracle   import compute_ercs_oracle
 from tests.gold_networks  import ALL_GOLD
 
@@ -53,7 +53,7 @@ from tests.gold_networks  import ALL_GOLD
 
 def _build_rndata_from_gold(net):
     """Build a minimal RNData from a gold network descriptor."""
-    from cot_gen.cot_types import RNData
+    from pyCOT.analysis.organizations.cot_types import RNData
     supp_q = tuple(s & ~net.E0_mask for s in net.supp)
     prod_q = tuple(p & ~net.E0_mask for p in net.prod)
     inv = tuple(
@@ -107,7 +107,7 @@ def test_erc_count_gold(net):
 @pytest.mark.parametrize("net", ALL_GOLD, ids=[n.name for n in ALL_GOLD])
 def test_erc_oracle_vs_opt_gold(net):
     """compute_ercs must produce same ERC masks and min-base counts as oracle."""
-    from cot_gen.cot_types import RNData
+    from pyCOT.analysis.organizations.cot_types import RNData
     supp_q = tuple(s & ~net.E0_mask for s in net.supp)
     prod_q = tuple(p & ~net.E0_mask for p in net.prod)
     inv = tuple(

@@ -70,12 +70,12 @@ NETWORK = "BIOMD0000000237"
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 from pyCOT.io.functions import read_txt
-from cot_gen.io_pyCOT import build_rndata
-from cot_gen.erc import compute_ercs
-from cot_gen.hierarchy import build_hierarchy
-from cot_gen.synergy import compute_synergies_basis_first
-from cot_gen.complementarity import compute_complementarities
-from cot_gen.fundamental_graph import FundamentalGraph
+from pyCOT.analysis.organizations.io_pyCOT import build_rndata
+from pyCOT.analysis.organizations.erc import compute_ercs
+from pyCOT.analysis.organizations.hierarchy import build_hierarchy
+from pyCOT.analysis.organizations.synergy import compute_synergies_basis_first
+from pyCOT.analysis.organizations.complementarity import compute_complementarities
+from pyCOT.analysis.organizations.fundamental_graph import FundamentalGraph
 
 
 def compute_max_sustainable_pool(g: FundamentalGraph) -> tuple[set[int], set[int]]:

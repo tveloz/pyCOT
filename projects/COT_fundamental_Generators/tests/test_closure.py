@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from cot_gen.closure import closure_opt, build_inv_idx, is_closed, is_ssm
+from pyCOT.analysis.organizations.closure import closure_opt, build_inv_idx, is_closed, is_ssm
 from oracles.closure_oracle import closure_oracle, is_closed_oracle, is_ssm_oracle
 from tests.gold_networks import ALL_GOLD
 

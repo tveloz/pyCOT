@@ -25,7 +25,7 @@ for _p in [_proj, os.path.join(_repo, "src")]:
         sys.path.insert(0, _p)
 
 from pyCOT.io.functions import read_txt
-from cot_gen.io_pyCOT import build_rndata
+from pyCOT.analysis.organizations.io_pyCOT import build_rndata
 
 _DATA_DIR = os.path.join(_repo, "data", "biomodels", "BioMD_other")
 _BIOMD237 = os.path.join(_DATA_DIR, "BIOMD0000000237.txt")

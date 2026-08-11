@@ -67,10 +67,9 @@ import tempfile
 
 _here = os.path.dirname(os.path.abspath(__file__))
 _proj = os.path.normpath(os.path.join(_here, ".."))
-_decomp_proj = os.path.normpath(os.path.join(_here, "..", "..", "Decomposition_Theorem"))
 _cot_gen_proj = os.path.normpath(os.path.join(_here, "..", "..", "COT_fundamental_Generators"))
 _repo = os.path.normpath(os.path.join(_here, "..", "..", ".."))
-for _p in (_proj, _decomp_proj, _cot_gen_proj, os.path.join(_repo, "src")):
+for _p in (_proj, _cot_gen_proj, os.path.join(_repo, "src")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
@@ -139,17 +138,18 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 from pyCOT.io.functions import read_txt  # noqa: E402
-from cot_gen.io_pyCOT import build_rndata  # noqa: E402
-from cot_gen.erc import compute_ercs  # noqa: E402
-from cot_gen.hierarchy import build_hierarchy  # noqa: E402
-from cot_gen.synergy import compute_synergies_basis_first  # noqa: E402
-from cot_gen.complementarity import compute_complementarities  # noqa: E402
-from cot_gen.epm import compute_epms, compute_espm  # noqa: E402
+from pyCOT.analysis.organizations import (  # noqa: E402
+    build_rndata,
+    compute_ercs,
+    build_hierarchy,
+    compute_synergies_basis_first,
+    compute_complementarities,
+    compute_epms, compute_espm,
+)
 from cot_gen.deep_report import build_so_lattice  # noqa: E402
 
-from decomp.bridge import build_full_stoich  # noqa: E402
-from decomp.hierarchy import decompose_hierarchy  # noqa: E402
-from decomp.viz import plot_organization_hasse, plot_organization_chains  # noqa: E402
+from pyCOT.analysis.decomposition import build_full_stoich, decompose_hierarchy  # noqa: E402
+from pyCOT.visualization.decomposition_viz import plot_organization_hasse, plot_organization_chains  # noqa: E402
 
 from raf.biomodel_crs import crs_from_biomodel, crs_from_biomodel_cofactor_pools, crs_from_biomodel_no_catalysis  # noqa: E402
 from raf.raf_algo import compute_maxRAF  # noqa: E402

@@ -17,10 +17,8 @@ import sys
 
 _here = os.path.dirname(os.path.abspath(__file__))
 _proj = os.path.normpath(os.path.join(_here, ".."))
-_decomp_proj = os.path.normpath(os.path.join(_here, "..", "..", "Decomposition_Theorem"))
-_cot_gen_proj = os.path.normpath(os.path.join(_here, "..", "..", "COT_fundamental_Generators"))
 _repo = os.path.normpath(os.path.join(_here, "..", "..", ".."))
-for _p in (_proj, _decomp_proj, _cot_gen_proj, os.path.join(_repo, "src")):
+for _p in (_proj, os.path.join(_repo, "src")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
@@ -82,7 +80,7 @@ for k, v in net.stats.items():
 
 # ── Load it back exactly as any other network in this project ─────────────
 from pyCOT.io.functions import read_txt  # noqa: E402
-from cot_gen.io_pyCOT import build_rndata  # noqa: E402
+from pyCOT.analysis.organizations import build_rndata  # noqa: E402
 from raf.biomodel_crs import crs_from_biomodel  # noqa: E402
 from raf.maxraf_decomp import analyze_maxraf_decomposition  # noqa: E402
 

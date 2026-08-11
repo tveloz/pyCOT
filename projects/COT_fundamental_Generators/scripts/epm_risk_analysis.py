@@ -79,7 +79,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 
-from cot_gen.fundamental_graph import FundamentalGraph, DFSState
+from pyCOT.analysis.organizations.fundamental_graph import FundamentalGraph, DFSState
 
 RISK_ORDER = {'safe': 0, 'mid': 1, 'risky': 2}
 

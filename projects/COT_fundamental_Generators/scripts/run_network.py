@@ -66,16 +66,16 @@ for _stream in (sys.stdout, sys.stderr):
 
 # ── Imports (do not edit) ─────────────────────────────────────────────────────
 from pyCOT.io.functions      import read_txt
-from cot_gen.io_pyCOT        import build_rndata
-from cot_gen.erc             import compute_ercs
-from cot_gen.hierarchy       import build_hierarchy
-from cot_gen.synergy         import compute_synergies, compute_synergies_basis_first
-from cot_gen.complementarity import compute_complementarities
-from cot_gen.generators      import compute_generators
-from cot_gen.epm             import compute_epms, compute_espm
+from pyCOT.analysis.organizations.io_pyCOT        import build_rndata
+from pyCOT.analysis.organizations.erc              import compute_ercs
+from pyCOT.analysis.organizations.hierarchy        import build_hierarchy
+from pyCOT.analysis.organizations.synergy          import compute_synergies, compute_synergies_basis_first
+from pyCOT.analysis.organizations.complementarity  import compute_complementarities
+from pyCOT.analysis.organizations.generators       import compute_generators
+from pyCOT.analysis.organizations.epm              import compute_epms, compute_espm
+from pyCOT.analysis.organizations.metrics          import Counters
+from pyCOT.analysis.organizations.max_semiorg      import compute_max_semiorganization, max_semiorganization_species
 from cot_gen.metanetwork     import build_metanetwork
-from cot_gen.metrics         import Counters
-from cot_gen.max_semiorg     import compute_max_semiorganization, max_semiorganization_species
 from cot_gen.deep_report     import (
     compute_hierarchy_stats, compute_epms_instrumented, compute_espm_instrumented,
     build_so_lattice,

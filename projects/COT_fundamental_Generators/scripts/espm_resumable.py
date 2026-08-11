@@ -37,8 +37,8 @@ import csv
 import time
 import pickle
 
-from cot_gen.fundamental_graph import FundamentalGraph, DFSState
-from cot_gen.epm import _mode1_dfs, EPMResult
+from pyCOT.analysis.organizations.fundamental_graph import FundamentalGraph, DFSState
+from pyCOT.analysis.organizations.epm import _mode1_dfs, EPMResult
 
 
 def _bits(mask: int):

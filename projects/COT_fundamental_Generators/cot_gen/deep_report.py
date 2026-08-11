@@ -27,8 +27,8 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, field
 
-from .epm import _bits, _mode1_dfs, _single_erc_epms, EPMResult, ESPMResult
-from .fundamental_graph import FundamentalGraph
+from pyCOT.analysis.organizations.epm import _bits, _mode1_dfs, _single_erc_epms, EPMResult, ESPMResult
+from pyCOT.analysis.organizations.fundamental_graph import FundamentalGraph
 
 # Shared palette -- consistent with cot_gen/explorer.py's relation colors.
 COLOR_CONTAINMENT = "#7f8c8d"
@@ -274,7 +274,7 @@ def _instrumented_mode1_dfs(seed_states, g, visited_sp, deg: DegeneracyStats, *,
 def compute_epms_instrumented(ercs, hier, syn, comp) -> tuple[EPMResult, DegeneracyStats]:
     """Mirrors cot_gen.epm.compute_epms exactly (Stage 1 + Stage 2 + Stage 3
     order assignment), with degeneracy stats recorded during Mode-1 DFS."""
-    from .epm import _assign_orders
+    from pyCOT.analysis.organizations.epm import _assign_orders
 
     single_idx, single_masks = _single_erc_epms(ercs, hier)
     single_sp_set = set(single_masks)

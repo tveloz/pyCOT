@@ -24,9 +24,9 @@ for _p in (_proj, os.path.join(_repo, "src")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from cot_gen.io_pyCOT import load_rndata
-from cot_gen.erc import compute_ercs
-from cot_gen.metrics import StageContext, Counters, print_summary
+from pyCOT.analysis.organizations.io_pyCOT import load_rndata
+from pyCOT.analysis.organizations.erc import compute_ercs
+from pyCOT.analysis.organizations.metrics import StageContext, Counters, print_summary
 
 _BIOMD237 = os.path.join(
     _repo, "data", "biomodels", "BioMD_other", "BIOMD0000000237.txt"

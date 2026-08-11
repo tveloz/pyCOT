@@ -36,12 +36,12 @@ for _p in (_proj, os.path.join(_repo, "src")):
         sys.path.insert(0, _p)
 
 from pyCOT.io.functions              import read_txt
-from cot_gen.io_pyCOT               import build_rndata
-from cot_gen.erc                    import compute_ercs
-from cot_gen.hierarchy              import build_hierarchy
-from cot_gen.synergy                import compute_synergies
-from cot_gen.complementarity        import compute_complementarities
-from cot_gen.epm                    import compute_epms
+from pyCOT.analysis.organizations.io_pyCOT        import build_rndata
+from pyCOT.analysis.organizations.erc              import compute_ercs
+from pyCOT.analysis.organizations.hierarchy        import build_hierarchy
+from pyCOT.analysis.organizations.synergy          import compute_synergies
+from pyCOT.analysis.organizations.complementarity  import compute_complementarities
+from pyCOT.analysis.organizations.epm              import compute_epms
 from oracles.erc_oracle              import compute_ercs_oracle
 from oracles.synergy_oracle          import fundamental_synergy_set as oracle_fund_syn
 from oracles.complementarity_oracle  import comp_fund_set           as oracle_fund_comp

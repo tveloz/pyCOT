@@ -30,11 +30,12 @@ import os
 import sys
 
 _here = os.path.dirname(os.path.abspath(__file__))
-_decomp_proj = os.path.normpath(os.path.join(_here, "..", "..", "Decomposition_Theorem"))
-if _decomp_proj not in sys.path:
-    sys.path.insert(0, _decomp_proj)
+_repo = os.path.normpath(os.path.join(_here, "..", "..", ".."))
+_src = os.path.join(_repo, "src")
+if _src not in sys.path:
+    sys.path.insert(0, _src)
 
-from decomp.bridge import build_full_stoich  # noqa: E402
+from pyCOT.analysis.decomposition import build_full_stoich  # noqa: E402
 
 from .crs import CRS
 

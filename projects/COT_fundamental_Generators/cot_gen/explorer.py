@@ -77,11 +77,11 @@ import os
 import webbrowser
 from dataclasses import dataclass, field
 
-from .erc import compute_ercs
-from .hierarchy import build_hierarchy
-from .synergy import compute_synergies_basis_first
-from .complementarity import compute_complementarities
-from .fundamental_graph import FundamentalGraph, DFSState
+from pyCOT.analysis.organizations.erc import compute_ercs
+from pyCOT.analysis.organizations.hierarchy import build_hierarchy
+from pyCOT.analysis.organizations.synergy import compute_synergies_basis_first
+from pyCOT.analysis.organizations.complementarity import compute_complementarities
+from pyCOT.analysis.organizations.fundamental_graph import FundamentalGraph, DFSState
 
 RELATIONS = ("containment", "synergy", "complementarity")
 
@@ -132,7 +132,7 @@ def load_network(name_or_path: str, *, data_root: str | None = None):
     catalogue name, or unique case-insensitive prefix match.
     """
     from pyCOT.io.functions import read_txt
-    from .io_pyCOT import build_rndata
+    from pyCOT.analysis.organizations.io_pyCOT import build_rndata
 
     if os.path.isfile(name_or_path):
         path = os.path.abspath(name_or_path)

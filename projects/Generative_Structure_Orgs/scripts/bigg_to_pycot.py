@@ -57,6 +57,7 @@ import time
 import argparse
 import urllib.request
 import urllib.error
+from decimal import Decimal
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -101,10 +102,30 @@ def download_bigg_json(model_id):
 
 # ── Conversion ───────────────────────────────────────────────────────────────
 def _coef_str(c):
-    """Format a numeric stoichiometry as a clean string."""
-    if float(c) == int(float(c)):
-        return str(int(float(c)))
-    return str(c)
+    r"""
+    Format a numeric stoichiometry as a clean string -- NEVER using
+    scientific notation.
+
+    Biomass reactions in genome-scale BiGG models routinely have tiny
+    coefficients (e.g. 5e-05). Python's str(5e-05) == '5e-05', and the
+    pyCOT parser's space-separated-coefficient regex (r'^(\d+(?:\.\d+)?)
+    \s+(.+)$') does not match the 'e-05' exponent part, so it falls
+    through to the legacy *compact* coefficient regex (r'^(\d+(?:\.\d+)?)
+    ([A-Za-z_].*)$'), which treats the 'e' in '5e-05' as the start of the
+    species name -- silently corrupting the species into 'e-05 accoa_c'
+    (a bogus species distinct from the real 'accoa_c' elsewhere in the
+    network). Using Decimal(str(c)) fixed-point formatting sidesteps this
+    entirely by never producing an 'e' in the coefficient string.
+    """
+    c = float(c)
+    if c == int(c):
+        return str(int(c))
+    s = format(Decimal(str(c)), 'f')
+    if '.' in s:
+        s = s.rstrip('0')
+        if s.endswith('.'):
+            s += '0'
+    return s
 
 
 def _fmt_term(coef, met_id):

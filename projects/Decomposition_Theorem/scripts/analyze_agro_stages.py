@@ -12,10 +12,9 @@ from __future__ import annotations
 
 import os, sys
 _here = os.path.dirname(os.path.abspath(__file__))
-_proj = os.path.normpath(os.path.join(_here, ".."))
 _cot_gen_proj = os.path.normpath(os.path.join(_here, "..", "..", "COT_fundamental_Generators"))
 _repo = os.path.normpath(os.path.join(_here, "..", "..", ".."))
-for _p in (_proj, _cot_gen_proj, os.path.join(_repo, "src")):
+for _p in (_cot_gen_proj, os.path.join(_repo, "src")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
@@ -24,18 +23,22 @@ for _stream in (sys.stdout, sys.stderr):
         _stream.reconfigure(encoding="utf-8")
 
 from pyCOT.io.functions      import read_txt
-from cot_gen.io_pyCOT        import build_rndata
-from cot_gen.erc             import compute_ercs
-from cot_gen.hierarchy       import build_hierarchy
-from cot_gen.synergy         import compute_synergies_basis_first
-from cot_gen.complementarity import compute_complementarities
-from cot_gen.epm             import compute_epms, compute_espm
+from pyCOT.analysis.organizations import (
+    build_rndata,
+    compute_ercs,
+    build_hierarchy,
+    compute_synergies_basis_first,
+    compute_complementarities,
+    compute_epms, compute_espm,
+)
 from cot_gen.deep_report     import build_so_lattice
 
-from decomp.bridge      import build_full_stoich, so_domain
-from decomp.hierarchy   import decompose_hierarchy
-from decomp.dependency  import build_dependency_dag, explain_circuit_failure
-from decomp.witness     import compute_witness
+from pyCOT.analysis.decomposition import (
+    build_full_stoich, so_domain,
+    decompose_hierarchy,
+    build_dependency_dag, explain_circuit_failure,
+    compute_witness,
+)
 
 NETWORK = "data/Examples_tests/FarmVariants/Farm_agro_stages.txt"
 ESPM_MAX_ORDER = 100

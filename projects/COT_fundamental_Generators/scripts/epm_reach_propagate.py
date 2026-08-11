@@ -84,7 +84,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 
-from cot_gen.fundamental_graph import FundamentalGraph, DFSState
+from pyCOT.analysis.organizations.fundamental_graph import FundamentalGraph, DFSState
 
 
 # =============================================================================

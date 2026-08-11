@@ -47,8 +47,8 @@ FILTER = ""
 VERBOSE = True
 # ─────────────────────────────────────────────────────────────────────────────
 
-from cot_gen.hierarchy  import build_hierarchy
-from cot_gen.synergy    import compute_synergies, compute_basic_synergies
+from pyCOT.analysis.organizations.hierarchy  import build_hierarchy
+from pyCOT.analysis.organizations.synergy    import compute_synergies, compute_basic_synergies
 from oracles.synergy_oracle import synergy_set as oracle_synergy_set
 from tests.gold_networks    import ALL_GOLD
 
@@ -63,8 +63,8 @@ except ImportError:
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _build_ercs_from_gold(net):
-    from cot_gen.erc       import compute_ercs
-    from cot_gen.cot_types import RNData
+    from pyCOT.analysis.organizations.erc       import compute_ercs
+    from pyCOT.analysis.organizations.cot_types import RNData
     supp_q = tuple(s & ~net.E0_mask for s in net.supp)
     prod_q = tuple(p & ~net.E0_mask for p in net.prod)
     inv = tuple(
@@ -184,7 +184,7 @@ def test_fundamental_is_subset_of_maximal_gold(net):
 
 def test_hierarchy_biomd237(biomd237_rndata):
     """Hierarchy builds without error; parent edges are true ancestors."""
-    from cot_gen.erc import compute_ercs
+    from pyCOT.analysis.organizations.erc import compute_ercs
     ercs = compute_ercs(biomd237_rndata)
     hier = build_hierarchy(ercs)
     assert hier.n == len(ercs)
@@ -195,7 +195,7 @@ def test_hierarchy_biomd237(biomd237_rndata):
 
 def test_synergy_biomd237(biomd237_rndata):
     """Synergy computation completes on Biomodel 237 without crashing."""
-    from cot_gen.erc import compute_ercs
+    from pyCOT.analysis.organizations.erc import compute_ercs
     ercs   = compute_ercs(biomd237_rndata)
     hier   = build_hierarchy(ercs)
     result = compute_synergies(ercs, hier, level="maximal")
@@ -211,8 +211,8 @@ pytestmark_hyp = pytest.mark.skipif(
 
 @st.composite
 def _random_net_ercs(draw, max_s=5, max_r=6):
-    from cot_gen.erc       import compute_ercs
-    from cot_gen.cot_types import RNData
+    from pyCOT.analysis.organizations.erc       import compute_ercs
+    from pyCOT.analysis.organizations.cot_types import RNData
     from oracles.closure_oracle import closure_oracle
 
     n    = draw(st.integers(min_value=1, max_value=max_s))

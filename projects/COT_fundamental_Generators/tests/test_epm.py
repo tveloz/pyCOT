@@ -36,12 +36,12 @@ from itertools import combinations
 
 import pytest
 
-from cot_gen.cot_types import RNData
-from cot_gen.erc import compute_ercs
-from cot_gen.hierarchy import build_hierarchy
-from cot_gen.synergy import compute_synergies_basis_first
-from cot_gen.complementarity import compute_complementarities
-from cot_gen.epm import compute_epms, compute_espm, latent_join
+from pyCOT.analysis.organizations.cot_types import RNData
+from pyCOT.analysis.organizations.erc import compute_ercs
+from pyCOT.analysis.organizations.hierarchy import build_hierarchy
+from pyCOT.analysis.organizations.synergy import compute_synergies_basis_first
+from pyCOT.analysis.organizations.complementarity import compute_complementarities
+from pyCOT.analysis.organizations.epm import compute_epms, compute_espm, latent_join
 from oracles.epm_oracle import epm_oracle, espm_oracle
 
 from tests.gold_networks import ALL_GOLD
@@ -292,7 +292,7 @@ def test_epm_espm_oracle_vs_opt_biomd91():
         pytest.skip(f"BIOMD0000000091 not found at {_BIOMD91}")
 
     from pyCOT.io.functions import read_txt
-    from cot_gen.io_pyCOT import build_rndata
+    from pyCOT.analysis.organizations.io_pyCOT import build_rndata
 
     rn_pycot = read_txt(_BIOMD91)
     rn = build_rndata(rn_pycot, network_id="BIOMD0000000091")

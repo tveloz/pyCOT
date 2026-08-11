@@ -16,14 +16,17 @@ import sys
 from dataclasses import dataclass, field
 
 _here = os.path.dirname(os.path.abspath(__file__))
-_decomp_proj = os.path.normpath(os.path.join(_here, "..", "..", "Decomposition_Theorem"))
-if _decomp_proj not in sys.path:
-    sys.path.insert(0, _decomp_proj)
+_repo = os.path.normpath(os.path.join(_here, "..", "..", ".."))
+_src = os.path.join(_repo, "src")
+if _src not in sys.path:
+    sys.path.insert(0, _src)
 
-from decomp.bridge import so_domain            # noqa: E402
-from decomp.catalysts import compute_catalysts  # noqa: E402
-from decomp.overproduction import compute_overproduced  # noqa: E402
-from decomp.types import DecompositionResult    # noqa: E402
+from pyCOT.analysis.decomposition import (  # noqa: E402
+    so_domain,
+    compute_catalysts,
+    compute_overproduced,
+    DecompositionResult,
+)
 
 from .cot_bridge import TranslatedNet, closure as cot_closure
 from .decomp_shim import RNShim

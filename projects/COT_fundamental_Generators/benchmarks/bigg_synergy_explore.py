@@ -103,14 +103,14 @@ NET_PATH = os.path.join(_repo, "data", "biomodels", "BiGG", fname)
 
 # ── imports ───────────────────────────────────────────────────────────────────
 from pyCOT.io.functions import read_txt
-from cot_gen.io_pyCOT import build_rndata
-from cot_gen.erc import compute_ercs
-from cot_gen.hierarchy import build_hierarchy
-from cot_gen.synergy import compute_synergies
-from cot_gen.complementarity import compute_complementarities
-from cot_gen.generators import compute_generators
+from pyCOT.analysis.organizations.io_pyCOT import build_rndata
+from pyCOT.analysis.organizations.erc import compute_ercs
+from pyCOT.analysis.organizations.hierarchy import build_hierarchy
+from pyCOT.analysis.organizations.synergy import compute_synergies
+from pyCOT.analysis.organizations.complementarity import compute_complementarities
+from pyCOT.analysis.organizations.generators import compute_generators
 from cot_gen.metanetwork import build_metanetwork
-from cot_gen.metrics import StageContext, Counters, print_summary
+from pyCOT.analysis.organizations.metrics import StageContext, Counters, print_summary
 
 # ── banner ────────────────────────────────────────────────────────────────────
 SEP = "=" * 70

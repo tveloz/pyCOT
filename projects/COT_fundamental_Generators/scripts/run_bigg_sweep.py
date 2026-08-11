@@ -45,15 +45,14 @@ Requires epm_reach_propagate.py in the same directory as this script.
 """
 import sys, os, csv, time, glob, traceback, importlib.util, multiprocessing as mp
 
-sys.path.insert(0, 'projects/COT_fundamental_Generators')
 sys.path.insert(0, 'src')
 
 from pyCOT.io.functions import read_txt
-from cot_gen.io_pyCOT import build_rndata
-from cot_gen.erc import compute_ercs
-from cot_gen.hierarchy import build_hierarchy
-from cot_gen.synergy import compute_synergies_basis_first
-from cot_gen.complementarity import compute_complementarities
+from pyCOT.analysis.organizations.io_pyCOT import build_rndata
+from pyCOT.analysis.organizations.erc import compute_ercs
+from pyCOT.analysis.organizations.hierarchy import build_hierarchy
+from pyCOT.analysis.organizations.synergy import compute_synergies_basis_first
+from pyCOT.analysis.organizations.complementarity import compute_complementarities
 
 _here = os.path.dirname(os.path.abspath(__file__))
 _spec = importlib.util.spec_from_file_location(
@@ -86,12 +85,12 @@ _espmrisk_spec.loader.exec_module(espm_risk_analysis)
 # =============================================================================
 DATA_DIR = 'data/biochemical_databases/biomodels_all_txt'  # BiGG networks (bigg_*.txt) -- see discover_networks()
 MIN_REACTIONS = 50     # skip networks smaller than this (0 = no lower bound)
-MAX_REACTIONS = 1000
-PER_RUN_TIME_BUDGET_S = 3000.0   # 5 minutes max, per (network, config) run
-ESPM_TIME_BUDGET_S = 3000.0      # separate budget for the ESPM stage (see below);
+MAX_REACTIONS = 1500
+PER_RUN_TIME_BUDGET_S = 600.0   # 5 minutes max, per (network, config) run
+ESPM_TIME_BUDGET_S = 600.0      # separate budget for the ESPM stage (see below);
                                  # enforced by hard process kill, not internal checks
-ESPM_MAX_ORDER = 100
-ESPM_EXTERNAL_KILL_GRACE_S = 3000.0  # extra time beyond ESPM_TIME_BUDGET_S before the
+ESPM_MAX_ORDER = 20
+ESPM_EXTERNAL_KILL_GRACE_S = 600.0  # extra time beyond ESPM_TIME_BUDGET_S before the
                                      # external hard-kill fires -- the internal deadline
                                      # (checked once per BFS round) needs room to finish
                                      # whatever round is in flight and checkpoint cleanly;
@@ -260,15 +259,14 @@ def _load_or_compute_precompute(path, name):
     """
     import pickle
     import sys as _sys
-    _sys.path.insert(0, 'projects/COT_fundamental_Generators')
     _sys.path.insert(0, 'src')
     from pyCOT.io.functions import read_txt
-    from cot_gen.io_pyCOT import build_rndata
-    from cot_gen.erc import compute_ercs
-    from cot_gen.hierarchy import build_hierarchy
-    from cot_gen.synergy import compute_synergies_basis_first
-    from cot_gen.complementarity import compute_complementarities
-    from cot_gen.epm import compute_epms as compute_epms_original
+    from pyCOT.analysis.organizations.io_pyCOT import build_rndata
+    from pyCOT.analysis.organizations.erc import compute_ercs
+    from pyCOT.analysis.organizations.hierarchy import build_hierarchy
+    from pyCOT.analysis.organizations.synergy import compute_synergies_basis_first
+    from pyCOT.analysis.organizations.complementarity import compute_complementarities
+    from pyCOT.analysis.organizations.epm import compute_epms as compute_epms_original
 
     cache_path = _precompute_cache_path(name)
     if os.path.exists(cache_path):

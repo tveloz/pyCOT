@@ -45,8 +45,8 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 
-from cot_gen.fundamental_graph import FundamentalGraph, DFSState
-from cot_gen.epm import EPMResult
+from pyCOT.analysis.organizations.fundamental_graph import FundamentalGraph, DFSState
+from pyCOT.analysis.organizations.epm import EPMResult
 
 from epm_risk_analysis import (
     _bits, _popcount, _producible, _classify_synergy, _classify_complementarity,

@@ -22,12 +22,12 @@ import numpy as np
 from .cot_bridge import TranslatedNet
 
 _here = os.path.dirname(os.path.abspath(__file__))
-_decomp_proj = os.path.normpath(os.path.join(_here, "..", "..", "Decomposition_Theorem"))
-if _decomp_proj not in sys.path:
-    sys.path.insert(0, _decomp_proj)
+_repo = os.path.normpath(os.path.join(_here, "..", "..", ".."))
+_src = os.path.join(_repo, "src")
+if _src not in sys.path:
+    sys.path.insert(0, _src)
 
-from decomp.core import decompose            # noqa: E402
-from decomp.types import DecompositionResult  # noqa: E402
+from pyCOT.analysis.decomposition import decompose, DecompositionResult  # noqa: E402
 
 
 class RNShim:

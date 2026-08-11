@@ -72,10 +72,10 @@ try:
 except ImportError:
     HAS_HYPOTHESIS = False
 
-from cot_gen.closure    import closure_opt, build_inv_idx, is_closed
+from pyCOT.analysis.organizations.closure    import closure_opt, build_inv_idx, is_closed
 from oracles.closure_oracle import closure_oracle
-from cot_gen.erc        import compute_ercs
-from cot_gen.cot_types  import RNData
+from pyCOT.analysis.organizations.erc        import compute_ercs
+from pyCOT.analysis.organizations.cot_types  import RNData
 
 pytestmark = pytest.mark.skipif(
     not HAS_HYPOTHESIS,

@@ -59,13 +59,13 @@ FILTER = ""
 VERBOSE = True
 # ─────────────────────────────────────────────────────────────────────────────
 
-from cot_gen.erc              import compute_ercs
-from cot_gen.hierarchy        import build_hierarchy
-from cot_gen.synergy          import compute_synergies
-from cot_gen.complementarity  import compute_complementarities
-from cot_gen.generators       import compute_generators, reachable_from, primitive_ercs
+from pyCOT.analysis.organizations.erc              import compute_ercs
+from pyCOT.analysis.organizations.hierarchy        import build_hierarchy
+from pyCOT.analysis.organizations.synergy          import compute_synergies
+from pyCOT.analysis.organizations.complementarity  import compute_complementarities
+from pyCOT.analysis.organizations.generators       import compute_generators, reachable_from, primitive_ercs
 from cot_gen.metanetwork      import build_metanetwork
-from cot_gen.cot_types        import RNData
+from pyCOT.analysis.organizations.cot_types        import RNData
 from oracles.complementarity_oracle import comp_basic_set, comp_fund_set
 from tests.gold_networks import ALL_GOLD, GOLD1_LOOP, GOLD2_HIERARCHY, GOLD5_NONPERSISTENT
 
@@ -384,7 +384,7 @@ def test_generators_unreachable_disjoint_from_reach(net):
 # ── reachable_from helper ─────────────────────────────────────────────────────
 
 def test_reachable_from_empty_seed():
-    from cot_gen.synergy import SynergyTuple
+    from pyCOT.analysis.organizations.synergy import SynergyTuple
     triples = [SynergyTuple(i=0, j=1, k=2, level="fundamental")]
     assert reachable_from([], triples) == frozenset()
 
@@ -395,7 +395,7 @@ def test_reachable_from_no_synergies():
 
 def test_reachable_from_chain():
     """Chain (0,1)→2, (2,1)→3: starting from {0,1} reaches {0,1,2,3}."""
-    from cot_gen.synergy import SynergyTuple
+    from pyCOT.analysis.organizations.synergy import SynergyTuple
     triples = [
         SynergyTuple(i=0, j=1, k=2, level="fundamental"),
         SynergyTuple(i=2, j=1, k=3, level="fundamental"),
