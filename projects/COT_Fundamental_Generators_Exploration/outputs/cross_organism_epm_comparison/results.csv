@@ -1,0 +1,14 @@
+model,organism,scenario,food_species,n_species_total,n_reactions,e0_size,n_ercs,n_persistent_ercs,n_fundamental_synergies,n_fundamental_complementarities,n_epms,epm_size_min,epm_size_mean,epm_size_max,time_s,status
+iJN678,Synechocystis sp. PCC 6803,aerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,o2_e,pi_e",795,1071,21,668,204,2468,804,63,21,24.0,33,9.63,ok
+iJN678,Synechocystis sp. PCC 6803,anaerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,pi_e",795,1070,17,683,204,2617,874,62,17,19.9,29,7.76,ok
+iJN678,Synechocystis sp. PCC 6803,carbon_starvation_core,"co2_e,h2o_e,h_e,nh4_e,o2_e,pi_e",795,1070,18,670,206,2469,804,64,18,21.0,30,7.95,ok
+iJN678,Synechocystis sp. PCC 6803,full_native,"ca2_e,cobalt2_e,ni2_e,h_e,h2o_e,o2_e,glc__D_e,no3_e,k_e,so4_e,pi_e,mobd_e,fe3_e,fe2_e,na1_e,mn2_e,mg2_e,cu2_e,zn2_e",795,1083,47,649,184,2535,822,49,47,50.2,59,9.57,ok
+iYO844,Bacillus subtilis,aerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,o2_e,pi_e",990,1583,16,885,296,4295,824,89,16,19.0,29,18.0,ok
+iYO844,Bacillus subtilis,anaerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,pi_e",990,1582,14,891,298,4526,907,93,14,16.9,27,37.03,ok
+iYO844,Bacillus subtilis,carbon_starvation_core,"co2_e,h2o_e,h_e,nh4_e,o2_e,pi_e",990,1582,13,888,293,10740,1798,88,13,15.9,26,57.48,ok
+iYO844,Bacillus subtilis,full_native,"fe3_e,glc__D_e,ca2_e,so4_e,co2_e,h2o_e,h_e,k_e,mg2_e,na1_e,nh4_e,o2_e,pi_e",990,1589,28,871,290,4222,819,85,28,31.0,41,19.91,ok
+iND750,Saccharomyces cerevisiae,aerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,o2_e,pi_e",1059,1703,40,880,384,3529,1131,152,40,42.9,50,10.9,ok
+iND750,Saccharomyces cerevisiae,anaerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,pi_e",1059,1702,36,893,390,3894,1144,154,36,38.9,46,10.56,ok
+iND750,Saccharomyces cerevisiae,carbon_starvation_core,"co2_e,h2o_e,h_e,nh4_e,o2_e,pi_e",1059,1702,37,883,382,5588,1380,152,37,39.9,47,12.86,ok
+iND750,Saccharomyces cerevisiae,full_native,"nh4_e,o2_e,pi_e,so4_e,glc__D_e,h2o_e",1059,1702,21,995,399,9651,1525,149,21,24.3,34,130.52,ok
+iAF987,Geobacter metallireducens,full_native,"h_e,h2o_e,k_e,mg2_e,ac_e,mn2_e,ca2_e,cd2_e,cl_e,co2_e,cobalt2_e,cro4_e,cu_e,cu2_e,mobd_e,fe2_e,fe3_e,n2_e,na1_e,nh4_e,ni2_e,pi_e,so3_e,so4_e,tungs_e,zn2_e",1109,1646,64,976,311,7949,2040,121,64,68.2,83,90.95,ok

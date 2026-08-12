@@ -1,0 +1,17 @@
+model,scenario,food_species,n_species_total,n_reactions,e0_size,n_ercs,n_persistent_ercs,n_fundamental_synergies,n_fundamental_complementarities,n_epms,epm_size_min,epm_size_mean,epm_size_max,time_s,status
+e_coli_core,isolated,(none),72,134,0,77,38,499,124,17,2,3.2,4,0.16,ok
+e_coli_core,aerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,o2_e,pi_e",72,141,13,49,34,110,22,15,13,15.1,17,0.05,ok
+e_coli_core,anaerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,pi_e",72,140,11,50,35,119,24,16,11,13.1,15,0.06,ok
+e_coli_core,carbon_starvation_core,"co2_e,h2o_e,h_e,nh4_e,o2_e,pi_e",72,140,12,51,34,117,22,16,12,14.2,16,0.06,ok
+iAF1260,aerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,o2_e,pi_e",1668,2942,23,1518,615,4439,1399,182,23,25.7,31,59.73,ok
+iAF1260,anaerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,pi_e",1668,2941,20,1535,604,4705,1495,189,20,22.6,28,96.6,ok
+iAF1260,carbon_starvation_core,"co2_e,h2o_e,h_e,nh4_e,o2_e,pi_e",1668,2941,19,1526,619,4444,1407,180,19,21.6,27,86.85,ok
+iAF1260,full_native,"ca2_e,cbl1_e,cl_e,co2_e,cobalt2_e,cu2_e,fe2_e,fe3_e,glc__D_e,h2o_e,h_e,k_e,mg2_e,mn2_e,mobd_e,na1_e,nh4_e,o2_e,pi_e,so4_e,tungs_e,zn2_e",1668,2957,61,1471,580,4387,1379,164,61,63.7,70,47.25,ok
+iJO1366,aerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,o2_e,pi_e",1805,3201,23,1632,660,4765,1518,201,23,25.7,31,63.91,ok
+iJO1366,anaerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,pi_e",1805,3200,20,1652,651,5058,1621,208,20,22.7,28,53.18,ok
+iJO1366,carbon_starvation_core,"co2_e,h2o_e,h_e,nh4_e,o2_e,pi_e",1805,3200,19,1640,664,4770,1526,199,19,21.7,27,66.42,ok
+iJO1366,full_native,"ca2_e,cbl1_e,cl_e,co2_e,cobalt2_e,cu2_e,fe2_e,fe3_e,glc__D_e,h2o_e,h_e,k_e,mg2_e,mn2_e,mobd_e,na1_e,nh4_e,ni2_e,o2_e,pi_e,sel_e,slnt_e,so4_e,tungs_e,zn2_e",1805,3219,71,1578,622,4638,1471,179,71,73.7,80,60.07,ok
+iML1515,aerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,o2_e,pi_e",1877,3358,23,1690,699,4508,1474,216,23,25.6,31,68.81,ok
+iML1515,anaerobic_core,"co2_e,glc__D_e,h2o_e,h_e,nh4_e,pi_e",1877,3357,20,1711,690,4776,1576,223,20,22.6,28,68.53,ok
+iML1515,carbon_starvation_core,"co2_e,h2o_e,h_e,nh4_e,o2_e,pi_e",1877,3357,19,1698,703,4514,1482,214,19,21.6,27,74.34,ok
+iML1515,full_native,"ca2_e,cl_e,co2_e,cobalt2_e,cu2_e,fe2_e,fe3_e,glc__D_e,h2o_e,h_e,k_e,mg2_e,mn2_e,mobd_e,na1_e,nh4_e,ni2_e,o2_e,pi_e,sel_e,slnt_e,so4_e,tungs_e,zn2_e",1877,3375,67,1639,659,4447,1444,194,67,69.7,76,67.49,ok

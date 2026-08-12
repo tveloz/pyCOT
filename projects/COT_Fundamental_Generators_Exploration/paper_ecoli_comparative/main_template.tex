@@ -1,0 +1,48 @@
+\documentclass[nocrop]{bioinfo}
+\copyrightyear{2015} \pubyear{2015}
+
+\input{paper/header}
+
+\begin{document}
+\firstpage{1}
+
+\subtitle{}
+
+\title[short Title]{This is a title}
+\author[Sample \textit{et~al}.]{Corresponding Author\,$^{\text{\sfb 1,}*}$, Co-Author\,$^{\text{\sfb 2}}$ and Co-Author\,$^{\text{\sfb 2,}*}$}
+\address{$^{\text{\sf 1}}$Department, Institution, City, Post Code, Country and \\
+$^{\text{\sf 2}}$Department, Institution, City, Post Code,
+Country.}
+
+\corresp{$^\ast$To whom correspondence should be addressed.}
+
+\history{}
+
+\editor{}
+
+\input{paper/abstract}
+
+\maketitle
+
+\input{paper/introduction}
+\input{paper/approach}
+\input{paper/methods}
+\input{paper/discussion}
+\input{paper/conclusion}
+
+\vspace*{-10pt}
+\input{paper/acknowledgements}
+
+\vspace*{-12pt}
+\input{paper/funding}
+
+\vspace*{-12pt}
+\bibliographystyle{natbib}
+\bibliography{bibliography}
+
+\clearpage
+\appendix
+\renewcommand{\thesection}{\Alph{section}}
+\input{paper/appendix}
+
+\end{document}

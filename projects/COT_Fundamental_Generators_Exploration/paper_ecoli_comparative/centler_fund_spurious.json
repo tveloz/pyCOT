@@ -1,0 +1,1 @@
+{"starvation": {"fundamental": 1, "spurious": 3, "total": 4}, "glucose": {"fundamental": 1, "spurious": 3, "total": 4}, "lactose": {"fundamental": 2, "spurious": 2, "total": 4}, "glycerol": {"fundamental": 2, "spurious": 2, "total": 4}, "all_sugars": {"fundamental": 3, "spurious": 1, "total": 4}}

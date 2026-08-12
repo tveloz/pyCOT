@@ -1,0 +1,8 @@
+INFLOW_nad: => 1 nad_c;
+INFLOW_pi: => 1 pi_c;
+PGI: 1 g6p_c => 1 f6p_c;
+ADK1_rev: 2 adp_c => 1 amp_c + 1 atp_c;
+PFK: 1 atp_c + 1 f6p_c => 1 adp_c + 1 fdp_c + 1 h_c;
+FBA: 1 fdp_c => 1 dhap_c + 1 g3p_c;
+TPI: 1 dhap_c => 1 g3p_c;
+GAPD: 1 g3p_c + 1 nad_c + 1 pi_c => 1 13dpg_c + 1 h_c + 1 nadh_c;

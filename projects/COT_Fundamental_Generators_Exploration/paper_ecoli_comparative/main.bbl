@@ -1,0 +1,105 @@
+\begin{thebibliography}{}
+
+\bibitem[Andersen {\em et~al.}(2019)Andersen, Flamm, Merkle, and
+  Stadler]{andersen2017motifs}
+Andersen, J.~L.  {\em et~al.} (2019).
+\newblock Chemical transformation motifs -- modelling pathways as integer
+  hyperflows.
+\newblock {\em IEEE/ACM Transactions on Computational Biology and
+  Bioinformatics\/}, {\bf 16}(2), 510--523.
+
+\bibitem[Centler {\em et~al.}(2006)Centler, Speroni~di Fenizio, Matsumaru, and
+  Dittrich]{centler2006}
+Centler, F.  {\em et~al.} (2006).
+\newblock Chemical organizations in the central sugar metabolism of escherichia
+  coli.
+\newblock In C.~Priami, E.~Merelli, P.~Gonzalez, and A.~Omicini, editors, {\em
+  Transactions on Computational Systems Biology V\/}, volume 3810 of {\em
+  Lecture Notes in Computer Science\/}, pages 74--92. Springer.
+
+\bibitem[Centler {\em et~al.}(2008)Centler, Kaleta, Speroni~di Fenizio, and
+  Dittrich]{centler2008computing}
+Centler, F.  {\em et~al.} (2008).
+\newblock Computing chemical organizations in biological networks.
+\newblock {\em Bioinformatics\/}, {\bf 24}(14), 1611--1618.
+
+\bibitem[Csete and Doyle(2004)Csete and Doyle]{csete2004bowtie}
+Csete, M. and Doyle, J. (2004).
+\newblock Bow ties, metabolism and disease.
+\newblock {\em Trends in Biotechnology\/}, {\bf 22}(9), 446--450.
+
+\bibitem[Dittrich and Speroni~di Fenizio(2007)Dittrich and Speroni~di
+  Fenizio]{seminal}
+Dittrich, P. and Speroni~di Fenizio, P. (2007).
+\newblock Chemical organisation theory.
+\newblock {\em Bulletin of Mathematical Biology\/}, {\bf 69}(4), 1199--1231.
+
+\bibitem[Feist {\em et~al.}(2007)Feist, Henry, Reed, Krummenacker, Joyce, Karp,
+  Broadbelt, Hatzimanikatis, and Palsson]{feist2007iaf1260}
+Feist, A.~M.  {\em et~al.} (2007).
+\newblock A genome-scale metabolic reconstruction for escherichia coli k-12
+  mg1655 that accounts for 1260 orfs and thermodynamic information.
+\newblock {\em Molecular Systems Biology\/}, {\bf 3}, 121.
+
+\bibitem[Flamm {\em et~al.}(2010)Flamm, Ullrich, Ekker, Mann, H{\"o}gerl,
+  Rohrschneider, Sauer, Scheuermann, Klemm, Hofacker, and
+  Stadler]{flamm2010evolution}
+Flamm, C.  {\em et~al.} (2010).
+\newblock Evolution of metabolic networks: a computational framework.
+\newblock {\em Journal of Systems Chemistry\/}, {\bf 1}, 4.
+
+\bibitem[Hordijk and Steel(2018)Hordijk and Steel]{hordijk2018autocatalytic}
+Hordijk, W. and Steel, M. (2018).
+\newblock Autocatalytic sets and the origin of life.
+\newblock {\em Entropy\/}, {\bf 20}(4), 291.
+
+\bibitem[King {\em et~al.}(2016)King, Lu, Draeger, Miller, Federowicz, Lerman,
+  Ebrahim, Palsson, and Lewis]{king2016bigg}
+King, Z.~A.  {\em et~al.} (2016).
+\newblock Bigg models: A platform for integrating, standardizing and sharing
+  genome-scale models.
+\newblock {\em Nucleic Acids Research\/}, {\bf 44}(D1), D515--D522.
+
+\bibitem[Monk {\em et~al.}(2017)Monk, Lloyd, Brunk, Mih, Sastry, King,
+  Takeuchi, Nomura, Zhang, Mori, Feist, and Palsson]{monk2017iml1515}
+Monk, J.~M.  {\em et~al.} (2017).
+\newblock iml1515, a knowledgebase that computes escherichia coli traits.
+\newblock {\em Nature Biotechnology\/}, {\bf 35}(10), 904--908.
+
+\bibitem[Orth {\em et~al.}(2010)Orth, Fleming, and Palsson]{orth2010core}
+Orth, J.~D.  {\em et~al.} (2010).
+\newblock Reconstruction and use of microbial metabolic networks: the core
+  escherichia coli metabolic model as an educational guide.
+\newblock {\em EcoSal Plus\/}, {\bf 4}(1).
+
+\bibitem[Orth {\em et~al.}(2011)Orth, Conrad, Na, Lerman, Nam, Feist, and
+  Palsson]{orth2011comprehensive}
+Orth, J.~D.  {\em et~al.} (2011).
+\newblock A comprehensive genome-scale reconstruction of escherichia coli
+  metabolism -- 2011.
+\newblock {\em Molecular Systems Biology\/}, {\bf 7}, 535.
+
+\bibitem[Steel {\em et~al.}(2013)Steel, Hordijk, and Smith]{steel2013minimal}
+Steel, M.  {\em et~al.} (2013).
+\newblock Minimal autocatalytic networks.
+\newblock {\em Journal of Theoretical Biology\/}, {\bf 332}, 96--107.
+
+\bibitem[Tenazinha and Vinga(2011)Tenazinha and Vinga]{tenazinha2011survey}
+Tenazinha, N. and Vinga, S. (2011).
+\newblock A survey on methods for modeling and analyzing integrated biological
+  networks.
+\newblock {\em IEEE/ACM Transactions on Computational Biology and
+  Bioinformatics\/}, {\bf 8}(4), 943--958.
+
+\bibitem[Veloz and Bassi(2026)Veloz and Bassi]{velozbassi}
+Veloz, T. and Bassi, A. (2026).
+\newblock Synergy and complementarity: The generative basis of chemical
+  organizations.
+\newblock {\em in preparation\/}.
+
+\bibitem[Zhao {\em et~al.}(2006)Zhao, Yu, Luo, Cao, and Li]{zhao2006bowtie}
+Zhao, J.  {\em et~al.} (2006).
+\newblock Hierarchical modularity of nested bow-ties in metabolic networks.
+\newblock {\em BMC Bioinformatics\/}, {\bf 7}, 386.
+
+\end{thebibliography}

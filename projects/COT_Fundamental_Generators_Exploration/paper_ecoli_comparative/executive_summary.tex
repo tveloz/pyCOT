@@ -1,0 +1,69 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{times}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{parskip}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.6em}{}
+
+\title{\vspace{-1.5em}Executive summary, for biochemical review\\
+\large A computational comparison of four \textit{E.\ coli} genome-scale reconstructions}
+\author{Tom\'as Veloz}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-2em}
+
+\section*{Purpose of this note}
+This is a short, non-technical companion to a manuscript draft I'm preparing for \textit{Bioinformatics}. The manuscript itself uses a fair amount of mathematical machinery (from chemical organization theory) that isn't necessary to evaluate whether the \emph{biology} holds up. This note strips that out and asks you to sanity-check four specific biological claims before I submit. It should take 15--20 minutes to read.
+
+If you want the full manuscript, figures, and underlying data tables, they're in the same folder as this note (\texttt{main.pdf}, \texttt{results.csv}).
+
+\section*{What we actually did, in plain terms}
+\textit{E.\ coli} K-12 MG1655 has been re-annotated into progressively larger, more detailed metabolic network reconstructions over 17 years: the small ``core'' textbook model (2000, 95 reactions), iAF1260 (2007, 2382 reactions), iJO1366 (2011, 2583 reactions), and iML1515 (2017, 2712 reactions). Each is a strict refinement of the same organism -- same underlying biology, progressively more genes and reactions annotated.
+
+We took a computational method that identifies the minimal, self-sustaining ``cores'' of a metabolic network -- sets of reactions and metabolites that, once triggered, keep each other going without needing anything else, and that cannot be built by simply combining two unrelated such cores. We call these \emph{elementary persistent modules} (EPMs). Think of them as candidate building blocks of metabolic organization: not just any subnetwork that could theoretically sustain itself, but ones that are ``irreducible'' -- not decomposable into smaller independent self-sustaining pieces.
+
+We computed these for all four reconstructions, under matched environmental conditions (aerobic, anaerobic, carbon-starved, and each model's own default full medium), and compared how the \emph{number} and \emph{size} of these modules changes as the reconstruction gets more detailed and as the environment changes.
+
+This is purely a structural/steady-state analysis of the network as annotated -- it says nothing about dynamics, regulation, gene expression, or timing. That's an important caveat throughout.
+
+\section*{The four findings I'd like you to stress-test}
+
+\subsection*{1. Module size doesn't grow with reconstruction detail; module count does}
+Going from the smallest model to the largest, the number of reactions grows about 28-fold and the number of ``elementary reaction closures'' (an intermediate combinatorial unit, not biologically meaningful on its own) grows about 15-fold. But the \emph{size} of each self-sustaining core stays essentially flat -- roughly 19--31 species in all three genome-scale models, under any fixed environment. What grows instead is how \emph{many} such cores exist (15--16 in the core model, up to $\sim$200 in the largest).
+
+Our reading: successive curation of \textit{E.\ coli}'s reconstruction has mostly added parallel, redundant routes (isozymes, alternative transporters) around an already-complete central core, rather than deepening or enlarging that core. This is offered as a computational echo of the textbook ``bow-tie'' picture of metabolism -- a small, conserved central core (glycolysis, TCA cycle, pentose phosphate pathway, core biosynthesis) fed and drained by a much larger, more variable set of peripheral pathways.
+
+\textbf{Ask}: Does ``the curated periphery grows, the core doesn't'' match your intuition about what 2007$\to$2017 reconstruction updates to \textit{E.\ coli} actually added? Is the bow-tie framing a fair characterization, or is it too strong a claim for what is essentially a network-size argument?
+
+\subsection*{2. Adding trace-metal cofactors fuses modules together rather than adding new ones}
+When we switch each model from the shared 7-species core medium (glucose, oxygen, ammonium, phosphate, CO$_2$, water, protons) to its own full native medium -- which adds cobalamin (B$_{12}$), molybdate, tungstate, nickel, selenium, and several other trace metals -- something specific happens: mean module size roughly \emph{triples} (e.g., iAF1260: 25.7 $\to$ 63.7 species) while the \emph{number} of modules \emph{drops} (182 $\to$ 164).
+
+Our interpretation: these cofactors are required by a specific, known class of enzymes -- molybdenum/tungsten-cofactor and nickel-dependent anaerobic respiratory enzymes (nitrate reductase, DMSO/TMAO reductase, the selenocysteine-dependent formate dehydrogenases, [NiFe]-hydrogenases). We think what's happening structurally is that these enzymes sit at junctions that were previously the boundary between two separately-self-sustaining modules; supplying their cofactor lets those two modules act as one connected unit instead of two.
+
+\textbf{Ask}: Is this mechanistic story about Mo/W/Ni/Se-cofactor respiratory enzymes plausible as an explanation for why supplying these micronutrients would \emph{merge} otherwise-separate self-sustaining subnetworks, rather than just adding new independent capabilities? Are there other/better-known cofactor-dependent bridging enzymes we should be citing instead or in addition?
+
+\subsection*{3. Environment reshapes module count in a way that tracks known physiology}
+Anaerobic conditions produce more modules than aerobic conditions on the same core medium (e.g., iML1515: 223 vs.\ 216); carbon starvation (removing glucose) produces fewer and smaller ones (214 modules, size 19--27, vs.\ 216 modules, size 23--31, aerobic). We read the anaerobic result as consistent with \textit{E.\ coli}'s well-known mixed-acid fermentation redundancy -- multiple non-exclusive branch points (pyruvate formate-lyase vs.\ the pyruvate dehydrogenase branch, several alternative fermentation end products) that don't exist in the same way under aerobic respiration, where flux is channeled through one dominant oxidative pathway. Carbon starvation's contraction is read as the direct structural counterpart of losing the network's main carbon/energy input -- again, a steady-state statement, not a claim about the stringent response or other starvation \emph{regulatory} programmes, which this method doesn't model at all.
+
+\textbf{Ask}: Does the mixed-acid fermentation explanation for anaerobic $>$ aerobic module count hold together biochemically? Is there a more standard way this redundancy is usually described in the literature that we should align our language with?
+
+\subsection*{4. A validation check against a 20-year-old published result -- with a twist}
+As a sanity check, we exactly reproduced a well-known 2006 study (Centler \textit{et al.}) that computed all such structures for a small, hand-built 92-species model of \textit{E.\ coli} sugar metabolism under five classic environments (glucose, lactose, glycerol, starvation, all sugars available). We matched their published organization counts exactly.
+
+But our method also lets us split their published results into two categories: modules that are reachable purely by combining biochemically-linked pieces (what we call \emph{fundamental}), versus ones that are only reachable by adding a nutrient the model never actually consumes into an already-complete set (\emph{spurious} -- a bookkeeping artifact of how the mathematical definition of ``persistent'' works, not a biologically distinct entity). It turns out only 1--3 of their 4 published results per scenario are fundamental in this sense; the rest exist only because of that bookkeeping technicality.
+
+\textbf{Ask}: This is more a methods/theory point than a wet-lab biology point, but: does ``some published chemical-organization results are combinatorial artifacts of the formalism, not distinct biological states'' seem like a fair and defensible claim to make in print, from your read of the biology involved (glucose/lactose/glycerol utilization in \textit{E.\ coli})?
+
+\section*{What this is \emph{not} claiming}
+To be explicit, since it's easy to over-read a structural result: this is not a claim about gene essentiality, growth rate, flux distributions, regulatory logic, or anything dynamic. It is a claim about which \emph{subsets} of a metabolic network, as annotated, are structurally self-sustaining and irreducible, and how that changes with reconstruction detail and nutrient environment. The manuscript's Discussion section proposes gene-essentiality and flux-based follow-ups as future work, precisely because this pass doesn't touch either.
+
+\section*{Bottom line}
+If the four biological interpretations above survive your read, I think this is ready to submit as-is. If any of them feel like a stretch, I'd rather soften or cut that specific claim than have a reviewer (or you, after publication) catch it. Happy to talk through any of this -- and thank you for taking the time.
+
+\end{document}
