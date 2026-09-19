@@ -1,6 +1,5 @@
 from collections import Counter
 from collections import defaultdict
-import graphviz
 from graphviz import Digraph
 from IPython.display import Image
 # from PIL import Image
@@ -10,6 +9,8 @@ import rustworkx as rx
 import matplotlib.pyplot as plt
 import mplcursors 
 import os
+import re
+import base64
 import webbrowser
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
@@ -20,87 +21,238 @@ import tempfile
 from pyCOT.simulations.core import build_reaction_dict
 
 ##################################################################
-# # Plot a reaction network in HTML:
+# Función de apoyo para renderizar "LaTeX" visual con Unicode
 ##################################################################
+def _tokenize_body(remainder, force_literal=False):
+    """Tokeniza la parte sin carga de un nombre de especie.
+
+    - force_literal=True (viene del prefijo '=', ver _tokenize_chemical_name):
+      fuerza texto literal sin importar dígitos/guiones. Para nombres-etiqueta
+      como P680/P700 que NO son fórmulas químicas y no deben subindexarse.
+    - Si contiene guion, espacio o coma: se trata de un nombre trivial/IUPAC
+      con locantes (posiciones), NO de una fórmula química. Se renderiza
+      literal, sin convertir dígitos en subíndice (ej. "Glucose-6-Phosphate",
+      "1,3-Bisphosphoglycerate", "S-Adenosyl Methionine").
+    - Si NO contiene esos separadores y tiene dígitos embebidos: se asume
+      fórmula química compacta y los dígitos se tokenizan como subíndice
+      (ej. "H2O" -> H,2(sub),O ; "FADH2" -> FADH,2(sub)).
+    - En cualquier otro caso (abreviaturas sin dígito: "CoA", "Pi", "PPi",
+      "ATP", "FAD", ...): segmento único literal, sin heurística adicional.
+    """
+    if not remainder:
+        return []
+
+    if force_literal:
+        return [(remainder, 'normal')]
+
+    if re.search(r'[-,\s]', remainder):
+        return [(remainder, 'normal')]
+
+    if re.search(r'\d', remainder):
+        segments = []
+        for chunk in re.findall(r'[A-Za-z]+|\d+', remainder):
+            segments.append((chunk, 'sub' if chunk.isdigit() else 'normal'))
+        return segments
+
+    return [(remainder, 'normal')]
+
+
+def _tokenize_chemical_name(name):
+    """
+    Descompone un nombre de especie en segmentos ordenados (texto, tipo),
+    tipo en {'normal', 'sub', 'super'}, con la siguiente prioridad:
+
+    0. Prefijo '=' explícito: fuerza el cuerpo a texto literal (sin
+       auto-subíndice de dígitos), preservando la detección de carga
+       posterior. Uso: nombres-etiqueta con dígitos que no son fórmulas
+       (ej. "=P680", "=P680+", "=P680^*").
+    1. Guion bajo explícito '_': todo lo posterior es subíndice (ej. P_act).
+    2. Circunflejo explícito '^': escape hatch para forzar la lectura
+       correcta cuando la convención por defecto (punto 3) no aplica, o
+       para cargas de magnitud >1 sin conteo atómico (ej. "Ca^2+" -> Ca²⁺).
+    3. Carga iónica final detectada automáticamente: uno o más '+'/'-' al
+       final de la cadena. CONVENCIÓN POR DEFECTO: cualquier dígito
+       inmediatamente anterior al signo se interpreta como parte del
+       cuerpo (conteo atómico -> subíndice), y el signo como carga unitaria
+       en superíndice. Resuelve correctamente "NH4+" -> NH₄⁺,
+       "H3O+" -> H₃O⁺, "HCO3-" -> HCO₃⁻ sin necesidad de escape.
+       LIMITACIÓN: iones con carga de magnitud >1 y SIN conteo atómico
+       adyacente (ej. Ca2+, Fe3+) requieren el escape '^' ("Ca^2+"),
+       porque el mismo patrón sintáctico (dígito+signo) es ambiguo entre
+       "conteo+carga unitaria" y "carga de magnitud N"; no es resoluble
+       por regex sin conocimiento semántico del ion.
+    4. Nombre trivial/IUPAC con guion, espacio o coma: se renderiza
+       literal (ver _tokenize_body).
+    5. Fórmula compacta sin separadores: dígitos embebidos -> subíndice.
+    """
+    force_literal = name.startswith('=')
+    if force_literal:
+        name = name[1:]
+
+    if '_' in name:
+        base, sub = name.split('_', 1)
+        segments = [(base, 'normal')]
+        if sub:
+            segments.append((sub, 'sub'))
+        return segments
+
+    if '^' in name:
+        body, charge = name.split('^', 1)
+        segments = _tokenize_body(body, force_literal)
+        if charge:
+            segments.append((charge, 'super'))
+        return segments
+
+    charge_match = re.match(r'^(.+?)([+-]+)$', name)
+    if charge_match:
+        remainder, charge_sign = charge_match.groups()
+        segments = _tokenize_body(remainder, force_literal)
+        segments.append((charge_sign, 'super'))
+        return segments
+
+    return _tokenize_body(name, force_literal)
+
+
+def _segments_to_svg_text(segments, font_size, sub_font_size, x, y):
+    """
+    Convierte una lista de segmentos (texto, tipo) en un elemento <text> SVG
+    con <tspan> anidados para subíndices y superíndices, ajustando la posición vertical según el tipo. 
+    Los segmentos se renderizan en orden, y 
+    los superíndices se apilan sobre los subíndices inmediatamente anteriores si están adyacentes.
+    """
+    CHAR_WIDTH_FACTOR = 0.75
+    SUB_DY_FACTOR = 0.25
+    SUPER_DY_FACTOR = 0.35
+    STACK_OFFSET_RATIO = 0.7   # <-- NUEVO: 1.0 = justo encima, 0.0 = secuencial a la derecha.
+                               #     Baja este valor para correr el superíndice más a la derecha.
+
+    def shift_for(kind):
+        if kind == 'sub':
+            return font_size * SUB_DY_FACTOR
+        if kind == 'super':
+            return -font_size * SUPER_DY_FACTOR
+        return 0.0
+
+    parts = []
+    current_shift = 0.0
+    prev_kind, prev_text = None, ""
+    for text, kind in segments:
+        size = font_size if kind == 'normal' else sub_font_size
+        target_shift = shift_for(kind)
+        dy = target_shift - current_shift
+
+        dx_attr = ""
+        if kind == 'super' and prev_kind == 'sub':
+            back = len(prev_text) * sub_font_size * CHAR_WIDTH_FACTOR * STACK_OFFSET_RATIO
+            dx_attr = f' dx="-{back:.2f}"'
+
+        dy_attr = f' dy="{dy:.2f}"' if dy != 0 else ""
+        parts.append(f'<tspan{dx_attr}{dy_attr} font-size="{size}">{text}</tspan>')
+
+        current_shift = target_shift
+        prev_kind, prev_text = kind, text
+
+    inner = ''.join(parts)
+    return f'<text x="{x}" y="{y}" font-family="Arial, sans-serif" text-anchor="middle" fill="black">{inner}</text>'
+
+
+def _segments_width(segments, normal_w, sub_w):
+    """Ancho efectivo ponderado. Cuando un 'super' se apila sobre un 'sub'
+    inmediatamente anterior (ver _segments_to_svg_text), no se suman por
+    separado: ocupan la misma columna, así que se toma el máximo de los
+    dos anchos en vez de la suma."""
+    total = 0.0
+    i, n = 0, len(segments)
+    while i < n:
+        text, kind = segments[i]
+        w = normal_w if kind == 'normal' else sub_w
+        this_width = len(text) * w
+        if kind == 'sub' and i + 1 < n and segments[i + 1][1] == 'super':
+            next_text = segments[i + 1][0]
+            this_width = max(this_width, len(next_text) * sub_w)
+            total += this_width
+            i += 2
+            continue
+        total += this_width
+        i += 1
+    return total
+
+
+def generate_svg_data_uri(name, bg_color, shape_type, tipo='specie', use_latex_style=False):
+    """
+    Genera una imagen SVG. Soporta subíndices y superíndices (carga iónica),
+    y ajusta la posición del texto dependiendo de si la forma es 'dot'
+    (texto abajo) o encapsulada (texto adentro) en el nodo.
+    """
+    if not use_latex_style:
+        return None
+
+    segments = _tokenize_chemical_name(name)
+
+    # --- AJUSTE DINÁMICO DE TAMAÑO Y POSICIÓN ---
+    if tipo == 'reaction':
+        # LAS REACCIONES MANTIENEN SU FORMATO COMPACTO CON TEXTO ADENTRO
+        font_size = 6          
+        sub_font_size = 6
+        width = max(20, 5 + _segments_width(segments, normal_w=4, sub_w=2))
+        height = 15             
+        cx, cy = width / 2, height / 3
+        
+        shape_svg = f'<rect x="2" y="2" width="{width-4}" height="{height-4}" rx="4" ry="4" fill="{bg_color}" stroke="{bg_color}" stroke-width="2"/>'
+        text_svg = _segments_to_svg_text(segments, font_size, sub_font_size, cx, cy + 4)
+
+    else:
+        # LAS ESPECIES EVALÚAN SI DEBEN PONER EL TEXTO AFUERA O ADENTRO
+        font_size = 16          
+        sub_font_size = 12      
+        width = max(45, 20 + _segments_width(segments, normal_w=12, sub_w=9))
+        cx = width / 2
+
+        if shape_type == 'dot':
+            # CASO 'DOT': Círculo en la parte superior, texto en la parte inferior
+            radio = 16
+            gap = 6  # Espacio entre el círculo y el texto
+            y_text = (radio * 2) + gap + 10 # Posición Y del texto
+            height = y_text + 10             # Alto total del lienzo aumentado
+            
+            # Dibujamos el círculo en la parte superior (cy = radio + 2 para el borde)
+            shape_svg = f'<circle cx="{cx}" cy="{radio + 2}" r="{radio}" fill="{bg_color}" stroke="{bg_color}" stroke-width="2"/>'
+            text_svg = _segments_to_svg_text(segments, font_size, sub_font_size, cx, y_text)
+        
+        else:
+            # OTROS CASOS ('circle', 'box'): Texto centrado adentro de la forma
+            height = 32             
+            cy = height / 2
+            
+            if shape_type in ['circle', 'ellipse']:
+                shape_svg = f'<circle cx="{cx}" cy="{cy}" r="{height/2 - 2}" fill="{bg_color}" stroke="{bg_color}" stroke-width="2"/>'
+            else:
+                shape_svg = f'<rect x="2" y="2" width="{width-4}" height="{height-4}" rx="4" ry="4" fill="{bg_color}" stroke="{bg_color}" stroke-width="2"/>'
+                
+            text_svg = _segments_to_svg_text(segments, font_size, sub_font_size, cx, cy + 5)
+
+    # Empaquetar y exportar
+    svg = f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">{shape_svg}{text_svg}</svg>'
+    b64_encoded = base64.b64encode(svg.encode('utf-8')).decode('utf-8')
+    return f"data:image/svg+xml;base64,{b64_encoded}"
+
+
+# ##################################################################
+# # Plot a reaction network in HTML
+# ##################################################################
 def rn_get_visualization(rn, lst_color_spcs=None, lst_color_reacs=None, 
                          global_species_color=None, global_reaction_color=None,
                          global_input_edge_color=None, global_output_edge_color=None, 
                          node_size=20, shape_species_node='dot', shape_reactions_node='box', 
                          curvature=None, physics_enabled=False, 
+                         use_latex_style=False, # NUEVO PARÁMETRO AQUÍ
+                         species_display_names=None, # NUEVO: nombre -> etiqueta LaTeX-style para el SVG (no afecta el id real del nodo)
                          filename="reaction_network.html"):
     """
     Visualizes a reaction network as an interactive HTML file.
-
-    This function uses a given reaction network (RN) to generate a visualization in which 
-    species and reactions are represented as nodes, and interactions are represented as edges. 
-    The resulting visualization is saved to an HTML file that can be opened in a browser.
-
-    Parameters:
-    ----------
-    rn : ReactionNetwork of rn_rustwork.py
-        An object representing the reaction network, which includes species, 
-        reactions, and their stoichiometric relationships.
-    
-    lst_color_spcs : list of tuples, optional
-        A list of tuples specifying colors for specific species. Each tuple should have the 
-        format (color, species_list), where species_list is a list of species names 
-        to be assigned the given color. Example: [('cyan', ['A', 'B'])].
-    
-    lst_color_reacs : list of tuples, optional
-        A list of tuples specifying colors for specific reactions. Each tuple should have 
-        the format (color, reaction_list), where reaction_list is a list of reaction 
-        names to be assigned the given color. Example: [('gray', ['R1', 'R2'])].
-    
-    global_species_color : str, optional
-        Default color ('cyan') for all species nodes if no specific color is assigned in lst_color_spcs.
-    
-    global_reaction_color : str, optional
-        Default color ('lightgray') for all reaction nodes if no specific color is assigned in lst_color_reacs.
-    
-    global_input_edge_color : str, optional
-        Color for edges representing inputs (species consumed in reactions). Default is 'red'.
-    
-    global_output_edge_color : str, optional
-        Color for edges representing outputs (species produced in reactions). Default is 'green'.
-    
-    node_size : int, optional
-        The size of the nodes in the visualization. Default is 20.
-    
-    shape_species_node : str, optional
-        Shape of the nodes representing species. Common options include 'dot', 'circle', 'box', 'ellipse', etc. Default is 'dot'.
-    
-    shape_reactions_node : str, optional
-        Shape of the nodes representing reactions. Common options include 'box', 'dot',  'ellipse', etc. Default is 'box'.
-    
-    curvature : str or None, optional
-        Determines whether edges are curved or straight. If 'curvedCCW' (curved counter-clockwise), 
-        edges will be curved. Default is None (straight edges).
-    
-    physics_enabled : bool, optional
-        If True, enables physics-based positioning for the nodes in the visualization. Default is False.
-    
-    filename : str, optional
-        Name of the output HTML file where the visualization will be saved. Default is "reaction_network.html".
-
-    Returns:
-    -------
-    str
-        The filename of the saved HTML file.
-
-    Example:
-    -------
-    # Load a reaction network object
-    file_path = 'Txt/Farm.txt'
-    rn = read_txt(file_path)
-
-    # Visualize the reaction network, assigning yellow to species 's1'
-    rn_get_visualization(rn, lst_color_spcs=[('yellow', ['s1'])], filename="reaction_network.html")
     """
-    # Initialize the network visualization with specific size, settings, and directionality
-    net = Network(height='750px', width='100%', notebook=True, directed=True, cdn_resources='in_line')
+    net = Network(height='100vh', width='100%', notebook=True, directed=True, cdn_resources='in_line') # Antes height='750px'
  
-    ######################################     
-    # Set physics options depending on ‘physics_enabled’.
     options = f"""
     var options = {{
         "physics": {{
@@ -109,62 +261,77 @@ def rn_get_visualization(rn, lst_color_spcs=None, lst_color_reacs=None,
     }}
     """
     net.set_options(options)
-    ######################################
-    # Default colors: Define fallback colors for species, reactions, and edges if not provided
+
     default_species_color = global_species_color or 'cyan'
     default_reaction_color = global_reaction_color or 'lightgray'
-    input_edge_color = global_input_edge_color or 'red'     # Color of input arrows to the reaction (Consume)
-    output_edge_color = global_output_edge_color or 'green'  # Color of output arrows from the reaction (Produce)
+    input_edge_color = global_input_edge_color or 'red'
+    output_edge_color = global_output_edge_color or 'green' 
     
-    # Map specific colors to certain species or reactions if lists provided, otherwise use defaults
     species_colors = {species: color for color, species_list in (lst_color_spcs or []) for species in species_list}
     reaction_colors = {reaction: color for color, reaction_list in (lst_color_reacs or []) for reaction in reaction_list}
     
-    #Construct RN dictionary from reactionnetwork object 
     RN_dict = build_reaction_dict(rn)
 
-    ###################################### 
-    # Identify all species in the network to check their presence in lst_color_spcs
     species_vector = sorted(set([spcs for reactants, products in RN_dict.values() for spcs, _ in reactants + products]))
-    species_set = set(species_vector)  # Convert to a set for easier comparison
+    species_set = set(species_vector) 
     
-    # Validate species in lst_color_spcs to ensure they belong to the network's species
     if lst_color_spcs:
         for color, species_list in lst_color_spcs:
             for species in species_list:
                 if species not in species_set:
                     print(f"Warning: The species '{species}' specified in lst_color_spcs does not belong to the species of the network.")
 
-    # Identify all reactions in the network to check their presence in lst_color_reacs
     reaction_vector = list(RN_dict.keys())
-    reaction_set = set(reaction_vector)  # Convert to a set for easier comparison
+    reaction_set = set(reaction_vector) 
 
-    # Validate reactions in lst_color_reacs to ensure they belong to the network's reactions
     if lst_color_reacs:
         for color, reaction_list in lst_color_reacs:
             for reaction in reaction_list:
                 if reaction not in reaction_set:
                     print(f"Warning: The reaction '{reaction}' specified in lst_color_reacs does not belong to the network reactions.")
-    
-    # Calculate node size based on character length of species name for better visualization 
+
+    ######################################
+    # AGREGAR NODOS DE ESPECIES
+    ######################################
+    display_names = species_display_names or {}
     for species in species_vector:
         color = species_colors.get(species, default_species_color)
-        net.add_node(species, shape=shape_species_node, label=species, color=color, 
-                     size=node_size, font={'size': 14, 'color': 'black'})
+        # render_size = node_size + 10 if use_latex_style else node_size
+        # Quitamos o reducimos el +10 para que PyVis no agrande la imagen
+        render_size = node_size if use_latex_style else node_size
+        
+        if use_latex_style:
+            # Pasamos tipo='specie' a la función generadora.
+            # display_names solo cambia la ETIQUETA renderizada; el id real
+            # del nodo (species) no se toca en ningún lado.
+            svg_uri = generate_svg_data_uri(display_names.get(species, species), color, shape_species_node, tipo='specie', use_latex_style=True)
+            net.add_node(species, shape='image', image=svg_uri, label=" ", size=render_size)
+        else:
+            net.add_node(species, shape=shape_species_node, label=species, color=color, 
+                         size=render_size, font={'size': 14, 'color': 'black'})
  
     ######################################
-
-    # Add reaction nodes with color defined in lst_color_reacs or global/default color
+    # AGREGAR NODOS DE REACCIÓN
+    ######################################
     for reaction in reaction_vector:
         color = reaction_colors.get(reaction, default_reaction_color)
-        net.add_node(reaction, shape=shape_reactions_node, label=reaction, color=color, size=10, font={'size': 14, 'color': 'black'})
+        # Reducimos el tamaño para las reacciones para que se vean más discretas
+        render_size = max(10, node_size - 5) if use_latex_style else max(5, node_size - 10)
+        
+        if use_latex_style:
+            # Pasamos tipo='reaction' a la función generadora
+            svg_uri = generate_svg_data_uri(reaction, color, shape_reactions_node, tipo='reaction', use_latex_style=True)
+            net.add_node(reaction, shape='image', image=svg_uri, label=" ", size=render_size)
+        else:
+            net.add_node(reaction, shape=shape_reactions_node, label=reaction, color=color, 
+                         size=render_size, font={'size': 14, 'color': 'black'})    
 
     ######################################
-    # Add edges and labels
-    connections = set() # Set of connections to track opposite edges and avoid redundant edges
+    # ARISTAS (Se mantiene igual)
+    ######################################
+    connections = set() 
     for reaction, (inputs, outputs) in RN_dict.items():
         for species, coef in inputs:
-            # coef = int(coef)  # Ensure coefficient is an integer
             if coef.is_integer():
                 coef = int(coef)
             else:
@@ -173,7 +340,7 @@ def rn_get_visualization(rn, lst_color_spcs=None, lst_color_reacs=None,
             edge_id = (species, reaction)
             default_curve='curvedCCW'
             smooth_type = {'type': default_curve} if curvature else None
-            # Check for opposite edges and set edge direction and label accordingly
+            
             if (reaction, species) in connections:
                 if coef != 1:
                     net.add_edge(species, reaction, arrows='to', label=str(coef), color=input_edge_color, 
@@ -189,11 +356,9 @@ def rn_get_visualization(rn, lst_color_spcs=None, lst_color_reacs=None,
                     net.add_edge(species, reaction, arrows='to', color=input_edge_color, 
                                  font_color=input_edge_color)
 
-            # Add edge to connections set to avoid redundant edges
             connections.add(edge_id)
 
         for species, coef in outputs:
-            # coef = int(coef)  # Ensure coefficient is an integer
             if coef.is_integer():
                 coef = int(coef)
             else:
@@ -202,7 +367,7 @@ def rn_get_visualization(rn, lst_color_spcs=None, lst_color_reacs=None,
             edge_id = (reaction, species)
             default_curve='curvedCCW'
             smooth_type = {'type': default_curve} if curvature else None
-            # Check for opposite edges and set edge direction and label accordingly
+            
             if (species, reaction) in connections:
                 if coef != 1:
                     net.add_edge(reaction, species, arrows='to', label=str(coef), color=output_edge_color, 
@@ -218,66 +383,52 @@ def rn_get_visualization(rn, lst_color_spcs=None, lst_color_reacs=None,
                     net.add_edge(reaction, species, arrows='to', color=output_edge_color, 
                                  font_color=output_edge_color)
 
-            # Add edge to connections set to avoid redundant edges
             connections.add(edge_id)
     
-    ######################################            
-    # Save the visualization to an HTML file 
     net.html = net.generate_html()
     with open(filename, "w", encoding="utf-8") as f:
         f.write(net.html)
     return filename
 
+
 ###########################################################################################
 # Function to visualize the reaction network and open the HTML file in a browser
-import os
-import webbrowser
-
+###########################################################################################
 def rn_visualize_html(rn, lst_color_spcs=None, lst_color_reacs=None, 
                  global_species_color=None, global_reaction_color=None,
                  global_input_edge_color=None, global_output_edge_color=None, 
                  node_size=20, shape_species_node='dot', shape_reactions_node='box', 
                  curvature=None, physics_enabled=False, 
+                 use_latex_style=False, # NUEVO PARÁMETRO AQUÍ
+                 species_display_names=None, # NUEVO: ver rn_get_visualization
                  filename="reaction_network.html"):
-    """
-    Example:
-    -------
-    # Load a reaction network object
-    file_path = 'Txt/Farm.txt'
-    rn = read_txt(file_path)
-
-    # Visualize the reaction network and open the HTML file in a browser
-    rn_visualize_html(rn, lst_color_spcs=[('yellow', ['s1'])], filename="reaction_network.html")
-    """    
-    # Create visualizations directory if it doesn't exist
+    
     visualizations_dir = "visualizations/rn_visualize_html"
     if not os.path.exists(visualizations_dir):
         os.makedirs(visualizations_dir)
     
-    # Create the full path including the visualizations folder
     full_path = os.path.join(visualizations_dir, filename)
     
-    # Call the rn_get_visualization function to generate the HTML file
+    # Pasamos el nuevo parámetro a rn_get_visualization
     rn_get_visualization(
         rn, lst_color_spcs, lst_color_reacs, 
         global_species_color, global_reaction_color,
         global_input_edge_color, global_output_edge_color, 
         node_size=node_size, shape_species_node=shape_species_node, shape_reactions_node=shape_reactions_node,
-        curvature=curvature, physics_enabled=physics_enabled, filename=full_path
+        curvature=curvature, physics_enabled=physics_enabled, 
+        use_latex_style=use_latex_style, # SE PASA AQUÍ
+        species_display_names=species_display_names, # SE PASA AQUÍ
+        filename=full_path
     )
     
-    # Convert to an absolute path
     abs_path = os.path.abspath(full_path)  
-    # Check if the file was created correctly
     if not os.path.isfile(abs_path):
-        print(f"\nFile not found at {abs_path}")  # Additional message for debugging
+        print(f"\nFile not found at {abs_path}") 
         raise FileNotFoundError(f"\nThe file {abs_path} was not found. Check if rn_get_visualization generated the file correctly.")
     
-    # Inform the user about the file's location
     print(f"\nThe visualization in HTML format of the reaction network was saved in:\n{abs_path}\n")
-    
-    # Open the HTML file in the default browser
     webbrowser.open(f"file://{abs_path}")
+
 
 ###########################################################################################
 # # Plot the Hierarchy
@@ -310,23 +461,11 @@ def hierarchy_get_visualization_html(
     lst_color_subsets=None,
     node_font_size=14, 
     edge_width=2,  
+    use_latex_style=False,  # NUEVO PARÁMETRO
     filename="hierarchy_visualization.html"
 ):
     """
     Visualizes the containment hierarchy among sets with automatic positions (inverted hierarchy).
-    
-    Args:
-        input_data (list): List of lists or sets, where each element represents a set.
-        node_size (int): Size of the nodes in the visualization.
-        node_color (str): Default color of the nodes in the visualization.
-        edge_color (str): Color of the edges in the visualization.
-        shape_node (str): Specifies the shape of the nodes in the visualization, options include 'dot', 'square', 'triangle', 'star', 'diamond' (default is 'dot').
-        lst_color_subsets (list): List of tuples with color and subsets to highlight specific nodes. Example: lst_color_subsets = [("red", [{"A", "B"}, {"A", "C"}])]
-        node_font_size (int): Font size of the node labels.
-        edge_width (int): Width of the edges. 
-        filename (str): Name of the output HTML file.
-    
-    Saves an interactive HTML graph with automatic positioning (smallest sets at the bottom).
     """
     # Convert input data to unique sets
     unique_subsets = []
@@ -341,10 +480,10 @@ def hierarchy_get_visualization_html(
     Set_of_sets.sort(key=lambda x: len(x))
     
     # Create set names based on their level
-    Set_names = [f"O{i+1}" for i in range(len(Set_of_sets))]
-
+    Set_names = [f"X{i+1}" for i in range(len(Set_of_sets))]
+    
     # Create a dictionary of labels for the nodes
-    labels = {f"O{i+1}": f"{', '.join(sorted(s))}" for i, s in enumerate(Set_of_sets)}
+    labels = {f"X{i+1}": f"{', '.join(sorted(s))}" for i, s in enumerate(Set_of_sets)}
 
     # Create set labels to display when hovering over nodes
     cursor_labels = [
@@ -353,7 +492,8 @@ def hierarchy_get_visualization_html(
     ]
 
     # Initialize the PyVis network
-    net = Network(height="750px", width="100%", directed=True, notebook=False)
+    net = Network(height='100vh', width='100%', notebook=True, directed=True, cdn_resources='in_line') 
+    # net = Network(height="750px", width="100%", directed=True, notebook=False)
     net.set_options(f"""
     {{
       "nodes": {{
@@ -398,25 +538,40 @@ def hierarchy_get_visualization_html(
                     if s == set(subset):
                         color_map[Set_names[i]] = color
 
-    # Add nodes to the graph
+    ######################################
+    # BUCLE DE NODOS ACTUALIZADO
+    ######################################
     for name, hover_text in zip(Set_names, cursor_labels):
-        color = color_map.get(name, node_color)  # Use the specific color if defined, otherwise use the default
-        net.add_node(
-            name,  # Node identifier
-            label=name,  # Node label to be displayed inside the node
-            title=hover_text,  # Text shown on hover
-            color=color,  # Node color
-            size=node_size,  # Node size
-            font={"size": node_font_size},  # Font size of the label
-            shape=shape_node  # Node shape (e.g., circle, to ensure the label fits inside)
-        )
- 
+        color = color_map.get(name, node_color)  
+        
+        if use_latex_style:
+            # Reutilizamos la función generadora. Usamos 'specie' para que tengan el tamaño estándar
+            svg_uri = generate_svg_data_uri(name, color, shape_node, tipo='specie', use_latex_style=True)
+            
+            net.add_node(
+                name,  
+                label=" ",                    # Ocultamos la etiqueta por defecto
+                title=hover_text,  
+                color=color,  
+                size=node_size + 10,          # Aumentamos un poco para la imagen SVG
+                shape='image',                # Cambiamos la forma a imagen
+                image=svg_uri                 # Inyectamos el SVG con el subíndice
+            )
+        else:
+            net.add_node(
+                name,  
+                label=name,  
+                title=hover_text,  
+                color=color,  
+                size=node_size,  
+                font={"size": node_font_size},  
+                shape=shape_node  
+            )
 
     # Add edges based on containment relationships
     for i, child_set in enumerate(Set_of_sets):
         for j, parent_set in enumerate(Set_of_sets):
-            if i < j and child_set.issubset(parent_set):  # Add edge if child is a subset of parent
-                # Ensure no intermediate set exists between child and parent
+            if i < j and child_set.issubset(parent_set):  
                 is_direct = True
                 for k, intermediate_set in enumerate(Set_of_sets):
                     if i < k < j and child_set.issubset(intermediate_set) and intermediate_set.issubset(parent_set):
@@ -449,23 +604,11 @@ def hierarchy_visualize_html(
     lst_color_subsets=None, 
     node_font_size=14, 
     edge_width=2,  
+    use_latex_style=False,  # NUEVO PARÁMETRO AQUÍ
     filename="hierarchy_visualization.html"
 ):        
     """
     Wrapper function to generate and visualize the containment hierarchy among sets as an HTML file.
-    
-    Args:
-        input_data (list): List of lists or sets, where each element represents a set.
-        node_size (int): Size of the nodes in the visualization.
-        node_color (str): Default color of the nodes in the visualization.
-        edge_color (str): Color of the edges in the visualization.
-        shape_node (str): Specifies the shape of the nodes in the visualization, options include 'dot', 'square', 'triangle', 'star', 'diamond' (default is 'dot').
-        lst_color_subsets (list): List of tuples with color and subsets to highlight specific nodes. Example: lst_color_subsets = [("red", [{"A", "B"}, {"A", "C"}])]
-        node_font_size (int): Font size of the node labels.
-        edge_width (int): Width of the edges. 
-        filename (str): Name of the output HTML file.
-    
-    Generates the visualization and opens it in the default web browser.
     """
     # Create the directory structure if it doesn't exist
     target_dir = "visualizations/hierarchy_visualize_html"
@@ -485,6 +628,7 @@ def hierarchy_visualize_html(
         lst_color_subsets=lst_color_subsets,  
         node_font_size=node_font_size, 
         edge_width=edge_width,  
+        use_latex_style=use_latex_style,  # PASAMOS EL PARÁMETRO A LA FUNCIÓN INTERNA
         filename=full_path
     )
     
@@ -635,139 +779,49 @@ def rn_visualize_png_in_out(
         else:
             dot.edge(str(src), str(dst), label=label, color=color)
 
-    # Renderizar en la ruta especificada (graphviz añadirá automáticamente .png).
-    # The default png renderer (pango/cairo) has a known Windows bug where it
-    # fails with "failure to create cairo surface: out of memory" on some
-    # layouts regardless of available RAM. Fall back to the gd renderer,
-    # which doesn't share that bug, if the default one crashes.
-    try:
-        dot.render(filepath, format='png', cleanup=True)
-    except graphviz.backend.execute.CalledProcessError:
-        dot.render(filepath, format='png', renderer='gd', cleanup=True)
+    # Renderizar en la ruta especificada (graphviz añadirá automáticamente .png)
+    dot.render(filepath, format='png', cleanup=True)
     full_path = os.path.abspath(f"{filepath}.png")
     print(f"Reaction network saved as: {full_path}")
 
     return Image(f"{filepath}.png")
 
-# def rn_visualize_png_in_out(graph, filename="metabolic_network"):
-#     dot = Digraph(comment="Bipartite Metabolic Network")
-
-#     for idx, (tipo, nombre) in enumerate(graph.nodes()):
-#         if tipo == 'specie':
-#             dot.node(str(idx), nombre, shape='circle', style='filled', fillcolor='cyan')
-#         else:
-#             dot.node(str(idx), nombre, shape='box', style='filled', fillcolor='lightgray')
-
-#     for src, dst in graph.edge_list():
-#         data = graph.get_edge_data(src, dst)
-#         color = 'red' if graph.nodes()[src][0] == 'specie' else 'green'
-#         # dot.edge(str(src), str(dst), label=str(data), color=color)
-#         label = str(data)
-#         if label == '1':
-#             dot.edge(str(src), str(dst), color=color)
-#         else:
-#             dot.edge(str(src), str(dst), label=label, color=color)
-
-
-#     dot.render(filename, format='png', cleanup=True)
-#     full_path = os.path.abspath(f"{filename}.png")
-#     print(f"Reaction network saved as: {full_path}")
-
-#     return Image(filename + '.png')
-
-# Function to get the visualization of the bipartite metabolic network graph as an interactive HTML file using the pyvis library
+# ##################################################################
+# # get_rn_visualize_html_in_out
+# ################################################################## 
+# Install necessary libraries for visualization
+# pip install pyvis
+# pip install rustworkx
+# pip install networkx
+# pip install pydot
 def get_rn_visualize_html_in_out(graph, lst_color_spcs=None, lst_color_reacs=None, 
                          global_species_color=None, global_reaction_color=None,
                          global_input_edge_color=None, global_output_edge_color=None, 
                          node_size=20, shape_species_node='dot', shape_reactions_node='box', 
-                         curvature=None, physics_enabled=False, filename="metabolic_network.html"):
+                         curvature=None, physics_enabled=False, 
+                         use_latex_style=False, # NUEVO PARÁMETRO
+                         species_display_names=None, # NUEVO: ver rn_get_visualization
+                         filename="metabolic_network.html"):
     """
-    Visualizes a metabolic network graph as an interactive HTML file.
-
-    This function uses a given graph to generate a visualization in which 
-    species and reactions are represented as nodes, and interactions are represented as edges. 
-    The resulting visualization is saved to an HTML file that can be opened in a browser.
-
-    Parameters:
-    ----------
-    graph : rustworkx.PyDiGraph
-        A directed graph representing the metabolic network, where nodes contain 
-        (tipo, nombre) tuples indicating node type and name.
-    
-    lst_color_spcs : list of tuples, optional
-        A list of tuples specifying colors for specific species. Each tuple should have the 
-        format (color, species_list), where species_list is a list of species names 
-        to be assigned the given color. Example: [('cyan', ['A', 'B'])].
-    
-    lst_color_reacs : list of tuples, optional
-        A list of tuples specifying colors for specific reactions. Each tuple should have 
-        the format (color, reaction_list), where reaction_list is a list of reaction 
-        names to be assigned the given color. Example: [('gray', ['R1', 'R2'])].
-    
-    global_species_color : str, optional
-        Default color for all species nodes if no specific color is assigned in lst_color_spcs.
-        Default is 'cyan'.
-    
-    global_reaction_color : str, optional
-        Default color for all reaction nodes if no specific color is assigned in lst_color_reacs.
-        Default is 'lightgray'.
-    
-    global_input_edge_color : str, optional
-        Color for edges representing inputs (species consumed in reactions). Default is 'red'.
-    
-    global_output_edge_color : str, optional
-        Color for edges representing outputs (species produced in reactions). Default is 'green'.
-    
-    node_size : int, optional
-        The size of the nodes in the visualization. Default is 20.
-    
-    shape_species_node : str, optional
-        Shape of the nodes representing species. Common options include 'dot', 'circle', 'box', 'ellipse', etc. Default is 'dot'.
-    
-    shape_reactions_node : str, optional
-        Shape of the nodes representing reactions. Common options include 'box', 'dot', 'ellipse', etc. Default is 'box'.
-    
-    curvature : str or None, optional
-        Determines whether edges are curved or straight. If 'curvedCCW' (curved counter-clockwise), 
-        edges will be curved. Default is None (straight edges). Other options can be 'curvedCW' (curved clockwise) or 'straight', 'curved', 
-    
-    physics_enabled : bool, optional
-        If True, enables physics-based positioning for the nodes in the visualization. Default is False.
-    
-    filename : str, optional
-        Name of the output HTML file where the visualization will be saved. Default is "metabolic_network.html".
-
-    Returns:
-    -------
-    str
-        The filename of the saved HTML file.
+    (Docstring original...)
     """
-    # Initialize the network visualization
+    net = Network(height='100vh', width='100%', notebook=True, directed=True, cdn_resources='in_line') 
     
-    net = Network(height='750px', width='100%', notebook=True, directed=True, cdn_resources='in_line') #, cdn_resources='remote'
-    # net = Network(height='100%', width='100%', notebook=True, directed=True, cdn_resources='in_line')
-    # net = Network(height='750px', width='100%', notebook=True, directed=True, cdn_resources='in_line')
-    # net = Network(height="100%", width="100%", directed=True)
-    
-    # Configure physics
     if physics_enabled:
         net.barnes_hut()
     else:
         net.toggle_physics(False)
     
-    # Default colors
     default_species_color = global_species_color or 'cyan'
     default_reaction_color = global_reaction_color or 'lightgray'
     input_edge_color = global_input_edge_color or 'red'
     output_edge_color = global_output_edge_color or 'green'
     
-    # Map specific colors to certain species or reactions
     species_colors = {species: color for color, species_list in (lst_color_spcs or []) for species in species_list}
     reaction_colors = {reaction: color for color, reaction_list in (lst_color_reacs or []) for reaction in reaction_list}
     
-    # Convert rustworkx graph to networkx for easier manipulation
     g_nx = nx.DiGraph()
-    node_mapping = {}  # Map rustworkx indices to node names
+    node_mapping = {}  
     species_set = set()
     reaction_set = set()
     
@@ -779,62 +833,87 @@ def get_rn_visualize_html_in_out(graph, lst_color_spcs=None, lst_color_reacs=Non
         else:
             reaction_set.add(nombre)
 
-    # Validate species in lst_color_spcs
     if lst_color_spcs:
         for color, species_list in lst_color_spcs:
             for species in species_list:
                 if species not in species_set:
                     print(f"Warning: The species '{species}' specified in lst_color_spcs does not belong to the species of the network.")
 
-    # Validate reactions in lst_color_reacs
     if lst_color_reacs:
         for color, reaction_list in lst_color_reacs:
             for reaction in reaction_list:
                 if reaction not in reaction_set:
                     print(f"Warning: The reaction '{reaction}' specified in lst_color_reacs does not belong to the network reactions.")
 
-    # Count edge occurrences
     edge_counts = Counter((src, dst) for src, dst in graph.edge_list())
     
     for src, dst in graph.edge_list():
         g_nx.add_edge(src, dst, weight=graph.get_edge_data(src, dst))
 
-    # Get positions using Graphviz layout if physics is disabled
     if not physics_enabled:
         try:
             pos = nx.nx_pydot.graphviz_layout(g_nx, prog="dot")
         except:
-            # Fallback to spring layout if graphviz is not available
             pos = nx.spring_layout(g_nx)
     else:
         pos = {}
 
-    # Add nodes to the visualization
+    ######################################
+    # BUCLE DE NODOS ACTUALIZADO
+    ######################################
+    display_names = species_display_names or {}
     for idx in g_nx.nodes():
         tipo = g_nx.nodes[idx]['tipo']
         nombre = g_nx.nodes[idx]['nombre']
         
-        # Determine node color
+        # Ajustamos el tamaño base de renderizado según si es especie o reacción
         if tipo == 'specie':
             color = species_colors.get(nombre, default_species_color)
             shape = shape_species_node
+            # Como la imagen SVG ya tiene la proporción correcta para el texto abajo, 
+            # usamos el tamaño original del nodo sin aumentarlo.
+            render_size = node_size 
         else:
             color = reaction_colors.get(nombre, default_reaction_color)
             shape = shape_reactions_node
+            # Reducimos el tamaño de las reacciones en PyVis
+            render_size = max(10, node_size - 5) if use_latex_style else max(5, node_size - 10)
         
-        # Add node with or without fixed position
+        # display_names solo aplica a especies; el id real del grafo (nombre)
+        # no se toca en ningún lado, solo la etiqueta pasada al SVG.
+        render_name = display_names.get(nombre, nombre) if tipo == 'specie' else nombre
+
+        if use_latex_style:
+            # Pasamos la variable 'tipo' explícitamente a la función SVG
+            svg_uri = generate_svg_data_uri(render_name, color, shape, tipo=tipo, use_latex_style=True)
+            node_shape = 'image'
+            display_label = " " 
+        else:
+            svg_uri = None
+            node_shape = shape
+            display_label = nombre
+        
         if not physics_enabled and idx in pos:
             x, y = pos[idx]
-            net.add_node(n_id=idx, label=nombre, shape=shape, color=color, 
-                        size=node_size, x=x, y=-y, physics=False,
-                        font={'size': 14, 'color': 'black'})
+            if use_latex_style:
+                net.add_node(n_id=idx, shape=node_shape, image=svg_uri, label=display_label, 
+                             size=render_size, x=x, y=-y, physics=False)
+            else:
+                net.add_node(n_id=idx, label=display_label, shape=node_shape, color=color, 
+                             size=render_size, x=x, y=-y, physics=False, 
+                             font={'size': 14, 'color': 'black'})
         else:
-            net.add_node(n_id=idx, label=nombre, shape=shape, color=color, 
-                        size=node_size, font={'size': 14, 'color': 'black'})
+            if use_latex_style:
+                net.add_node(n_id=idx, shape=node_shape, image=svg_uri, label=display_label, 
+                             size=render_size)
+            else:
+                net.add_node(n_id=idx, label=display_label, shape=node_shape, color=color, 
+                             size=render_size, font={'size': 14, 'color': 'black'})
 
-    # Add edges with proper styling
+    ######################################
+    # LÓGICA DE ARISTAS (Se mantiene igual)
+    ######################################
     edge_usage = Counter()
-    
     connections = set()
     
     for src, dst in g_nx.edges():
@@ -842,25 +921,20 @@ def get_rn_visualize_html_in_out(graph, lst_color_spcs=None, lst_color_reacs=Non
         count = edge_counts[(src, dst)]
         edge_usage[(src, dst)] += 1
         
-        # Determine edge color based on node types
         src_tipo = g_nx.nodes[src]['tipo']
         dst_tipo = g_nx.nodes[dst]['tipo']
         
-        # Species -> Reaction (input/consumption)
         if src_tipo == 'specie' and dst_tipo == 'reaction':
             edge_color = input_edge_color
-        # Reaction -> Species (output/production)
         elif src_tipo == 'reaction' and dst_tipo == 'specie':
             edge_color = output_edge_color
         else:
-            edge_color = 'gray'  # Default for other cases
+            edge_color = 'gray' 
         
-        # Configure edge smoothing based on curvature and edge usage
         smooth_config = {}
 
         if curvature:
             if count != 1 or (dst, src) in connections:
-                # Caso con conexión opuesta y múltiples aristas
                 curve_type = "cubicBezier" if edge_usage[(src, dst)] % 2 == 0 else "curvedCCW"
                 smooth_config = {
                     "smooth": {
@@ -869,7 +943,6 @@ def get_rn_visualize_html_in_out(graph, lst_color_spcs=None, lst_color_reacs=Non
                     }
                 }
             else:
-                # Caso único o sin conexión opuesta
                 smooth_config = {
                     "smooth": {
                         "type": "cubicBezier",
@@ -878,7 +951,6 @@ def get_rn_visualize_html_in_out(graph, lst_color_spcs=None, lst_color_reacs=Non
                     }
                 }
         elif count != 1 or (dst, src) in g_nx.edges():
-            # Caso sin curvature, pero con múltiples aristas o arista opuesta
             curve_type = "curvedCW" if edge_usage[(src, dst)] % 2 == 0 else "curvedCCW"
             smooth_config = {
                 "smooth": {
@@ -888,105 +960,60 @@ def get_rn_visualize_html_in_out(graph, lst_color_spcs=None, lst_color_reacs=Non
                 }
             }
         
-        # Add edge with weight label if greater than 1
         if weight != 1: 
-            net.add_edge(src, dst, label=str(weight), 
-                        arrows='to', 
-                        color=edge_color, font_color=edge_color, **smooth_config)
+            net.add_edge(src, dst, label=str(weight), arrows='to', 
+                         color=edge_color, font_color=edge_color, **smooth_config)
         else: 
-            net.add_edge(src, dst, arrows='to', 
-                        color=edge_color, font_color=edge_color, **smooth_config)
+            net.add_edge(src, dst, arrows='to', color=edge_color, 
+                         font_color=edge_color, **smooth_config)
 
         connections.add((src, dst)) 
-
-    ######################################            
-    # Save the visualization to an HTML file 
+          
     net.html = net.generate_html()
     with open(filename, "w", encoding="utf-8") as f:
         f.write(net.html)
     return filename 
 
-    # # Ensure filename has .html extension
-    # if not filename.endswith('.html'):
-    #     filename += '.html'
-    
-    # # SOLUCIÓN AL PROBLEMA DE CODIFICACIÓN: Reemplazar net.write_html(filename) con:
-    # try:
-    #     # Generar contenido HTML
-    #     html_content = net.generate_html()
-        
-    #     # Escribir con codificación UTF-8
-    #     with codecs.open(filename, 'w', encoding='utf-8') as f:
-    #         f.write(html_content)
-        
-    #     print(f"Visualización guardada exitosamente en: {filename}")
-        
-    # except Exception as e:
-    #     print(f"Error al guardar el archivo: {e}")
-    #     # Respaldo: intentar con el método original
-    #     try:
-    #         net.write_html(filename)
-    #         print(f"Guardado con método alternativo en: {filename}")
-    #     except:
-    #         print("No se pudo guardar el archivo HTML")
-    #         raise
-    
-    # return filename   
- 
-    # # Ensure filename has .html extension
-    # if not filename.endswith('.html'):
-    #     filename += '.html'
-    
-    # # Save the visualization
-    # net.write_html(filename)
-    
-    # return filename
-
-# Function to visualize the metabolic network graph as an interactive HTML file using the pyvis library
-import os
-import webbrowser
-
+##################################################################
+# Modificación en rn_visualize_html_in_out
+##################################################################
 def rn_visualize_html_in_out(graph, lst_color_spcs=None, lst_color_reacs=None, 
                          global_species_color=None, global_reaction_color=None,
                          global_input_edge_color=None, global_output_edge_color=None, 
                          node_size=20, shape_species_node='dot', shape_reactions_node='box', 
-                         curvature=None, physics_enabled=False, filename="metabolic_network.html"):
+                         curvature=None, physics_enabled=False, 
+                         use_latex_style=False, # NUEVO PARÁMETRO
+                         species_display_names=None, # NUEVO: ver rn_get_visualization
+                         filename="metabolic_network.html"):
     """
     Visualizes an interactive graph object and saves it in the specified directory.
-    
-    Example:
-    -------
-    # Visualize an interactive graph object 
-    graph = create_bipartite_graph_from_rn()
-    rn_visualize_html_in_out(graph, lst_color_spcs=[('blue', ['node1'])], filename="interactive_graph.html")
     """
-    
-    # Create the directory if it doesn't exist
     output_dir = "visualizations/rn_visualize_html_in_out"
     os.makedirs(output_dir, exist_ok=True)
     
-    # Construct the full file path
     filepath = os.path.join(output_dir, filename)
     
-    # Call a function to generate the interactive graph HTML file with the correct path
     get_rn_visualize_html_in_out(
         graph, lst_color_spcs, lst_color_reacs, 
         global_species_color, global_reaction_color,
         global_input_edge_color, global_output_edge_color, 
         node_size=node_size, shape_species_node=shape_species_node, shape_reactions_node=shape_reactions_node,
-        curvature=curvature, physics_enabled=physics_enabled, filename=filepath  # Pass the full path here
+        curvature=curvature, physics_enabled=physics_enabled, 
+        use_latex_style=use_latex_style, # PASANDO EL PARÁMETRO
+        species_display_names=species_display_names, # PASANDO EL PARÁMETRO
+        filename=filepath  
     )
     
-    # Convert the filepath to an absolute path
     abs_path = os.path.abspath(filepath)  
     
-    # Check if the file was created successfully
     if not os.path.isfile(abs_path):
-        print(f"\nFile not found at {abs_path}")  # Debugging message
+        print(f"\nFile not found at {abs_path}") 
         raise FileNotFoundError(f"\nThe file {abs_path} was not found. Check if get_rn_visualize_html_in_out created the file correctly.")
     
-    # Inform the user about the file's location
     print(f"\nThe visualization of the bipartite graph of the metabolic network was saved in HTML format:\n{abs_path}\n")
+    
+    webbrowser.open(f"file://{abs_path}")
+
 
 
 ##################################################################

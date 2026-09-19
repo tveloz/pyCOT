@@ -39,46 +39,146 @@ from pyCOT.simulations.spatial import *
 # Plots the time series of ODE concentrations and abstractions
 ######################################################################################
 # Function to plot time series of concentrations from ODE simulation and optionally save the figure
-def plot_series_ode(time_series, xlabel="Time", ylabel="Concentration", 
-                   title="Time Series of Concentrations", filename="time_series_plot.png",
-                   show_grid=True, save_figure=True,
-                   ax=None, show_fig=False, color_dict=None):
-    if 'Time' not in time_series.columns:
-        raise ValueError("The DataFrame must include a 'Time' column for time values.")
+import os
+import matplotlib.pyplot as plt
 
+
+def plot_series_ode(
+    time_series,
+    xlabel="Time",
+    ylabel="Concentration",
+    title="Time Series of Concentrations",
+    filename="time_series_plot.png",
+    show_grid=True,
+    save_figure=True,
+    output_dir="visualizations/plot_series_ode",
+    ax=None,
+    show_fig=False,
+    color_dict=None
+):
+    """
+    Plot time series of ODE model species.
+
+    Parameters
+    ----------
+    time_series : pandas.DataFrame
+        DataFrame containing a 'Time' column and one or more species columns.
+
+    xlabel : str, default="Time"
+        Label for the x-axis.
+
+    ylabel : str, default="Concentration"
+        Label for the y-axis.
+
+    title : str, default="Time Series of Concentrations"
+        Figure title.
+
+    filename : str, default="time_series_plot.png"
+        Name of the output figure file.
+
+    show_grid : bool, default=True
+        Whether to display the grid.
+
+    save_figure : bool, default=True
+        Whether to save the figure.
+
+    output_dir : str, default="visualizations/plot_series_ode"
+        Directory where the figure will be saved.
+
+    ax : matplotlib.axes.Axes, optional
+        Existing matplotlib Axes. If None, a new figure is created.
+
+    show_fig : bool, default=False
+        Whether to display the figure.
+
+    color_dict : dict, optional
+        Dictionary mapping species names to colors.
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        Matplotlib figure.
+
+    ax : matplotlib.axes.Axes
+        Matplotlib axes.
+    """
+
+    # ------------------------------------------------------------------
+    # Validate input
+    # ------------------------------------------------------------------
+    if "Time" not in time_series.columns:
+        raise ValueError(
+            "The DataFrame must include a 'Time' column for time values."
+        )
+
+    # ------------------------------------------------------------------
+    # Create or retrieve figure
+    # ------------------------------------------------------------------
     if ax is None:
         fig, ax = plt.subplots(figsize=(10, 6))
     else:
         fig = ax.get_figure()
 
-    species_list = [col for col in time_series.columns if col != 'Time']
-    
-    for species in species_list:
-        if color_dict and species in color_dict:
-            ax.plot(time_series['Time'], time_series[species], 
-                   label=species, color=color_dict[species])
-        else:
-            ax.plot(time_series['Time'], time_series[species], label=species)
+    # ------------------------------------------------------------------
+    # Plot species
+    # ------------------------------------------------------------------
+    species_list = [
+        col for col in time_series.columns
+        if col != "Time"
+    ]
 
+    for species in species_list:
+
+        if color_dict and species in color_dict:
+            ax.plot(
+                time_series["Time"],
+                time_series[species],
+                label=species,
+                color=color_dict[species]
+            )
+        else:
+            ax.plot(
+                time_series["Time"],
+                time_series[species],
+                label=species
+            )
+
+    # ------------------------------------------------------------------
+    # Figure formatting
+    # ------------------------------------------------------------------
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title(title)
+
     ax.grid(show_grid)
     ax.legend()
-    
+
+    # ------------------------------------------------------------------
+    # Save figure
+    # ------------------------------------------------------------------
     if save_figure:
-        plt.savefig(filename, dpi=300, bbox_inches='tight')
-    
+
+        # Create directory if it does not exist
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Full output path
+        filepath = os.path.join(output_dir, filename)
+
+        # Save
+        fig.savefig(
+            filepath,
+            dpi=300,
+            bbox_inches="tight"
+        )
+
+        print(f"Figure saved as: {filepath}")
+
+    # ------------------------------------------------------------------
+    # Show figure
+    # ------------------------------------------------------------------
     if show_fig:
         plt.show()
 
-    if save_figure:
-        os.makedirs("visualizations/plot_series_ode", exist_ok=True)
-        filepath = os.path.join("visualizations", "plot_series_ode", filename)
-        fig.savefig(filepath, dpi=300, bbox_inches='tight')
-        print(f"Figure saved as: {filepath}")
-    if show_fig:
-        plt.show()
     return fig, ax
 
 ######################################################################################## 
@@ -449,49 +549,341 @@ def animate_diffusion_heatmaps_all_species_2D(t, X, species_names=None, main_tit
 
 ########################################################################################
 
-def plot_species_dynamics_MP(t, time_series, species, num_patches=4, separate_plots=False, 
-                         filename='dynamics.png', title='Dinámicas de Especies en Cada Parche', 
-                         figsize=(12, 8)):
+# def plot_species_dynamics_MP(t, time_series, species, num_patches=4, separate_plots=False, 
+#                          filename='dynamics.png', title='Dinámicas de Especies en Cada Parche', 
+#                          figsize=(12, 8)):
+#     """
+#     Grafica las series temporales de las concentraciones de especies en cada parche.
+    
+#     Parámetros:
+#     - t: Arreglo de tiempos (numpy array).
+#     - time_series: DataFrame con las concentraciones, columnas en formato (especie, parche).
+#     - species: Lista de nombres de las especies (ej. ['l', 's1', 's2']).
+#     - num_patches: Número de parches (default: 4).
+#     - separate_plots: Si True, crea un subgráfico por especie; si False, grafica todo en una figura (default: False).
+#     - filename: Nombre del archivo para guardar el gráfico (default: 'dynamics.png').
+#     - title: Título del gráfico (default: 'Dinámicas de Especies en Cada Parche').
+#     - figsize: Tupla con el tamaÃ±o de la figura (default: (12, 8)).
+#     """
+#     if separate_plots:
+#         # Crear subgráficos para cada especie
+#         fig, axs = plt.subplots(len(species), 1, figsize=(figsize[0], figsize[1] * len(species) / 2), sharex=True)
+#         for i, sp in enumerate(species):
+#             for p in range(num_patches):
+#                 axs[i].plot(t, time_series[(sp, p)], label=f'Parche {p}')
+#             axs[i].set_title(f'Concentración de {sp}')
+#             axs[i].set_ylabel('Concentración')
+#             axs[i].legend()
+#             axs[i].grid(True)
+#         axs[-1].set_xlabel('Tiempo')
+#         plt.suptitle(title, y=1.02)
+#     else:
+#         # Graficar todas las especies en una sola figura
+#         plt.figure(figsize=figsize)
+#         for sp in species:
+#             for p in range(num_patches):
+#                 plt.plot(t, time_series[(sp, p)], label=f'{sp}, Parche {p}')
+#         plt.xlabel('Tiempo')
+#         plt.ylabel('Concentración')
+#         plt.title(title)
+#         plt.legend()
+#         plt.grid(True)
+    
+#     plt.tight_layout()
+#     plt.savefig(filename)
+#     plt.show()
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def _get_patch_series(time_series, sp, p):
+    """Extrae la serie temporal de la especie `sp` en el parche `p`.
+
+    Acepta los tres formatos que circulan en pyCOT:
+      1. dict {especie: array (n_tiempos, n_parches)}   <- lo que devuelve
+         simulate_metapopulation_dynamics
+      2. DataFrame con columnas MultiIndex (especie, parche)
+      3. array 3D (n_tiempos, n_especies, n_parches), con `sp` como indice
+    """
+    # 1. dict de arrays por especie
+    if isinstance(time_series, dict):
+        arr = np.asarray(time_series[sp])
+        return arr[:, p] if arr.ndim == 2 else arr
+
+    # 2. DataFrame con MultiIndex (especie, parche)
+    if hasattr(time_series, 'columns'):
+        for key in ((sp, p), (sp, str(p)), f'{sp}_{p}', f'{sp}{p}'):
+            if key in time_series.columns:
+                return time_series[key].values
+        raise KeyError(
+            f"No encuentro la columna para ({sp}, {p}). "
+            f"Columnas disponibles: {list(time_series.columns)[:10]}")
+
+    # 3. array 3D
+    arr = np.asarray(time_series)
+    if arr.ndim == 3:
+        return arr[:, sp, p]
+
+    raise TypeError(f"Formato de time_series no reconocido: {type(time_series)}")
+
+
+def plot_species_dynamics_MP(t, time_series, species, num_patches=4,
+                             separate_plots=False, filename='dynamics.png',
+                             title='Dinámicas de Especies en Cada Parche',
+                             figsize=(12, 8), show=True):
     """
     Grafica las series temporales de las concentraciones de especies en cada parche.
-    
+
     Parámetros:
     - t: Arreglo de tiempos (numpy array).
-    - time_series: DataFrame con las concentraciones, columnas en formato (especie, parche).
+    - time_series: dict {especie: array (n_tiempos, n_parches)}, DataFrame con
+      columnas MultiIndex (especie, parche), o array 3D.
     - species: Lista de nombres de las especies (ej. ['l', 's1', 's2']).
     - num_patches: Número de parches (default: 4).
-    - separate_plots: Si True, crea un subgráfico por especie; si False, grafica todo en una figura (default: False).
-    - filename: Nombre del archivo para guardar el gráfico (default: 'dynamics.png').
-    - title: Título del gráfico (default: 'Dinámicas de Especies en Cada Parche').
-    - figsize: Tupla con el tamaÃ±o de la figura (default: (12, 8)).
+    - separate_plots: Si True, crea un subgráfico por especie (default: False).
+    - filename: Nombre del archivo para guardar el gráfico.
+    - title: Título del gráfico.
+    - figsize: Tupla con el tamaño de la figura.
+    - show: Si True, llama a plt.show() al final.
     """
+    t = np.asarray(t)
+
+    # Verificacion de longitudes: si t y las series no coinciden, el error de
+    # matplotlib es opaco, asi que conviene detectarlo aqui.
+    n_t = len(_get_patch_series(time_series, species[0], 0))
+    if len(t) != n_t:
+        raise ValueError(
+            f"t tiene {len(t)} puntos pero las series tienen {n_t}. "
+            f"Verifica que n_steps coincida con el vector de tiempos devuelto.")
+
     if separate_plots:
-        # Crear subgráficos para cada especie
-        fig, axs = plt.subplots(len(species), 1, figsize=(figsize[0], figsize[1] * len(species) / 2), sharex=True)
+        fig, axs = plt.subplots(len(species), 1,
+                                figsize=(figsize[0], figsize[1] * len(species) / 2),
+                                sharex=True)
+        axs = np.atleast_1d(axs)      # con una sola especie, subplots no devuelve array
         for i, sp in enumerate(species):
             for p in range(num_patches):
-                axs[i].plot(t, time_series[(sp, p)], label=f'Parche {p}')
+                axs[i].plot(t, _get_patch_series(time_series, sp, p), label=f'Parche {p}')
             axs[i].set_title(f'Concentración de {sp}')
             axs[i].set_ylabel('Concentración')
             axs[i].legend()
-            axs[i].grid(True)
+            axs[i].grid(True, alpha=0.3)
         axs[-1].set_xlabel('Tiempo')
         plt.suptitle(title, y=1.02)
     else:
-        # Graficar todas las especies en una sola figura
         plt.figure(figsize=figsize)
         for sp in species:
             for p in range(num_patches):
-                plt.plot(t, time_series[(sp, p)], label=f'{sp}, Parche {p}')
+                plt.plot(t, _get_patch_series(time_series, sp, p), label=f'{sp}, Parche {p}')
         plt.xlabel('Tiempo')
         plt.ylabel('Concentración')
         plt.title(title)
-        plt.legend()
-        plt.grid(True)
-    
+        plt.legend(fontsize=8, ncol=2)
+        plt.grid(True, alpha=0.3)
+
     plt.tight_layout()
-    plt.savefig(filename)
-    plt.show()
+    plt.savefig(filename, dpi=250, bbox_inches='tight')
+    if show:
+        plt.show()
+    return plt.gcf()
+
+
+def _resolve_curve_value(sp, p, val):
+    """Resuelve un valor de estilo/etiqueta para la curva de la especie `sp`
+    en el parche `p`. `val` puede ser un valor único (se aplica a todas las
+    curvas), o un dict que se busca en orden: (sp, p) -> sp -> p. Esto permite
+    indexar por especie, por parche o por la combinación exacta, sin importar
+    si el `mode` de plot_species_dynamics_grid itera especies o parches como
+    curvas dentro de cada panel. Devuelve (valor, encontrado)."""
+    if val is None:
+        return None, False
+    if not isinstance(val, dict):
+        return val, True
+    for key in ((sp, p), sp, p):
+        if key in val:
+            return val[key], True
+    return None, False
+
+
+def _curve_style(sp, p, colors, linestyles, linewidths, markers, line_kwargs):
+    """Arma los kwargs de estilo de una curva a partir de las opciones de
+    plot_species_dynamics_grid. Cada una de colors/linestyles/linewidths/markers
+    puede ser un valor único o un dict indexado por especie, por parche
+    (1-based: parche 1, parche 2, ...), o por la tupla (especie, parche) para
+    el caso más específico -- ver `_resolve_curve_value`. line_kwargs permite
+    overrides puntuales adicionales (alpha, zorder, markersize, etc.) buscados
+    con el mismo orden de claves."""
+    style = {}
+    for name, val in (('color', colors), ('linestyle', linestyles),
+                      ('linewidth', linewidths), ('marker', markers)):
+        resolved, found = _resolve_curve_value(sp, p, val)
+        if found:
+            style[name] = resolved
+    if line_kwargs:
+        for key in ((sp, p), sp, p):
+            if key in line_kwargs:
+                style.update(line_kwargs[key])
+                break
+    return style
+
+
+def _curve_label(sp, p, default, legend_labels):
+    if legend_labels:
+        for key in ((sp, p), sp, p):
+            if key in legend_labels:
+                return legend_labels[key]
+    return default
+
+
+def plot_species_dynamics_grid(t, time_series, species, num_patches=4,
+                               mode='per_patch', ncols=None, sharey=False,
+                               colors=None, linestyles=None, linewidths=None,
+                               markers=None, line_kwargs=None,
+                               xlabel='Tiempo', ylabel='Concentración',
+                               legend_labels=None, legend_fontsize=8,
+                               title=None, panel_title_fn=None,
+                               show_grid=True, grid_alpha=0.3,
+                               figsize=(5, 4), dpi=250,
+                               save_figure=True, filename='dynamics_grid.png',
+                               folder='visualizations/plot_species_dynamics_grid',
+                               show=True):
+    """
+    Grafica las dinámicas de n parches x m especies en una cuadrícula de subgráficos,
+    uno por parche o uno por especie según `mode`.
+
+    - mode='per_patch': un subgráfico por parche (n en total), con las m especies
+      superpuestas en cada uno. La "identidad" de cada curva es la especie.
+    - mode='per_species': un subgráfico por especie (m en total), con los n parches
+      superpuestos en cada uno. La "identidad" de cada curva es el parche.
+
+    Parámetros:
+    - t: Arreglo de tiempos (numpy array).
+    - time_series: dict {especie: array (n_tiempos, n_parches)}, DataFrame con
+      columnas MultiIndex (especie, parche), o array 3D. Ver `_get_patch_series`.
+    - species: Lista de nombres de las especies (ej. ['l', 's1', 's2']).
+    - num_patches: Número de parches (default: 4).
+    - mode: 'per_patch' o 'per_species' (default: 'per_patch').
+    - ncols: Número de columnas de la cuadrícula (default: min(n_paneles, 3)).
+    - sharey: Si True, todos los subgráficos comparten el eje y (default: False).
+
+    Estilo de curvas — cada uno acepta un valor único (aplica a todas las
+    curvas del mismo tipo) o un dict, y funciona igual sin importar `mode`
+    porque cada curva concreta siempre corresponde a una (especie, parche).
+    El dict se busca en este orden de claves: (especie, parche) -> especie ->
+    parche. El parche se numera desde 1 (parche 1, parche 2, ...), igual que
+    en los títulos y leyendas por defecto. Así puedes fijar el estilo por
+    especie (consistente entre parches), por parche (consistente entre
+    especies), o combinar ambos para el caso más específico:
+    - colors: color de cada curva, ej. {'s1': 'tab:blue', 's2': 'tab:orange'}
+      (por especie), {1: 'tab:blue', 2: 'tab:red'} (por parche), o
+      {('s1', 1): 'tab:blue', ('s1', 2): 'tab:red'} (combinado).
+    - linestyles: estilo de línea, ej. {'s1': '-', 's2': '--'}.
+    - linewidths: grosor de línea, ej. 2 o {'s1': 1, 's2': 2.5}.
+    - markers: marcador, ej. 'o' o {1: 'o', 2: '^'}.
+    - line_kwargs: overrides adicionales por curva para cualquier kwarg de
+      `Axes.plot` no cubierto arriba (alpha, zorder, markersize, ...), ej.
+      {'s1': {'alpha': 0.6, 'markersize': 4}} (mismo orden de claves).
+
+    Textos:
+    - xlabel, ylabel: nombres de los ejes (default 'Tiempo'/'Concentración').
+    - legend_labels: dict {clave: texto} para renombrar las entradas de la
+      leyenda (mismas claves y orden de búsqueda que colors/linestyles/...).
+    - legend_fontsize: tamaño de fuente de la leyenda (default: 8).
+    - title: Título general de la figura (default: uno según `mode`).
+    - panel_title_fn: función opcional `identidad_de_panel -> str` para
+      personalizar el título de cada subgráfico (identidad = número de parche
+      1-based en modo per_patch, nombre de especie en modo per_species). Si es
+      None, se usa 'Parche {n}' / 'Especie {sp}'.
+
+    Grilla y tamaño:
+    - show_grid: Si True, dibuja grilla en cada subgráfico (default: True).
+    - grid_alpha: Transparencia de la grilla (default: 0.3).
+    - figsize: Tamaño de CADA subgráfico (ancho, alto); la figura completa
+      escala con el número de filas/columnas de la cuadrícula.
+    - dpi: Resolución al guardar la figura (default: 150).
+
+    Guardado:
+    - save_figure: Si True, guarda la figura en disco (default: True).
+    - filename: Nombre del archivo.
+    - folder: Carpeta donde guardar `filename` (default:
+      'visualizations/plot_species_dynamics_grid'; se crea si no existe). Usa
+      folder=None para guardar `filename` tal cual (ej. si ya trae una ruta).
+    - show: Si True, llama a plt.show() al final.
+
+    Al guardar, imprime la ruta final del archivo.
+    """
+    if mode not in ('per_patch', 'per_species'):
+        raise ValueError("mode debe ser 'per_patch' o 'per_species'")
+
+    t = np.asarray(t)
+
+    # Misma verificación temprana que plot_species_dynamics_MP: el error de
+    # matplotlib por longitudes distintas es opaco.
+    n_t = len(_get_patch_series(time_series, species[0], 0))
+    if len(t) != n_t:
+        raise ValueError(
+            f"t tiene {len(t)} puntos pero las series tienen {n_t}. "
+            f"Verifica que n_steps coincida con el vector de tiempos devuelto.")
+
+    n_panels = num_patches if mode == 'per_patch' else len(species)
+    if ncols is None:
+        ncols = min(n_panels, 3)
+    nrows = int(np.ceil(n_panels / ncols))
+
+    fig, axs = plt.subplots(nrows, ncols,
+                            figsize=(figsize[0] * ncols, figsize[1] * nrows),
+                            sharex=True, sharey=sharey, squeeze=False)
+    axs_flat = axs.flatten()
+
+    for i in range(n_panels):
+        ax = axs_flat[i]
+        if mode == 'per_patch':
+            p = i                  # índice 0-based para acceder a los datos
+            patch_num = p + 1      # número de parche 1-based para estilo/etiquetas
+            for sp in species:
+                style = _curve_style(sp, patch_num, colors, linestyles, linewidths, markers, line_kwargs)
+                label = _curve_label(sp, patch_num, sp, legend_labels)
+                ax.plot(t, _get_patch_series(time_series, sp, p), label=label, **style)
+            panel_key = patch_num
+            default_title = f'Parche {patch_num}'
+        else:
+            sp = species[i]
+            for p in range(num_patches):
+                patch_num = p + 1
+                style = _curve_style(sp, patch_num, colors, linestyles, linewidths, markers, line_kwargs)
+                label = _curve_label(sp, patch_num, f'Parche {patch_num}', legend_labels)
+                ax.plot(t, _get_patch_series(time_series, sp, p), label=label, **style)
+            panel_key = sp
+            default_title = f'Especie {sp}'
+
+        ax.set_title(panel_title_fn(panel_key) if panel_title_fn else default_title)
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        ax.legend(fontsize=legend_fontsize)
+        if show_grid:
+            ax.grid(True, alpha=grid_alpha)
+
+    # Apaga los ejes sobrantes si la cuadrícula no se llena exactamente.
+    for j in range(n_panels, len(axs_flat)):
+        axs_flat[j].axis('off')
+
+    if title is None:
+        title = ('Dinámicas por parche (todas las especies)' if mode == 'per_patch'
+                 else 'Dinámicas por especie (todos los parches)')
+    plt.suptitle(title, y=1.0)
+
+    plt.tight_layout()
+    if save_figure:
+        filepath = os.path.join(folder, filename) if folder else filename
+        if folder:
+            os.makedirs(folder, exist_ok=True)
+        fig.savefig(filepath, dpi=dpi, bbox_inches='tight')
+        print(f"Figure saved as: {filepath}")
+    if show:
+        plt.show()
+    return fig
+
 
 # Función para graficar mapas de calor 2D para cada especie en múltiples tiempos
 def plot_heatmaps_for_species_2d(time_series, species, t, patch_shape=(2, 2), time_indices=None, 
