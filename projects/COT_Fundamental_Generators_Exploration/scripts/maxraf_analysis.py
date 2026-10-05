@@ -36,13 +36,13 @@ to be non-increasing, so it converges in at most n_ercs iterations to the
 GREATEST fixed point of Phi. Because RAF-type fixed points are closed under
 union (a structural fact carried over from RAF theory: the union of two
 self-sustaining sets is self-sustaining), maxRAF contains every genuine
-EPM/ESPM's own ERC-set -- so any ERC excluded from maxRAF can be safely
-excluded from the whole EPM/ESPM search: it could never appear in a real
+SO0/SOi's own ERC-set -- so any ERC excluded from maxRAF can be safely
+excluded from the whole SO0/SOi search: it could never appear in a real
 persistent module.
 
 WHAT IT DOES NOT DO
 --------------------
-Does not modify cot_gen/epm.py. This is a standalone, read-only
+Does not modify pyCOT.analysis.organizations.so_search. This is a standalone, read-only
 characterization tool -- see maxraf_filter.py in this same folder for the
 version wired into the actual search (once validated).
 

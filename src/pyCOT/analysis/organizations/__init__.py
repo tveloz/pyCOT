@@ -12,7 +12,7 @@ Pipeline (see organizations.py for the full narrative):
   Stage 2: ERC Hierarchy                 hierarchy
   Stage 3: Fundamental synergies         synergy
   Stage 4: Fundamental complementarities complementarity
-  Stage 5: EPM / ESPM exploration        fundamental_graph, epm
+  Stage 5: SO0 / SOi exploration          fundamental_graph, so_search
   Stage 6: LP self-maintenance           self_maintenance
   Orchestration                          organizations.compute_organizations
 
@@ -32,7 +32,7 @@ from .erc import compute_ercs
 from .hierarchy import build_hierarchy, HierarchyData
 from .synergy import compute_synergies_basis_first, SynergyResult
 from .complementarity import compute_complementarities, CompResult
-from .epm import compute_epms, compute_espm, EPMResult, ESPMResult
+from .so_search import compute_elementary_sos, compute_so_hierarchy, ElementarySOResult, SOHierarchyResult
 from .max_semiorg import compute_max_semiorganization, max_semiorganization_species
 from .self_maintenance import minimize_sv, check_self_maintenance, diagnose_self_maintenance
 from .organizations import compute_organizations, OrganizationsResult, SemiOrganization
@@ -44,7 +44,7 @@ __all__ = [
     "build_hierarchy", "HierarchyData",
     "compute_synergies_basis_first", "SynergyResult",
     "compute_complementarities", "CompResult",
-    "compute_epms", "compute_espm", "EPMResult", "ESPMResult",
+    "compute_elementary_sos", "compute_so_hierarchy", "ElementarySOResult", "SOHierarchyResult",
     "compute_max_semiorganization", "max_semiorganization_species",
     "minimize_sv", "check_self_maintenance", "diagnose_self_maintenance",
     "compute_organizations", "OrganizationsResult", "SemiOrganization",

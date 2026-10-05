@@ -23,28 +23,40 @@
 \textbf{Motivation:} Chemical Organization Theory (COT) identifies the persistent (closed,
 self-maintaining) subnetworks of a reaction network, but exhaustive computation of these
 organizations is combinatorially intractable beyond a few hundred reactions. A companion
-theoretical result shows that \emph{elementary persistent modules} (EPMs) -- the productively
+theoretical result shows that \emph{elementary semi-organizations} (ESOs) -- the productively
 novel, irreducible building blocks of every organization -- can be enumerated directly from a
 reaction network's elementary reaction closures (ERCs) via fundamental synergy and
 complementarity relations, without exhaustive search. Whether this generative structure is
 stable under genome-scale reconstruction curation, or reshaped by environment the way it is in
 small hand-built models, has not previously been tested.
 \\
-\textbf{Results:} We compute EPMs for four successive genome-scale reconstructions of
+\textbf{Results:} We compute ESOs for four successive genome-scale reconstructions of
 \textit{Escherichia coli} K-12 MG1655 (\textsc{e\_coli\_core}, iAF1260, iJO1366, iML1515;
-2000--2017) under matched environmental (inflow) regimes. EPM \emph{size} is essentially
+2000--2017) under matched environmental (inflow) regimes. ESO \emph{size} is essentially
 invariant across the three genome-scale reconstructions (23--31 species) despite 15 years of
-curation and an $\sim$11\% growth in elementary reaction closures per generation; EPM
+curation and an $\sim$11\% growth in elementary reaction closures per generation; ESO
 \emph{count} grows instead, consistent with a conserved metabolic core accumulating parallel,
 redundant routes as annotation improves. Supplying each reconstruction's full native medium
-(trace metals and cofactor precursors absent from the core model) roughly triples mean EPM
+(trace metals and cofactor precursors absent from the core model) roughly triples mean ESO
 size, consistent with cofactor-dependent respiratory enzymes bridging otherwise separate
-modules. Extending the comparison to three further organisms (a cyanobacterium, a
+modules. Linear-programming verification of self-maintenance -- confirmed by code inspection to
+operate purely on already-enumerated ERC-combination closures rather than by species-level
+search, and cheap even at genome scale ($<$0.1\,s/ESO) -- shows only a minority of ESOs are
+genuine \emph{elementary organizations} (EOs, the elementary case of \citeauthor{centler2008computing}'s
+2008 organization concept): 29--40\% for the hand-built core model but a stable 11--15\% across
+all three genome-scale reconstructions and every environment tested, a threefold drop invisible
+to any core-model-only study. Extending the comparison to three further organisms (a cyanobacterium, a
 Gram-positive bacterium and a eukaryote) under the same matched environments shows this
-reconstruction-curation invariance is organism-specific -- EPM count and size both vary
+reconstruction-curation invariance is organism-specific -- ESO count and size both vary
 substantially by organism -- while two directional effects, carbon-starvation shrinkage and
 (in three of four organisms tested, most strongly in an anaerobic metal-reducer) the trace-metal
-fusion effect, replicate across every organism tested. Reproducing the organization tables of
+fusion effect, replicate across every organism tested. Testing a specific dual-ancestry hypothesis for the eukaryote in that comparison
+(\textit{S.\,cerevisiae}: cytoplasmic/nuclear machinery of archaeal origin operating alongside
+mitochondrial machinery of bacterial, endosymbiotic origin), using its reconstruction's own
+compartment tags, we find no compartment-pure ESO of either kind under any medium tested --
+100\% of ESOs already draw jointly on both compartments -- consistent with complete,
+long-since-fused integration of the two lineages rather than two separable networks operating in
+parallel. Reproducing the organization tables of
 Centler \textit{et al.} (2006) exactly, we further show that only 1--3 of their 4 published
 organizations per scenario are \emph{fundamental} in this sense; the remainder are combinatorial
 artefacts of unconsumed environmental species.
@@ -90,12 +102,12 @@ which subnetworks can be built up from food alone with every reaction catalysed 
 already present -- an origin-of-life-motivated research programme in its own right
 \citep{hordijk2018autocatalytic} -- and \citet{steel2013minimal} explicitly study the
 relationship between RAF theory's \emph{irreducible} RAFs (irrRAFs, the smallest building
-blocks a RAF can be decomposed into) and COT; irrRAFs and EPMs are, informally, analogous
+blocks a RAF can be decomposed into) and COT; irrRAFs and ESOs are, informally, analogous
 minimal-building-block objects defined from different starting axioms (catalysis vs.\
 closure/self-maintenance), and we return to this connection in \cref{sec:discussion}.
 Integer-hyperflow pathway models \citep{andersen2017motifs} instead formalise individual
 \emph{pathways} as mechanistic, integer-valued flows through a network -- a finer-grained,
-single-route object than an organization or EPM, useful for questions COT does not address (is
+single-route object than an organization or ESO, useful for questions COT does not address (is
 a specific route chemically realisable) but not for the network-wide persistence question this
 paper asks; evolutionary-simulation frameworks for metabolic network innovation
 \citep{flamm2010evolution} sit further still from this paper's scope, asking how such structure
@@ -106,14 +118,14 @@ one of comparatively few approaches that characterise a network's structural, si
 possibility space rather than a single optimal or sampled trajectory through it.
 
 A companion theoretical contribution \citep{velozbassi} resolves this by identifying the
-\emph{generative} structure underlying organizations directly: every persistent module can be
+\emph{generative} structure underlying organizations directly: every semi-organization can be
 built by combining \emph{elementary reaction closures} (ERCs) through \emph{fundamental
 synergy} (a combination that activates a reaction neither part could trigger alone) and
 \emph{fundamental complementarity} (one part supplies a species the other requires), without
 ever searching the much larger space of generatively irrelevant combinations -- adding an inert
-species, or joining two unrelated closed sets, both produce a "new" persistent module whose
+species, or joining two unrelated closed sets, both produce a "new" semi-organization whose
 status was already determined by its parts. Restricting to fundamental combinations yields the
-\emph{elementary persistent modules} (EPMs): the productively novel, irreducible cores from
+\emph{elementary semi-organizations} (ESOs): the productively novel, irreducible cores from
 which the full organization lattice is built. That paper validated the approach statistically
 across 438 networks, showing ERC count and fundamental-relation density scale favourably with
 network size, but it did not ask a longitudinal or comparative biological question: does this
@@ -132,7 +144,7 @@ open, to our knowledge previously unaddressed questions -- a literature search f
 organization or generative analyses applied comparatively across the iAF1260/iJO1366/iML1515
 reconstruction lineage returned no prior work.
 
-This paper reports EPM-level results addressing both questions for four successive genome-scale
+This paper reports ESO-level results addressing both questions for four successive genome-scale
 reconstructions of \textit{E. coli} K-12 MG1655, validates the pipeline by exactly reproducing
 \citeauthor{centler2006}'s own published organizations (decomposed for the first time into
 their fundamental and spurious, non-fundamental, parts), and then asks a third question the
@@ -218,20 +230,32 @@ reaction in its raw BiGG file -- a convention we first verified reproduces the f
 under its own full native medium only.
 
 \subsection{Computational pipeline and scope}
-For each (reconstruction, regime) pair we compute elementary reaction closures, the ERC
-containment hierarchy, fundamental synergies and complementarities, and elementary persistent
-modules (EPMs), using the fundamental-generator algorithm of \citet{velozbassi}
-(module \texttt{pyCOT.analysis.organizations}). We deliberately stop at EPMs: a per-stage timing
-characterisation on iAF1260 (1\,471--1\,690 ERCs across regimes) showed the full ERC-to-EPM
-pipeline completes in 1--2 minutes, while subsequent stages -- higher-order elementary
-semi-persistent modules (ESPMs) and linear-programming self-maintenance verification of every
-candidate -- are not yet efficient at this scale; the LP step in particular rebuilds a
-sub-network object per candidate rather than reusing a single stoichiometric matrix, an
-identified but not-yet-implemented optimisation. Extending to full organizations is future
-work (\cref{sec:discussion}). One regime -- the fully isolated network (no inflow at all) --
+\label{sec:pipeline-scope}
+For each (reconstruction, regime) pair we compute elementary reaction closures (ERCs; via the
+species-level closure operator, applied exactly once per reaction's support), the ERC
+containment hierarchy, fundamental synergies and complementarities, and elementary
+semi-organizations (ESOs), using the fundamental-generator algorithm of \citet{velozbassi}
+(module \texttt{pyCOT.analysis.organizations}). We confirmed by direct inspection of this
+implementation that ESO search itself never recomputes a species-level closure: once ERCs are
+built, new closures are assembled purely by combining ERCs' precomputed species sets along
+fundamental synergy/complementarity edges -- a bitmask/Horn-propagation step over the ERC
+hierarchy (module \texttt{fundamental\_graph.py}, function \texttt{erc\_syn\_close}) -- which is
+what makes genome-scale search tractable at all; species-level closure computation is confined
+to the one-time, per-reaction ERC-construction step (module \texttt{erc.py}). We additionally
+verify, via linear programming, which ESOs are self-maintaining, i.e.\ genuine \emph{elementary
+organizations} (EOs) in the sense of \citet{centler2008computing} (\cref{sec:eso-eo}); this LP
+pass is cheap (well under 0.1\,s/ESO even at genome scale) because it is applied to an
+already-enumerated, elementary/order-0 ESO list rather than to the much larger search space full
+organization enumeration would explore. A per-stage timing characterisation on iAF1260
+(1\,471--1\,690 ERCs across regimes) showed the full ERC-to-ESO-to-EO pipeline completes in 1--2
+minutes. We deliberately stop at this elementary/order-0 level: higher-order elementary
+semi-persistent modules (ESPMs) and the free-species/latent-join completion needed to enumerate
+non-elementary organizations remain future work (\cref{sec:discussion}) -- a distinct and
+computationally much larger problem than the per-ESO LP self-maintenance check reported here.
+One regime -- the fully isolated network (no inflow at all) --
 was excluded for the three genome-scale reconstructions: its fundamental-relations graph is
 $\sim$20$\times$ denser than any fed regime's (91\,322 vs.\ 4\,387 fundamental synergies on
-iAF1260), and EPM search there did not complete in practical time; it remains included for
+iAF1260), and ESO search there did not complete in practical time; it remains included for
 \textsc{e\_coli\_core}, where it is fast.
 
 As a validation step independent of the \textit{E. coli} reconstruction comparison, we also ran
@@ -271,15 +295,15 @@ complementarity alone); the rest are generated only by adding an unconsumed exte
 \label{fig:centler}
 \end{figure}
 
-\subsection{EPM structure is size-invariant across reconstruction generations}
+\subsection{ESO structure is size-invariant across reconstruction generations}
 \label{sec:comparison}
-\Cref{fig:comparison}a--b compares EPM count and size across all four reconstructions under the
-three core regimes common to all of them. Two patterns are immediately visible. First, EPM
+\Cref{fig:comparison}a--b compares ESO count and size across all four reconstructions under the
+three core regimes common to all of them. Two patterns are immediately visible. First, ESO
 \emph{count} grows with reconstruction depth: from 15--16 for \textsc{e\_coli\_core}, to
 180--190 for iAF1260, 199--208 for iJO1366, and 194--223 for iML1515, roughly tracking each
 model's $\sim$10\% growth in ERC count over the previous generation (\cref{fig:scaling}).
-Second, and more strikingly, EPM \emph{size} does not grow with it: across the three
-genome-scale reconstructions, EPM size under any given core regime falls in a narrow,
+Second, and more strikingly, ESO \emph{size} does not grow with it: across the three
+genome-scale reconstructions, ESO size under any given core regime falls in a narrow,
 essentially unchanged range (19--31 species; e.g.\ aerobic: 23--31 in all three), despite 1\,518
 to 1\,690 ERCs and hundreds of added reactions separating iAF1260 from iML1515.
 
@@ -300,18 +324,18 @@ rather than a cross-species comparison.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{fig1_epm_comparison.pdf}
-\caption{EPM count (a) and size range (b, min--max with mean) across four \textit{E. coli}
+\caption{ESO count (a) and size range (b, min--max with mean) across four \textit{E. coli}
 reconstructions under matched core environments, plus each genome-scale model's own full
-native medium. EPM size is stable across reconstruction generations under any fixed core
-regime; the full native medium roughly triples mean EPM size.}
+native medium. ESO size is stable across reconstruction generations under any fixed core
+regime; the full native medium roughly triples mean ESO size.}
 \label{fig:comparison}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.85\columnwidth]{fig2_scaling.pdf}
-\caption{ERC and EPM counts against reaction count (aerobic core regime), log--log. Both grow
-with reconstruction size; EPM size does not (\cref{fig:comparison}b).}
+\caption{ERC and ESO counts against reaction count (aerobic core regime), log--log. Both grow
+with reconstruction size; ESO size does not (\cref{fig:comparison}b).}
 \label{fig:scaling}
 \end{figure}
 
@@ -320,8 +344,8 @@ with reconstruction size; EPM size does not (\cref{fig:comparison}b).}
 Supplying each genome-scale model's full native medium in place of the seven-species core --
 adding cobalamin (vitamin B\textsubscript{12}), molybdate, tungstate, nickel, selenium and
 several further transition-metal ions -- produces a qualitatively different effect from adding
-more of the same core nutrients: mean EPM size roughly triples (e.g.\ iAF1260: 25.7 to
-63.7 species) while EPM \emph{count} falls slightly (182 to 164). We interpret this
+more of the same core nutrients: mean ESO size roughly triples (e.g.\ iAF1260: 25.7 to
+63.7 species) while ESO \emph{count} falls slightly (182 to 164). We interpret this
 mechanistically rather than merely descriptively. Molybdenum/tungsten-cofactor and nickel-
 dependent enzymes in \textit{E. coli} are predominantly anaerobic respiratory reductases --
 nitrate reductase, DMSO/TMAO reductase, formate dehydrogenase (a selenocysteine-dependent
@@ -331,16 +355,16 @@ pool at the heart of central metabolism. Making these cofactors available does n
 independent self-sustaining pathways; it \emph{connects} pathways that were separately
 elementary under the core medium into single larger elementary modules, exactly the size-up,
 count-down signature observed. This gives the trace-metal result a specific, falsifiable
-mechanistic reading rather than only a numerical one, and suggests EPM fusion under added
+mechanistic reading rather than only a numerical one, and suggests ESO fusion under added
 cofactors as a general, computable proxy for identifying which specific micronutrients are
 structurally load-bearing for a given metabolic network -- a question current constraint-based
 methods do not answer directly.
 
 \subsection{Environment reshapes structure at genome scale, as it does in the small model}
 \label{sec:environment-regime}
-Across all three genome-scale reconstructions, the anaerobic core regime yields more EPMs than
+Across all three genome-scale reconstructions, the anaerobic core regime yields more ESOs than
 the aerobic core regime (e.g.\ iML1515: 223 vs.\ 216), while carbon starvation yields fewer and
-smaller ones than either (e.g.\ iML1515: 214 EPMs, size 19--27, vs.\ 216 EPMs, size 23--31,
+smaller ones than either (e.g.\ iML1515: 214 ESOs, size 19--27, vs.\ 216 ESOs, size 23--31,
 aerobic). Both directions match well-established \textit{E. coli} physiology: anaerobic mixed-
 acid fermentation offers several parallel, non-exclusive branch points (pyruvate formate-lyase
 vs.\ the pyruvate dehydrogenase branch; multiple fermentation end products), a known redundancy
@@ -354,28 +378,104 @@ which this framework does not model. That the qualitative environment-sensitivit
 three independent reconstructions and a $\sim$30-fold increase in network size, is itself a
 result: it was not guaranteed, and to our knowledge had not previously been shown.
 
+\subsection{Most ESOs are not organizations, and reconstruction curation widens the gap}
+\label{sec:eso-eo}
+For each of the 16 (reconstruction, regime) combinations above we additionally verified, via
+linear programming, which ESOs are self-maintaining -- i.e.\ which are genuine \emph{elementary
+organizations} (EOs) in the sense of \citet{centler2008computing}, the elementary case of that
+paper's general \emph{organization} concept. \citeauthor{centler2008computing}'s own algorithms
+compute organizations by extending species sets; ours instead verifies already-generated
+ERC-combination closures directly (\cref{sec:pipeline-scope}), and the LP check itself is cheap
+even at genome scale: verifying every ESO in a given reconstruction/regime combination takes
+well under 15\,s in total (0.04--0.08\,s/ESO for \textsc{e\_coli\_core}, 0.03--0.07\,s/ESO for
+the three genome-scale reconstructions; \cref{tab:eso-eo}), several orders of magnitude cheaper
+than the free-species/latent-join completion full organization search would require.
+
+The resulting EO fraction is far from saturating, and drops sharply with reconstruction depth.
+Under the three shared core regimes, \textsc{e\_coli\_core} has 29--40\% of its ESOs
+self-maintaining (5--6 of 15--17); every genome-scale reconstruction, under every regime
+including its own full native medium, falls instead in a narrow 11--15\% band (22--27 of
+164--223 ESOs; \cref{tab:eso-eo}) -- a threefold drop that is stable across three independently
+curated reconstructions (iAF1260, iJO1366, iML1515) and persists under every environment tested,
+including the trace-metal-rich full native medium that roughly triples mean ESO size
+(\cref{sec:fusion}).
+
+We read this as a second, independent piece of evidence -- alongside \cref{sec:comparison}'s
+size-invariance result -- that a hand-built, centrally-curated small model like
+\textsc{e\_coli\_core} is not simply a scaled-down genome-scale reconstruction: it
+over-represents, by a factor of roughly three, how often a productively novel elementary
+building block is already a self-maintaining structure on its own, rather than one that must
+combine further -- into a still-larger ESO, or into a non-elementary organization -- before it
+can persist. Practically, ESO count/size (computable directly from ERCs) and EO fraction (an
+added LP pass) carry different, complementary information, and a study reporting only the
+former at core-model scale risks a materially misleading picture of how much of an organism's
+generative structure is already self-sustaining.
+
+To our knowledge, this ESO$\to$EO attrition rate has not been quantified before. \citeauthor{centler2008computing}'s
+own organization-computing algorithms \citep{centler2008computing} build organizations directly
+by adding candidate species, without separately reporting how many closed sets along the way
+fail self-maintenance; and \citeauthor{seminal}'s foundational thesis \citep{speroni2007thesis},
+while rigorously separating semi-organization from organization in general reaction systems,
+demonstrates its computations mainly on \emph{catalytic flow systems} (every species purely a
+catalyst, never stoichiometrically consumed, as in replicator-equation-style artificial
+chemistries), where a proven lemma makes every semi-organization automatically an organization --
+a structural feature real, stoichiometric metabolic reconstructions like the four studied here do
+not share, which is exactly why the gap reported here needed checking rather than being assumed
+closed.
+
+\begin{table}[t]
+\centering
+\caption{ESO$\to$EO verification across all (reconstruction, regime) pairs of
+\cref{sec:comparison}. EO = ESO that additionally passes the LP self-maintenance check of
+\citet{centler2008computing}'s elementary case.}
+\label{tab:eso-eo}
+\small
+\begin{tabular}{llrrr}
+\hline
+Reconstruction & Regime & $n_{\rm ESO}$ & $n_{\rm EO}$ & EO\% \\
+\hline
+e\_coli\_core & isolated   & 17  & 5  & 29\% \\
+e\_coli\_core & aerobic    & 15  & 6  & 40\% \\
+e\_coli\_core & anaerobic  & 16  & 6  & 38\% \\
+e\_coli\_core & C-starved  & 16  & 6  & 38\% \\
+iAF1260 & aerobic    & 182 & 25 & 14\% \\
+iAF1260 & anaerobic  & 189 & 25 & 13\% \\
+iAF1260 & C-starved  & 180 & 26 & 14\% \\
+iAF1260 & full native & 164 & 25 & 15\% \\
+iJO1366 & aerobic    & 201 & 22 & 11\% \\
+iJO1366 & anaerobic  & 208 & 22 & 11\% \\
+iJO1366 & C-starved  & 199 & 23 & 12\% \\
+iJO1366 & full native & 179 & 22 & 12\% \\
+iML1515 & aerobic    & 216 & 26 & 12\% \\
+iML1515 & anaerobic  & 223 & 26 & 12\% \\
+iML1515 & C-starved  & 214 & 27 & 13\% \\
+iML1515 & full native & 194 & 26 & 13\% \\
+\hline
+\end{tabular}
+\end{table}
+
 \subsection{Fundamental generative structure across organisms}
 \label{sec:organisms}
 The size-invariance result above is specific to one organism across one reconstruction
-lineage; whether EPM structure itself -- as opposed to its stability under curation -- is
-similar across organisms is a different question. We computed EPMs, under the same matched
+lineage; whether ESO structure itself -- as opposed to its stability under curation -- is
+similar across organisms is a different question. We computed ESOs, under the same matched
 core regimes, for three further BiGG genome-scale reconstructions of comparable network size to
 iAF1260/iJO1366/iML1515 but different organisms: \textit{Synechocystis} sp.\ PCC 6803 (iJN678, a
 cyanobacterium), \textit{Bacillus subtilis} (iYO844, Gram-positive), and \textit{Saccharomyces
 cerevisiae} (iND750, a eukaryote); a fourth, \textit{Geobacter metallireducens} (iAF987, an
 obligate anaerobic metal-reducer with no glucose or oxygen exchange at all), was run under its
 own full native medium only, since it cannot support the shared aerobic/anaerobic core regimes.
-\Cref{fig:organisms} reports EPM count and size range for all five organisms side by side
+\Cref{fig:organisms} reports ESO count and size range for all five organisms side by side
 (E.\ coli's iML1515 repeated from \cref{fig:comparison} as reference).
 
-Unlike the reconstruction-lineage result, EPM structure is \emph{not} invariant across
-organisms: under the matched aerobic core, EPM count ranges from 63 (\textit{Synechocystis}) to
-216 (\textit{E.\ coli}) at broadly comparable ERC counts (668--1\,690), and mean EPM size is
+Unlike the reconstruction-lineage result, ESO structure is \emph{not} invariant across
+organisms: under the matched aerobic core, ESO count ranges from 63 (\textit{Synechocystis}) to
+216 (\textit{E.\ coli}) at broadly comparable ERC counts (668--1\,690), and mean ESO size is
 systematically larger for the eukaryote (\textit{S.\ cerevisiae}, 38.9--42.9 across core regimes)
 than for any of the three bacteria (15.9--25.6) -- a domain-level signal, not a curation
 artefact, since all four organisms' reconstructions were built and curated independently.
 One directional pattern does replicate across all four organisms without exception: carbon
-starvation (removing \texttt{glc\_\_D\_e} from the core) shrinks mean EPM size relative to the
+starvation (removing \texttt{glc\_\_D\_e} from the core) shrinks mean ESO size relative to the
 aerobic core in every case (\textit{E.\ coli} 21.6 vs.\ 25.6; \textit{Synechocystis} 21.0 vs.\
 24.0; \textit{B.\ subtilis} 15.9 vs.\ 19.0; \textit{S.\ cerevisiae} 39.9 vs.\ 42.9), suggesting
 the structural link between carbon-backbone availability and elementary-module size
@@ -385,13 +485,13 @@ The trace-metal fusion effect (\cref{sec:fusion}) partially replicates as well. 
 \textit{Synechocystis}'s full native medium -- which, consistent with real cyanobacterial
 physiology, uses \texttt{no3\_e} (nitrate) rather than \texttt{nh4\_e} as nitrogen source, an
 organism-specific substitution the auto-extracted food set recovers without being told to --
-reproduces the \textit{E.\ coli} pattern exactly: EPM count falls (63$\to$49) while mean size
+reproduces the \textit{E.\ coli} pattern exactly: ESO count falls (63$\to$49) while mean size
 more than doubles (24.0$\to$50.2). \textit{B.\ subtilis} shows the same direction at smaller
-magnitude (89$\to$85 EPMs; 19.0$\to$31.0 mean size). \textit{Geobacter}'s full native medium --
+magnitude (89$\to$85 ESOs; 19.0$\to$31.0 mean size). \textit{Geobacter}'s full native medium --
 acetate as carbon source plus a wide panel of alternative terminal electron acceptors
 (Fe(III), nitrate-like and chromate species, sulfate/sulfite, and dinitrogen), consistent with
 its ecological role as a versatile anaerobic and extracellular respirer -- produces the largest
-EPMs of any organism or scenario in this study (mean 68.2, range 64--83), the same
+ESOs of any organism or scenario in this study (mean 68.2, range 64--83), the same
 qualitative signature taken further: an organism whose native lifestyle depends on many
 alternative respiratory cofactors shows the fusion effect most strongly. \textit{S.\ cerevisiae}
 is the exception, but for an identifiable, non-biological reason: its auto-extracted native
@@ -399,22 +499,30 @@ food set has only 6 species and, unlike the other three organisms' native sets, 
 rather than a superset of the 7-species core (missing \texttt{co2\_e} and \texttt{h\_e}) --
 this BiGG reconstruction does not declare boundary/exchange reactions for the vitamins and
 trace elements a real yeast culture requires, so this comparison is uninformative for that
-organism rather than contradictory; EPM count and size both fall slightly (152$\to$149;
+organism rather than contradictory; ESO count and size both fall slightly (152$\to$149;
 42.9$\to$24.3 mean), consistent with a \emph{reduced}, not enriched, medium.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig4_cross_organism_comparison.pdf}
-\caption{EPM count (a) and size range (b, min--max with mean) across five organisms under
+\caption{ESO count (a) and size range (b, min--max with mean) across five organisms under
 matched core environments (E.\ coli's iML1515 repeated from \cref{fig:comparison} as reference;
 \textit{G.\ metallireducens} has no glucose/O$_2$ exchange and is shown under its own full
-native medium only). EPM structure varies by organism at matched network scale; carbon
-starvation shrinks mean EPM size in all four organisms tested; the trace-metal fusion effect of
+native medium only). ESO structure varies by organism at matched network scale; carbon
+starvation shrinks mean ESO size in all four organisms tested; the trace-metal fusion effect of
 \cref{sec:fusion} replicates in \textit{Synechocystis}, \textit{B.\ subtilis} and (most strongly)
 \textit{G.\ metallireducens}, but not in \textit{S.\ cerevisiae}, whose reconstruction's default
 exchange set is a reduced, not enriched, medium relative to the core (see text).}
 \label{fig:organisms}
 \end{figure*}
+
+\subsection{Testing a specific hypothesis: does \textit{S.\ cerevisiae}'s dual evolutionary origin leave separable elementary traces?}
+\label{sec:compartment}
+A biochemist reviewer of an earlier draft raised a specific, testable prediction: eukaryotes like \textit{S.\ cerevisiae} have two distinct evolutionary origins operating side by side -- a nuclear/cytoplasmic lineage inherited from the archaeal host, and a mitochondrial lineage inherited from the bacterial endosymbiont that became the mitochondrion -- so ESOs might separate into compartment-pure cytoplasmic modules and compartment-pure mitochondrial modules, with the eukaryote's systematically larger ESO size (\cref{sec:organisms}) reflecting these two networks operating in parallel. iND750 already carries BiGG's own compartment tags on every species (cytoplasmic/nuclear \texttt{\_c}/\texttt{\_n}/\texttt{\_r}/\texttt{\_g}/\texttt{\_v}/\texttt{\_x}, mitochondrial \texttt{\_m}), letting us test this directly with no new modelling assumption.
+
+The prediction does not hold, in a specific and informative way: under every medium tested (the shared aerobic core, iND750's own auto-extracted native medium, and a supplemented medium described below), 100\% of ESOs are \emph{compartment-hybrid} -- every single elementary module draws on both the cytoplasmic/nuclear and mitochondrial compartments jointly; not one compartment-pure ESO of either kind was found (0/152 under the aerobic core, 0/149 native, 0/146 supplemented). Rather than two separable networks running in parallel, at the elementary/order-0 level \textit{S.\ cerevisiae}'s reconstruction shows complete, unconditional integration of its two evolutionary origins: no elementary building block remains that could exist using only one compartment's machinery. We read the eukaryote's systematically larger ESO size (\cref{sec:organisms}) as a consequence of, rather than an alternative to, this complete fusion -- consistent with, and a real-network completion of, the same fusion-not-multiplication signature already reported here for trace-metal cofactors within a single compartment (\cref{sec:fusion}) and for freshly constructed, only partially hybridized endosymbiotic mergers in a companion study \citep{velozendosymbiosis2026}: where a newly built merger shows a mix of hybrid and non-hybrid elementary modules, roughly 1.5 billion years of eukaryotic evolution have apparently erased every trace of separability entirely.
+
+The reviewer's related methodological point -- that iND750's default medium lacks the vitamins and trace elements mitochondrial respiration depends on -- is correct, and only partially testable with this reconstruction: iND750 declares boundary exchange reactions for a handful of relevant cofactors (biotin, riboflavin, thiamin, pantothenate, myo-inositol, sulfate, potassium, sodium) but none at all for iron, zinc, manganese, copper, magnesium, calcium, molybdate, cobalt, folate or niacin -- this specific reconstruction simply does not represent most of a real yeast culture's trace-metal requirements as boundary species. Supplying the core medium plus every cofactor iND750 \emph{does} declare (15 species total) leaves the compartment-hybrid result unchanged (146/146, 100\%) but reproduces the trace-metal fusion signature's magnitude almost exactly: mean ESO size rises from 24.3 (native, 6-species medium) to 63.9 (supplemented), a 2.6-fold increase comparable in magnitude to \textit{E.\ coli}'s own trace-metal fusion effect (\cref{sec:fusion}), while EO fraction falls from 73\% (native) to 55\% (supplemented, matching the aerobic-core value exactly). A definitive test of whether full trace-metal supplementation could ever produce a compartment-pure ESO would require a reconstruction that declares those exchange reactions, which iND750 does not.
 
 \section{Discussion and Extensions}
 \label{sec:discussion}
@@ -422,7 +530,7 @@ exchange set is a reduced, not enriched, medium relative to the core (see text).
 \subsection{Biological extensions}
 The bow-tie-consistent size invariance of \cref{sec:comparison} is a statement about
 \emph{reconstruction curation within one organism}; \cref{sec:organisms}'s four-organism test
-shows it is not simultaneously a statement about organisms in general -- EPM count and mean
+shows it is not simultaneously a statement about organisms in general -- ESO count and mean
 size both vary substantially by organism at matched network scale and matched core environment,
 with the eukaryote (\textit{S.\ cerevisiae}) systematically larger than the three bacteria
 tested. Two patterns did generalise across every organism tested: carbon-starvation shrinkage,
@@ -434,14 +542,14 @@ fusion mechanism predicts should produce the largest effect. The organism-labell
 natural next step a systematic version of \cref{sec:organisms} at that scale: is the
 reconstruction-curation size-invariance result itself organism-general (does \textit{E. coli}'s
 \emph{lineage} finding replicate in, say, a \textit{B.\ subtilis} or yeast reconstruction
-lineage), and does eukaryote/bacterium EPM-size separation hold up across many more species on
+lineage), and does eukaryote/bacterium ESO-size separation hold up across many more species on
 each side, or was ours a two-eukaryote-vs-many-bacteria artefact of sampling only one
 representative of the former. The trace-metal fusion result itself suggests a more targeted,
 single-organism extension: systematically toggling individual cofactor classes (Mo/W, Ni, Se,
 B\textsubscript{12}) against enzyme-cofactor annotation to map, mechanistically rather than post
 hoc, which specific micronutrients are structurally load-bearing in a given network -- directly
 relevant to minimal-medium design and to identifying environmentally contingent essential
-functions. A further biological extension links EPM and (once available) organization
+functions. A further biological extension links ESO and (once available) organization
 membership to \textit{E. coli}'s well-characterised experimental gene-essentiality and
 synthetic-lethality data sets, testing whether structurally fundamental modules are enriched for
 essential genes -- a directly testable, falsifiable bridge from this structural theory to
@@ -454,12 +562,12 @@ A separate, more theoretical extension follows from \cref{sec:worked-example}'s 
 RAF theory. \citet{steel2013minimal} study irreducible RAFs (irrRAFs) -- the smallest
 autocatalytic building blocks a reflexively autocatalytic food-generated set decomposes into --
 and their relationship to COT, from a catalysis-first rather than closure-first starting point.
-Formalising the correspondence between irrRAFs and EPMs (when does an irrRAF-decomposition and
+Formalising the correspondence between irrRAFs and ESOs (when does an irrRAF-decomposition and
 an ERC/fundamental-synergy decomposition of the same network agree, and when and why do they
 diverge) would connect two literatures that ask structurally adjacent minimal-building-block
 questions from different axiomatic starting points, and could in principle transfer results in
 either direction -- RAF theory's polynomial-time irrRAF bounds \citep{steel2013minimal} into
-COT, or the generative EPM/ESPM construction into RAF enumeration.
+COT, or the generative ESO/ESPM construction into RAF enumeration.
 
 \subsection{Methodological extensions}
 Completing the pipeline to full organizations requires two engineering steps identified but not
@@ -469,7 +577,7 @@ characterised; and (ii) an efficient linear-programming verification step reusin
 stoichiometric matrix per network (as already done for organization decomposition into
 catalysts, overproduced species and fragile circuits) rather than rebuilding a sub-network per
 candidate. With both in place, the same reconstruction and environment comparisons reported
-here for EPMs extend naturally to full organization lattices, Hasse diagrams, and
+here for ESOs extend naturally to full organization lattices, Hasse diagrams, and
 catalyst/overproduction/fragile-circuit decompositions, which we expect to sharpen rather than
 overturn the qualitative findings reported here.
 

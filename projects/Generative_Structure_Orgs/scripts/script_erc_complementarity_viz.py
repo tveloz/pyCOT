@@ -8,18 +8,34 @@ complementarity relationships as intermediate junction nodes.
 Complementarity rendering
 --------------------------
 Each directional supply  E_producer ——[s]——> E_consumer  is drawn as a
-small square junction node placed at the midpoint between the two ERCs.
+small junction node placed at the midpoint between the two ERCs.
 Two arrows are drawn:
     E_producer  →  junction   (producer side)
     junction    →  E_consumer (consumer side)
 The junction is labelled with the supplied species name(s).
 
-Junction and arrow colours by classification (each direction drawn once
-at its highest applicable level):
-    blue   (#3498DB) — complementary (also synergetic, lowest level)
-    orange (#E67E22) — purely complementary (not synergetic)
-    green  (#27AE60) — fundamental complementarity (E_prod ∈ minprod(s),
-                        E_cons ∈ mincons(s))
+Junction and arrow colours by classification. The three tiers are NESTED
+(orange ⊇ blue ⊇ green): every fundamental edge is one of the "all
+complementarities" edges, and every fundamental+pure edge is also a
+fundamental edge. Each direction is drawn once, at its highest applicable
+(most stringent) tier:
+    orange (#E67E22) — all complementarities (base tier; least stringent)
+    blue   (#3498DB) — fundamental complementarity (E_prod ∈ minprod(s),
+                        E_cons ∈ mincons(s) for some supplied species s)
+    green  (#27AE60) — fundamental AND purely complementary (not synergetic;
+                        most stringent)
+
+Junction marker/line style by chain relation:
+    ■ square, solid line  — inter-chain (E_producer, E_consumer incomparable)
+    ◆ diamond, dotted line — intra-chain (E_producer, E_consumer hierarchy-
+                              comparable). Only the direction from the LARGER
+                              ERC down to the SMALLER one can be nonempty
+                              (see module docstring of
+                              pyCOT.analysis.organizations.complementarity);
+                              since chain pairs can never be synergetic, they
+                              are always classified 'complementary' (orange)
+                              or 'fundamental_pure' (green), never plain
+                              'fundamental' (blue), which requires synergy.
 
 Mutual complementarity (E1 supplies to E2 AND E2 supplies to E1) produces
 two separate junctions; a small perpendicular offset separates them.
@@ -36,6 +52,9 @@ Correctness note
 The supply-based complementarity definition is implemented directly from
 Section 5 of the paper:
     supl(E, E') = prod(R_E) ∩ req(E')   with  req(E) = supp(R_E) \\ prod(R_E)
+This is NOT restricted to incomparable (E, E') pairs: for comparable E ⊊ E',
+supl(E⇀E') is provably always empty, but supl(E'⇀E) can be nonempty (the
+larger ERC supplying the smaller one) -- see the "intra-chain" case above.
 Synergy detection uses the corrected _compute_basic() function from
 script_erc_synergy_viz.py (library's get_maximal_synergies is inverted).
 """
@@ -66,8 +85,9 @@ from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_nam
 from pyCOT.analysis.SORN_Generators import is_semi_self_maintaining
 
 # -- Network file --------------------------------------------------------------
-RN_FILE = os.path.join(_PYCOT_ROOT, 'data', 'biomodels',
+RN_FILE = os.path.join(_PYCOT_ROOT, 'data', 'biochemical_databases',
                        'biomodels_interesting', 'bigg_iAF692.txt')
+RN_FILE ="data/biochemical_databases/biomodels_interesting/BIOMD0000000237_manyOrgs.txt"
 # Alternatives:
 # RN_FILE = os.path.join(_PYCOT_ROOT, 'networks', 'testing', 'Farm.txt')
 # RN_FILE = 'data\\Examples_tests\\testing\\ERC_synergy0.txt'
@@ -80,19 +100,20 @@ COL_SSM  = '#E67E22'
 COL_DEF  = '#AED6F1'
 SM_EPS   = 1e-6
 
-# Complementarity level colours
+# Complementarity level colours (nested tiers: complementary ⊇ fundamental ⊇
+# fundamental_pure)
 COL_COMP = {
-    'complementary': '#3498DB',   # blue — complementary (also synergetic)
-    'pure':          '#E67E22',   # orange — purely complementary
-    'fundamental':   '#27AE60',   # green — fundamental
+    'complementary':    '#E67E22',   # orange — all complementarities (base tier)
+    'fundamental':      '#3498DB',   # blue — fundamental
+    'fundamental_pure': '#27AE60',   # green — fundamental AND pure
 }
 
 # Junction square marker size (scatter units = pts²)
 JUNC_SIZE = 90
 
 # Arrow widths and opacities
-ARROW_LW    = {'complementary': 0.7, 'pure': 0.9, 'fundamental': 1.1}
-ARROW_ALPHA = {'complementary': 0.65, 'pure': 0.75, 'fundamental': 0.90}
+ARROW_LW    = {'complementary': 0.7, 'fundamental': 0.9, 'fundamental_pure': 1.1}
+ARROW_ALPHA = {'complementary': 0.65, 'fundamental': 0.75, 'fundamental_pure': 0.90}
 
 # Shrink from node centres to arrowhead (display pts)
 SHRINK_ERC  = 12
@@ -205,18 +226,26 @@ def _compute_minprod_mincons(ercs, hierarchy, RN):
 
 def _classify_supply(e_prod, e_cons, supply_species, pair_is_syn, minprod, mincons):
     """
-    Return the highest classification level for a directional supply
+    Return the classification tier for a directional supply
     (e_prod → e_cons via species in supply_species).
 
-    Levels (highest to lowest): 'fundamental' > 'pure' > 'complementary'
+    'is_fundamental' and 'is_pure' are independent conditions; the returned
+    tier is the most stringent one that applies, forming a NESTED hierarchy
+    (every 'fundamental_pure' edge is also 'fundamental'; every 'fundamental'
+    edge is also 'complementary'):
+        'complementary'      — base tier: any complementarity at all
+        'fundamental'         — additionally: e_prod ∈ minprod(s), e_cons ∈
+                                mincons(s) for some supplied species s
+        'fundamental_pure'   — additionally: not synergetic (pure)
     """
-    # Fundamental: any supply species has e_prod ∈ minprod(s) AND e_cons ∈ mincons(s)
-    for s in supply_species:
-        if e_prod in minprod.get(s, []) and e_cons in mincons.get(s, []):
-            return 'fundamental'
-    # Purely complementary: not synergetic
-    if not pair_is_syn:
-        return 'pure'
+    is_fundamental = any(e_prod in minprod.get(s, []) and e_cons in mincons.get(s, [])
+                          for s in supply_species)
+    is_pure = not pair_is_syn
+
+    if is_fundamental and is_pure:
+        return 'fundamental_pure'
+    if is_fundamental:
+        return 'fundamental'
     return 'complementary'
 
 
@@ -227,32 +256,35 @@ def compute_complementarity_entries(ercs, hierarchy, RN):
         'producer':  ERC object,
         'consumer':  ERC object,
         'species':   set of supply species names,
-        'level':     'fundamental' | 'pure' | 'complementary',
+        'level':     'fundamental_pure' | 'fundamental' | 'complementary',
+        'chain':     True iff producer/consumer are hierarchy-comparable
+                     ("intra-chain" -- see module docstring). Chain pairs are
+                     trivially pure (never synergetic): only the direction
+                     from the larger ERC down to the smaller one can be
+                     nonempty; the reverse is provably always zero.
       }
     """
     minprod, mincons = _compute_minprod_mincons(ercs, hierarchy, RN)
     entries = []
 
     for e1, e2 in combinations(ercs, 2):
-        if not _is_incomparable(e1, e2, hierarchy):
-            continue
-
         s12 = _supply(e1, e2, RN)
         s21 = _supply(e2, e1, RN)
 
         if not s12 and not s21:
             continue
 
-        pair_syn = _has_basic_synergy(e1, e2, hierarchy, RN)
+        chain = not _is_incomparable(e1, e2, hierarchy)
+        pair_syn = (not chain) and _has_basic_synergy(e1, e2, hierarchy, RN)
 
         if s12:
             level = _classify_supply(e1, e2, s12, pair_syn, minprod, mincons)
             entries.append({'producer': e1, 'consumer': e2,
-                            'species': s12, 'level': level})
+                            'species': s12, 'level': level, 'chain': chain})
         if s21:
             level = _classify_supply(e2, e1, s21, pair_syn, minprod, mincons)
             entries.append({'producer': e2, 'consumer': e1,
-                            'species': s21, 'level': level})
+                            'species': s21, 'level': level, 'chain': chain})
 
     return entries
 
@@ -295,12 +327,15 @@ t0 = time.time()
 comp_entries = compute_complementarity_entries(ercs, hierarchy, RN)
 t_comp = time.time() - t0
 
-# Partition by level for statistics
-n_fund = sum(1 for e in comp_entries if e['level'] == 'fundamental')
-n_pure = sum(1 for e in comp_entries if e['level'] == 'pure')
-n_comp = sum(1 for e in comp_entries if e['level'] == 'complementary')
-print(f"  Fundamental={n_fund}  Purely complementary={n_pure}  "
-      f"Complementary(+synergy)={n_comp}  ({t_comp:.1f}s)")
+# Cumulative tier counts (nested: all ⊇ fundamental ⊇ fundamental_pure)
+n_fund_pure = sum(1 for e in comp_entries if e['level'] == 'fundamental_pure')
+n_fund_all  = sum(1 for e in comp_entries if e['level'] in ('fundamental', 'fundamental_pure'))
+n_comp_all  = len(comp_entries)
+n_chain = sum(1 for e in comp_entries if e['chain'])
+print(f"  All complementarities(orange)={n_comp_all}  Fundamental(blue)={n_fund_all}  "
+      f"Fundamental+pure(green)={n_fund_pure}  ({t_comp:.1f}s)")
+print(f"  Intra-chain (hierarchy-comparable, ◆ dotted)={n_chain}  "
+      f"Inter-chain (incomparable, ■ solid)={len(comp_entries) - n_chain}")
 
 # =============================================================================
 # Layout: level-based (same as synergy_viz and hierarchy scripts)
@@ -396,25 +431,27 @@ nx.draw_networkx_labels(G, pos, ax=ax,
 
 
 # -- FancyArrowPatch helper ---------------------------------------------------
-def _farrow(src, dst, col, lw, alpha, style='->', shrinkA=SHRINK_ERC, shrinkB=SHRINK_ERC):
+def _farrow(src, dst, col, lw, alpha, style='->', shrinkA=SHRINK_ERC, shrinkB=SHRINK_ERC,
+            linestyle='solid'):
     patch = FancyArrowPatch(
         posA=tuple(src), posB=tuple(dst),
         arrowstyle=style,
         lw=lw, color=col, alpha=alpha,
         shrinkA=shrinkA, shrinkB=shrinkB,
         mutation_scale=10,
+        linestyle=linestyle,
         zorder=1,
     )
     ax.add_patch(patch)
 
 
 # -- Draw complementarity junctions and arrows --------------------------------
-level_order = {'fundamental': 3, 'pure': 2, 'complementary': 1}
+level_order = {'fundamental_pure': 3, 'fundamental': 2, 'complementary': 1}
 
 for idx, entry in enumerate(comp_entries):
     level = entry['level']
 
-    if SHOW_FUNDAMENTAL_ONLY and level != 'fundamental':
+    if SHOW_FUNDAMENTAL_ONLY and level not in ('fundamental', 'fundamental_pure'):
         continue
 
     if idx not in junc_pos:
@@ -429,13 +466,15 @@ for idx, entry in enumerate(comp_entries):
     lw    = ARROW_LW[level]
     alpha = ARROW_ALPHA[level]
     jpos  = junc_pos[idx]
+    chain = entry['chain']
 
-    # For non-fundamental levels use dashed arrow style
-    arrow_style = '->' if level == 'fundamental' else '->'
+    # Intra-chain (hierarchy-comparable) pairs get a diamond junction marker
+    # and a dotted arrow line, to distinguish them from inter-chain (incomparable) pairs.
+    junc_marker = 'D' if chain else 's'
+    linestyle   = 'dotted' if chain else 'solid'
 
-    # Junction square marker
     ax.scatter(*jpos, s=JUNC_SIZE,
-               c=col, marker='s',
+               c=col, marker=junc_marker,
                edgecolors='white', linewidths=0.8,
                alpha=0.95, zorder=4)
 
@@ -448,9 +487,11 @@ for idx, entry in enumerate(comp_entries):
             color=col, zorder=5, alpha=min(alpha + 0.1, 1.0))
 
     # Producer → junction
-    _farrow(pos[lp], jpos, col, lw, alpha, shrinkA=SHRINK_ERC, shrinkB=SHRINK_JUNC)
+    _farrow(pos[lp], jpos, col, lw, alpha, shrinkA=SHRINK_ERC, shrinkB=SHRINK_JUNC,
+            linestyle=linestyle)
     # Junction → consumer
-    _farrow(jpos, pos[lc], col, lw, alpha, shrinkA=SHRINK_JUNC, shrinkB=SHRINK_ERC)
+    _farrow(jpos, pos[lc], col, lw, alpha, shrinkA=SHRINK_JUNC, shrinkB=SHRINK_ERC,
+            linestyle=linestyle)
 
 
 # -- Hover tooltip (ERC nodes) ------------------------------------------------
@@ -500,28 +541,34 @@ maintenance_legend = ax.legend(
 )
 ax.add_artist(maintenance_legend)
 
-# 2) Complementarity type
-shown_fund = sum(1 for e in comp_entries if e['level'] == 'fundamental')
-shown_pure = sum(1 for e in comp_entries if e['level'] == 'pure')
-shown_comp = sum(1 for e in comp_entries if e['level'] == 'complementary')
+# 2) Complementarity type — nested tiers, counts are cumulative
+#    (all ⊇ fundamental ⊇ fundamental_pure), matching the colours drawn.
+shown_all        = len(comp_entries)
+shown_fund       = sum(1 for e in comp_entries
+                       if e['level'] in ('fundamental', 'fundamental_pure'))
+shown_fund_pure  = sum(1 for e in comp_entries if e['level'] == 'fundamental_pure')
 
-comp_handles = [
-    Line2D([0], [0], color=COL_COMP['fundamental'], lw=2.5,
-           label=f'Fundamental  ({shown_fund} directions)'),
-]
+comp_handles = []
 if not SHOW_FUNDAMENTAL_ONLY:
-    comp_handles += [
-        Line2D([0], [0], color=COL_COMP['pure'], lw=1.8,
-               label=f'Purely complementary  ({shown_pure})'),
+    comp_handles.append(
         Line2D([0], [0], color=COL_COMP['complementary'], lw=1.2,
-               label=f'Complementary (+synergy)  ({shown_comp})'),
-    ]
+               label=f'All complementarities  ({shown_all} directions)'))
+comp_handles.append(
+    Line2D([0], [0], color=COL_COMP['fundamental'], lw=1.8,
+           label=f'Fundamental  ({shown_fund})'))
+comp_handles.append(
+    Line2D([0], [0], color=COL_COMP['fundamental_pure'], lw=2.5,
+           label=f'Fundamental + pure  ({shown_fund_pure})'))
 
-# Square marker proxy for junction
+# Junction marker proxies: square/solid = inter-chain, diamond/dotted = intra-chain
 junc_handle = ax.scatter([], [], s=JUNC_SIZE,
                          color='#888888', marker='s', alpha=0.9,
-                         label='■ = supply junction  (prod→cons)')
+                         label='■ = inter-chain (incomparable), solid')
 comp_handles.append(junc_handle)
+junc_chain_handle = ax.scatter([], [], s=JUNC_SIZE,
+                         color='#888888', marker='D', alpha=0.9,
+                         label='◆ = intra-chain (comparable), dotted')
+comp_handles.append(junc_chain_handle)
 
 comp_legend = ax.legend(handles=comp_handles,
                         loc='upper left', fontsize=10,
@@ -552,16 +599,19 @@ net_name = os.path.splitext(os.path.basename(RN_FILE))[0]
 n_comp_pairs = len({frozenset([e['producer'].label, e['consumer'].label])
                     for e in comp_entries})
 n_fund_pairs = len({frozenset([e['producer'].label, e['consumer'].label])
-                    for e in comp_entries if e['level'] == 'fundamental'})
-n_pure_pairs = len({frozenset([e['producer'].label, e['consumer'].label])
-                    for e in comp_entries if e['level'] == 'pure'})
+                    for e in comp_entries
+                    if e['level'] in ('fundamental', 'fundamental_pure')})
+n_fund_pure_pairs = len({frozenset([e['producer'].label, e['consumer'].label])
+                    for e in comp_entries if e['level'] == 'fundamental_pure'})
+n_chain_pairs = len({frozenset([e['producer'].label, e['consumer'].label])
+                     for e in comp_entries if e['chain']})
 
 ax.set_title(
     f"ERC Hierarchy + Complementarity — {net_name}\n"
-    f"Complementary pairs: {n_comp_pairs}   "
-    f"Fundamental edges: {n_fund_pairs}   "
-    f"Purely complementary: {n_pure_pairs}   "
-    f"■ = supply junction",
+    f"Complementary pairs: {n_comp_pairs} (intra-chain: {n_chain_pairs})   "
+    f"Fundamental pairs: {n_fund_pairs}   "
+    f"Fundamental+pure pairs: {n_fund_pure_pairs}   "
+    f"■ = inter-chain, ◆ = intra-chain",
     fontsize=11)
 ax.axis('off')
 plt.tight_layout()

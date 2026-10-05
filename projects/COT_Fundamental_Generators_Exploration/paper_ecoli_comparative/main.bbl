@@ -79,6 +79,11 @@ Orth, J.~D.  {\em et~al.} (2011).
   metabolism -- 2011.
 \newblock {\em Molecular Systems Biology\/}, {\bf 7}, 535.
 
+\bibitem[Speroni~di Fenizio(2007)Speroni~di Fenizio]{speroni2007thesis}
+Speroni~di Fenizio, P. (2007).
+\newblock {\em Chemical Organization Theory\/}.
+\newblock Ph.D. thesis, University of Jena.
+
 \bibitem[Steel {\em et~al.}(2013)Steel, Hordijk, and Smith]{steel2013minimal}
 Steel, M.  {\em et~al.} (2013).
 \newblock Minimal autocatalytic networks.
@@ -90,6 +95,12 @@ Tenazinha, N. and Vinga, S. (2011).
   networks.
 \newblock {\em IEEE/ACM Transactions on Computational Biology and
   Bioinformatics\/}, {\bf 8}(4), 943--958.
+
+\bibitem[Veloz(2026)Veloz]{velozendosymbiosis2026}
+Veloz, T. (2026).
+\newblock Endosymbiotic fusion of elementary semi-organizations: a computable
+  structural model of evolutionary complexification.
+\newblock {\em in preparation, submitted to PNAS\/}.
 
 \bibitem[Veloz and Bassi(2026)Veloz and Bassi]{velozbassi}
 Veloz, T. and Bassi, A. (2026).

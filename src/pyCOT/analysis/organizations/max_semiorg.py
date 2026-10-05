@@ -18,7 +18,7 @@ together, not complementarity alone):
 
   1. req_mask[i] already incorporates every reaction of every hierarchy
      descendant of E_i (existing architectural invariant relied on
-     throughout cot_gen — see epm.py's module docstring). Consequence:
+     throughout cot_gen — see so_search.py's module docstring). Consequence:
      starting the pruning from "every ERC in the network" already
      includes every containment level from round zero. There is no
      separate downward-propagation step to get right, because nothing is
@@ -44,12 +44,12 @@ matches the proof, they don't substitute for it.
 What this does NOT give you
 ----------------------------
 The maxSemiOrganization is the single top element of the lattice of all
-semi-organizations. It does not enumerate the EPMs/ESPMs beneath it — for
-that, compute_epms/compute_espm in epm.py are still required. What this
-module gives you is a near-free (millisecond-scale, even on genome-scale
-networks) global upper bound: every ERC outside the maxSemiOrganization
-provably cannot appear in any semi-organization at all, and every
-discovered EPM/ESPM is provably a subset of it — useful both as a
+semi-organizations. It does not enumerate the SO0s/SOis beneath it — for
+that, compute_elementary_sos/compute_so_hierarchy in so_search.py are still
+required. What this module gives you is a near-free (millisecond-scale,
+even on genome-scale networks) global upper bound: every ERC outside the
+maxSemiOrganization provably cannot appear in any semi-organization at all,
+and every discovered SO0/SOi is provably a subset of it — useful both as a
 headline structural statistic and as a scope-restricting pre-filter.
 
 Public API

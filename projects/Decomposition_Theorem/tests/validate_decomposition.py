@@ -3,7 +3,7 @@ validate_decomposition.py — Correctness checks for the decomp package.
 
 Run directly: python projects/Decomposition_Theorem/tests/validate_decomposition.py
 
-Three independent checks, on every EPM + a sample of ESPMs of a test network:
+Three independent checks, on every elementary SO + a sample of higher-order SOs of a test network:
 
   1. Oracle check: decomp's is_organization must agree with a DIRECT,
      decomposition-free self-maintenance LP on the full closed species set
@@ -43,7 +43,7 @@ from pyCOT.analysis.organizations import (
     build_hierarchy,
     compute_synergies_basis_first,
     compute_complementarities,
-    compute_epms, compute_espm,
+    compute_elementary_sos, compute_so_hierarchy,
 )
 from cot_gen.deep_report import build_so_lattice
 
@@ -71,17 +71,17 @@ def main():
     hier = build_hierarchy(ercs)
     syn = compute_synergies_basis_first(ercs, hier)
     comp = compute_complementarities(ercs, hier, syn)
-    epm_result = compute_epms(rn_data, ercs, hier, syn, comp)
-    espm_result = compute_espm(rn_data, ercs, hier, syn, comp, epm_result, max_order=6)
+    elem_result = compute_elementary_sos(rn_data, ercs, hier, syn, comp)
+    so_result = compute_so_hierarchy(rn_data, ercs, hier, syn, comp, elem_result, max_order=6)
 
-    print(f"ERCs={len(ercs)}  EPMs={len(epm_result.all_epm_masks)}  "
-          f"SOs(order<=6)={len(espm_result.all_so_masks)}")
+    print(f"ERCs={len(ercs)}  Elementary SOs={len(elem_result.all_elementary_masks)}  "
+          f"SOs(order<=6)={len(so_result.all_so_masks)}")
 
-    so_order = {sp: 0 for sp in espm_result.epm_masks}
-    for order, masks in espm_result.espm_by_order.items():
+    so_order = {sp: 0 for sp in so_result.elementary_masks}
+    for order, masks in so_result.so_by_order.items():
         for sp in masks:
             so_order[sp] = order
-    so_lattice = build_so_lattice(espm_result.all_so_masks, so_order)
+    so_lattice = build_so_lattice(so_result.all_so_masks, so_order)
 
     S_full = build_full_stoich(rn_pycot)
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.5.11)  12 AUG 2026 16:54
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.5.11)  13 AUG 2026 12:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -603,21 +603,21 @@ Package hyperref Info: Link coloring OFF on input line 6.
 \@outlinefile=\write3
 \openout3 = `main.out'.
 
-LaTeX Font Info:    Trying to load font information for T1+phv on input line 65
+LaTeX Font Info:    Trying to load font information for T1+phv on input line 77
 .
 
 (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\t1phv.fd
 File: t1phv.fd 2020/03/25 scalable font definitions for T1/phv.
 )
 LaTeX Font Info:    Font shape `T1/phv/b/it' in size <18> not available
-(Font)              Font shape `T1/phv/b/sl' tried instead on input line 65.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 65.
+(Font)              Font shape `T1/phv/b/sl' tried instead on input line 77.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 77.
 
 
 (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 65.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 77.
 
 
 (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
@@ -625,78 +625,131 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 
 LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <6.5> not available
-(Font)              size <6> substituted on input line 65.
+(Font)              size <6> substituted on input line 77.
 
 
 LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <6.5> not available
-(Font)              size <6> substituted on input line 65.
+(Font)              size <6> substituted on input line 77.
 
 
 LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <6.5> not available
-(Font)              size <6> substituted on input line 65.
+(Font)              size <6> substituted on input line 77.
 
-LaTeX Font Info:    Calculating math sizes for size <8.5> on input line 65.
+LaTeX Font Info:    Calculating math sizes for size <8.5> on input line 77.
 
 LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <8.5> not available
-(Font)              size <8> substituted on input line 65.
+(Font)              size <8> substituted on input line 77.
 
 
 LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.25> not available
-(Font)              size <5> substituted on input line 65.
+(Font)              size <5> substituted on input line 77.
 
 
 LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <8.5> not available
-(Font)              size <8> substituted on input line 65.
+(Font)              size <8> substituted on input line 77.
 
 
 LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.25> not available
-(Font)              size <5> substituted on input line 65.
+(Font)              size <5> substituted on input line 77.
 
 
 LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <8.5> not available
-(Font)              size <8> substituted on input line 65.
+(Font)              size <8> substituted on input line 77.
 
 
 LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.25> not available
-(Font)              size <5> substituted on input line 65.
+(Font)              size <5> substituted on input line 77.
 
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <9> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 65.
-LaTeX Font Info:    Trying to load font information for T1+pcr on input line 65
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 77.
+LaTeX Font Info:    Trying to load font information for T1+pcr on input line 77
 .
 (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\t1pcr.fd
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
 )
-Underfull \hbox (badness 1735) in paragraph at lines 65--65
+Underfull \hbox (badness 1735) in paragraph at lines 77--77
 \T1/phv/b/n/9 Availability and imple-men-ta-tion: \T1/phv/m/n/9 All code, conve
 r-ted netw-orks and result tables are avai-la-ble in the \T1/pcr/m/n/9 pyCOT
  []
 
 
-Underfull \hbox (badness 5175) in paragraph at lines 65--65
+Underfull \hbox (badness 5175) in paragraph at lines 77--77
 \T1/phv/m/n/9 repo-si-tory (module \T1/pcr/m/n/9 pyCOT.analysis.organizations\T
 1/phv/m/n/9 ); this manu-script's sou-rce, figures and data are in
  []
 
 
-Overfull \hbox (50.295pt too wide) in paragraph at lines 65--65
+Overfull \hbox (50.295pt too wide) in paragraph at lines 77--77
 [][] 
  []
 
 
-Underfull \hbox (badness 10000) detected at line 65
+Underfull \hbox (badness 10000) detected at line 77
 []
  []
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+LaTeX Warning: Optional argument of \twocolumn too tall on page 1.
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-LaTeX Font Info:    Trying to load font information for TS1+phv on input line 8
-5.
 
+
+LaTeX Warning: Text page 1 contains only floats.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+LaTeX Font Info:    Font shape `T1/phv/m/it' in size <8> not available
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 77.
+
+Overfull \hbox (253.1475pt too wide) has occurred while \output is active
+[][] 
+ []
+
+[1{C:/Users/hp/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/hp/Ap
+pData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}
+
+
+
+]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+<fig0_illustrative_example.pdf, id=119, 804.00375pt x 423.2795pt>
+File: fig0_illustrative_example.pdf Graphic file (type pdf)
+<use fig0_illustrative_example.pdf>
+Package pdftex.def Info: fig0_illustrative_example.pdf  used on input line 179.
+
+(pdftex.def)             Requested size: 488.295pt x 257.06984pt.
+LaTeX Font Info:    Calculating math sizes for size <6.5> on input line 186.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.54997> not available
+(Font)              size <5> substituted on input line 186.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.25> not available
+(Font)              size <5> substituted on input line 186.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.54997> not available
+(Font)              size <5> substituted on input line 186.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.25> not available
+(Font)              size <5> substituted on input line 186.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.54997> not available
+(Font)              size <5> substituted on input line 186.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.25> not available
+(Font)              size <5> substituted on input line 186.
+
+LaTeX Font Info:    Trying to load font information for TS1+phv on input line 2
+03.
 (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ts1phv.fd
 File: ts1phv.fd 2020/03/25 scalable font definitions for TS1/phv.
 )
@@ -704,95 +757,99 @@ Overfull \hbox (1.52002pt too wide) has occurred while \output is active
  []
  []
 
-[1
-
-{C:/Users/hp/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/hp/AppD
-ata/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}
-
-
-]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-<fig0_illustrative_example.pdf, id=114, 804.00375pt x 423.2795pt>
-File: fig0_illustrative_example.pdf Graphic file (type pdf)
-<use fig0_illustrative_example.pdf>
-Package pdftex.def Info: fig0_illustrative_example.pdf  used on input line 167.
-
-(pdftex.def)             Requested size: 488.295pt x 257.06984pt.
-LaTeX Font Info:    Calculating math sizes for size <6.5> on input line 174.
-
-
-LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.54997> not available
-(Font)              size <5> substituted on input line 174.
-
-
-LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.25> not available
-(Font)              size <5> substituted on input line 174.
-
-
-LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.54997> not available
-(Font)              size <5> substituted on input line 174.
-
-
-LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.25> not available
-(Font)              size <5> substituted on input line 174.
-
-
-LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.54997> not available
-(Font)              size <5> substituted on input line 174.
-
-
-LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.25> not available
-(Font)              size <5> substituted on input line 174.
-
-LaTeX Font Info:    Font shape `T1/phv/m/it' in size <8> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 219.
-
-Overfull \hbox (253.1475pt too wide) has occurred while \output is active
-[][] 
+[2]
+Underfull \hbox (badness 1789) in paragraph at lines 234--260
+\T1/ptm/m/n/8 med by direct inspe-ction of this imple-men-ta-tion that ESO sea-
+rch
  []
 
-[2]
+
+Underfull \hbox (badness 1997) in paragraph at lines 234--260
+\T1/ptm/m/n/8 new clo-su-res are assem-bled purely by com-bi-ning ERCs' pre-com
+-
+ []
+
+
 Overfull \hbox (253.1475pt too wide) has occurred while \output is active
 [][] 
  []
 
 [3 <./fig0_illustrative_example.pdf>]
-<fig3_centler_split.pdf, id=246, 243.03674pt x 206.5251pt>
+<fig3_centler_split.pdf, id=258, 243.03674pt x 206.5251pt>
 File: fig3_centler_split.pdf Graphic file (type pdf)
 <use fig3_centler_split.pdf>
-Package pdftex.def Info: fig3_centler_split.pdf  used on input line 267.
+Package pdftex.def Info: fig3_centler_split.pdf  used on input line 291.
 (pdftex.def)             Requested size: 235.14749pt x 199.82487pt.
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <6.5> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 270.
-<fig1_epm_comparison.pdf, id=253, 503.44211pt x 224.06886pt>
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 294.
+<fig1_epm_comparison.pdf, id=265, 503.44211pt x 224.06886pt>
 File: fig1_epm_comparison.pdf Graphic file (type pdf)
 <use fig1_epm_comparison.pdf>
-Package pdftex.def Info: fig1_epm_comparison.pdf  used on input line 302.
+Package pdftex.def Info: fig1_epm_comparison.pdf  used on input line 326.
 (pdftex.def)             Requested size: 235.14749pt x 104.65593pt.
-<fig2_scaling.pdf, id=254, 244.0207pt x 205.72131pt>
+<fig2_scaling.pdf, id=266, 244.0207pt x 205.72131pt>
 File: fig2_scaling.pdf Graphic file (type pdf)
 <use fig2_scaling.pdf>
-Package pdftex.def Info: fig2_scaling.pdf  used on input line 312.
+Package pdftex.def Info: fig2_scaling.pdf  used on input line 336.
 (pdftex.def)             Requested size: 199.8768pt x 168.50735pt.
 
 Overfull \hbox (253.1475pt too wide) has occurred while \output is active
 [][] 
  []
 
-[4 <./fig3_centler_split.pdf> <./fig1_epm_comparison.pdf> <./fig2_scaling.pdf>]
-<fig4_cross_organism_comparison.pdf, id=406, 817.78008pt x 313.9996pt>
-File: fig4_cross_organism_comparison.pdf Graphic file (type pdf)
-<use fig4_cross_organism_comparison.pdf>
-Package pdftex.def Info: fig4_cross_organism_comparison.pdf  used on input line
- 407.
-(pdftex.def)             Requested size: 488.295pt x 187.49088pt.
+[4 <./fig3_centler_split.pdf> <./fig1_epm_comparison.pdf>]
+Underfull \hbox (badness 1057) in paragraph at lines 383--393
+\T1/ptm/m/n/8 stru-cti-ons; Table []1[]), seve-ral orders of magni-tude che-a-p
+er than the
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+LaTeX Font Info:    Calculating math sizes for size <7.5> on input line 430.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <7.5> not available
+(Font)              size <7> substituted on input line 430.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.75> not available
+(Font)              size <5> substituted on input line 430.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <7.5> not available
+(Font)              size <7> substituted on input line 430.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.75> not available
+(Font)              size <5> substituted on input line 430.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <7.5> not available
+(Font)              size <7> substituted on input line 430.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.75> not available
+(Font)              size <5> substituted on input line 430.
+
+LaTeX Font Info:    Font shape `T1/phv/m/it' in size <7.5> not available
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 430.
 
 Overfull \hbox (253.1475pt too wide) has occurred while \output is active
 [][] 
  []
 
-[5] (main.bbl
+[5 <./fig2_scaling.pdf>]
+<fig4_cross_organism_comparison.pdf, id=443, 817.78008pt x 313.9996pt>
+File: fig4_cross_organism_comparison.pdf Graphic file (type pdf)
+<use fig4_cross_organism_comparison.pdf>
+Package pdftex.def Info: fig4_cross_organism_comparison.pdf  used on input line
+ 507.
+(pdftex.def)             Requested size: 488.295pt x 187.49088pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
@@ -800,12 +857,20 @@ Overfull \hbox (253.1475pt too wide) has occurred while \output is active
 [][] 
  []
 
-[6 <./fig4_cross_organism_comparison.pdf>])
+[6]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ (main.bbl
 Overfull \hbox (253.1475pt too wide) has occurred while \output is active
 [][] 
  []
 
-[7
+[7 <./fig4_cross_organism_comparison.pdf>])
+Overfull \hbox (253.1475pt too wide) has occurred while \output is active
+[][] 
+ []
+
+[8
 
 ] (main.aux)
  ***********
@@ -818,38 +883,41 @@ LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 1.75pt have occurred.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: AD91AC4E980EB60D78F2C8E589AB24CA;3836.
+(rerunfilecheck)             Checksum: 0BDEBEA092111F81DD1E325723EA30DB;4951.
  ) 
 Here is how much of TeX's memory you used:
- 13347 strings out of 467691
- 217715 string characters out of 5416439
- 669038 words of memory out of 5000000
- 42124 multiletter control sequences out of 15000+600000
- 739016 words of font info for 163 fonts, out of 8000000 for 9000
+ 13400 strings out of 467691
+ 218641 string characters out of 5416439
+ 674038 words of memory out of 5000000
+ 42167 multiletter control sequences out of 15000+600000
+ 750719 words of font info for 179 fonts, out of 8000000 for 9000
  1145 hyphenation exceptions out of 8191
- 80i,9n,82p,885b,579s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 80i,10n,82p,1498b,549s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cmextr
 a/cmbsy9.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsf
 onts/cm/cmmi6.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public
-/amsfonts/cm/cmmi8.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/p
-ublic/amsfonts/cm/cmr5.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/typ
-e1/public/amsfonts/cm/cmr6.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts
-/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/f
-onts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/hp/AppData/Local/Programs/MiK
-TeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/hp/AppData/Local/Program
-s/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Users/hp/AppData/Local/Pr
-ograms/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/hp/AppData/Local/Pro
-grams/MiKTeX/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Users/hp/AppData/Local/Pro
-grams/MiKTeX/fonts/type1/urw/helvetic/uhvbo8a.pfb><C:/Users/hp/AppData/Local/Pr
-ograms/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/hp/AppData/Local/Pr
-ograms/MiKTeX/fonts/type1/urw/helvetic/uhvr8ac.pfb><C:/Users/hp/AppData/Local/P
-rograms/MiKTeX/fonts/type1/urw/helvetic/uhvro8a.pfb><C:/Users/hp/AppData/Local/
-Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/hp/AppData/Local/Pro
-grams/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/hp/AppData/Local/Progra
-ms/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (7 pages, 354785 bytes).
+/amsfonts/cm/cmmi7.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/p
+ublic/amsfonts/cm/cmmi8.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/public/amsfonts/cm/cmmi9.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fon
+ts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX
+/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/hp/AppData/Local/Programs/Mi
+KTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/hp/AppData/Local/Program
+s/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/hp/AppData/Local/Pr
+ograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/hp/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/hp/AppDat
+a/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Users/hp/A
+ppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/hp/Ap
+pData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Users/hp/Ap
+pData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvbo8a.pfb><C:/Users/hp/A
+ppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/hp/A
+ppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8ac.pfb><C:/Users/hp/
+AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvro8a.pfb><C:/Users/hp
+/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/hp/Ap
+pData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/hp/AppDa
+ta/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (8 pages, 398885 bytes).
 PDF statistics:
- 583 PDF objects out of 1000 (max. 8388607)
- 47 named destinations out of 1000 (max. 500000)
- 146 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 642 PDF objects out of 1000 (max. 8388607)
+ 53 named destinations out of 1000 (max. 500000)
+ 162 words of extra memory for PDF output out of 10000 (max. 10000000)
 

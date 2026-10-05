@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 750px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "cyan", "font": {"size": 14}, "id": "O1", "label": "O1", "shape": "dot", "size": 20, "title": "V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O2", "label": "O2", "shape": "dot", "size": 20, "title": "F_fun"}, {"color": "cyan", "font": {"size": 14}, "id": "O3", "label": "O3", "shape": "dot", "size": 20, "title": "S_alm"}, {"color": "cyan", "font": {"size": 14}, "id": "O4", "label": "O4", "shape": "dot", "size": 20, "title": "H, Nut_int"}, {"color": "cyan", "font": {"size": 14}, "id": "O5", "label": "O5", "shape": "dot", "size": 20, "title": "H, Nut_int, P_hsp, T_sigma"}, {"color": "cyan", "font": {"size": 14}, "id": "O6", "label": "O6", "shape": "dot", "size": 20, "title": "A_apt, F_fun, H_dew, S_alm"}, {"color": "cyan", "font": {"size": 14}, "id": "O7", "label": "O7", "shape": "dot", "size": 20, "title": "A_def, F_fun, H_dew, S_alm"}, {"color": "limegreen", "font": {"size": 14}, "id": "O8", "label": "O8", "shape": "dot", "size": 20, "title": "A_apt, E_fit, F_fun, H_dew, S_alm"}, {"color": "cyan", "font": {"size": 14}, "id": "O9", "label": "O9", "shape": "dot", "size": 20, "title": "A_apt, A_def, F_fun, H_dew, S_alm"}, {"color": "cyan", "font": {"size": 14}, "id": "O10", "label": "O10", "shape": "dot", "size": 20, "title": "A_apt, F_fun, H_dew, S_alm, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O11", "label": "O11", "shape": "dot", "size": 20, "title": "A_apt, A_def, E_fit, F_fun, H_dew, S_alm"}, {"color": "cyan", "font": {"size": 14}, "id": "O12", "label": "O12", "shape": "dot", "size": 20, "title": "A_apt, E_fit, F_fun, H_dew, S_alm, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O13", "label": "O13", "shape": "dot", "size": 20, "title": "A_apt, A_def, F_fun, H_dew, S_alm, V_voc"}, {"color": "limegreen", "font": {"size": 14}, "id": "O14", "label": "O14", "shape": "dot", "size": 20, "title": "A_ala, A_par, A_vul, D, M_mum, Nut, P_p"}, {"color": "cyan", "font": {"size": 14}, "id": "O15", "label": "O15", "shape": "dot", "size": 20, "title": "A_apt, A_def, F_fun, H, H_dew, Nut_int, S_alm"}, {"color": "limegreen", "font": {"size": 14}, "id": "O16", "label": "O16", "shape": "dot", "size": 20, "title": "A_apt, F_fun, H_dew, Pl, Pl_dam, S_alm, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O17", "label": "O17", "shape": "dot", "size": 20, "title": "A_apt, A_def, E_fit, F_fun, H_dew, S_alm, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O18", "label": "O18", "shape": "dot", "size": 20, "title": "A_apt, A_def, E_fit, F_fun, H, H_dew, Nut_int, S_alm"}, {"color": "cyan", "font": {"size": 14}, "id": "O19", "label": "O19", "shape": "dot", "size": 20, "title": "A_apt, A_def, F_fun, H, H_dew, Nut_int, S_alm, V_voc"}, {"color": "limegreen", "font": {"size": 14}, "id": "O20", "label": "O20", "shape": "dot", "size": 20, "title": "A_apt, E_fit, F_fun, H_dew, Pl, Pl_dam, S_alm, V_voc"}, {"color": "limegreen", "font": {"size": 14}, "id": "O21", "label": "O21", "shape": "dot", "size": 20, "title": "A_apt, A_def, F_fun, H_dew, Pl, Pl_dam, S_alm, V_voc"}, {"color": "limegreen", "font": {"size": 14}, "id": "O22", "label": "O22", "shape": "dot", "size": 20, "title": "A_apt, A_eaa, B, C_lip, E_fit, F_fun, H_dew, Nut_int, S_alm"}, {"color": "cyan", "font": {"size": 14}, "id": "O23", "label": "O23", "shape": "dot", "size": 20, "title": "A_apt, A_def, F_fun, H, H_dew, Nut_int, P_hsp, S_alm, T_sigma"}, {"color": "cyan", "font": {"size": 14}, "id": "O24", "label": "O24", "shape": "dot", "size": 20, "title": "A_apt, A_def, E_fit, F_fun, H, H_dew, Nut_int, S_alm, V_voc"}, {"color": "limegreen", "font": {"size": 14}, "id": "O25", "label": "O25", "shape": "dot", "size": 20, "title": "A_apt, A_def, E_fit, F_fun, H_dew, Pl, Pl_dam, S_alm, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O26", "label": "O26", "shape": "dot", "size": 20, "title": "A_apt, A_def, A_eaa, B, C_lip, E_fit, F_fun, H_dew, Nut_int, S_alm"}, {"color": "cyan", "font": {"size": 14}, "id": "O27", "label": "O27", "shape": "dot", "size": 20, "title": "A_apt, A_eaa, B, C_lip, E_fit, F_fun, H_dew, Nut_int, S_alm, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O28", "label": "O28", "shape": "dot", "size": 20, "title": "A_apt, A_def, E_fit, F_fun, H, H_dew, Nut_int, P_hsp, S_alm, T_sigma"}, {"color": "cyan", "font": {"size": 14}, "id": "O29", "label": "O29", "shape": "dot", "size": 20, "title": "A_apt, A_def, F_fun, H, H_dew, Nut_int, P_hsp, S_alm, T_sigma, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O30", "label": "O30", "shape": "dot", "size": 20, "title": "A_apt, A_def, F_fun, H, H_dew, Nut_int, Pl, Pl_dam, S_alm, V_voc"}, {"color": "limegreen", "font": {"size": 14}, "id": "O31", "label": "O31", "shape": "dot", "size": 20, "title": "A_apt, A_eaa, B, C_lip, E_fit, F_fun, H_dew, Nut_int, P_hsp, S_alm, T_sigma"}, {"color": "cyan", "font": {"size": 14}, "id": "O32", "label": "O32", "shape": "dot", "size": 20, "title": "A_apt, A_def, A_eaa, B, C_lip, E_fit, F_fun, H_dew, Nut_int, S_alm, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O33", "label": "O33", "shape": "dot", "size": 20, "title": "A_apt, A_def, E_fit, F_fun, H, H_dew, Nut_int, P_hsp, S_alm, T_sigma, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O34", "label": "O34", "shape": "dot", "size": 20, "title": "A_apt, A_def, E_fit, F_fun, H, H_dew, Nut_int, Pl, Pl_dam, S_alm, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O35", "label": "O35", "shape": "dot", "size": 20, "title": "A_apt, A_def, A_eaa, B, C_lip, E_fit, F_fun, H_dew, Nut_int, P_hsp, S_alm, T_sigma"}, {"color": "limegreen", "font": {"size": 14}, "id": "O36", "label": "O36", "shape": "dot", "size": 20, "title": "A_apt, A_def, A_eaa, B, C_lip, E_fit, F_fun, H, H_dew, Nut_int, S_alm, T_tox"}, {"color": "cyan", "font": {"size": 14}, "id": "O37", "label": "O37", "shape": "dot", "size": 20, "title": "A_apt, A_eaa, B, C_lip, E_fit, F_fun, H_dew, Nut_int, P_hsp, S_alm, T_sigma, V_voc"}, {"color": "limegreen", "font": {"size": 14}, "id": "O38", "label": "O38", "shape": "dot", "size": 20, "title": "A_apt, A_eaa, B, C_lip, E_fit, F_fun, H_dew, Nut_int, Pl, Pl_dam, S_alm, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O39", "label": "O39", "shape": "dot", "size": 20, "title": "A_apt, A_def, F_fun, H, H_dew, Nut_int, P_hsp, Pl, Pl_dam, S_alm, T_sigma, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O40", "label": "O40", "shape": "dot", "size": 20, "title": "A_apt, A_def, A_eaa, B, C_lip, E_fit, F_fun, H_dew, Nut_int, P_hsp, S_alm, T_sigma, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O41", "label": "O41", "shape": "dot", "size": 20, "title": "A_apt, A_def, A_eaa, B, C_lip, E_fit, F_fun, H, H_dew, Nut_int, S_alm, T_tox, V_voc"}, {"color": "limegreen", "font": {"size": 14}, "id": "O42", "label": "O42", "shape": "dot", "size": 20, "title": "A_apt, A_def, A_eaa, B, C_lip, E_fit, F_fun, H_dew, Nut_int, Pl, Pl_dam, S_alm, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O43", "label": "O43", "shape": "dot", "size": 20, "title": "A_apt, A_def, E_fit, F_fun, H, H_dew, Nut_int, P_hsp, Pl, Pl_dam, S_alm, T_sigma, V_voc"}, {"color": "limegreen", "font": {"size": 14}, "id": "O44", "label": "O44", "shape": "dot", "size": 20, "title": "A_apt, A_def, A_eaa, B, C_lip, E_fit, F_fun, H, H_dew, Nut_int, P_hsp, S_alm, T_sigma, T_tox"}, {"color": "limegreen", "font": {"size": 14}, "id": "O45", "label": "O45", "shape": "dot", "size": 20, "title": "A_apt, A_eaa, B, C_lip, E_fit, F_fun, H_dew, Nut_int, P_hsp, Pl, Pl_dam, S_alm, T_sigma, V_voc"}, {"color": "cyan", "font": {"size": 14}, "id": "O46", "label": "O46", "shape": "dot", "size": 20, "title": "A_apt, A_def, A_eaa, B, C_lip, E_fit, F_fun, H, H_dew, Nut_int, P_hsp, S_alm, T_sigma, T_tox, V_voc"}, {"color": "limegreen", "font": {"size": 14}, "id": "O47", "label": "O47", "shape": "dot", "size": 20, "title": "A_apt, A_def, A_eaa, B, C_lip, E_fit, F_fun, H_dew, Nut_int, P_hsp, Pl, Pl_dam, S_alm, T_sigma, V_voc"}, {"color": "limegreen", "font": {"size": 14}, "id": "O48", "label": "O48", "shape": "dot", "size": 20, "title": "A_apt, A_def, A_eaa, B, C_lip, E_fit, F_fun, H, H_dew, Nut_int, Pl, Pl_dam, S_alm, T_tox, V_voc"}, {"color": "limegreen", "font": {"size": 14}, "id": "O49", "label": "O49", "shape": "dot", "size": 20, "title": "A_apt, A_def, A_eaa, B, C_lip, E_fit, F_fun, H, H_dew, Nut_int, P_hsp, Pl, Pl_dam, S_alm, T_sigma, T_tox, V_voc"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "O1", "to": "O10"}, {"arrows": "to", "from": "O2", "to": "O6"}, {"arrows": "to", "from": "O2", "to": "O7"}, {"arrows": "to", "from": "O3", "to": "O6"}, {"arrows": "to", "from": "O3", "to": "O7"}, {"arrows": "to", "from": "O4", "to": "O5"}, {"arrows": "to", "from": "O4", "to": "O15"}, {"arrows": "to", "from": "O5", "to": "O23"}, {"arrows": "to", "from": "O6", "to": "O8"}, {"arrows": "to", "from": "O6", "to": "O9"}, {"arrows": "to", "from": "O6", "to": "O10"}, {"arrows": "to", "from": "O7", "to": "O9"}, {"arrows": "to", "from": "O8", "to": "O11"}, {"arrows": "to", "from": "O8", "to": "O12"}, {"arrows": "to", "from": "O8", "to": "O22"}, {"arrows": "to", "from": "O9", "to": "O11"}, {"arrows": "to", "from": "O9", "to": "O13"}, {"arrows": "to", "from": "O9", "to": "O15"}, {"arrows": "to", "from": "O10", "to": "O12"}, {"arrows": "to", "from": "O10", "to": "O13"}, {"arrows": "to", "from": "O10", "to": "O16"}, {"arrows": "to", "from": "O11", "to": "O17"}, {"arrows": "to", "from": "O11", "to": "O18"}, {"arrows": "to", "from": "O11", "to": "O26"}, {"arrows": "to", "from": "O12", "to": "O17"}, {"arrows": "to", "from": "O12", "to": "O20"}, {"arrows": "to", "from": "O12", "to": "O27"}, {"arrows": "to", "from": "O13", "to": "O17"}, {"arrows": "to", "from": "O13", "to": "O19"}, {"arrows": "to", "from": "O13", "to": "O21"}, {"arrows": "to", "from": "O15", "to": "O18"}, {"arrows": "to", "from": "O15", "to": "O19"}, {"arrows": "to", "from": "O15", "to": "O23"}, {"arrows": "to", "from": "O16", "to": "O20"}, {"arrows": "to", "from": "O16", "to": "O21"}, {"arrows": "to", "from": "O17", "to": "O24"}, {"arrows": "to", "from": "O17", "to": "O25"}, {"arrows": "to", "from": "O17", "to": "O32"}, {"arrows": "to", "from": "O18", "to": "O24"}, {"arrows": "to", "from": "O18", "to": "O28"}, {"arrows": "to", "from": "O18", "to": "O36"}, {"arrows": "to", "from": "O19", "to": "O24"}, {"arrows": "to", "from": "O19", "to": "O29"}, {"arrows": "to", "from": "O19", "to": "O30"}, {"arrows": "to", "from": "O20", "to": "O25"}, {"arrows": "to", "from": "O20", "to": "O38"}, {"arrows": "to", "from": "O21", "to": "O25"}, {"arrows": "to", "from": "O21", "to": "O30"}, {"arrows": "to", "from": "O22", "to": "O26"}, {"arrows": "to", "from": "O22", "to": "O27"}, {"arrows": "to", "from": "O22", "to": "O31"}, {"arrows": "to", "from": "O23", "to": "O28"}, {"arrows": "to", "from": "O23", "to": "O29"}, {"arrows": "to", "from": "O24", "to": "O33"}, {"arrows": "to", "from": "O24", "to": "O34"}, {"arrows": "to", "from": "O24", "to": "O41"}, {"arrows": "to", "from": "O25", "to": "O34"}, {"arrows": "to", "from": "O25", "to": "O42"}, {"arrows": "to", "from": "O26", "to": "O32"}, {"arrows": "to", "from": "O26", "to": "O35"}, {"arrows": "to", "from": "O26", "to": "O36"}, {"arrows": "to", "from": "O27", "to": "O32"}, {"arrows": "to", "from": "O27", "to": "O37"}, {"arrows": "to", "from": "O27", "to": "O38"}, {"arrows": "to", "from": "O28", "to": "O33"}, {"arrows": "to", "from": "O28", "to": "O44"}, {"arrows": "to", "from": "O29", "to": "O33"}, {"arrows": "to", "from": "O29", "to": "O39"}, {"arrows": "to", "from": "O30", "to": "O34"}, {"arrows": "to", "from": "O30", "to": "O39"}, {"arrows": "to", "from": "O31", "to": "O35"}, {"arrows": "to", "from": "O31", "to": "O37"}, {"arrows": "to", "from": "O32", "to": "O40"}, {"arrows": "to", "from": "O32", "to": "O41"}, {"arrows": "to", "from": "O32", "to": "O42"}, {"arrows": "to", "from": "O33", "to": "O43"}, {"arrows": "to", "from": "O33", "to": "O46"}, {"arrows": "to", "from": "O34", "to": "O43"}, {"arrows": "to", "from": "O34", "to": "O48"}, {"arrows": "to", "from": "O35", "to": "O40"}, {"arrows": "to", "from": "O35", "to": "O44"}, {"arrows": "to", "from": "O36", "to": "O41"}, {"arrows": "to", "from": "O36", "to": "O44"}, {"arrows": "to", "from": "O37", "to": "O40"}, {"arrows": "to", "from": "O37", "to": "O45"}, {"arrows": "to", "from": "O38", "to": "O42"}, {"arrows": "to", "from": "O38", "to": "O45"}, {"arrows": "to", "from": "O39", "to": "O43"}, {"arrows": "to", "from": "O40", "to": "O46"}, {"arrows": "to", "from": "O40", "to": "O47"}, {"arrows": "to", "from": "O41", "to": "O46"}, {"arrows": "to", "from": "O41", "to": "O48"}, {"arrows": "to", "from": "O42", "to": "O47"}, {"arrows": "to", "from": "O42", "to": "O48"}, {"arrows": "to", "from": "O43", "to": "O49"}, {"arrows": "to", "from": "O44", "to": "O46"}, {"arrows": "to", "from": "O45", "to": "O47"}, {"arrows": "to", "from": "O46", "to": "O49"}, {"arrows": "to", "from": "O47", "to": "O49"}, {"arrows": "to", "from": "O48", "to": "O49"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"shape": "dot", "font": {"size": 14, "align": "center"}, "borderWidth": 2, "borderColor": "black"}, "edges": {"smooth": false, "color": "gray", "width": 2}, "physics": {"enabled": false, "stabilization": {"enabled": false}, "hierarchicalRepulsion": {"nodeDistance": 150}}, "layout": {"hierarchical": {"enabled": true, "direction": "DU", "sortMethod": "directed"}}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

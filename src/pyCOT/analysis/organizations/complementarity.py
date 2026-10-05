@@ -10,8 +10,20 @@ Supply from E to E' (Def 22):
 Basic complementarity (Def 23):
   E and E' are complementary if supl(E⇀E') ∪ supl(E'⇀E) ≠ ∅.
   One ERC produces a species the other needs externally.
-  Only incomparable pairs are relevant (for comparable E ⊊ E': prod(R_E) ⊆ prod(R_E'),
-  so prod(R_E) ∩ req(E') = ∅ since req(E') = supp(R_E') \\ prod(R_E')).
+
+  This is NOT restricted to incomparable pairs. For comparable E ⊊ E':
+  prod(R_E) ⊆ prod(R_E') (every reaction triggered within closure(E) is
+  also triggered within closure(E'), since R_E ⊆ R_E'), so
+  supl(E⇀E') = prod(R_E) ∩ req(E') = ∅ — the smaller ERC can never supply
+  the larger one. But the converse is NOT guaranteed empty: supl(E'⇀E) =
+  prod(R_E') ∩ req(E) can be nonempty, because req(E) is computed from
+  E's own (smaller) reaction set R_E and is not generally a subset of
+  req(E') or disjoint from prod(R_E'). Concretely: r0: a=>2a, r1: a+b=>c,
+  r2: d=>b, r3: d=>a+d gives E=closure({a,b})={a,b,c} with req(E)={b},
+  and E'=closure({d})={a,b,c,d} ⊋ E with prod(R_E')∋b — so E' supplies b
+  to E even though E ⊊ E'. This is "intra-chain" complementarity, as
+  opposed to the "inter-chain" case where E and E' are incomparable.
+  Each CompPair/FundComp carries a `chain` flag recording which case it is.
 
 Pure complementarity (Def 24):
   Basic and NOT synergetic (pass syn_result to compute this).
@@ -28,16 +40,21 @@ Public API
 ----------
 compute_complementarities(ercs, hier, syn_result=None, *, counters=None) -> CompResult
 
-CompPair(i, j, fwd_supply, bwd_supply, is_pure)
+CompPair(i, j, fwd_supply, bwd_supply, is_pure, chain)
   i, j         : ERC indices (i < j)
   fwd_supply   : prod_i & req_j  (species E_i supplies to E_j, as bitmask)
   bwd_supply   : prod_j & req_i  (species E_j supplies to E_i, as bitmask)
   is_pure      : True if pair is basic-complementary and NOT synergetic
+  chain        : True if i and j are hierarchy-comparable ("intra-chain");
+                 False if incomparable ("inter-chain"). For chain pairs,
+                 exactly one of fwd_supply/bwd_supply is guaranteed 0 (the
+                 subset-ERC-to-superset-ERC direction).
 
-FundComp(prod_idx, cons_idx, species)
+FundComp(prod_idx, cons_idx, species, chain)
   prod_idx : ERC index of the ⊆-minimal producer of `species`
   cons_idx : ERC index of the ⊆-minimal consumer of `species`
   species  : bit index (0-based) of the supplied species
+  chain    : True if prod_idx and cons_idx are hierarchy-comparable
 
 CompResult(.basic, .pure, .fundamental)
 """
@@ -59,6 +76,7 @@ class CompPair:
     fwd_supply: int  # prod_i & req_j — species E_i supplies to E_j (bitmask)
     bwd_supply: int  # prod_j & req_i — species E_j supplies to E_i (bitmask)
     is_pure: bool = False  # True if pair is not synergetic
+    chain: bool = False    # True if i, j are hierarchy-comparable (intra-chain)
 
 
 @dataclass(frozen=True)
@@ -67,6 +85,7 @@ class FundComp:
     prod_idx: int   # index of the ⊆-minimal ERC that produces `species`
     cons_idx: int   # index of the ⊆-minimal ERC that requires `species`
     species:  int   # species bit index (0-based position)
+    chain: bool = False  # True if prod_idx, cons_idx are hierarchy-comparable
 
 
 @dataclass
@@ -135,14 +154,18 @@ def compute_complementarities(
     basic_pairs: list[CompPair] = []
 
     for i, j in combinations(range(n), 2):
-        if not hier.can_interact(i, j):   # skip comparable pairs
-            continue
+        # Comparable ("chain") pairs are included: the subset-ERC-to-superset-ERC
+        # direction is always 0 by construction (see module docstring), but the
+        # reverse direction can be nonempty — that is intra-chain complementarity.
+        chain = hier.is_comparable(i, j)
         fwd = prods[i] & reqs[j]   # E_i produces what E_j needs
         bwd = prods[j] & reqs[i]   # E_j produces what E_i needs
         if not (fwd or bwd):
             continue
-        is_pure = (syn_result is not None) and ((i, j) not in syn_pairs)
-        basic_pairs.append(CompPair(i=i, j=j, fwd_supply=fwd, bwd_supply=bwd, is_pure=is_pure))
+        # Chain pairs can never be synergetic (synergy requires incomparable
+        # ERCs), so every intra-chain complementary pair is trivially pure.
+        is_pure = chain or ((syn_result is not None) and ((i, j) not in syn_pairs))
+        basic_pairs.append(CompPair(i=i, j=j, fwd_supply=fwd, bwd_supply=bwd, is_pure=is_pure, chain=chain))
 
     pure_pairs = [cp for cp in basic_pairs if cp.is_pure] if syn_result is not None else []
 
@@ -188,7 +211,10 @@ def compute_complementarities(
         for pi in min_prods:
             for ci in min_cons:
                 if pi != ci:
-                    fundamental.append(FundComp(prod_idx=pi, cons_idx=ci, species=s_bit))
+                    fundamental.append(FundComp(
+                        prod_idx=pi, cons_idx=ci, species=s_bit,
+                        chain=hier.is_comparable(pi, ci),
+                    ))
 
     result = CompResult(basic=basic_pairs, pure=pure_pairs, fundamental=fundamental)
 
@@ -196,5 +222,9 @@ def compute_complementarities(
         counters.inc("comp.n_basic",       len(basic_pairs))
         counters.inc("comp.n_pure",        len(pure_pairs))
         counters.inc("comp.n_fundamental", len(fundamental))
+        counters.inc("comp.n_basic_intra_chain", sum(1 for cp in basic_pairs if cp.chain))
+        counters.inc("comp.n_basic_inter_chain", sum(1 for cp in basic_pairs if not cp.chain))
+        counters.inc("comp.n_fundamental_intra_chain", sum(1 for fc in fundamental if fc.chain))
+        counters.inc("comp.n_fundamental_inter_chain", sum(1 for fc in fundamental if not fc.chain))
 
     return result

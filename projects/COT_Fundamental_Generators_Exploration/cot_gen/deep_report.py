@@ -2,32 +2,34 @@
 deep_report.py — Deep structural analysis + presentation-quality reporting
 for a single reaction network's full COT pipeline.
 
-Built on top of the validated computation (cot_gen.epm.compute_epms /
-compute_espm, cot_gen.max_semiorg), never reimplementing the search itself
--- this module only INSTRUMENTS the existing, oracle-validated traversal to
-record extra bookkeeping (candidate-convergence stats, per-move-type
-provenance) for reporting, and adds visualization on top.
+Built on top of the validated computation
+(cot_gen.so_search.compute_elementary_sos / compute_so_hierarchy,
+cot_gen.max_semiorg), never reimplementing the search itself -- this module
+only INSTRUMENTS the existing, oracle-validated traversal to record extra
+bookkeeping (candidate-convergence stats, per-move-type provenance) for
+reporting, and adds visualization on top.
 
 Public API
 ----------
 compute_hierarchy_stats(ercs, hier, syn, comp) -> HierarchyStats
-compute_epms_instrumented(ercs, hier, syn, comp) -> (EPMResult, DegeneracyStats)
-compute_espm_instrumented(ercs, hier, syn, comp, epm_result, max_order=10)
-    -> (ESPMResult, dict[order -> MoveTypeCounts], DegeneracyStats)
-build_so_lattice(ercs, epm_result, espm_result, so_order) -> SOLattice
+compute_elementary_sos_instrumented(ercs, hier, syn, comp) -> (ElementarySOResult, DegeneracyStats)
+compute_so_hierarchy_instrumented(ercs, hier, syn, comp, elementary_result, max_order=10)
+    -> (SOHierarchyResult, dict[order -> MoveTypeCounts], DegeneracyStats)
+build_so_lattice(all_so_masks, so_order) -> SOLattice
 
 plot_hierarchy_overview(...) -> html path
-plot_epm_hierarchy(...) -> html path
 plot_so_lattice(...) -> html path
 plot_degeneracy(...) -> png path
-plot_espm_composition(...) -> png path
+plot_so_composition(...) -> png path
 """
 from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
 
-from pyCOT.analysis.organizations.epm import _bits, _mode1_dfs, _single_erc_epms, EPMResult, ESPMResult
+from pyCOT.analysis.organizations.so_search import (
+    _bits, _mode1_dfs, _single_erc_elementary_sos, ElementarySOResult, SOHierarchyResult,
+)
 from pyCOT.analysis.organizations.fundamental_graph import FundamentalGraph
 
 # Shared palette -- consistent with cot_gen/explorer.py's relation colors.
@@ -35,8 +37,8 @@ COLOR_CONTAINMENT = "#7f8c8d"
 COLOR_SYNERGY = "#e67e22"
 COLOR_COMPLEMENTARITY = "#2980b9"
 COLOR_VERTICAL_LIFT = "#8e44ad"
-COLOR_EPM = "#27ae60"
-COLOR_ESPM = "#f1c40f"
+COLOR_ELEMENTARY = "#27ae60"
+COLOR_HIGHER_ORDER = "#f1c40f"
 COLOR_NEUTRAL = "#d0d3d4"
 COLOR_MAXSO = "#c0392b"
 
@@ -45,7 +47,7 @@ COLOR_MAXSO = "#c0392b"
 # directly (a larger SSM containing a smaller one as a proper subset,
 # found by requirement-driven closure alone, with no Mode-2 growth step
 # involved at all) -- these are real order-k SOs and must be counted, or
-# per-order totals silently undercount relative to espm_by_order.
+# per-order totals silently undercount relative to so_by_order.
 MOVE_TYPE_ORDER = ["synergy", "complementarity", "vertical_lift", "carryover"]
 MOVE_TYPE_COLOR = {
     "synergy": COLOR_SYNERGY,
@@ -124,7 +126,7 @@ def compute_hierarchy_stats(ercs, hier, syn, comp) -> HierarchyStats:
 
 
 # ---------------------------------------------------------------------------
-# EPM computation instrumented with degeneracy tracking
+# Elementary-SO computation instrumented with degeneracy tracking
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -170,7 +172,7 @@ def _top_k_share(counts: list[int], frac: float) -> float:
 
 
 def _instrumented_mode1_dfs(seed_states, g, visited_sp, deg: DegeneracyStats, *, lineage=None, stats=None):
-    """Same logic as cot_gen.epm._mode1_dfs, plus per-state raw candidate
+    """Same logic as cot_gen.so_search._mode1_dfs, plus per-state raw candidate
     bookkeeping for degeneracy reporting. Never changes which states get
     explored or which SSMs get found -- purely additive instrumentation.
 
@@ -271,12 +273,13 @@ def _instrumented_mode1_dfs(seed_states, g, visited_sp, deg: DegeneracyStats, *,
     return ssm_states, leaf_states
 
 
-def compute_epms_instrumented(ercs, hier, syn, comp) -> tuple[EPMResult, DegeneracyStats]:
-    """Mirrors cot_gen.epm.compute_epms exactly (Stage 1 + Stage 2 + Stage 3
-    order assignment), with degeneracy stats recorded during Mode-1 DFS."""
-    from pyCOT.analysis.organizations.epm import _assign_orders
+def compute_elementary_sos_instrumented(ercs, hier, syn, comp) -> tuple[ElementarySOResult, DegeneracyStats]:
+    """Mirrors cot_gen.so_search.compute_elementary_sos exactly (Stage 1 +
+    Stage 2 + Stage 3 order assignment), with degeneracy stats recorded
+    during Mode-1 DFS."""
+    from pyCOT.analysis.organizations.so_search import _assign_orders
 
-    single_idx, single_masks = _single_erc_epms(ercs, hier)
+    single_idx, single_masks = _single_erc_elementary_sos(ercs, hier)
     single_sp_set = set(single_masks)
     g = FundamentalGraph(ercs, hier, syn, comp)
     visited_sp: set[int] = set(single_masks)
@@ -291,17 +294,17 @@ def compute_epms_instrumented(ercs, hier, syn, comp) -> tuple[EPMResult, Degener
     for sp in single_masks:
         so_order.setdefault(sp, 0)
 
-    multi_epm_masks = [s.sp for s in ssm_states if so_order.get(s.sp, -1) == 0 and s.sp not in single_sp_set]
-    all_epm_masks = sorted(single_sp_set | set(multi_epm_masks))
+    multi_erc_masks = [s.sp for s in ssm_states if so_order.get(s.sp, -1) == 0 and s.sp not in single_sp_set]
+    all_elementary_masks = sorted(single_sp_set | set(multi_erc_masks))
 
     sp_to_state = {s.sp: s for s in ssm_states}
     for i in single_idx:
         sp = ercs[i].species_mask
         sp_to_state.setdefault(sp, g.make_seed_state(i))
 
-    result = EPMResult(
-        single_epm_indices=single_idx, single_epm_masks=single_masks,
-        multi_epm_masks=multi_epm_masks, all_epm_masks=all_epm_masks,
+    result = ElementarySOResult(
+        single_erc_indices=single_idx, single_erc_masks=single_masks,
+        multi_erc_masks=multi_erc_masks, all_elementary_masks=all_elementary_masks,
         leaf_masks=[s.sp for s in leaf_states], stats=stats,
         _graph=g, _visited_sp=visited_sp, _sp_to_state=sp_to_state, _so_order=so_order,
     )
@@ -309,7 +312,7 @@ def compute_epms_instrumented(ercs, hier, syn, comp) -> tuple[EPMResult, Degener
 
 
 # ---------------------------------------------------------------------------
-# ESPM computation instrumented with per-order move-type provenance
+# SO-hierarchy computation instrumented with per-order move-type provenance
 # ---------------------------------------------------------------------------
 
 @dataclass
@@ -325,33 +328,38 @@ class MoveTypeCounts:
                 "vertical_lift": self.vertical_lift, "carryover": self.carryover}
 
 
-def compute_espm_instrumented(ercs, hier, syn, comp, epm_result: EPMResult, *, max_order=10):
-    """Mirrors cot_gen.epm.compute_espm's Mode-2/Mode-1 loop exactly (same
-    candidate generation, same seeds reach Mode-1), but tags each surviving
-    Mode-2 seed with which move type(s) proposed it, so each order's new SOs
-    can be attributed to synergy / complementarity-consumer / vertical-lift
-    for reporting."""
-    g = epm_result._graph
-    visited_sp = epm_result._visited_sp
-    sp_to_state = epm_result._sp_to_state
-    so_order = epm_result._so_order
+def compute_so_hierarchy_instrumented(ercs, hier, syn, comp, elementary_result: ElementarySOResult, *, max_order=10):
+    """Mirrors cot_gen.so_search.compute_so_hierarchy's Mode-2/Mode-1 loop
+    exactly (same candidate generation, same seeds reach Mode-1; always runs
+    with vertical lift enabled -- Conjecture 1 -- since this is the
+    reporting/visualization pipeline, not the conjecture comparison), but
+    tags each surviving Mode-2 seed with which move type(s) proposed it, so
+    each order's new SOs can be attributed to synergy /
+    complementarity-consumer / vertical-lift for reporting. See
+    conjectures/strategies.py for the controlled Conjecture 1 vs
+    Conjecture 2 comparison built on the underlying so_search engine
+    directly (not this instrumented copy)."""
+    g = elementary_result._graph
+    visited_sp = elementary_result._visited_sp
+    sp_to_state = elementary_result._sp_to_state
+    so_order = elementary_result._so_order
 
-    espm_by_order: dict[int, list[int]] = {}
+    so_by_order: dict[int, list[int]] = {}
     leaf_masks_by_order: dict[int, list[int]] = {}
     move_counts_by_order: dict[int, MoveTypeCounts] = {}
     deg = DegeneracyStats()
 
     for sp, ord_k in so_order.items():
         if ord_k >= 1:
-            espm_by_order.setdefault(ord_k, []).append(sp)
-    for k in espm_by_order:
-        espm_by_order[k].sort()
+            so_by_order.setdefault(ord_k, []).append(sp)
+    for k in so_by_order:
+        so_by_order[k].sort()
         mc = MoveTypeCounts()
-        mc.carryover = len(espm_by_order[k])
-        mc.n_new_so = len(espm_by_order[k])
+        mc.carryover = len(so_by_order[k])
+        mc.n_new_so = len(so_by_order[k])
         move_counts_by_order[k] = mc
 
-    current_layer = [sp_to_state[sp] for sp in epm_result.all_epm_masks if sp in sp_to_state]
+    current_layer = [sp_to_state[sp] for sp in elementary_result.all_elementary_masks if sp in sp_to_state]
 
     for order in range(1, max_order + 1):
         if not current_layer:
@@ -412,7 +420,7 @@ def compute_espm_instrumented(ercs, hier, syn, comp, epm_result: EPMResult, *, m
         # Bucket by the TRUE assigned so_order (max(sub-SO order) + 1), not
         # by the BFS round index -- they usually coincide but can diverge
         # (a state reached in round r can have sub-SOs implying a higher
-        # order), exactly as the real compute_espm's own verbose reporting
+        # order), exactly as the real compute_so_hierarchy's own verbose reporting
         # already accounts for via ord_counts. Merge into (not overwrite)
         # whatever that order's MoveTypeCounts already holds from the
         # carry-over pre-population above.
@@ -450,16 +458,16 @@ def compute_espm_instrumented(ercs, hier, syn, comp, epm_result: EPMResult, *, m
         if not new_ssm_states:
             break
 
-    espm_by_order.clear()
+    so_by_order.clear()
     for sp, ord_k in so_order.items():
         if ord_k >= 1:
-            espm_by_order.setdefault(ord_k, []).append(sp)
-    for k in list(espm_by_order):
-        espm_by_order[k].sort()
+            so_by_order.setdefault(ord_k, []).append(sp)
+    for k in list(so_by_order):
+        so_by_order[k].sort()
 
-    result = ESPMResult(
-        epm_masks=sorted(epm_result.all_epm_masks),
-        espm_by_order=espm_by_order,
+    result = SOHierarchyResult(
+        elementary_masks=sorted(elementary_result.all_elementary_masks),
+        so_by_order=so_by_order,
         all_so_masks=sorted(so_order.keys()),
         leaf_masks_by_order=leaf_masks_by_order,
         stats_by_order={},

@@ -23,7 +23,7 @@ Four phases, run and reported together:
 
   Phase C — FUNDAMENTAL ORGANIZATIONS per regime (optional, costlier)
     Run pyCOT.analysis.organizations.compute_organizations() under each
-    regime and report the verified FUNDAMENTAL organizations (EPM/ESPM +
+    regime and report the verified FUNDAMENTAL organizations (SO0/SOi +
     LP verification; combining ERCs via fundamental synergy/complementarity
     ONLY -- see organizations.py's module docstring). Spurious organizations
     (free-species addition, latent join) are deliberately NOT computed here
@@ -52,7 +52,7 @@ stable enough that a second copy is not a maintenance risk.
 Usage (from repo root)
 -----------------------
     python projects/COT_Fundamental_Generators_Exploration/scripts/inflow_regime_analysis.py \\
-        <path_to_network.txt> <network_name> [--organizations] [--hasse] [--max-espm-order N]
+        <path_to_network.txt> <network_name> [--organizations] [--hasse] [--max-so-order N]
 
     Or import and call analyze_inflow_regimes(path, name, scenarios) from
     another script, where scenarios is a list of (label, food_tokens) pairs.
@@ -200,7 +200,7 @@ def analyze_inflow_regimes(
     *,
     run_organizations: bool = False,
     run_hasse: bool = False,
-    max_espm_order: int = 2,
+    max_so_order: int = 2,
     skip_organizations_for: tuple[str, ...] = (),
     verbose: bool = True,
 ) -> str:
@@ -219,7 +219,7 @@ def analyze_inflow_regimes(
         "isolated" (no-inflow) scenario on a genome-scale network can have
         a dramatically denser fundamental-relations graph than any fed
         scenario (confirmed on iAF1260: 91,322 fundamental synergies
-        isolated vs. 4,387 fed -- ~20x), which made the EPM/ESPM search
+        isolated vs. 4,387 fed -- ~20x), which made the SO0/SOi search
         run for many hours and consume 17GB+ of memory with zero output.
         Phase A/B stats are still cheap and informative on their own (that
         91k/4.4k comparison IS the finding) -- only the organization
@@ -259,7 +259,7 @@ def analyze_inflow_regimes(
             rn = prof['_rn']
             org_result = compute_organizations(
                 rn, network_id=f"{name}__{label}",
-                max_espm_order=max_espm_order,
+                max_so_order=max_so_order,
                 include_spurious=False,  # fundamental organizations only
                 verbose=False,
             )
@@ -321,7 +321,7 @@ def analyze_inflow_regimes(
                     f"({r.get('decomposition_agreement', '-')} agree) |") if png else " (none) |"
         lines.append(row)
 
-    lines.append("\n(No EPM/ESPM/organization computation performed unless "
+    lines.append("\n(No SO0/SOi/organization computation performed unless "
                   "--organizations was passed; Phases A/B are req/prod "
                   "structural statistics only, matching the network's own "
                   "wiring under each regime.)\n")
@@ -370,7 +370,7 @@ if __name__ == '__main__':
                      help='Also run Phase C (fundamental organizations per scenario)')
     ap.add_argument('--hasse', action='store_true',
                      help='Also run Phase D (Hasse diagram + decomposition; implies --organizations)')
-    ap.add_argument('--max-espm-order', type=int, default=2)
+    ap.add_argument('--max-so-order', type=int, default=2)
     args = ap.parse_args()
 
     print("No scenarios given on the CLI beyond the isolated baseline -- "
@@ -380,5 +380,5 @@ if __name__ == '__main__':
         args.path, args.name, [],
         run_organizations=args.organizations,
         run_hasse=args.hasse,
-        max_espm_order=args.max_espm_order,
+        max_so_order=args.max_so_order,
     )

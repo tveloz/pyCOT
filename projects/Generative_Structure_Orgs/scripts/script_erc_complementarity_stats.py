@@ -9,22 +9,32 @@ script_erc_synergy_stats.py.
 Statistics collected per network
 ---------------------------------
   n_species, n_reactions, n_ercs, n_pairs_max
+  n_pairs_inter_chain, n_pairs_intra_chain – theoretical max per category
   n_complementary_pairs      – unordered (E1,E2) pairs with supl(E1,E2)∪supl(E2,E1) ≠ ∅
-  n_pure_complementary_pairs – complementary pairs that are NOT synergetic
+    (+ _inter / _intra split: incomparable vs hierarchy-comparable pairs)
+  n_pure_complementary_pairs – complementary pairs that are NOT synergetic (+ _inter/_intra)
   n_fundamental_edges        – unique unordered {E_prod,E_cons} in any fundamental comp.
+    (+ _inter / _intra split)
   n_producer_ERCs            – distinct ERCs acting as minimal producers in ≥1 fund. comp.
   n_consumer_ERCs            – distinct ERCs acting as minimal consumers in ≥1 fund. comp.
   ratio_complementary        = n_complementary_pairs / C(n_ercs,2)
   ratio_pure                 = n_pure_complementary_pairs / C(n_ercs,2)
   ratio_fundamental          = n_fundamental_edges / C(n_ercs,2)
+  ratio_complementary_inter/_intra, ratio_fundamental_inter/_intra
+    – same counts normalized by n_pairs_inter_chain / n_pairs_intra_chain instead
   time_ercs, time_complementarity
 
 Definitions (Section 5 of the paper)
 --------------------------------------
   supl(E, E')  = prod(R_E) ∩ req(E')           (supply from E to E')
   req(E)       = supp(R_E) \\ prod(R_E)          (species required by E)
-  complementary pair: incomparable (E,E') with supl(E,E')∪supl(E',E) ≠ ∅
-  purely complementary: complementary AND NOT synergetic
+  complementary pair: (E,E') with supl(E,E')∪supl(E',E) ≠ ∅ -- includes
+    BOTH incomparable pairs ("inter-chain") AND hierarchy-comparable pairs
+    ("intra-chain"). For comparable E ⊊ E', supl(E⇀E') is provably always
+    empty, but supl(E'⇀E) can be nonempty -- the larger ERC supplies a
+    species the smaller one still requires externally.
+  purely complementary: complementary AND NOT synergetic (every intra-chain
+    pair is trivially pure, since chain pairs can never be synergetic)
   minprod(s): inclusion-minimal ERCs producing s
   mincons(s): inclusion-minimal ERCs requiring s
   fundamental complementarity E ⟺[s] E': E ∈ minprod(s), E' ∈ mincons(s)
@@ -53,7 +63,7 @@ from pyCOT.analysis.ERC_Hierarchy import ERC, ERC_Hierarchy, species_list_to_nam
 from utils_ercs import load_ercs
 
 # -- Configuration -------------------------------------------------------------
-_BIOMD = os.path.join(_PYCOT_ROOT, 'data', 'biomodels')
+_BIOMD = os.path.join(_PYCOT_ROOT, 'data', 'biochemical_databases')
 SCAN_FOLDERS = {
     os.path.join(_BIOMD, 'BioMD_metabolic'):       'BioMD_metabolic',
     os.path.join(_BIOMD, 'BioMD_cell_cycle'):       'BioMD_cell_cycle',
@@ -161,51 +171,66 @@ def compute_complementarity_stats(ercs, hierarchy, RN):
     """
     Compute all complementarity statistics for the given ERC collection.
 
+    Complementarity pairs are NOT restricted to incomparable ERCs. For a
+    comparable pair E ⊊ E', supl(E⇀E') = prod(R_E) ∩ req(E') is provably
+    always empty (R_E ⊆ R_E' so prod(R_E) ⊆ prod(R_E')), but the reverse
+    supl(E'⇀E) = prod(R_E') ∩ req(E) can be nonempty -- the larger ERC can
+    supply a species the smaller one still requires externally. This is
+    "intra-chain" complementarity, as opposed to "inter-chain" (the
+    incomparable-pair case, computed alone by earlier versions of this
+    function). Every intra-chain pair is trivially pure (chain pairs can
+    never be synergetic).
+
     Returns a dict with keys:
-      n_complementary_pairs, n_pure_complementary_pairs,
-      n_fundamental_edges, n_producer_ERCs, n_consumer_ERCs
+      n_complementary_pairs[_inter|_intra], n_pure_complementary_pairs[_inter|_intra],
+      n_fundamental_edges[_inter|_intra], n_producer_ERCs, n_consumer_ERCs
     """
     minprod, mincons = _compute_minprod_mincons(ercs, hierarchy, RN)
 
-    comp_pairs   = set()   # frozenset pair keys for complementary pairs
-    pure_pairs   = set()   # subset of comp_pairs that are not synergetic
-    fund_pairs   = set()   # frozenset pair keys for fundamental edges
+    comp_inter, comp_intra = set(), set()   # complementary pair keys
+    pure_inter, pure_intra = set(), set()   # subset that are not synergetic
+    fund_inter, fund_intra = set(), set()   # fundamental-edge pair keys
     prod_ercs    = set()   # ERC labels acting as fundamental producers
     cons_ercs    = set()   # ERC labels acting as fundamental consumers
 
     for e1, e2 in combinations(ercs, 2):
-        if not _is_incomparable(e1, e2, hierarchy):
-            continue
-
         s12 = _supply(e1, e2, RN)   # e1 → e2
         s21 = _supply(e2, e1, RN)   # e2 → e1
 
         if not s12 and not s21:
             continue
 
+        chain = not _is_incomparable(e1, e2, hierarchy)
         pair_key = frozenset([e1.label, e2.label])
-        comp_pairs.add(pair_key)
+        (comp_intra if chain else comp_inter).add(pair_key)
 
-        # Purely complementary: complementary and NOT synergetic
-        if not _has_basic_synergy(e1, e2, hierarchy, RN):
-            pure_pairs.add(pair_key)
+        # Purely complementary: complementary and NOT synergetic.
+        # Chain pairs can never be synergetic, so they are trivially pure.
+        if chain or not _has_basic_synergy(e1, e2, hierarchy, RN):
+            (pure_intra if chain else pure_inter).add(pair_key)
 
         # Fundamental complementarities: E_prod ∈ minprod(s), E_cons ∈ mincons(s)
         for s in s12:
             if e1 in minprod.get(s, []) and e2 in mincons.get(s, []):
-                fund_pairs.add(pair_key)
+                (fund_intra if chain else fund_inter).add(pair_key)
                 prod_ercs.add(e1.label)
                 cons_ercs.add(e2.label)
         for s in s21:
             if e2 in minprod.get(s, []) and e1 in mincons.get(s, []):
-                fund_pairs.add(pair_key)
+                (fund_intra if chain else fund_inter).add(pair_key)
                 prod_ercs.add(e2.label)
                 cons_ercs.add(e1.label)
 
     return {
-        'n_complementary_pairs':      len(comp_pairs),
-        'n_pure_complementary_pairs': len(pure_pairs),
-        'n_fundamental_edges':        len(fund_pairs),
+        'n_complementary_pairs':            len(comp_inter) + len(comp_intra),
+        'n_complementary_pairs_inter':      len(comp_inter),
+        'n_complementary_pairs_intra':      len(comp_intra),
+        'n_pure_complementary_pairs':       len(pure_inter) + len(pure_intra),
+        'n_pure_complementary_pairs_inter': len(pure_inter),
+        'n_pure_complementary_pairs_intra': len(pure_intra),
+        'n_fundamental_edges':              len(fund_inter) + len(fund_intra),
+        'n_fundamental_edges_inter':        len(fund_inter),
+        'n_fundamental_edges_intra':        len(fund_intra),
         'n_producer_ERCs':            len(prod_ercs),
         'n_consumer_ERCs':            len(cons_ercs),
     }
@@ -302,13 +327,19 @@ for idx, (fpath, dataset_label) in enumerate(all_files):
         cst = compute_complementarity_stats(ercs, hierarchy, RN)
         t_c = time.time() - t0
 
-        print(f"  Complementary={cst['n_complementary_pairs']}  "
+        print(f"  Complementary={cst['n_complementary_pairs']}"
+              f" (inter={cst['n_complementary_pairs_inter']}, intra={cst['n_complementary_pairs_intra']})  "
               f"Pure={cst['n_pure_complementary_pairs']}  "
-              f"Fundamental={cst['n_fundamental_edges']}  ({t_c:.1f}s)")
+              f"Fundamental={cst['n_fundamental_edges']}"
+              f" (inter={cst['n_fundamental_edges_inter']}, intra={cst['n_fundamental_edges_intra']})"
+              f"  ({t_c:.1f}s)")
         print(f"  Producer ERCs={cst['n_producer_ERCs']}  "
               f"Consumer ERCs={cst['n_consumer_ERCs']}")
 
         n_pairs = n_ercs * (n_ercs - 1) // 2   # C(n,2)
+        # Comparable ("chain") pairs: each counted once via its descendant side.
+        n_pairs_chain    = sum(len(hierarchy.get_contain(e)) for e in ercs)
+        n_pairs_nonchain = n_pairs - n_pairs_chain
         records.append({
             'file':       fname,
             'dataset':    dataset_label,
@@ -316,14 +347,26 @@ for idx, (fpath, dataset_label) in enumerate(all_files):
             'n_reactions': n_rx,
             'n_ercs':     n_ercs,
             'n_pairs_max': n_pairs,
-            'n_complementary_pairs':      cst['n_complementary_pairs'],
-            'n_pure_complementary_pairs': cst['n_pure_complementary_pairs'],
-            'n_fundamental_edges':        cst['n_fundamental_edges'],
+            'n_pairs_inter_chain': n_pairs_nonchain,
+            'n_pairs_intra_chain': n_pairs_chain,
+            'n_complementary_pairs':            cst['n_complementary_pairs'],
+            'n_complementary_pairs_inter':      cst['n_complementary_pairs_inter'],
+            'n_complementary_pairs_intra':      cst['n_complementary_pairs_intra'],
+            'n_pure_complementary_pairs':       cst['n_pure_complementary_pairs'],
+            'n_pure_complementary_pairs_inter': cst['n_pure_complementary_pairs_inter'],
+            'n_pure_complementary_pairs_intra': cst['n_pure_complementary_pairs_intra'],
+            'n_fundamental_edges':              cst['n_fundamental_edges'],
+            'n_fundamental_edges_inter':        cst['n_fundamental_edges_inter'],
+            'n_fundamental_edges_intra':        cst['n_fundamental_edges_intra'],
             'n_producer_ERCs':            cst['n_producer_ERCs'],
             'n_consumer_ERCs':            cst['n_consumer_ERCs'],
             'ratio_complementary': (cst['n_complementary_pairs']      / n_pairs if n_pairs > 0 else 0),
             'ratio_pure':          (cst['n_pure_complementary_pairs'] / n_pairs if n_pairs > 0 else 0),
             'ratio_fundamental':   (cst['n_fundamental_edges']        / n_pairs if n_pairs > 0 else 0),
+            'ratio_complementary_inter': (cst['n_complementary_pairs_inter'] / n_pairs_nonchain if n_pairs_nonchain > 0 else 0),
+            'ratio_complementary_intra': (cst['n_complementary_pairs_intra'] / n_pairs_chain    if n_pairs_chain    > 0 else 0),
+            'ratio_fundamental_inter':   (cst['n_fundamental_edges_inter']   / n_pairs_nonchain if n_pairs_nonchain > 0 else 0),
+            'ratio_fundamental_intra':   (cst['n_fundamental_edges_intra']   / n_pairs_chain    if n_pairs_chain    > 0 else 0),
             'ratio_producers':     (cst['n_producer_ERCs'] / n_ercs if n_ercs > 0 else 0),
             'ratio_consumers':     (cst['n_consumer_ERCs'] / n_ercs if n_ercs > 0 else 0),
             'time_ercs':            round(t_erc, 2),

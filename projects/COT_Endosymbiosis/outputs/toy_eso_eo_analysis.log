@@ -1,0 +1,36 @@
+=== Host alone: C:\Users\hp\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\projects\COT_Endosymbiosis\scripts\..\toy_model\host_alone.txt ===
+  [Stage 1] Finding single-ERC EPMs...
+  [Stage 2] Building fundamental graph...
+  [Stage 2] Running Mode-1 DFS...
+  species=10 reactions=8 ERCs=2
+  E0 (food closure) = ['adp_h', 'atp_h', 'glc_h', 'lac_h', 'nad_h', 'nadh_h', 'pi_h', 'pyr_h']
+  ESO: n=1, sizes=[8], max=8, mean=8.0  ->  EO: n=1 (100%), n=1, sizes=[8], max=8, mean=8.0
+
+=== Symbiont alone: C:\Users\hp\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\projects\COT_Endosymbiosis\scripts\..\toy_model\symbiont_alone.txt ===
+  [Stage 1] Finding single-ERC EPMs...
+  [Stage 2] Building fundamental graph...
+  [Stage 2] Running Mode-1 DFS...
+  species=12 reactions=11 ERCs=1
+  E0 (food closure) = ['adp_s', 'atp_s', 'co2_s', 'fe_s', 'fescluster_s', 'glc_s', 'nad_s', 'nadh_s', 'o2_s', 'pi_s', 'pyr_s', 's_s']
+  ESO: n=1, sizes=[12], max=12, mean=12.0  ->  EO: n=1 (100%), n=1, sizes=[12], max=12, mean=12.0
+
+=== Merged: C:\Users\hp\Dropbox\Public\AcademicWork\Europe\CLEA\Postdocs\TempletonPostdoc\sftw\pyCOT\projects\COT_Endosymbiosis\scripts\..\toy_model\merged.txt ===
+  [Stage 1] Finding single-ERC EPMs...
+  [Stage 2] Building fundamental graph...
+  [Stage 2] Running Mode-1 DFS...
+  species=22 reactions=22 ERCs=1
+  E0 (food closure, size 22) = ['adp_h', 'adp_s__endo', 'atp_h', 'atp_s__endo', 'co2_s__endo', 'fe_s__endo', 'fescluster_h', 'fescluster_s__endo', 'glc_h', 'glc_s__endo', 'lac_h', 'macromol_h', 'nad_h', 'nad_s__endo', 'nadh_h', 'nadh_s__endo', 'o2_s__endo', 'pi_h', 'pi_s__endo', 'pyr_h', 'pyr_s__endo', 's_s__endo']
+  ESO: n=1, sizes=[22], max=22, mean=22.0  ->  EO: n=1 (100%), n=1, sizes=[22], max=22, mean=22.0
+
+  Classified merged ESOs:
+    host-only:     (none)  (EO: 0/0)
+    symbiont-only: (none)  (EO: 0/0)
+    HYBRID (both): n=1, sizes=[22], max=22, mean=22.0  (EO: 1/1)
+    hybrid ESO species (is_EO=True): ['adp_h', 'adp_s__endo', 'atp_h', 'atp_s__endo', 'co2_s__endo', 'fe_s__endo', 'fescluster_h', 'fescluster_s__endo', 'glc_h', 'glc_s__endo', 'lac_h', 'macromol_h', 'nad_h', 'nad_s__endo', 'nadh_h', 'nadh_s__endo', 'o2_s__endo', 'pi_h', 'pi_s__endo', 'pyr_h', 'pyr_s__endo', 's_s__endo']
+
+=== Complexification summary ===
+  baseline (host ESO ⊔ symbiont ESO, no interface): n=2, max=12, mean=10.0
+  merged: n=1, max=22, mean=22.0
+  Delta max size: +10
+  Delta E0 size (host+symbiont E0 vs merged E0, no double count): 22 vs 20 (+2)
+  Hybrid ESOs found: 1, of which EO (self-maintaining): 1 (100%)

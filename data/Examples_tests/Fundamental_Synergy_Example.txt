@@ -1,0 +1,6 @@
+r1: a+e => b+c;
+r2: b+c => 2c;
+r3: d+a => a+b;
+r4: g => f+d;
+r5: f+d => 2d;
+r6: c+d => g;

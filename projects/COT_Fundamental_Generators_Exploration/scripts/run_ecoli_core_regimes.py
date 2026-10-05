@@ -41,5 +41,5 @@ if __name__ == '__main__':
         path, 'e_coli_core',
         SCENARIOS,
         run_organizations=True,
-        max_espm_order=2,
+        max_so_order=2,
     )

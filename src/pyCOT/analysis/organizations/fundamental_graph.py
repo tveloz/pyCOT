@@ -1,5 +1,5 @@
 """
-fundamental_graph.py — Unified ERC adjacency graph for EPM/ESPM traversal.
+fundamental_graph.py — Unified ERC adjacency graph for SO0/SOi traversal.
 
 All traversal state lives in ERC-index space.  No species-level closure
 computation is performed during the DFS.

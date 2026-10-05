@@ -65,12 +65,12 @@ NATIVE_FOOD = {
                 'so4_e', 'tungs_e', 'zn2_e'],
 }
 
-# Conservative per-model ESPM order cap -- start low, these networks are
-# 15-35x e_coli_core's ERC count (per this session's timing: e_coli_core's
+# Conservative per-model SO-hierarchy order cap -- start low, these networks
+# are 15-35x e_coli_core's ERC count (per this session's timing: e_coli_core's
 # 49 ERCs -> 0.7s; iAF1260's 1471 ERCs -> ~66s for ERC/hierarchy/relations/
-# EPM alone, before ESPM/LP). Raise only after confirming a given model
-# finishes in reasonable time at the current cap.
-MAX_ESPM_ORDER = {
+# elementary SOs alone, before the higher-order search/LP). Raise only after
+# confirming a given model finishes in reasonable time at the current cap.
+MAX_SO_ORDER = {
     'iAF1260': 1,
     'iJO1366': 1,
     'iML1515': 1,
@@ -90,7 +90,7 @@ def run_one(model: str):
     out_dir = analyze_inflow_regimes(
         path, model, scenarios,
         run_organizations=True, run_hasse=True,
-        max_espm_order=MAX_ESPM_ORDER[model],
+        max_so_order=MAX_SO_ORDER[model],
         # The isolated (no-inflow) scenario's fundamental-relations graph
         # can be far denser than any fed scenario -- confirmed on iAF1260:
         # 91,322 fundamental synergies isolated vs. 4,387 fed (~20x), which

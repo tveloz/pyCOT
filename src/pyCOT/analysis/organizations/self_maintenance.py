@@ -7,9 +7,9 @@ unchanged) and already relied on directly by
 projects/Decomposition_Theorem/decomp/circuits.py to decide, per fragile
 circuit, whether an organization-candidate genuinely self-maintains.
 
-Why this module exists separately from EPM/ESPM (epm.py)
-----------------------------------------------------------
-epm.py's "SSM" (semi-self-maintaining, req_mask == 0) is a *necessary but
+Why this module exists separately from SO0/SOi search (so_search.py)
+-----------------------------------------------------------------------
+so_search.py's "SSM" (semi-self-maintaining, req_mask == 0) is a *necessary but
 not sufficient* condition for the classical COT notion of self-maintenance.
 SSM only says every species some active reaction needs is produced by
 *some* active reaction in the set -- it says nothing about whether a

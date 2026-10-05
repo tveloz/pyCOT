@@ -1,5 +1,5 @@
 """
-organizations.py — Fundamental Organizations from the EPM/ESPM lattice.
+organizations.py — Fundamental Organizations from the SO0/SOi lattice.
 
 Terminology fixed by Veloz & Bassi, "Synergy and Complementarity: The
 Generative Basis of Chemical Organizations" (the paper this whole engine
@@ -7,8 +7,9 @@ implements — see src/pyCOT/analysis/organizations/, ported from
 projects/COT_Fundamental_Generators_Exploration/cot_gen):
 
   FUNDAMENTAL organizations : verified organizations reachable through the
-    fundamental-generator DFS alone (epm.compute_epms / compute_espm),
-    which combines ERCs ONLY via fundamental synergy and fundamental
+    fundamental-generator DFS alone (so_search.compute_elementary_sos /
+    compute_so_hierarchy), which combines ERCs ONLY via fundamental synergy
+    and fundamental
     complementarity. This is Theorem thm:fund_gen's object: every
     "productively novel" semi-organization has a fundamental generator,
     and nothing outside this set does. THIS IS THE DEFAULT AND ONLY THING
@@ -51,7 +52,8 @@ Pipeline (fundamental path, always run)
   2. Fundamental relations              synergy.compute_synergies_basis_first,
                                          complementarity.compute_complementarities
   3. Fundamental hierarchy              hierarchy.build_hierarchy
-  4. EPM/ESPM exploration               epm.compute_epms, epm.compute_espm
+  4. SO0/SOi exploration                 so_search.compute_elementary_sos,
+                                         so_search.compute_so_hierarchy
   5. LP self-maintenance verification   self_maintenance.check_self_maintenance
 
 Steps 1-4 find every semi-organization reachable via fundamental synergy/
@@ -81,7 +83,8 @@ whether include_spurious actually enumerates them.
 
 Public API
 ----------
-compute_organizations(rn, *, network_id="", max_espm_order=10,
+compute_organizations(rn, *, network_id="", max_so_order=10,
+                       use_vertical_lift=True,
                        verify_organizations=True, include_spurious=False,
                        verbose=False, counters=None) -> OrganizationsResult
 """
@@ -95,7 +98,7 @@ from .erc import compute_ercs
 from .hierarchy import build_hierarchy
 from .synergy import compute_synergies_basis_first
 from .complementarity import compute_complementarities
-from .epm import compute_epms, compute_espm
+from .so_search import compute_elementary_sos, compute_so_hierarchy
 from .closure import closure_opt
 from .self_maintenance import check_self_maintenance
 
@@ -292,8 +295,8 @@ def _saturate_latent_joins(so_masks: set[int], rn_data, *, max_rounds: int = 20,
     """
     SPURIOUS-organization generator (only called when include_spurious=True).
 
-    Closes the found semi-organization set under "latent join": epm.py's
-    compute_epms/compute_espm deliberately never search for unions of
+    Closes the found semi-organization set under "latent join": so_search.py's
+    compute_elementary_sos/compute_so_hierarchy deliberately never search for unions of
     already-SSM sets that share no fundamental synergy/complementarity edge
     -- Table 2's case (F,F) in the paper: "not synergetic, not
     complementary... a sequence of connected sets can be irrelevant."
@@ -327,7 +330,7 @@ def _saturate_latent_joins(so_masks: set[int], rn_data, *, max_rounds: int = 20,
     requirement on closed+SSM sets in the classical (Dittrich/Centler)
     sense this function is reconstructing. Fundamental organizations get
     connectivity for free, structurally, from the DFS's own combination
-    rules (see epm.py: "Connectivity is NOT checked: it is structurally
+    rules (see so_search.py: "Connectivity is NOT checked: it is structurally
     guaranteed by both combination rules") -- nothing here needs to
     re-check it. Spurious organizations are, by definition, outside that
     guarantee, and reconstructing Centler's pre-refinement published
@@ -381,16 +384,17 @@ def _saturate_latent_joins(so_masks: set[int], rn_data, *, max_rounds: int = 20,
 @dataclass
 class SemiOrganization:
     """
-    One node of the EPM/ESPM lattice, promoted with an LP verification verdict.
+    One node of the SO0/SOi lattice, promoted with an LP verification verdict.
 
     species_mask  : int              — QUOTIENTED (E0-excluded) species bitmask,
                      in rn_data's index space -- pass this directly to
                      pyCOT.analysis.decomposition.decompose(species_mask,
                      rn_data, S_full) for E/F/fragile-circuit decomposition
     species_names : tuple[str, ...]  — full species set (E0 species included)
-    order         : int              — 0 = EPM (elementary), >=1 = ESPM order
+    order         : int              — 0 = elementary SO (SO0), >=1 = SOi order
     is_fundamental : bool            — True iff reached via the fundamental-
-                     generator DFS alone (epm.compute_epms/compute_espm);
+                     generator DFS alone (so_search.compute_elementary_sos/
+                     compute_so_hierarchy);
                      False iff only reachable via free-species-addition or
                      latent-join (see module docstring) -- always True
                      unless include_spurious=True was passed.
@@ -422,7 +426,7 @@ class OrganizationsResult:
                          only, unless include_spurious=True was passed.
     organizations     : list[SemiOrganization] — the subset that is LP-verified
                          self-maintaining (empty if verify_organizations=False)
-    rn_data, ercs, hier, syn_result, comp_result, epm_result, espm_result
+    rn_data, ercs, hier, syn_result, comp_result, elementary_result, so_hierarchy_result
                       : intermediate pipeline artifacts, kept for reuse
                         (e.g. by the ERC-hierarchy visualization or by
                         projects/Decomposition_Theorem's decomposition step)
@@ -438,8 +442,8 @@ class OrganizationsResult:
     hier: object
     syn_result: object
     comp_result: object
-    epm_result: object
-    espm_result: object
+    elementary_result: object
+    so_hierarchy_result: object
     stats: dict = field(default_factory=dict)
 
 
@@ -459,7 +463,8 @@ def compute_organizations(
     rn,
     *,
     network_id: str = "",
-    max_espm_order: int = 10,
+    max_so_order: int = 10,
+    use_vertical_lift: bool = True,
     verify_organizations: bool = True,
     include_spurious: bool = False,
     verbose: bool = False,
@@ -467,7 +472,7 @@ def compute_organizations(
 ) -> OrganizationsResult:
     """
     Run the fundamental ERC -> fundamental relations -> hierarchy ->
-    EPM/ESPM -> LP-verified-organizations pipeline on a pyCOT
+    SO0/SOi exploration -> LP-verified-organizations pipeline on a pyCOT
     ReactionNetwork.
 
     By default this computes ONLY fundamental organizations -- those
@@ -479,7 +484,13 @@ def compute_organizations(
     ----------
     rn : pyCOT ReactionNetwork (e.g. from pyCOT.io.functions.read_txt)
     network_id : label carried through metrics/instrumentation
-    max_espm_order : safety cap on ESPM BFS depth (epm.compute_espm)
+    max_so_order : safety cap on SOi BFS depth (so_search.compute_so_hierarchy)
+    use_vertical_lift : forwarded to so_search.compute_so_hierarchy. True
+        (default) = paper's Conjecture 1 (synergy + complementarity +
+        hierarchy-ancestor growth once already at an SSM). False =
+        Conjecture 2 (synergy + complementarity only — see
+        projects/COT_Fundamental_Generators_Exploration/conjectures/ for a
+        controlled comparison of the two).
     verify_organizations : if False, skip the LP check entirely and
         return every SSM with is_organization=False -- useful when you only
         need the fast semi-organization lattice (e.g. for
@@ -492,7 +503,7 @@ def compute_organizations(
         exists only for cross-validation against pre-productive-novelty-
         theory published results (e.g. Centler et al. 2006). Leave False
         for genome-scale work.
-    verbose : print per-stage progress (forwarded to compute_epms/compute_espm)
+    verbose : print per-stage progress (forwarded to compute_elementary_sos/compute_so_hierarchy)
     counters : optional metrics.Counters for instrumentation
 
     Returns
@@ -519,20 +530,21 @@ def compute_organizations(
     stats['n_fundamental_complementarities'] = len(comp_result.fundamental)
 
     if verbose:
-        print("[organizations] Stage 3: EPM exploration...")
-    epm_result = compute_epms(
+        print("[organizations] Stage 3: elementary SO (SO0) exploration...")
+    elementary_result = compute_elementary_sos(
         rn_data, ercs, hier, syn_result, comp_result,
         counters=counters, verbose=verbose,
     )
     if verbose:
-        print("[organizations] Stage 4: ESPM exploration...")
-    espm_result = compute_espm(
-        rn_data, ercs, hier, syn_result, comp_result, epm_result,
-        max_order=max_espm_order, counters=counters, verbose=verbose,
+        print("[organizations] Stage 4: SO hierarchy (SOi) exploration...")
+    so_hierarchy_result = compute_so_hierarchy(
+        rn_data, ercs, hier, syn_result, comp_result, elementary_result,
+        max_order=max_so_order, use_vertical_lift=use_vertical_lift,
+        counters=counters, verbose=verbose,
     )
-    stats['n_epms'] = len(epm_result.all_epm_masks)
-    stats['n_espms'] = espm_result.total_espm()
-    stats['max_espm_order_reached'] = espm_result.max_order()
+    stats['n_elementary_sos'] = len(elementary_result.all_elementary_masks)
+    stats['n_higher_order_sos'] = so_hierarchy_result.total_so()
+    stats['max_so_order_reached'] = so_hierarchy_result.max_order()
 
     # Normalize every SO mask by stripping E0 bits before doing anything
     # else. compute_ercs injects E0 itself as a P-ERC (species_mask ==
@@ -545,12 +557,12 @@ def compute_organizations(
     # touches from this point on E0-free and canonical; E0 is added back
     # exactly once, at the point species names are produced.
     e0 = rn_data.E0_mask
-    fundamental_masks = {m & ~e0 for m in espm_result.all_so_masks}
+    fundamental_masks = {m & ~e0 for m in so_hierarchy_result.all_so_masks}
 
     so_order = {}
-    for sp in epm_result.all_epm_masks:
+    for sp in elementary_result.all_elementary_masks:
         so_order[sp & ~e0] = 0
-    for k, masks in espm_result.espm_by_order.items():
+    for k, masks in so_hierarchy_result.so_by_order.items():
         for sp in masks:
             so_order[sp & ~e0] = k
 
@@ -586,7 +598,7 @@ def compute_organizations(
                   f"synergy/complementarity DFS alone.")
 
         # Assign an order to every newly-added mask: 1 + max(order of any
-        # proper sub-mask already known), matching epm.py's own rule.
+        # proper sub-mask already known), matching so_search.py's own rule.
         for m in sorted(all_masks - set(so_order), key=lambda x: bin(x).count('1')):
             max_sub = -1
             for sub, sub_ord in so_order.items():
@@ -651,6 +663,6 @@ def compute_organizations(
         organizations=organizations,
         rn_data=rn_data, ercs=ercs, hier=hier,
         syn_result=syn_result, comp_result=comp_result,
-        epm_result=epm_result, espm_result=espm_result,
+        elementary_result=elementary_result, so_hierarchy_result=so_hierarchy_result,
         stats=stats,
     )

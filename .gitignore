@@ -1,3 +1,6 @@
 **/__pycache__
 networks
 .~lock.*#
+projects/COT_Fundamental_Generators_Exploration/outputs/gen_v2_checkpoints/
+# COT_EI_Link project removed from repo (large simulation outputs)
+projects/COT_EI_Link/

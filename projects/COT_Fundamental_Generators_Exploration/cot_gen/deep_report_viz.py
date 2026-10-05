@@ -14,7 +14,7 @@ import webbrowser
 
 from .deep_report import (
     COLOR_CONTAINMENT, COLOR_SYNERGY, COLOR_COMPLEMENTARITY,
-    COLOR_EPM, COLOR_NEUTRAL, COLOR_MAXSO,
+    COLOR_ELEMENTARY, COLOR_NEUTRAL, COLOR_MAXSO,
     MOVE_TYPE_ORDER, MOVE_TYPE_COLOR,
     _gini, _top_k_share,
 )
@@ -58,11 +58,11 @@ def _open(path):
 
 
 # ---------------------------------------------------------------------------
-# ERC hierarchy overview (optionally EPM-highlighted)
+# ERC hierarchy overview (optionally elementary-SO-highlighted)
 # ---------------------------------------------------------------------------
 
 def plot_hierarchy_overview(ercs, hier, syn, comp, stats, out_path, *,
-                             highlight_ercs=None, highlight_label="EPM member",
+                             highlight_ercs=None, highlight_label="elementary SO member",
                              max_nodes=250, show_synergy=True, show_complementarity=True,
                              title="ERC hierarchy"):
     """
@@ -103,7 +103,7 @@ def plot_hierarchy_overview(ercs, hier, syn, comp, stats, out_path, *,
     net = _new_network()
     for i in node_set:
         is_hl = i in highlight
-        color = COLOR_EPM if is_hl else COLOR_NEUTRAL
+        color = COLOR_ELEMENTARY if is_hl else COLOR_NEUTRAL
         size = 22 if is_hl else 14
         title_txt = (f"E{i}  |  {stats.sizes[i]} species  |  level {stats.levels[i]}<br>"
                      f"synergy degree: {stats.syn_degree[i]}<br>"
@@ -317,7 +317,7 @@ def _plot_so_lattice_static(so_lattice, shown, max_order, out_path, *, title):
     ax.scatter(xs, ys, c=colors, s=sizes, zorder=2, edgecolors="none")
 
     ax.set_xlabel("(arbitrary horizontal spread within each order)")
-    ax.set_ylabel("order (0 = EPM, minimal organizations, at the bottom)")
+    ax.set_ylabel("order (0 = elementary SO, minimal organizations, at the bottom)")
     ax.set_yticks(range(0, max_order + 1))
     ax.set_xticks([])
     ax.set_title(f"{title}\n({len(shown)} SOs, orders 0-{max_order}; {len(segs)} containment edges; "
@@ -370,7 +370,7 @@ def plot_degeneracy(deg_stats, out_path, *, title="Generative degeneracy"):
         cum += c
         xs.append(i / len(sorted_counts))
         ys.append(cum / total if total else 0)
-    axes[2].plot(xs, ys, color=COLOR_EPM, linewidth=2, label="observed")
+    axes[2].plot(xs, ys, color=COLOR_ELEMENTARY, linewidth=2, label="observed")
     axes[2].plot([0, 1], [0, 1], "--", color="#95a5a6", linewidth=1, label="perfect equality")
     axes[2].set_xlabel("fraction of distinct target closures")
     axes[2].set_ylabel("cumulative fraction of edges")
@@ -388,7 +388,7 @@ def plot_degeneracy(deg_stats, out_path, *, title="Generative degeneracy"):
     return out_path
 
 
-def plot_espm_composition(move_counts_by_order, out_path, *, title="ESPM construction by order"):
+def plot_so_composition(move_counts_by_order, out_path, *, title="SO hierarchy construction by order"):
     """Stacked bar: x=order, y=new SOs, stacked by which move type(s)
     contributed. Fixed categorical color order (synergy, complementarity,
     vertical_lift), never reordered."""

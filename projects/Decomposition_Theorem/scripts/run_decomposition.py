@@ -1,7 +1,7 @@
 """
 run_decomposition.py — Decompose every semi-organization of a network's
-EPM/ESPM lattice (E / F / fragile circuits) and show how the decomposition
-evolves order by order, from EPMs up to the maximal semi-organization.
+SO0/SOi lattice (E / F / fragile circuits) and show how the decomposition
+evolves order by order, from elementary SOs up to the maximal semi-organization.
 
 HOW TO RUN
 ----------
@@ -32,7 +32,7 @@ from pyCOT.analysis.organizations import (
     build_hierarchy,
     compute_synergies_basis_first,
     compute_complementarities,
-    compute_epms, compute_espm,
+    compute_elementary_sos, compute_so_hierarchy,
 )
 from cot_gen.deep_report     import build_so_lattice
 
@@ -53,10 +53,10 @@ NETWORK        = "e_coli_core"
 #NETWORK  = "iMM904" #(2072 reaction)
 #NETWORK  = "iND750" #(1702 reactions)
 #NETWORK  = "iNF517"
-#NETWORK  = "iNJ661"     # genome-scale -- ESPM enumeration is not yet fast enough to
+#NETWORK  = "iNJ661"     # genome-scale -- SO-hierarchy enumeration is not yet fast enough to
 #NETWORK  = "iAF692"     # finish at these sizes; the Stage H2 maxSemiOrganization
                           # (a few ms) still works fine even here, but set
-                          # COMPUTE_ESPM = False (or a low ESPM_MAX_ORDER) if you pick one.
+                          # COMPUTE_SO_HIERARCHY = False (or a low SO_MAX_ORDER) if you pick one.
 #NETWORK  = "iSBO_1134"      #(3240 reactions)                      
 #NETWORK  = "iSDY_1059"     #(3182 reactions)                          
 #NETWORK  = "iSFV_1184"    #(3279 reactions)                           
@@ -68,7 +68,7 @@ NETWORK = "iIT341" #(737 REACTIONS)
 #NETWORK = "data/Examples_tests/FarmVariants/Farm.txt"
 #NETWORK = "data/Examples_tests/FarmVariants/Farm_r7_diff.txt"
 NETWORK = "data/Examples_tests/FarmVariants/Farm_agro_stages.txt"
-ESPM_MAX_ORDER = 100
+SO_MAX_ORDER   = 100
 VERIFY         = True
 
 # ── Visualizations ────────────────────────────────────────────────────────────
@@ -119,18 +119,18 @@ ercs = compute_ercs(rn_data, verify=VERIFY)
 hier = build_hierarchy(ercs)
 syn = compute_synergies_basis_first(ercs, hier)
 comp = compute_complementarities(ercs, hier, syn)
-epm_result = compute_epms(rn_data, ercs, hier, syn, comp, verbose=False)
-espm_result = compute_espm(rn_data, ercs, hier, syn, comp, epm_result,
-                            max_order=ESPM_MAX_ORDER, verbose=False)
+elem_result = compute_elementary_sos(rn_data, ercs, hier, syn, comp, verbose=False)
+so_result = compute_so_hierarchy(rn_data, ercs, hier, syn, comp, elem_result,
+                            max_order=SO_MAX_ORDER, verbose=False)
 pipeline_ms = (time.perf_counter() - t0) * 1000
-print(f"  ERCs={len(ercs)}  EPMs={len(epm_result.all_epm_masks)}  "
-      f"total SOs={len(espm_result.all_so_masks)}  ({pipeline_ms:.0f} ms)")
+print(f"  ERCs={len(ercs)}  Elementary SOs={len(elem_result.all_elementary_masks)}  "
+      f"total SOs={len(so_result.all_so_masks)}  ({pipeline_ms:.0f} ms)")
 
-so_order = {sp: 0 for sp in epm_result.all_epm_masks}
-for order, masks in espm_result.espm_by_order.items():
+so_order = {sp: 0 for sp in elem_result.all_elementary_masks}
+for order, masks in so_result.so_by_order.items():
     for sp in masks:
         so_order[sp] = order
-so_lattice = build_so_lattice(espm_result.all_so_masks, so_order)
+so_lattice = build_so_lattice(so_result.all_so_masks, so_order)
 
 print("\n[Stage D] Decomposing every SO in the lattice (E / F / fragile circuits)...")
 t0 = time.perf_counter()

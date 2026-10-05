@@ -209,41 +209,45 @@ pytestmark_hyp = pytest.mark.skipif(
     not HAS_HYPOTHESIS, reason="hypothesis not installed"
 )
 
-@st.composite
-def _random_net_ercs(draw, max_s=5, max_r=6):
-    from pyCOT.analysis.organizations.erc       import compute_ercs
-    from pyCOT.analysis.organizations.cot_types import RNData
-    from oracles.closure_oracle import closure_oracle
-
-    n    = draw(st.integers(min_value=1, max_value=max_s))
-    nr   = draw(st.integers(min_value=1, max_value=max_r))
-    full = (1 << n) - 1
-    supp = draw(st.lists(st.integers(0, full), min_size=nr, max_size=nr))
-    prod = draw(st.lists(st.integers(0, full), min_size=nr, max_size=nr))
-
-    inflow_prod = 0
-    for s, p in zip(supp, prod):
-        if s == 0:
-            inflow_prod |= p
-    E0     = closure_oracle(supp, prod, inflow_prod)
-    supp_q = [s & ~E0 for s in supp]
-    prod_q = [p & ~E0 for p in prod]
-    inv    = tuple(
-        tuple(r for r, s in enumerate(supp_q) if (s >> i) & 1)
-        for i in range(n)
-    )
-    rnd = RNData(
-        n_species=n, species_names=tuple(f"s{i}" for i in range(n)),
-        species_index=tuple((f"s{i}", i) for i in range(n)),
-        n_reactions=nr, reaction_names=tuple(f"r{i}" for i in range(nr)),
-        supp_raw=tuple(supp), prod_raw=tuple(prod),
-        E0_mask=E0, supp_q=tuple(supp_q), prod_q=tuple(prod_q),
-        species_to_reactions=inv,
-    )
-    return compute_ercs(rnd)
-
-
+# Guarded by HAS_HYPOTHESIS: the @st.composite decorator itself touches `st`,
+# which is unbound when hypothesis isn't installed -- pytestmark_hyp only
+# skips collected tests, it doesn't stop this decorator from running at
+# import time, so the definition must be skipped too, not just the tests.
 if HAS_HYPOTHESIS:
+
+    @st.composite
+    def _random_net_ercs(draw, max_s=5, max_r=6):
+        from pyCOT.analysis.organizations.erc       import compute_ercs
+        from pyCOT.analysis.organizations.cot_types import RNData
+        from oracles.closure_oracle import closure_oracle
+
+        n    = draw(st.integers(min_value=1, max_value=max_s))
+        nr   = draw(st.integers(min_value=1, max_value=max_r))
+        full = (1 << n) - 1
+        supp = draw(st.lists(st.integers(0, full), min_size=nr, max_size=nr))
+        prod = draw(st.lists(st.integers(0, full), min_size=nr, max_size=nr))
+
+        inflow_prod = 0
+        for s, p in zip(supp, prod):
+            if s == 0:
+                inflow_prod |= p
+        E0     = closure_oracle(supp, prod, inflow_prod)
+        supp_q = [s & ~E0 for s in supp]
+        prod_q = [p & ~E0 for p in prod]
+        inv    = tuple(
+            tuple(r for r, s in enumerate(supp_q) if (s >> i) & 1)
+            for i in range(n)
+        )
+        rnd = RNData(
+            n_species=n, species_names=tuple(f"s{i}" for i in range(n)),
+            species_index=tuple((f"s{i}", i) for i in range(n)),
+            n_reactions=nr, reaction_names=tuple(f"r{i}" for i in range(nr)),
+            supp_raw=tuple(supp), prod_raw=tuple(prod),
+            E0_mask=E0, supp_q=tuple(supp_q), prod_q=tuple(prod_q),
+            species_to_reactions=inv,
+        )
+        return compute_ercs(rnd)
+
     @given(_random_net_ercs())
     @settings(max_examples=200, suppress_health_check=[HealthCheck.too_slow])
     def test_property_synergy_oracle_vs_opt(ercs):

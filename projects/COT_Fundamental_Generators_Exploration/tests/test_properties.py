@@ -84,17 +84,23 @@ pytestmark = pytest.mark.skipif(
 
 
 # ── Strategy: random reaction network ─────────────────────────────────────────
+# Guarded by HAS_HYPOTHESIS: the @st.composite decorator itself touches `st`,
+# which is unbound when hypothesis isn't installed -- module-level pytestmark
+# only skips collected tests, it doesn't stop this decorator from running at
+# import time, so the definition must be skipped too, not just the tests.
 
-@st.composite
-def random_net(draw, max_s=6, max_r=8):
-    """Generate (supp, prod, n_species, seed) for a small random network."""
-    n    = draw(st.integers(min_value=1, max_value=max_s))
-    nr   = draw(st.integers(min_value=1, max_value=max_r))
-    full = (1 << n) - 1
-    supp = draw(st.lists(st.integers(0, full), min_size=nr, max_size=nr))
-    prod = draw(st.lists(st.integers(0, full), min_size=nr, max_size=nr))
-    seed = draw(st.integers(0, full))
-    return supp, prod, n, seed
+if HAS_HYPOTHESIS:
+
+    @st.composite
+    def random_net(draw, max_s=6, max_r=8):
+        """Generate (supp, prod, n_species, seed) for a small random network."""
+        n    = draw(st.integers(min_value=1, max_value=max_s))
+        nr   = draw(st.integers(min_value=1, max_value=max_r))
+        full = (1 << n) - 1
+        supp = draw(st.lists(st.integers(0, full), min_size=nr, max_size=nr))
+        prod = draw(st.lists(st.integers(0, full), min_size=nr, max_size=nr))
+        seed = draw(st.integers(0, full))
+        return supp, prod, n, seed
 
 
 def _make_rndata(supp, prod, n, E0_mask=0):

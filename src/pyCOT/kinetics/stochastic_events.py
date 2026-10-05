@@ -203,75 +203,168 @@ def rate_perturbation_event(base_rate_params: Dict,
 
 class GillespieSSA:
     """
-    Gillespie Stochastic Simulation Algorithm (exact method).
-    
-    Treats reactions as discrete, stochastic events rather than continuous flows.
-    Exact for systems with discrete molecule counts and stochastic reaction events.
-    
-    More computationally expensive than ODE integration but captures
-    fluctuations important in small population systems.
-    
-    Reference: Gillespie, D. T. (1977). J. Phys. Chem. 81(25), 2340–2361.
+    Gillespie Stochastic Simulation Algorithm (exact method, direct
+    method / Gillespie 1977).
+
+    Deliberately shares its rate-law layer with `pyCOT.simulations.ode.
+    simulation()` rather than hand-rolling separate propensity formulas:
+    both call the exact same `pyCOT.kinetics.KINETIC_REGISTRY` functions
+    (mak, mmk, hill, ...) with the same `(reactants, x, species_idx,
+    params)` signature. The only difference between the two simulators is
+    what happens with the rate once computed -- integrated continuously
+    (ODE) vs. used as a stochastic propensity that gates a random,
+    discrete firing event (SSA) -- not two independently-maintained
+    notions of "the rate of this reaction" that could silently diverge.
+
+    Treats reactions as discrete, stochastic events rather than continuous
+    flows. Captures fluctuations and multiple-attractor behaviour that a
+    deterministic ODE trajectory, by construction, cannot show (it always
+    converges to exactly one outcome from a given initial condition).
+
+    Reference: Gillespie, D. T. (1977). J. Phys. Chem. 81(25), 2340-2361.
     """
-    
-    def __init__(self, rn, kinetic_params, seed=None):
+
+    def __init__(self, rn, rate='mak', spec_vector=None, additional_laws=None,
+                 seed=None):
         """
         Initialize Gillespie SSA simulator.
-        
-        Parameters:
-        -----------
+
+        Parameters
+        ----------
         rn : ReactionNetwork
-            Network structure
-        kinetic_params : dict
-            Rate constants for each reaction
+            pyCOT reaction network object.
+        rate : str or list
+            Kinetic law name(s), same convention as
+            `pyCOT.simulations.ode.simulation` -- single string applied to
+            every reaction, or one name per reaction.
+        spec_vector : list, optional
+            Parameters per reaction (same format as the ODE simulator).
+            If None, generated via `generate_default_parameters`.
+        additional_laws : dict, optional
+            Custom kinetic functions {name: function}, merged into the
+            registry exactly as the ODE simulator does.
         seed : int, optional
-            Random seed
+            Random seed.
         """
+        from pyCOT.kinetics import KINETIC_REGISTRY
+        from pyCOT.simulations.core import (
+            validate_rate_list, build_reaction_dict, parse_parameters,
+            generate_default_parameters,
+        )
+
         self.rn = rn
-        self.kinetic_params = kinetic_params
+        self.species = [s.name for s in rn.species()]
+        self.reactions = [r.name() for r in rn.reactions()]
+        self.species_idx = {s: i for i, s in enumerate(self.species)}
+        self.rn_dict = build_reaction_dict(rn)
+
+        self.rate = validate_rate_list(rate, len(self.reactions))
+        if spec_vector is None:
+            spec_vector = generate_default_parameters(
+                self.rate, len(self.reactions), additional_laws)
+        self.parameters = parse_parameters(rn, self.rn_dict, self.rate, spec_vector)
+
+        self.rate_laws = dict(KINETIC_REGISTRY)
+        if additional_laws:
+            self.rate_laws.update(additional_laws)
+        for name in self.rate:
+            if name not in self.rate_laws:
+                raise NotImplementedError(
+                    f"Kinetic law '{name}' not defined or registered")
+
         self.rng = np.random.default_rng(seed)
-        
+
     def propensity(self, x, reaction_idx):
         """
-        Calculate propensity (instantaneous probability) of reaction firing.
-        
-        For mass action: a_j = k_j * Π(x_i choose α_ij)
+        Instantaneous propensity a_j(x) of reaction j firing, using the
+        SAME rate-law function the ODE simulator would use for this
+        reaction (mass action, Hill, etc.) evaluated at the current state
+        x. Clamped to >= 0 (a rate law should never go negative, but a
+        custom `additional_laws` function is not guaranteed to enforce
+        that itself).
         """
-        # Simplified mass action propensity
-        # Full implementation requires stoichiometry
-        pass
-    
+        reaction = self.reactions[reaction_idx]
+        kinetic = self.rate[reaction_idx]
+        reactants = self.rn_dict[reaction][0]
+        if kinetic == 'mmk' and not reactants:
+            return 0.0
+        param_vector = self.parameters[reaction]
+        rate_fn = self.rate_laws[kinetic]
+        a = rate_fn(reactants, x, self.species_idx, param_vector)
+        return max(0.0, float(a))
+
+    def all_propensities(self, x):
+        return np.array([self.propensity(x, i) for i in range(len(self.reactions))])
+
     def step(self, x, t):
         """
-        Single Gillespie step: choose reaction and advance time.
-        
-        Returns:
-        --------
-        x_new : array
-            Updated state after one reaction
-        t_new : float
-            Time of next reaction
-        reaction_fired : int
-            Index of reaction that occurred
+        Single direct-method Gillespie step: draw waiting time tau from
+        Exp(a0), draw which reaction fires (weighted by propensity/a0),
+        apply its stoichiometry.
+
+        Returns
+        -------
+        x_new : array          Updated state after one reaction fires.
+        t_new : float           Time of that reaction (t + tau), or +inf
+                                 if no reaction has positive propensity.
+        reaction_idx : int|None Index of reaction that fired, or None.
         """
-        # Calculate all propensities
-        propensities = np.array([self.propensity(x, i) for i in range(len(self.rn.reactions()))])
+        propensities = self.all_propensities(x)
         a0 = propensities.sum()
-        
-        if a0 == 0:
-            return x, np.inf, None  # No reactions possible
-        
-        # Time to next reaction (exponential)
+
+        if a0 <= 0:
+            return x, np.inf, None
+
         tau = self.rng.exponential(1.0 / a0)
-        
-        # Choose reaction (weighted by propensities)
-        reaction_idx = self.rng.choice(len(propensities), p=propensities/a0)
-        
-        # Apply stoichiometry
-        S = self.rn.stoichiometry_matrix()
-        x_new = x + S[:, reaction_idx]
-        
+        reaction_idx = int(self.rng.choice(len(propensities), p=propensities / a0))
+
+        x_new = np.array(x, dtype=float)
+        reaction = self.reactions[reaction_idx]
+        for sp, coef in self.rn_dict[reaction][0]:
+            x_new[self.species_idx[sp]] -= coef
+        for sp, coef in self.rn_dict[reaction][1]:
+            x_new[self.species_idx[sp]] += coef
+        x_new = np.maximum(x_new, 0.0)
+
         return x_new, t + tau, reaction_idx
+
+    def simulate(self, x0, t_span, max_steps=200_000, verbose=False):
+        """
+        Run the SSA from x0 over t_span = (t_start, t_end), stopping at
+        t_end, at max_steps reactions, or when no reaction has positive
+        propensity (absorbing state).
+
+        Returns
+        -------
+        time_series_df : DataFrame, index=Time (irregular, one row per
+                          reaction event, plus the initial condition),
+                          columns=species.
+        event_log       : list of (t, reaction_idx, reaction_name)
+        """
+        import pandas as pd
+
+        t_start, t_end = t_span
+        x = np.array(x0, dtype=float)
+        t = t_start
+
+        times = [t]
+        states = [x.copy()]
+        event_log = []
+
+        for step_i in range(max_steps):
+            x_new, t_new, reaction_idx = self.step(x, t)
+            if reaction_idx is None or t_new > t_end:
+                break
+            x, t = x_new, t_new
+            times.append(t)
+            states.append(x.copy())
+            event_log.append((t, reaction_idx, self.reactions[reaction_idx]))
+            if verbose and (step_i + 1) % 1000 == 0:
+                print(f"  [SSA] step={step_i + 1}  t={t:.3f}")
+
+        traj_df = pd.DataFrame(states, columns=self.species, index=times)
+        traj_df.index.name = 'Time'
+        return traj_df, event_log
 
 
 class TauLeaping:

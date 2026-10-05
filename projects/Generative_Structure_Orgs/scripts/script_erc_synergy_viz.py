@@ -64,11 +64,17 @@ RN_FILE = os.path.join(_PYCOT_ROOT, 'data', 'biomodels',
 # Uncomment alternatives:
 # RN_FILE = os.path.join(_PYCOT_ROOT, 'networks', 'testing', 'Farm.txt')
 # RN_FILE = 'data\\Examples_tests\\testing\\ERC_synergy0.txt'
-RN_FILE = '../../networks/testing/LBCA.txt'
+RN_FILE = 'data/Examples_tests/Fundamental_Synergy_Example.txt'
 
 # -- Visual parameters ---------------------------------------------------------
-NODE_SIZE_BASE  = 400
-NODE_SIZE_SCALE = 120
+# Target print size: ~7 lines of body text tall x 40% of the page width
+# (roughly 1.2in x 2.6in at typical 10-11pt article settings) -- everything
+# below is sized so it survives that shrink, not to look right at 100%
+# on screen. Bigger source fonts/nodes/lines = more pixels-per-element
+# once LaTeX scales the raster down to the small print footprint.
+NODE_SIZE_BASE  = 900    # was 400
+NODE_SIZE_SCALE = 220    # was 120
+NODE_FONT_SIZE  = 20     # ERC label font (was 12)
 COL_SM   = '#27AE60'
 COL_SSM  = '#E67E22'
 COL_DEF  = '#AED6F1'
@@ -84,23 +90,47 @@ COL_SYN = {
 }
 
 # Junction diamond marker size (scatter units = pts²)
-JUNC_SIZE = 80
+JUNC_SIZE = 180   # was 80
 
-# Arrow line widths and opacities per level
-ARROW_LW    = {'basic': 0.7, 'maximal': 0.7, 'fundamental': 0.7}
-ARROW_ALPHA = {'basic': 0.7, 'maximal': 0.7, 'fundamental': 0.7}
+# Arrow line widths and opacities per level -- boosted across the board;
+# containment edges (drawn separately below) get an even bigger boost
+# since those were flagged as the least visible at print size.
+ARROW_LW    = {'basic': 1.6, 'maximal': 2.0, 'fundamental': 2.4}
+ARROW_ALPHA = {'basic': 0.80, 'maximal': 0.88, 'fundamental': 0.95}
+
+# Containment-edge (ERC hierarchy) styling -- the "especially containment
+# ones" arrows called out for visibility.
+CONTAIN_EDGE_COLOR    = '#333333'   # was '#555555' -- darker, more contrast
+CONTAIN_EDGE_WIDTH    = 2.6         # was 1.1
+CONTAIN_EDGE_ALPHA    = 0.9         # was 0.65
+CONTAIN_ARROWSIZE     = 30          # was 14
 
 # Shrink (in display pts) to pull arrow endpoints back from node centres.
 # Formula: ~sqrt(scatter_size / π) gives the marker radius in pts.
-# These are fixed estimates that work across the typical node size range.
-SHRINK_ERC  = 12   # shrink from / into ERC hierarchy nodes
-SHRINK_JUNC =  5   # shrink from / into junction nodes
+# Rescaled to match the larger NODE_SIZE_BASE/JUNC_SIZE above.
+SHRINK_ERC  = 20   # was 12
+SHRINK_JUNC =  8   # was 5
 
 # Set False to hide non-maximal basic synergies (less visual clutter)
 SHOW_BASIC = True
 
-# How far to push junctions off an ERC level line when the computed y lands on one.
-PUSH_OFF_LEVEL = 0.40
+# Set False to hide any ERC whose closure is the empty set (e.g. E0 in a
+# system where the empty set is itself closed) -- off by default, since
+# that node carries no species and is usually not worth the space.
+SHOW_EMPTY_ERC = False
+
+# Vertical spacing between hierarchy levels, in data units (was a flat 2.0
+# in the position formula below). Compressed so the whole figure comes out
+# wide-and-short -- matching a 40%-width / 7-line-tall print target --
+# instead of the taller, more square layout the original 2.0 spacing gives.
+LEVEL_Y_SPACING = 1.2
+NODE_X_SPACING  = 2.4   # widened slightly to compensate for bigger node size
+
+# How far to push junctions off an ERC level line when the computed y lands
+# on one, and the same-level junction offset just below -- both were tuned
+# as fractions of the old flat 2.0 level spacing, rescaled to match
+# LEVEL_Y_SPACING above.
+PUSH_OFF_LEVEL = 0.40 * (LEVEL_Y_SPACING / 2.0)
 
 
 # ===========================================================================
@@ -256,7 +286,17 @@ for erc in ercs:
 
 print("Building hierarchy...")
 hierarchy = ERC_Hierarchy(RN, ercs)
-G = hierarchy.graph
+G = hierarchy.graph.copy()   # copy: safe to mutate without touching hierarchy's own graph
+
+if not SHOW_EMPTY_ERC:
+    empty_labels = [erc.label for erc in ercs if len(erc.get_closure(RN)) == 0]
+    if empty_labels:
+        print(f"  SHOW_EMPTY_ERC=False: hiding empty-closure ERC(s) {empty_labels}")
+        G.remove_nodes_from(empty_labels)
+        # Downstream synergy-drawing code already skips any junction/edge
+        # whose endpoint isn't in `pos` (built from G's nodes below), so
+        # removing the node from G here is enough to also drop every
+        # containment edge and synergy arrow that touched it.
 
 # Classify nodes
 node_sizes, node_colors = {}, {}
@@ -319,7 +359,7 @@ pos = {}
 for lvl, nodes in level_nodes.items():
     nodes.sort(key=lambda n: len(nx.ancestors(G, n)), reverse=True)
     for i, node in enumerate(nodes):
-        pos[node] = np.array([(i - (len(nodes) - 1) / 2) * 2.0, lvl * 2.0])
+        pos[node] = np.array([(i - (len(nodes) - 1) / 2) * NODE_X_SPACING, lvl * LEVEL_Y_SPACING])
 
 # Junction positions: between the reactant midpoint and the target,
 # always kept between levels (never on top of an ERC node).
@@ -333,11 +373,17 @@ for lvl, nodes in level_nodes.items():
 
 level_ys = sorted(set(float(p[1]) for p in pos.values()))
 
+# Proximity/offset thresholds below scale with LEVEL_Y_SPACING (all were
+# originally tuned as fractions of the old flat 2.0 spacing) so junction
+# placement stays proportionally correct now that levels are compressed.
+_LEVEL_SCALE = LEVEL_Y_SPACING / 2.0
+_LEVEL_CLEARANCE = 0.22 * _LEVEL_SCALE
+
 def _clear_of_levels(y, level_ys, y_target, step=PUSH_OFF_LEVEL, max_iter=8):
-    """Shift y toward y_target until it is not within 0.22 of any ERC level."""
+    """Shift y toward y_target until it is not within _LEVEL_CLEARANCE of any ERC level."""
     direction = 1 if y_target >= y else -1
     for _ in range(max_iter):
-        if not any(abs(y - ly) < 0.22 for ly in level_ys):
+        if not any(abs(y - ly) < _LEVEL_CLEARANCE for ly in level_ys):
             break
         y += direction * step
     return y
@@ -360,12 +406,12 @@ for key, (l1, l2) in syn_reactants.items():
     # Y: midpoint between the higher reactant and the target
     y_hi  = max(p1[1], p2[1])
     y_T   = float(pt[1])
-    if abs(y_T - y_hi) > 0.5:
+    if abs(y_T - y_hi) > 0.5 * _LEVEL_SCALE:
         y_junc = (y_hi + y_T) / 2.0
     else:
         # Reactants and target at the same level — push junction in target direction
         y_sign = 1 if y_T >= y_hi else -1
-        y_junc = y_hi + y_sign * 0.7
+        y_junc = y_hi + y_sign * 0.7 * _LEVEL_SCALE
 
     # Ensure junction is not sitting on an ERC level line
     y_junc = _clear_of_levels(y_junc, level_ys, y_T)
@@ -378,7 +424,7 @@ for key, (l1, l2) in syn_reactants.items():
     count = pair_junc_count[pair_key]
     if count > 0:
         sign   = 1 if count % 2 == 1 else -1
-        offset = ((count + 1) // 2) * 0.42
+        offset = ((count + 1) // 2) * 0.42 * (NODE_X_SPACING / 2.0)
         base   = base + np.array([sign * offset, 0.0])
     pair_junc_count[pair_key] += 1
 
@@ -392,7 +438,10 @@ ordered_nodes = list(G.nodes())
 sizes_list    = [node_sizes.get(n, NODE_SIZE_BASE) for n in ordered_nodes]
 colors_list   = [node_colors.get(n, COL_DEF)        for n in ordered_nodes]
 
-fig, ax = plt.subplots(figsize=(14, 9))
+# Wide-and-short canvas to match the 40%-page-width / 7-line-tall print
+# target (bbox_inches='tight' below will crop to actual content, but this
+# sets the aspect ratio spacing/legends are laid out against).
+fig, ax = plt.subplots(figsize=(13, 5.5))
 
 # -- ERC hierarchy (nodes + containment edges) --------------------------------
 scatter = nx.draw_networkx_nodes(G, pos, ax=ax,
@@ -401,11 +450,15 @@ scatter = nx.draw_networkx_nodes(G, pos, ax=ax,
                                  node_size=sizes_list,
                                  alpha=0.92)
 scatter.set_zorder(3)
+scatter.set_edgecolor('#222222')
+scatter.set_linewidth(1.4)
 nx.draw_networkx_edges(G, pos, ax=ax,
-                       edge_color='#555555', arrows=True, arrowsize=14,
-                       width=1.1, alpha=0.65)
+                       edge_color=CONTAIN_EDGE_COLOR, arrows=True,
+                       arrowsize=CONTAIN_ARROWSIZE,
+                       width=CONTAIN_EDGE_WIDTH, alpha=CONTAIN_EDGE_ALPHA,
+                       node_size=sizes_list)
 nx.draw_networkx_labels(G, pos, ax=ax,
-                        font_size=12, font_weight='bold')
+                        font_size=NODE_FONT_SIZE, font_weight='bold')
 
 # -- Helper: draw a FancyArrowPatch -------------------------------------------
 def _farrow(src, dst, col, lw, alpha, shrinkA=SHRINK_ERC, shrinkB=SHRINK_ERC):
@@ -418,7 +471,7 @@ def _farrow(src, dst, col, lw, alpha, shrinkA=SHRINK_ERC, shrinkB=SHRINK_ERC):
         posA=tuple(src), posB=tuple(dst),
         arrowstyle='->', lw=lw, color=col, alpha=alpha,
         shrinkA=shrinkA, shrinkB=shrinkB,
-        mutation_scale=10,    # controls arrowhead size
+        mutation_scale=22,    # controls arrowhead size (was 10)
         zorder=1,
     )
     ax.add_patch(patch)
@@ -476,18 +529,36 @@ def _on_hover(event):
 
 fig.canvas.mpl_connect("motion_notify_event", _on_hover)
 
+# Pad the data limits a bit so the two corner-anchored legends that stay
+# INSIDE the axes (closure size, synergy type) have clear space regardless
+# of the specific network's hierarchy shape.
+ax.margins(x=0.15, y=0.15)
+
 # -- Legends ------------------------------------------------------------------
-# 1) Maintenance class (node colour)
-maintenance_legend = ax.legend(
+# 1) Maintenance class (node colour). Anchored OUTSIDE the axes (to the
+# right, bottom-aligned) rather than an inside corner like the other two:
+# an inside 'lower right' collided with whichever node ends up in that
+# corner, which corner that is depends on the network's own hierarchy
+# shape (and shifts further when SHOW_EMPTY_ERC changes which nodes
+# exist) -- not something a fixed inside-corner placement can be made
+# robust to, confirmed by hitting the collision twice while tuning
+# margins. Outside the axes there is nothing to collide with.
+# Uses fig.legend() rather than ax.legend()+add_artist(): confirmed by a
+# standalone test that ax.legend()+add_artist() with an outside-axes
+# bbox_to_anchor silently drops the legend from bbox_inches='tight''s
+# saved extent (renders fine on screen, vanishes from the saved PNG) --
+# fig.legend() does not have that problem since it isn't competing with
+# the axes' own single "current legend" slot that add_artist works around.
+maintenance_legend = fig.legend(
     handles=[
         mpatches.Patch(facecolor=COL_SM,  label='Self-maintaining  (SM)'),
         mpatches.Patch(facecolor=COL_SSM, label='Semi-self-maintaining  (SSM)'),
         mpatches.Patch(facecolor=COL_DEF, label='Neither / not reactive'),
     ],
-    loc='lower right', fontsize=12, framealpha=0.9,
+    loc='lower left', bbox_to_anchor=(0.92, 0.02), bbox_transform=fig.transFigure,
+    fontsize=12, framealpha=0.9,
     title='Maintenance class', title_fontsize=12,
 )
-ax.add_artist(maintenance_legend)
 
 # 2) Synergy type (arrow + junction colour)
 syn_handles = [
@@ -505,7 +576,7 @@ syn_legend = ax.legend(handles=syn_handles, loc='upper right', fontsize=12,
 ax.add_artist(syn_legend)
 
 # 3) Closure size (node size)
-all_counts = sorted({len(erc.get_closure(RN)) for erc in ercs})
+all_counts = sorted({len(erc.get_closure(RN)) for erc in ercs if erc.label in G})
 if len(all_counts) > 4:
     tick_idx   = [0, len(all_counts)//3, 2*len(all_counts)//3, -1]
     size_ticks = sorted({all_counts[i] for i in tick_idx})
@@ -516,7 +587,7 @@ size_handles = [
                color='#888888', alpha=0.85, label=f'{n} species')
     for n in size_ticks
 ]
-ax.legend(handles=size_handles, loc='lower left', fontsize=12, framealpha=0.9,
+ax.legend(handles=size_handles, loc='upper left', fontsize=12, framealpha=0.9,
           title='Closure size', title_fontsize=12,
           labelspacing=1.2, handletextpad=1.0)
 

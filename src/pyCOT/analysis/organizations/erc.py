@@ -34,10 +34,10 @@ themselves, which consume nothing). It is therefore always a genuine
 persistent ERC in its own right whenever the network has an inflow — this
 was previously left unrepresented, since every OTHER ERC is computed via
 QUOTIENTED closure (supp_q/prod_q, which strip E0's species out entirely),
-so E0's own species never appeared as their own ERC/EPM node.
+so E0's own species never appeared as their own ERC/SO0 node.
 
 E0 does not disqualify, or get disqualified by, any other ERC's
-elementary/EPM status: every other ERC's species_mask lives in the
+elementary-SO status: every other ERC's species_mask lives in the
 quotiented (E0-excluded) index space, so E0's bits are structurally never
 set in any other ERC's mask — the two live in disjoint parts of the
 bitset. That is the right behavior, not an approximation: E0's species are

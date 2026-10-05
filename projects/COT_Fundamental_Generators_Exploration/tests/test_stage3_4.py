@@ -153,7 +153,7 @@ def test_comp_basic_oracle_vs_opt_gold(net):
     hier = build_hierarchy(ercs)
 
     orc = comp_basic_set(ercs)
-    opt = {(c.i, c.j, c.fwd_supply, c.bwd_supply)
+    opt = {(c.i, c.j, c.fwd_supply, c.bwd_supply, c.chain)
            for c in compute_complementarities(ercs, hier).basic}
 
     assert opt == orc, (
@@ -183,11 +183,32 @@ def test_comp_empty_on_single_erc():
     assert len(comp) == 0
 
 
-def test_comp_empty_on_comparable_pair():
-    """GOLD5: two comparable ERCs → no complementarity."""
+def test_comp_intra_chain_on_comparable_pair():
+    """
+    GOLD5: two comparable ERCs X={b,c} (req={c}, prod={b}) and
+    Y={a,b,c} (req={a}, prod={b,c}), with X ⊊ Y.
+    supl(X⇀Y) = prod(X) ∩ req(Y) = {b} ∩ {a} = ∅  (subset→superset, always 0)
+    supl(Y⇀X) = prod(Y) ∩ req(X) = {b,c} ∩ {c} = {c} ≠ ∅  (superset→subset)
+    So this comparable pair IS complementary (intra-chain), supplying c from
+    Y down to X — this is the case the old "incomparable-only" definition missed.
+    """
     ercs = _build_ercs_from_gold(GOLD5_NONPERSISTENT)
-    comp = compute_complementarities(ercs, build_hierarchy(ercs))
-    assert len(comp) == 0
+    hier = build_hierarchy(ercs)
+    comp = compute_complementarities(ercs, hier)
+
+    assert len(ercs) == 2
+    assert hier.is_comparable(0, 1)
+
+    assert len(comp.basic) == 1
+    pair = comp.basic[0]
+    assert pair.chain, "the only complementary pair here is comparable (intra-chain)"
+    assert pair.is_pure, "chain pairs can never be synergetic, so they are trivially pure"
+    # Exactly one direction carries the supply — the superset producing for the subset.
+    assert (pair.fwd_supply == 0) != (pair.bwd_supply == 0)
+
+    assert len(comp.fundamental) == 1
+    fc = comp.fundamental[0]
+    assert fc.chain
 
 
 def test_comp_two_loops_empty():
@@ -252,16 +273,31 @@ def test_comp_gold2_synergy_driven_reduction_is_not_basic():
 
 
 @pytest.mark.parametrize("net", ALL_GOLD, ids=[n.name for n in ALL_GOLD])
-def test_comp_only_incomparable_pairs(net):
-    """All reported complementarity pairs must be incomparable."""
+def test_comp_chain_pairs_supply_only_superset_to_subset(net):
+    """
+    For every intra-chain (comparable) complementary pair, supply can only
+    flow from the superset ERC to the subset ERC — never the reverse. This
+    is the real invariant (subset→superset supply is provably always 0);
+    chain pairs are not banned from having complementarity altogether.
+    """
     ercs = _build_ercs_from_gold(net)
     hier = build_hierarchy(ercs)
     comp = compute_complementarities(ercs, hier)
 
     for c in comp.basic:
-        assert not hier.is_comparable(c.i, c.j), (
-            f"[{net.name}] comparable pair ({c.i},{c.j}) has complementarity"
-        )
+        if not c.chain:
+            continue
+        # i < j by construction; figure out which of i, j is the superset.
+        if hier.is_ancestor(c.i, c.j):      # j ⊋ i → j is superset
+            assert c.fwd_supply == 0, (
+                f"[{net.name}] subset E{c.i} supplied superset E{c.j}, "
+                f"which should be provably impossible"
+            )
+        else:                               # i ⊋ j → i is superset
+            assert c.bwd_supply == 0, (
+                f"[{net.name}] subset E{c.j} supplied superset E{c.i}, "
+                f"which should be provably impossible"
+            )
 
 
 # ══════════════════════════════════════════════════════════════════════════════

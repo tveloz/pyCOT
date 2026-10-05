@@ -2,8 +2,8 @@
 reproduce_centler2006.py
 
 Computes the FULL organization hierarchy (closed + self-maintaining species
-sets, in the classical Dittrich/Speroni di Fenizio sense -- NOT the ERC/EPM/
-ESPM engine in cot_gen/) for all 5 scenarios of:
+sets, in the classical Dittrich/Speroni di Fenizio sense -- NOT the
+ERC/SO0/SOi engine in pyCOT.analysis.organizations) for all 5 scenarios of:
 
   Centler, Speroni di Fenizio, Matsumaru, Dittrich (2006)
   "Chemical Organizations in the Central Sugar Metabolism of Escherichia Coli"

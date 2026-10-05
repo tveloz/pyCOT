@@ -10,6 +10,17 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/vexp-restore.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }

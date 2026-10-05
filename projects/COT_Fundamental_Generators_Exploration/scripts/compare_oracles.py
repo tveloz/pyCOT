@@ -13,8 +13,8 @@ AND the efficient algorithm for four stages and checks that they agree:
                                efficient uses the bitset hierarchy filter.
   Stage C — Fundamental comp.: oracle and efficient both apply Def 26 (minprod/mincons);
                                comparison verifies (prod_idx, cons_idx, species_bit) sets.
-  Stage E — EPMs             : oracle enumerates ERC-subsets; efficient uses minimal P-ERCs
-                               + pairwise complementary pairs.  (Only run when |ERCs| ≤ EPM_ERC_LIMIT.)
+  Stage E — Elementary SOs   : oracle enumerates ERC-subsets; efficient uses minimal P-ERCs
+                               + pairwise complementary pairs.  (Only run when |ERCs| ≤ ELEM_ERC_LIMIT.)
 
 Skipped stages are marked with '--' in the table.
 
@@ -41,11 +41,11 @@ from pyCOT.analysis.organizations.erc              import compute_ercs
 from pyCOT.analysis.organizations.hierarchy        import build_hierarchy
 from pyCOT.analysis.organizations.synergy          import compute_synergies
 from pyCOT.analysis.organizations.complementarity  import compute_complementarities
-from pyCOT.analysis.organizations.epm              import compute_epms
+from pyCOT.analysis.organizations.so_search        import compute_elementary_sos
 from oracles.erc_oracle              import compute_ercs_oracle
 from oracles.synergy_oracle          import fundamental_synergy_set as oracle_fund_syn
 from oracles.complementarity_oracle  import comp_fund_set           as oracle_fund_comp
-from oracles.epm_oracle              import epm_oracle_set
+from oracles.so_oracle                import elementary_so_oracle_set
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  CONFIGURATION — edit this block, then press Play                          ║
@@ -58,13 +58,16 @@ MAX_REACTIONS = 200
 # Which collection: "all" | "bigg" | "biomd"
 NETWORK_FILTER = "all"
 
-# ── EPM oracle size limit ─────────────────────────────────────────────────────
-# EPM oracle enumerates 2^|ERCs| subsets — only feasible for small networks.
-# Set to 0 to skip EPM comparison entirely.
-EPM_ERC_LIMIT = 20
+# ── Elementary-SO oracle size limit ────────────────────────────────────────────
+# Elementary-SO oracle enumerates 2^|ERCs| subsets — only feasible for small
+# networks. Set to 0 to skip this comparison entirely.
+ELEM_ERC_LIMIT = 20
 
 # ── Catalogue ─────────────────────────────────────────────────────────────────
-CATALOGUE_CSV = "projects/COT_Fundamental_Generators_Complex/network_catalogue.csv"
+# No catalogue CSV is maintained any more (projects/COT_Fundamental_Generators_Complex/,
+# which used to hold it, was removed) — leave empty to always fall back to
+# scanning data/biochemical_databases/ directly via _discover_all().
+CATALOGUE_CSV = ""
 
 # ── Output ────────────────────────────────────────────────────────────────────
 OUTPUT_CSV = "compare_oracles_results.csv"
@@ -76,7 +79,7 @@ VERIFY = True
 # ║  Script body                                                                ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
-_DATA_ROOT = os.path.join(_repo, "data", "biomodels")
+_DATA_ROOT = os.path.join(_repo, "data", "biochemical_databases")
 _OUT_PATH  = os.path.join(_here, OUTPUT_CSV)
 
 
@@ -164,7 +167,7 @@ COLS = [
     "erc_match",  "t_erc_eff_ms",  "t_erc_orc_ms",
     "fund_syn",   "syn_match",     "t_syn_eff_ms",  "t_syn_orc_ms",
     "fund_comp",  "comp_match",    "t_comp_eff_ms", "t_comp_orc_ms",
-    "epms",       "epm_match",     "t_epm_eff_ms",  "t_epm_orc_ms",
+    "elems",      "elem_match",    "t_elem_eff_ms", "t_elem_orc_ms",
     "all_ok", "error",
 ]
 
@@ -185,7 +188,7 @@ print(f"  {'Network':<32} {'Rxn':>4}  "
       f"{'ERCs':>5} {'eff ms':>7} {'orc ms':>7} {'ERC?':>5}  "
       f"{'fSYN':>5} {'eff ms':>7} {'orc ms':>7} {'SYN?':>5}  "
       f"{'fCMP':>5} {'eff ms':>7} {'orc ms':>7} {'CMP?':>5}  "
-      f"{'EPMs':>5} {'eff ms':>7} {'orc ms':>7} {'EPM?':>5}  ALL")
+      f"{'Elem':>5} {'eff ms':>7} {'orc ms':>7} {'ELM?':>5}  ALL")
 print(f"  {'(eff=efficient  orc=brute-force oracle  --=skipped)'}")
 print(SEP)
 
@@ -243,25 +246,25 @@ for net_name, net_path, n_rxn in candidates:
         row["fund_comp"]  = len(comp.fundamental)
         row["comp_match"] = (eff_fcomp == orc_fcomp)
 
-        # ── EPMs ──────────────────────────────────────────────────────────────
+        # ── Elementary SOs ────────────────────────────────────────────────────
         n_ercs = len(ercs)
-        if EPM_ERC_LIMIT > 0 and n_ercs <= EPM_ERC_LIMIT:
+        if ELEM_ERC_LIMIT > 0 and n_ercs <= ELEM_ERC_LIMIT:
             t0 = time.perf_counter()
-            epm = compute_epms(rn, ercs, hier, comp_result=comp)
-            row["t_epm_eff_ms"] = (time.perf_counter() - t0) * 1000
+            elem = compute_elementary_sos(rn, ercs, hier, comp_result=comp)
+            row["t_elem_eff_ms"] = (time.perf_counter() - t0) * 1000
 
             t0 = time.perf_counter()
-            orc_epms = epm_oracle_set(rn, ercs)
-            row["t_epm_orc_ms"] = (time.perf_counter() - t0) * 1000
+            orc_elems = elementary_so_oracle_set(rn, ercs)
+            row["t_elem_orc_ms"] = (time.perf_counter() - t0) * 1000
 
-            eff_epms = set(epm.all_epm_masks)
-            row["epms"]      = len(epm.all_epm_masks)
-            row["epm_match"] = (eff_epms == orc_epms)
-        # else: leave EPM columns as None (shown as --)
+            eff_elems = set(elem.all_elementary_masks)
+            row["elems"]      = len(elem.all_elementary_masks)
+            row["elem_match"] = (eff_elems == orc_elems)
+        # else: leave elementary-SO columns as None (shown as --)
 
         row["all_ok"] = bool(
             row["erc_match"] and row["syn_match"] and row["comp_match"]
-            and (row["epm_match"] is None or row["epm_match"])
+            and (row["elem_match"] is None or row["elem_match"])
         )
 
     except Exception as exc:
@@ -273,7 +276,7 @@ for net_name, net_path, n_rxn in candidates:
     e_n = f"{row['ercs']}"      if row["ercs"]       is not None else "?"
     s_n = f"{row['fund_syn']}"  if row["fund_syn"]   is not None else "?"
     c_n = f"{row['fund_comp']}" if row["fund_comp"]  is not None else "?"
-    p_n = f"{row['epms']}"      if row["epms"]       is not None else "-"
+    p_n = f"{row['elems']}"     if row["elems"]      is not None else "-"
     all_str = " OK " if row["all_ok"] else "FAIL"
 
     line = (
@@ -281,7 +284,7 @@ for net_name, net_path, n_rxn in candidates:
         f"{e_n:>5} {_ms(row['t_erc_eff_ms'])} {_ms(row['t_erc_orc_ms'])} {_ok(row['erc_match'])}  "
         f"{s_n:>5} {_ms(row['t_syn_eff_ms'])} {_ms(row['t_syn_orc_ms'])} {_ok(row['syn_match'])}  "
         f"{c_n:>5} {_ms(row['t_comp_eff_ms'])} {_ms(row['t_comp_orc_ms'])} {_ok(row['comp_match'])}  "
-        f"{p_n:>5} {_ms(row['t_epm_eff_ms'])} {_ms(row['t_epm_orc_ms'])} {_ok(row['epm_match'])}  "
+        f"{p_n:>5} {_ms(row['t_elem_eff_ms'])} {_ms(row['t_elem_orc_ms'])} {_ok(row['elem_match'])}  "
         f"{all_str}"
     )
     if row["error"]:
@@ -295,7 +298,7 @@ print(SEP)
 print(f"PASSED: {n_ok}/{len(rows_out)}    FAILED: {n_fail}")
 print(f"  eff ms = efficient algorithm wall time")
 print(f"  orc ms = brute-force oracle wall time (should match but be slower)")
-print(f"  --     = stage skipped (EPM oracle only runs when |ERCs| ≤ {EPM_ERC_LIMIT})")
+print(f"  --     = stage skipped (elementary-SO oracle only runs when |ERCs| ≤ {ELEM_ERC_LIMIT})")
 if n_fail:
     print("\nFailed networks:")
     for r in rows_out:

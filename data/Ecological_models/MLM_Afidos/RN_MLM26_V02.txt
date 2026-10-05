@@ -1,0 +1,99 @@
+#sps_RN_MLM_V02
+
+# Nut: Phloem sap nutrients--Non-essential organic nutrients and sugars absorbed from phloem sap.
+# Nut_int: Internalized nutrients--Intracellular nutrient pool assimilated and processed by endosymbionts.
+# B: Buchnera aphidicola--Obligate intracellular primary endosymbiont.
+# H: Secondary endosymbionts--Facultative endosymbionts (H. defensa / F. symbiotica) conferring resilience.
+# A_eaa: Essential amino acids--Protein precursor pool synthesized by Buchnera.
+# P_hsp: Heat-shock proteins--Molecular chaperones expressed under thermal stress.
+# W_nit: Nitrogenous waste--Host catabolic byproducts recycled into nutrients.
+# E_fit: Host fitness reserves--Cytosolic energetic pool sustaining host growth and fecundity.
+# C_lip: Cytosolic lipids & sugars--Nutritional substrate assimilated for endosymbiont maintenance.
+# T_tox: Anti-parasitoid toxins--Secondary metabolites synthesized by secondary endosymbionts.
+# T_sigma: Thermal stress index--Environmental temperature perturbation modulating kinetic rates.
+# A_vul: Vulnerable aphid phenotype--Nymph or adult susceptible to predation and parasitism.
+# A_apt: Apterous aphid morph--Unwinged adult with high basal reproductive capacity.
+# A_ala: Alate aphid morph--Winged adult adapted for long-distance spatial dispersal.
+# A_def: Defended aphid morph--Host possessing endosymbiont-mediated parasitoid defense.
+# A_par: Parasitoid-infected aphid--Host carrying endoparasitoid egg or growing larva.
+# M_mum: Parasitoid mummy--Sclerotized aphid carcass housing developing pupa.
+# H_dew: Honeydew excretion--Sugar-rich metabolic byproduct excreted during feeding.
+# Pl: Healthy plant biomass--Basal vegetative host tissue (Fabaceae) fixing CO2.
+# Pl_dam: Damaged plant tissue--Foliar tissue undergoing cellular stress from herbivory.
+# P_p: Parasitoid wasp--Adult female parasitoid wasp (Aphidius ervi).
+# D: Generalist predator--Higher-trophic arthropod predator.
+# V_voc: Volatile organic compounds--Airborne infochemical signals emitted by damaged plant tissue.
+# F_fun: Saprophytic fungi--Fungal colonies developing on honeydew deposits.
+# S_alm: Alarm pheromone--Volatile infochemical released during predator attacks.
+
+
+#rxs_RN_MLM_V02
+
+r_1: Nut + B => B + Nut_int; #Primary symbiont nutrient uptake and internalization
+r_2: Nut + H => H + Nut_int; #Secondary symbiont cytosolic nutrient assimilation
+r_3: Nut + B => B + A_eaa; #Biosynthesis of essential amino acids by B. aphidicola
+r_4: Nut + A_eaa + B => B + 2A_eaa; #Autocatalytic metabolic amplification of essential amino acids
+r_5: A_eaa + B => B + E_fit; #Conversion of essential amino acids into host fitness biomass
+r_6: Nut + E_fit => 2E_fit; #Energetic output generation sustaining host fecundity
+r_7: T_sigma + H => T_sigma + H + P_hsp; #Thermal stress induction of heat-shock protein expression
+r_8: T_sigma + P_hsp + H => T_sigma + 2P_hsp; #Chaperone-mediated protein folding and cell recovery
+r_9: T_sigma + P_hsp + A_eaa => T_sigma + P_hsp + E_fit; #Protection of metabolic pathways under thermal thresholds
+r_10: W_nit + B => B + Nut; #Primary symbiont nitrogenous waste recycling into nutrients
+r_11: W_nit + H => H + A_eaa; #Waste assimilation into bioavailable amino acid pools
+r_12: C_lip + B => 2B; #Primary endosymbiont growth via host lipid/carbohydrate uptake
+r_13: C_lip + H => 2H; #Secondary endosymbiont population maintenance and growth
+r_14: Nut + B => B + C_lip; #Intracellular conversion of host sap into symbiont lipid stocks
+r_15: A_eaa + A_vul => A_apt; #Metabolic trigger of apterous morphic differentiation
+r_16: E_fit + A_vul => A_apt + E_fit; #High nutrient threshold signaling toward unwinged morphs
+r_17: A_vul => A_ala; #Basal environmental pathway inducing alate morph development
+r_18: 2A_vul => A_vul + A_ala; #Crowding-induced differentiation into winged dispersal morphs
+r_19: H + A_apt => A_def + H; #Symbiont-mediated induction of defensive host phenotype
+r_20: H + A_eaa => H + T_tox; #Secondary endosymbiont synthesis of parasitoid toxins
+r_21: T_tox + A_par => A_def; #Parasitoid larval development arrest via endosymbiont toxins
+r_22: A_apt + Pl => 2A_apt + Nut; #Trophic phloem herbivory and reproduction by apterous morphs
+r_23: A_ala + Pl => A_ala + A_apt + Nut; #Phloem herbivory and colony founding by winged morphs
+r_24: A_def + Pl => 2A_def + Nut; #Phloem consumption and biomass conversion by defended morphs
+r_25: A_apt + Pl => A_apt + Pl_dam; #Induction of host plant tissue cellular damage by feeding
+r_26: A_ala + Pl => A_ala + Pl_dam; #Feeding-induced localized tissue damage by winged aphids
+r_27: Pl_dam => Pl_dam + V_voc; #Herbivore-induced synthesis and emission of plant volatile VOCs
+r_28: A_apt + Nut => A_apt + H_dew; #Metabolic excretion of excess carbohydrates as honeydew
+r_29: A_def + Nut => A_def + H_dew; #Excretion of honeydew by defended aphid morphs
+r_30: A_apt + P_p => A_par + P_p; #Parasitoid wasp oviposition into apterous host hemocoel
+r_31: A_vul + P_p => A_par + P_p; #Parasitoid oviposition into vulnerable aphid phenotypes
+r_32: A_par => M_mum + P_p; #Endoparasitoid larval development and host mummification
+r_33: A_par + E_fit => M_mum + 2P_p; #Accelerated mummification and emergence of parasitoid offspring
+r_34: A_vul + D => 2D; #Predation of vulnerable aphids by generalist predators
+r_35: A_apt + D => 2D; #Top-down predator consumption of apterous aphid morphs
+r_36: A_ala + D => 2D; #Predator consumption of alate dispersal morphs
+r_37: A_def + D => D; #Predator attack on defended aphids with reduced consumption
+r_38: V_voc + P_p => 2P_p + V_voc; #Airborne VOC infochemical guidance of foraging parasitoids
+r_39: V_voc + P_p + A_apt => P_p + A_par; #Infochemical-facilitated host location and parasitism
+r_40: Pl_dam => Pl; #Physiological repair and recovery of damaged plant tissue
+r_41: Pl_dam + Pl => 2Pl; #Structural tissue regrowth and compensatory plant growth
+r_42: V_voc => ; #Advective dispersion and atmospheric breakdown of VOCs
+r_43: H_dew => F_fun; #Saprophytic fungal colonization of leaf honeydew deposits
+r_44: H_dew + Pl => F_fun + Pl_dam; #Micro-environmental fungal growth inducing secondary plant stress
+r_45: A_apt + D => D + S_alm; #Predator attack triggering aphid alarm pheromone emission
+r_46: A_def + D => D + S_alm; #Defensive interaction inducing alarm pheromone release
+r_47: S_alm + A_apt => S_alm + A_ala; #Alarm pheromone signaling driving immediate dispersal morphic shift
+r_48: M_mum + D => 2D; #Predator consumption of aphid mummies (intraguild predation)
+r_49: P_p + D => 2D; #Direct intraguild predation of parasitoid wasps by predators
+r_50: Pl => 2Pl; #Primary production and growth influx of host plant biomass
+r_51: => P_p; #External immigration of parasitoid wasps into the landscape
+r_52: => A_vul; #Recruitment and entry of vulnerable aphid phenotypes
+r_53: => D; #Immigration and seasonal influx of generalist predators
+r_54: => Nut; #External nutrient influx via plant root sap absorption
+r_55: 2A_apt => A_apt; #Density-dependent mortality and natural loss of apterous aphids
+r_56: 2A_def => A_def; #Density-dependent mortality of defended aphid morphs
+r_57: 2A_ala => A_ala; #Senescence and emigration losses of alate dispersal morphs
+r_58: 2A_vul => A_vul; #Density-dependent mortality of vulnerable aphid phenotypes
+r_59: 2B => B; #Turnover and degradation of primary endosymbionts
+r_60: 2H => H; #Turnover and degradation of secondary endosymbionts
+r_61: 2Pl => Pl; #Natural senescence and self-thinning of host plant biomass
+r_62: 2D => D; #Intraspecific competition and emigration loss of generalist predators
+r_63: 2P_p => P_p; #Intraspecific competition and mortality of parasitoid wasps
+r_64: 2Pl_dam => Pl_dam; #Structural decay and breakdown of damaged plant tissue
+r_65: 2V_voc => V_voc; #Atmospheric degradation and decay of volatile infochemicals
+r_66: 2S_alm => S_alm; #Evaporative dissipation and decay of alarm pheromone signals
+r_67: 2F_fun => F_fun; #Natural degradation and loss of saprophytic fungal structures
+

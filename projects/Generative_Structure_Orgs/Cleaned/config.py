@@ -10,7 +10,7 @@ import os
 # ── Paths ──────────────────────────────────────────────────────────────────────
 _HERE      = os.path.dirname(os.path.abspath(__file__))
 PYCOT_ROOT = os.path.normpath(os.path.join(_HERE, '..', '..', '..'))
-_BIOMD     = os.path.join(PYCOT_ROOT, 'data', 'biomodels')
+_BIOMD     = os.path.join(PYCOT_ROOT, 'data', 'biochemical_databases')
 
 OUT_DIR = os.path.join(_HERE, 'outputs')
 VIZ_DIR = os.path.join(_HERE, 'visualizations')

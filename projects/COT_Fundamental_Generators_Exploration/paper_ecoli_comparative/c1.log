@@ -1,0 +1,293 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex.fmt)
+ restricted \write18 enabled.
+entering extended mode
+(main.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-03-20>
+(bioinfo.cls
+Document Class: bioinfo 2003/02/08 0.1
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/crop\crop.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifluatex.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics\color.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.cfg)
+) (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/xelatex/xetexconfig\crop.cfg))
+
+==> First Aid for crop.sty applied!
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
+For additional information on amsmath, use the `?' option.
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amstext.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsgen.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsbsy.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsopn.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amssymb.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/sttools\flushend.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/sttools\stfloats.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amscls\amsthm.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/changepage\chngpage.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\times.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/base\fontenc.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/ly1\ly1enc.def
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/base\ly1enc.dfu))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\t1ptm.fd))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/natbib\natbib.sty))
+(header.tex
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/kvsetkeys\kvsetkeys.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/kvdefinekeys\kvdefinekey
+s.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pdfescape\pdfescape.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pdftexcmds\pdftexcmds.st
+y
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/infwarerr\infwarerr.sty)
+)) (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/hycolor\hycolor.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/refcount\refcount.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/gettitlestring\gettitles
+tring.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.sty)))
+ (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/stringenc\stringenc.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\intcalc.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/bigintcalc\bigintcalc.st
+y))) (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.def
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfilech
+eck.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/uniquecounter\uniquecoun
+ter.sty)))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/cleveref\cleveref.sty)
+==> First Aid for cleveref.sty applied!
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/multirow\multirow.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdftex
+.def) (main.aux)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/ly1\ly1ptm.fd)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base
+.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg)
+) (main.out) (main.out)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\t1phv.fd)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd)
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <6.5> not available
+(Font)              size <6> substituted on input line 77.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <6.5> not available
+(Font)              size <6> substituted on input line 77.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <6.5> not available
+(Font)              size <6> substituted on input line 77.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <8.5> not available
+(Font)              size <8> substituted on input line 77.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.25> not available
+(Font)              size <5> substituted on input line 77.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <8.5> not available
+(Font)              size <8> substituted on input line 77.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.25> not available
+(Font)              size <5> substituted on input line 77.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <8.5> not available
+(Font)              size <8> substituted on input line 77.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.25> not available
+(Font)              size <5> substituted on input line 77.
+
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\t1pcr.fd)
+Underfull \hbox (badness 1735) in paragraph at lines 77--77
+\T1/phv/b/n/9 Availability and imple-men-ta-tion: \T1/phv/m/n/9 All code, conve
+r-ted netw-orks and result tables are avai-la-ble in the \T1/pcr/m/n/9 pyCOT
+
+Underfull \hbox (badness 5175) in paragraph at lines 77--77
+\T1/phv/m/n/9 repo-si-tory (module \T1/pcr/m/n/9 pyCOT.analysis.organizations\T
+1/phv/m/n/9 ); this manu-script's sou-rce, figures and data are in
+
+Overfull \hbox (50.295pt too wide) in paragraph at lines 77--77
+[][] 
+
+Underfull \hbox (badness 10000) detected at line 77
+[]
+
+LaTeX Warning: Optional argument of \twocolumn too tall on page 1.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active
+
+LaTeX Warning: Text page 1 contains only floats.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active
+Overfull \hbox (253.1475pt too wide) has occurred while \output is active
+[][] 
+[1{C:/Users/hp/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/hp/Ap
+pData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}]
+Underfull \vbox (badness 10000) has occurred while \output is active
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.54997> not available
+(Font)              size <5> substituted on input line 186.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.25> not available
+(Font)              size <5> substituted on input line 186.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.54997> not available
+(Font)              size <5> substituted on input line 186.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.25> not available
+(Font)              size <5> substituted on input line 186.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.54997> not available
+(Font)              size <5> substituted on input line 186.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.25> not available
+(Font)              size <5> substituted on input line 186.
+
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ts1phv.fd)
+Overfull \hbox (1.52002pt too wide) has occurred while \output is active
+ []
+[2]
+Underfull \hbox (badness 1789) in paragraph at lines 234--260
+\T1/ptm/m/n/8 med by direct inspe-ction of this imple-men-ta-tion that ESO sea-
+rch
+
+Underfull \hbox (badness 1997) in paragraph at lines 234--260
+\T1/ptm/m/n/8 new clo-su-res are assem-bled purely by com-bi-ning ERCs' pre-com
+-
+
+Overfull \hbox (253.1475pt too wide) has occurred while \output is active
+[][] 
+[3 <./fig0_illustrative_example.pdf>]
+Overfull \hbox (253.1475pt too wide) has occurred while \output is active
+[][] 
+[4 <./fig3_centler_split.pdf> <./fig1_epm_comparison.pdf>]
+Underfull \hbox (badness 1057) in paragraph at lines 383--393
+\T1/ptm/m/n/8 stru-cti-ons; Table []1[]), seve-ral orders of magni-tude che-a-p
+er than the
+
+Underfull \vbox (badness 10000) has occurred while \output is active
+
+Package natbib Warning: Citation `speroni2007thesis' on page 5 undefined on inp
+ut line 417.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <7.5> not available
+(Font)              size <7> substituted on input line 430.
+
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.75> not available
+(Font)              size <5> substituted on input line 430.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <7.5> not available
+(Font)              size <7> substituted on input line 430.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.75> not available
+(Font)              size <5> substituted on input line 430.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <7.5> not available
+(Font)              size <7> substituted on input line 430.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.75> not available
+(Font)              size <5> substituted on input line 430.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active
+Overfull \hbox (253.1475pt too wide) has occurred while \output is active
+[][] 
+[5 <./fig2_scaling.pdf>]
+Underfull \vbox (badness 10000) has occurred while \output is active
+
+Package natbib Warning: Citation `velozendosymbiosis2026' on page 6 undefined o
+n input line 523.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active
+Overfull \hbox (253.1475pt too wide) has occurred while \output is active
+[][] 
+[6]
+Underfull \vbox (badness 10000) has occurred while \output is active (main.bbl
+Overfull \hbox (253.1475pt too wide) has occurred while \output is active
+[][] 
+[7 <./fig4_cross_organism_comparison.pdf>])
+Overfull \hbox (253.1475pt too wide) has occurred while \output is active
+[][] 
+[8]
+
+Package natbib Warning: There were undefined citations.
+
+(main.aux)
+
+LaTeX Font Warning: Size substitutions with differences
+(Font)              up to 1.75pt have occurred.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `main.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+ )
+(see the transcript file for additional information)<C:/Users/hp/AppData/Local/
+Programs/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmbsy9.pfb><C:/Users/hp/App
+Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/h
+p/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Us
+ers/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><
+C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.
+pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/c
+mr5.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
+cm/cmr6.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
+nts/cm/cmr8.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/a
+msfonts/cm/cmsy6.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/pub
+lic/amsfonts/cm/cmsy7.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type
+1/public/amsfonts/cm/cmsy8.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts
+/type1/public/amsfonts/cm/cmsy9.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/
+fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/f
+onts/type1/urw/helvetic/uhvb8a.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/f
+onts/type1/urw/helvetic/uhvbo8a.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/
+fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/
+fonts/type1/urw/helvetic/uhvr8ac.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX
+/fonts/type1/urw/helvetic/uhvro8a.pfb><C:/Users/hp/AppData/Local/Programs/MiKTe
+X/fonts/type1/urw/times/utmb8a.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/f
+onts/type1/urw/times/utmr8a.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/font
+s/type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (8 pages, 397185 bytes).
+Transcript written on main.log.

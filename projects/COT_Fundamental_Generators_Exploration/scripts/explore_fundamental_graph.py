@@ -32,7 +32,7 @@ This is a manual exploration tool, not the validated search. Nothing here
 enforces canonical ordering, minimality, or fundamentality -- you can add
 ERCs in any order, including ones that would never appear in an
 irreducible generator. For the exhaustive, validated computation of all
-EPMs/ESPMs, use run_network.py / cot_gen.epm.compute_epms.
+SO0s/SOis, use run_network.py / pyCOT.analysis.organizations.so_search.compute_elementary_sos.
 
 HOW TO RUN
 ----------

@@ -1,9 +1,13 @@
 """
 oracles/complementarity_oracle.py — Brute-force complementarity oracle (paper Defs 22–26).
 
-comp_basic_set(ercs) -> set[tuple[int,int,int,int]]
-    All basic complementary pairs as (i, j, fwd_supply, bwd_supply) with i < j.
+comp_basic_set(ercs) -> set[tuple[int,int,int,int,bool]]
+    All basic complementary pairs as (i, j, fwd_supply, bwd_supply, chain) with i < j.
     fwd_supply = prod_i & req_j, bwd_supply = prod_j & req_i.
+    chain = True iff i, j are hierarchy-comparable (intra-chain pair). Comparable
+    pairs ARE included: the subset-to-superset direction is provably always 0,
+    but the superset-to-subset direction can be nonempty (see complementarity.py
+    module docstring for the worked example).
 
 comp_fund_set(ercs) -> set[tuple[int,int,int]]
     Fundamental complementarities as (prod_idx, cons_idx, species_bit).
@@ -21,8 +25,9 @@ def comp_basic_set(ercs) -> set[tuple]:
     Brute-force basic complementarity oracle.
 
     (E_i, E_j) are basic complementary if prod_i & req_j ≠ 0 or prod_j & req_i ≠ 0.
-    Only incomparable pairs (neither mask is a subset of the other).
-    Returns set of (i, j, fwd_supply, bwd_supply) with i < j.
+    Comparable pairs are included (see module docstring): only the subset-to-
+    superset direction is provably always 0, not the reverse.
+    Returns set of (i, j, fwd_supply, bwd_supply, chain) with i < j.
     """
     masks = [e.species_mask for e in ercs]
     reqs  = [e.req_mask     for e in ercs]
@@ -32,13 +37,11 @@ def comp_basic_set(ercs) -> set[tuple]:
     result: set[tuple] = set()
     for i, j in combinations(range(n), 2):
         mi, mj = masks[i], masks[j]
-        # Skip comparable pairs
-        if (mi & mj) == mi or (mi & mj) == mj:
-            continue
+        chain = (mi & mj) == mi or (mi & mj) == mj
         fwd = prods[i] & reqs[j]   # E_i supplies to E_j
         bwd = prods[j] & reqs[i]   # E_j supplies to E_i
         if fwd or bwd:
-            result.add((i, j, fwd, bwd))
+            result.add((i, j, fwd, bwd, chain))
 
     return result
 

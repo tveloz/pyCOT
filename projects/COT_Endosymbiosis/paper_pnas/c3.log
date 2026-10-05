@@ -1,0 +1,352 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex.fmt)
+ restricted \write18 enabled.
+entering extended mode
+(main.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-03-20>
+(pnas-new.cls
+Document Class: pnas-new 2018/05/06, v1.44
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/extsizes\extarticle.cls
+Document Class: extarticle 1996/10/08 v1.0 Non Standard LaTeX document class
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/extsizes\size9.clo)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/base\exscale.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/babel\txtbabel.def)
+*************************************
+* Local config file bblopts.cfg used
+*
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/arabi\bblopts.cfg)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/babel/locale/en\babel-en
+glish.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/babel-english\english.ldf)
+) (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
+For additional information on amsmath, use the `?' option.
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amstext.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsgen.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsbsy.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsopn.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amssymb.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lm\lmodern.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\helvet.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/base\fontenc.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmr.fd))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lettrine\lettrine.sty
+Loading lettrine.cfg
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lettrine\lettrine.cfg))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/tools\afterpage.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifpdf.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifxetex.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/pgf/frontendlayer\tikz.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgf.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfrcs.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfutil-co
+mmon.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfutil-la
+tex.def)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfrcs.cod
+e.tex
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf\pgf.revision.tex)))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/pgf/basiclayer\pgfcore.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.cfg)
+))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/pgf/systemlayer\pgfsys.sty
+
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsys.c
+ode.tex
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeys.co
+de.tex
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeyslib
+raryfiltered.code.tex))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgf.cfg)
+
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsys-p
+dftex.def
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsys-c
+ommon-pdf.def)))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsysso
+ftpath.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/systemlayer\pgfsyspr
+otocol.code.tex))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcore.c
+ode.tex
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.code.te
+x
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathutil.cod
+e.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathparser.c
+ode.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunction
+s.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunction
+s.basic.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunction
+s.trigonometric.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunction
+s.random.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunction
+s.comparison.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunction
+s.base.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunction
+s.round.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunction
+s.misc.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfunction
+s.integerarithmetics.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathcalc.cod
+e.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmathfloat.co
+de.tex))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfint.code.tex
+)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcorepo
+ints.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcorepa
+thconstruct.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcorepa
+thusage.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcoresc
+opes.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcoregr
+aphicstate.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcoretr
+ansformations.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcorequ
+ick.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcoreob
+jects.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcorepa
+thprocessing.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcorear
+rows.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcoresh
+ade.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcoreim
+age.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcoreex
+ternal.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcorela
+yers.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcoretr
+ansparency.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcorepa
+tterns.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/basiclayer\pgfcorerd
+f.code.tex)))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodulesha
+pes.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmoduleplo
+t.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfcomp-
+version-0-65.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/pgf/compatibility\pgfcomp-
+version-1-18.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgffor.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/pgf/utilities\pgfkeys.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgfkeys.co
+de.tex))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/pgf/math\pgfmath.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/math\pgfmath.code.te
+x))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/utilities\pgffor.cod
+e.tex))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tikz\t
+ikz.code.tex
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflibrary
+plothandlers.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/modules\pgfmodulemat
+rix.code.tex)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/tikz/l
+ibraries\tikzlibrarytopaths.code.tex)))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/mdframed\mdframed.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/kvsetkeys\kvsetkeys.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/l3packages/xparse\xparse.s
+ty (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/l3kernel\expl3.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdftex
+.def)))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/etoolbox\etoolbox.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/zref\zref-abspage.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/zref\zref-base.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/infwarerr\infwarerr.sty)
+
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/kvdefinekeys\kvdefinekey
+s.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pdftexcmds\pdftexcmds.st
+y) (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/etexcmds\etexcmds.sty
+) (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/auxhook\auxhook.sty)))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/needspace\needspace.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/mdframed\md-frame-1.mdf))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/pdfescape\pdfescape.sty)
+ (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/hycolor\hycolor.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/refcount\refcount.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/gettitlestring\gettitles
+tring.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/stringenc\stringenc.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\intcalc.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/bigintcalc\bigintcalc.st
+y))) (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.def
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfilech
+eck.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/uniquecounter\uniquecoun
+ter.sty)))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/preprint\authblk.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/xifthen\xifthen.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/tools\calc.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/base\ifthen.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/ifmtarg\ifmtarg.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/base\textcomp.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/colortbl\colortbl.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/booktabs\booktabs.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/algorithms\algorithm.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/algorithmicx\algpseudocode
+.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/algorithmicx\algorithmicx.
+sty
+Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
+)
+Document Style - pseudocode environments for use with the `algorithmicx' style
+)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/changepage\changepage.sty)
+ (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifvtex.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/caption\caption3.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/newfloat\newfloat.sty))
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/natbib\natbib.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/fancyhdr\fancyhdr.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lastpage\lastpage.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lastpage\lastpage2e.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lastpage\lastpagemodern.st
+y) 
+)) (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/titlesec\titlesec.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lineno\lineno.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/footmisc\footmisc.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/enumitem\enumitem.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/sidecap\sidecap.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/sttools\stfloats.sty)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/marginnote\marginnote.sty)
+) (C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/microtype\microtype.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/microtype\microtype-pdftex
+.def)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/microtype\microtype.cfg))
+(pnasresearcharticle.sty) (main.aux)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base
+.sty
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg)
+) (main.out) (main.out)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/draftwatermark\draftwaterm
+ark.sty)
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/ragged2e\ragged2e.sty)
+
+Package microtype Warning: Unable to apply patch `eqnum' on input line 27.
+
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-cmr.cfg)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmss.fd)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\t1phv.fd)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lm\ot1lmr.fd)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lm\omllmm.fd)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lm\omslmsy.fd)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lm\omxlmex.fd)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msa.cfg)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msb.cfg)
+Underfull \vbox (badness 10000) has occurred while \output is active
+Underfull \vbox (badness 10000) has occurred while \output is active
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\t1bch.fd)
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-bch.cfg)
+[1{C:/Users/hp/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/hp/Ap
+pData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}{C:/Users/hp/AppData/Lo
+cal/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}{C:/Users/hp/AppData/Local/Pro
+grams/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc}{C:/Users/hp/AppData/Local/Progra
+ms/MiKTeX/fonts/enc/dvips/lm/lm-mathsy.enc}{C:/Users/hp/AppData/Local/Programs/
+MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}]
+(C:\Users\hp\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd)
+
+Package natbib Warning: Author undefined for citation`seminal' 
+(natbib)                on page 2 on input line 48.
+
+[2]
+Underfull \vbox (badness 10000) has occurred while \output is active
+Underfull \vbox (badness 10000) has occurred while \output is active [3 <../fig
+ures/fig_native_networks_composite.pdf>] [4 <../figures/fig_fusigenic_search.pd
+f> <../figures/fig_complexification_summary.pdf>]
+Overfull \hbox (8.8308pt too wide) in paragraph at lines 146--156
+ [][] 
+
+Underfull \hbox (badness 10000) in paragraph at lines 185--185
+\T1/lmr/m/n/8 (+20) ERC$\OMS/lmsy/m/n/8 !$\T1/lmr/m/n/8 (+20) hierarchy$\OMS/lm
+sy/m/n/8 !$\T1/lmr/m/n/8 (+20) fundamental-synergy/complementarity$\OMS/lmsy/m/
+n/8 !$\T1/lmr/m/n/8 (+20) ESO
+[5]
+
+Package natbib Warning: Author undefined for citation`centler2008computing' 
+(natbib)                on page 6 on input line 185.
+
+
+Package natbib Warning: Author undefined for citation`centler2008computing' 
+(natbib)                on page 6 on input line 185.
+
+
+Underfull \hbox (badness 6675) in paragraph at lines 185--185
+\T1/lmr/m/n/8 (+20) na-tive vi-su-al-izer (\T1/lmtt/m/n/8 src/pyCOT/visualizati
+on/rn_visualize.py\T1/lmr/m/n/8 (+20) :
+
+Underfull \hbox (badness 3547) in paragraph at lines 185--186
+[]\T1/lmr/m/it/8 (+20) Availability. \T1/lmr/m/n/8 (+20) All code, net-work fil
+es, raw logs, and
+
+Underfull \hbox (badness 10000) in paragraph at lines 185--186
+\T1/lmr/m/n/8 (+20) fig-ures are openly avail-able in the \T1/lmtt/m/n/8 pyCOT 
+\T1/lmr/m/n/8 (+20) repos-i-tory
+(main.bbl) [6] 
+enddocument/afterlastpage (AED): lastpage setting LastPage.
+(main.aux) )
+(see the transcript file for additional information)<C:/Users/hp/AppData/Local/
+Programs/MiKTeX/fonts/type1/bitstrea/charter/bchb8a.pfb><C:/Users/hp/AppData/Lo
+cal/Programs/MiKTeX/fonts/type1/public/lm/lmbx8.pfb><C:/Users/hp/AppData/Local/
+Programs/MiKTeX/fonts/type1/public/lm/lmbx9.pfb><C:/Users/hp/AppData/Local/Prog
+rams/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><C:/Users/hp/AppData/Local/Programs
+/MiKTeX/fonts/type1/public/lm/lmmi9.pfb><C:/Users/hp/AppData/Local/Programs/MiK
+TeX/fonts/type1/public/lm/lmr5.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/f
+onts/type1/public/lm/lmr6.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/
+type1/public/lm/lmr8.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1
+/public/lm/lmr9.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/publ
+ic/lm/lmri8.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/l
+m/lmri9.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lm
+ssbx10.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lms
+y8.pfb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy9.p
+fb><C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt8.pfb><
+C:/Users/hp/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt9.pfb><C:/U
+sers/hp/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/U
+sers/hp/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/U
+sers/hp/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvro8a.pfb>
+Output written on main.pdf (6 pages, 724269 bytes).
+Transcript written on main.log.

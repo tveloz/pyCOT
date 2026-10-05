@@ -3,8 +3,8 @@ explorer.py — Interactive manual exploration of the fundamental graph
 (ERC hierarchy + fundamental synergy + fundamental complementarity), and of
 how a hand-picked generator builds up towards a semi-organization (SSM).
 
-This is a research/understanding tool, not part of the validated EPM/ESPM
-search pipeline (cot_gen/epm.py).  It reuses the same precomputed
+This is a research/understanding tool, not part of the validated SO0/SOi
+search pipeline (pyCOT.analysis.organizations.so_search).  It reuses the same precomputed
 structures (ERCData, HierarchyData, SynergyResult, CompResult) and the
 same state-tracking machinery (FundamentalGraph.extend_state) that the
 search uses, so "what the generator has reached so far" is always computed
@@ -468,7 +468,8 @@ class GraphExplorer:
         """
         ERCs connected to the CURRENT generator that could be added next,
         grouped by the move that connects them (mirrors the search
-        algorithm's own extension moves — see cot_gen/epm.py):
+        algorithm's own extension moves — see
+        pyCOT.analysis.organizations.so_search):
 
           'producer'        : minimal producer of a still-required species
           'consumer'        : minimal consumer of an already-produced species

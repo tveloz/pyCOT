@@ -29,7 +29,7 @@ from pyCOT.analysis.organizations import (
     build_hierarchy,
     compute_synergies_basis_first,
     compute_complementarities,
-    compute_epms, compute_espm,
+    compute_elementary_sos, compute_so_hierarchy,
 )
 from cot_gen.deep_report     import build_so_lattice
 
@@ -41,7 +41,7 @@ from pyCOT.analysis.decomposition import (
 )
 
 NETWORK = "data/Examples_tests/FarmVariants/Farm_agro_stages.txt"
-ESPM_MAX_ORDER = 100
+SO_MAX_ORDER = 100
 
 net_path = os.path.join(_repo, NETWORK)
 NET_ID = os.path.splitext(os.path.basename(NETWORK))[0]
@@ -57,15 +57,15 @@ ercs = compute_ercs(rn_data, verify=True)
 hier = build_hierarchy(ercs)
 syn = compute_synergies_basis_first(ercs, hier)
 comp = compute_complementarities(ercs, hier, syn)
-epm_result = compute_epms(rn_data, ercs, hier, syn, comp, verbose=False)
-espm_result = compute_espm(rn_data, ercs, hier, syn, comp, epm_result,
-                            max_order=ESPM_MAX_ORDER, verbose=False)
+elem_result = compute_elementary_sos(rn_data, ercs, hier, syn, comp, verbose=False)
+so_result = compute_so_hierarchy(rn_data, ercs, hier, syn, comp, elem_result,
+                            max_order=SO_MAX_ORDER, verbose=False)
 
-so_order = {sp: 0 for sp in epm_result.all_epm_masks}
-for order, masks in espm_result.espm_by_order.items():
+so_order = {sp: 0 for sp in elem_result.all_elementary_masks}
+for order, masks in so_result.so_by_order.items():
     for sp in masks:
         so_order[sp] = order
-so_lattice = build_so_lattice(espm_result.all_so_masks, so_order)
+so_lattice = build_so_lattice(so_result.all_so_masks, so_order)
 
 S_full = build_full_stoich(rn_pycot)
 results = decompose_hierarchy(so_lattice, rn_data, S_full, verbose=False)

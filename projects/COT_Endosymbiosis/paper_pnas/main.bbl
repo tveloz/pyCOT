@@ -1,0 +1,67 @@
+\begin{thebibliography}{10}
+
+\bibitem{archibald2015}
+Archibald JM (2015) Endosymbiosis and eukaryotic cell evolution.
+\newblock {\em Current Biology} 25(19):R911--R921.
+
+\bibitem{wernegreen2004}
+Wernegreen JJ (2004) Endosymbiosis: Lessons in conflict resolution.
+\newblock {\em PLoS Biology} 2(3):e68.
+
+\bibitem{velozflores2021}
+Veloz T, Flores D (2021) Reaction network modeling of complex ecological
+  interactions: Endosymbiosis and multilevel regulation.
+\newblock {\em Complexity} 2021:8760937.
+
+\bibitem{seminal}
+Dittrich P, Speroni~di Fenizio P (2007) Chemical organisation theory.
+\newblock {\em Bulletin of Mathematical Biology} 69(4):1199--1231.
+
+\bibitem{peterdittrich2011}
+Peter S, Dittrich P (2011) On the relation between organizations and limit sets
+  in chemical reaction systems.
+\newblock {\em Advances in Complex Systems} 14(1):77--96.
+
+\bibitem{centler2008computing}
+Centler F, Kaleta C, Speroni~di Fenizio P, Dittrich P (2008) Computing chemical
+  organizations in biological networks.
+\newblock {\em Bioinformatics} 24(14):1611--1618.
+
+\bibitem{velozfoundations2019}
+Veloz T (2019) The complexity-stability debate, chemical organization theory,
+  and the identification of non-classical structures in ecology.
+\newblock {\em Foundations of Science} 25(1):259--273.
+
+\bibitem{velozbassi}
+Veloz T, Bassi A (2026) Synergy and complementarity: The generative basis of
+  chemical organizations.
+\newblock {\em in preparation}.
+
+\bibitem{velozecoli2026}
+Veloz T (2026) Fundamental generative structure is invariant across
+  genome-scale reconstructions of \textit{Escherichia coli}.
+\newblock {\em in preparation, submitted to Bioinformatics}.
+
+\bibitem{velozflores2020soft}
+Veloz T, Flores D (2021) Toward endosymbiosis modeling using reaction networks.
+\newblock {\em Soft Computing} 25:6831--6840.
+
+\bibitem{speroni2007thesis}
+Speroni~di Fenizio P (2007) Ph.D. thesis (University of Jena).
+
+\bibitem{steel2013minimal}
+Steel M, Hordijk W, Smith J (2013) Minimal autocatalytic networks.
+\newblock {\em Journal of Theoretical Biology} 332:96--107.
+
+\bibitem{king2016bigg}
+King ZA, et~al. (2016) Bigg models: A platform for integrating, standardizing
+  and sharing genome-scale models.
+\newblock {\em Nucleic Acids Research} 44(D1):D515--D522.
+
+\bibitem{orth2010core}
+Orth JD, Fleming RMT, Palsson B{\O} (2010) Reconstruction and use of microbial
+  metabolic networks: the core escherichia coli metabolic model as an
+  educational guide.
+\newblock {\em EcoSal Plus} 4(1).
+
+\end{thebibliography}

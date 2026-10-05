@@ -1,0 +1,25 @@
+# --- host (from host_alone.txt) ---
+INFLOW_glc: => 1 glc_h;
+INFLOW_adp: => 1 adp_h;
+INFLOW_pi:  => 1 pi_h;
+INFLOW_nad: => 1 nad_h;
+GLYC: 1 glc_h + 2 adp_h + 2 pi_h + 2 nad_h => 2 pyr_h + 2 atp_h + 2 nadh_h;
+FERM: 1 pyr_h + 1 nadh_h => 1 lac_h + 1 nad_h;
+MAINT: 1 atp_h => 1 adp_h + 1 pi_h;
+BIOSYN: 1 atp_h + 1 fescluster_h + 1 nad_h => 1 macromol_h + 1 adp_h;
+# --- symbiont (from symbiont_alone.txt, relabelled with tag '__endo') ---
+INFLOW_glc__endo:  => 1 glc_s__endo;
+INFLOW_o2__endo:  => 1 o2_s__endo;
+INFLOW_adp__endo:  => 1 adp_s__endo;
+INFLOW_pi__endo:  => 1 pi_s__endo;
+INFLOW_nad__endo:  => 1 nad_s__endo;
+INFLOW_fe__endo:  => 1 fe_s__endo;
+INFLOW_s__endo:  => 1 s_s__endo;
+GLYC_S__endo: 1 glc_s__endo + 2 adp_s__endo + 2 pi_s__endo + 2 nad_s__endo => 2 pyr_s__endo + 2 atp_s__endo + 2 nadh_s__endo;
+OXID__endo: 1 pyr_s__endo + 1 nad_s__endo => 1 co2_s__endo + 1 nadh_s__endo;
+ETC__endo: 1 nadh_s__endo + 1 o2_s__endo + 3 adp_s__endo + 3 pi_s__endo => 1 nad_s__endo + 3 atp_s__endo;
+ISC__endo: 1 fe_s__endo + 1 s_s__endo + 1 atp_s__endo => 1 fescluster_s__endo + 1 adp_s__endo;
+# --- interface (curated transport/exchange reactions) ---
+XPORT_PYR: 1 pyr_h => 1 pyr_s__endo;
+XPORT_ATP: 1 atp_s__endo => 1 atp_h;
+XPORT_FES: 1 fescluster_s__endo => 1 fescluster_h;

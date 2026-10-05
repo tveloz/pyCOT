@@ -4,15 +4,15 @@ results_io.py — Persistent CSV results store for the COT pipeline.
 One row per network run.  Dynamic column groups grow automatically when a
 new run introduces a larger length / order than any previously stored row:
 
-  epms_len{N}   — EPMs whose erc_set has exactly N members
-  espm_o{K}     — SOs of order K (order 0 = EPMs, order 1 = first extension layer, …)
+  elem_len{N} — elementary SOs (SO0) whose erc_set has exactly N members
+  so_o{K}     — SOs of order K (order 0 = elementary, order 1 = first extension layer, …)
   leaves_len{N} — DFS dead-ends (req≠0, no extension) with erc_set size N
 
 All other columns are fixed.
 
 Public API
 ----------
-make_row(network_id, rn, ercs_list, syn_fund, comp, epm, espm,
+make_row(network_id, rn, ercs_list, syn_fund, comp, elem, so_hier,
          timing_ms, status="ok") -> dict
 
 update_results_csv(csv_path, row) -> None
@@ -31,9 +31,9 @@ _FRONT = [
 ]
 
 _TOTALS = [
-    "n_epms",          # total EPMs
-    "n_espms",         # total ESPMs (all orders)
-    "n_sos",           # all semi-organizing sets found
+    "n_elem",          # total elementary SOs (SO0)
+    "n_so_higher",     # total higher-order SOs (SOi, i>=1)
+    "n_sos",           # all semi-organizing sets found (every order)
     "n_leaves",        # DFS dead-ends (req≠0, no extension possible)
 ]
 
@@ -45,7 +45,7 @@ _PERF = [
 
 _TIMING = [
     "t_load_ms", "t_erc_ms", "t_hier_ms", "t_syn_ms",
-    "t_comp_ms", "t_gen_ms", "t_epm_ms", "t_espm_ms", "t_total_ms",
+    "t_comp_ms", "t_gen_ms", "t_elem_ms", "t_so_ms", "t_total_ms",
 ]
 
 _END = ["status"]
@@ -53,35 +53,35 @@ _END = ["status"]
 
 # ── Dynamic column name helpers ───────────────────────────────────────────────
 
-def _epms_col(n: int)   -> str: return f"epms_len{n}"
-def _espm_col(k: int)   -> str: return f"espm_o{k}"
+def _elem_col(n: int)   -> str: return f"elem_len{n}"
+def _so_col(k: int)     -> str: return f"so_o{k}"
 def _leaves_col(n: int) -> str: return f"leaves_len{n}"
 
 
 def _scan_maximums(rows: list[dict]) -> tuple[int, int, int]:
-    """Return (max_epm_len, max_espm_order, max_leaves_len) across all rows."""
-    max_epm = max_leaves = 0
-    max_espm = -1
+    """Return (max_elem_len, max_so_order, max_leaves_len) across all rows."""
+    max_elem = max_leaves = 0
+    max_so = -1
     for row in rows:
         for col in row:
-            if col.startswith("epms_len"):
-                try: max_epm = max(max_epm, int(col[8:]))
+            if col.startswith("elem_len"):
+                try: max_elem = max(max_elem, int(col[8:]))
                 except ValueError: pass
-            elif col.startswith("espm_o"):
-                try: max_espm = max(max_espm, int(col[6:]))
+            elif col.startswith("so_o"):
+                try: max_so = max(max_so, int(col[4:]))
                 except ValueError: pass
             elif col.startswith("leaves_len"):
                 try: max_leaves = max(max_leaves, int(col[10:]))
                 except ValueError: pass
-    return max_epm, max_espm, max_leaves
+    return max_elem, max_so, max_leaves
 
 
-def _column_order(max_epm_len: int, max_espm_order: int, max_leaves_len: int) -> list[str]:
+def _column_order(max_elem_len: int, max_so_order: int, max_leaves_len: int) -> list[str]:
     cols = list(_FRONT)
     cols += list(_TOTALS)
-    cols += [_epms_col(n)  for n in range(1, max_epm_len   + 1)]
-    if max_espm_order >= 0:
-        cols += [_espm_col(k) for k in range(0, max_espm_order + 1)]
+    cols += [_elem_col(n) for n in range(1, max_elem_len + 1)]
+    if max_so_order >= 0:
+        cols += [_so_col(k) for k in range(0, max_so_order + 1)]
     cols += list(_PERF)
     cols += [_leaves_col(n) for n in range(1, max_leaves_len + 1)]
     cols += list(_TIMING)
@@ -97,18 +97,18 @@ def make_row(
     ercs_list,
     syn_fund,
     comp,
-    epm,
-    espm,
+    elem,
+    so_hier,
     timing_ms: dict,
     status: str = "ok",
 ) -> dict:
     """
     Build a flat dict row from pipeline outputs.
 
-    Any of rn / ercs_list / syn_fund / comp / epm / espm may be None
+    Any of rn / ercs_list / syn_fund / comp / elem / so_hier may be None
     (stages that were skipped or failed).
 
-    timing_ms keys: load, erc, hier, syn, comp, gen, epm, espm  (values in ms).
+    timing_ms keys: load, erc, hier, syn, comp, gen, elem, so  (values in ms).
     """
     row: dict = {}
 
@@ -125,53 +125,54 @@ def make_row(
     row["fund_syn"]  = len(syn_fund.fundamental) if syn_fund else 0
     row["fund_comp"] = len(comp.fundamental)      if comp     else 0
 
-    # ── EPM counts ────────────────────────────────────────────────────────────
-    if epm is not None:
-        row["n_epms"]   = len(epm.all_epm_masks)
-        row["n_leaves"] = len(epm.leaf_masks)
+    # ── Elementary-SO counts ─────────────────────────────────────────────────
+    if elem is not None:
+        row["n_elem"]   = len(elem.all_elementary_masks)
+        row["n_leaves"] = len(elem.leaf_masks)
 
-        # single-ERC EPMs always have length 1
-        row[_epms_col(1)] = len(epm.single_epm_indices)
+        # single-ERC elementary SOs always have length 1
+        row[_elem_col(1)] = len(elem.single_erc_indices)
 
-        # multi-ERC EPMs: from DFS ssm_by_length (keys are erc_set sizes ≥ 2)
-        for n, cnt in epm.stats.get("ssm_by_length", {}).items():
-            col = _epms_col(int(n))
+        # multi-ERC elementary SOs: from DFS ssm_by_length (keys are erc_set sizes ≥ 2)
+        for n, cnt in elem.stats.get("ssm_by_length", {}).items():
+            col = _elem_col(int(n))
             row[col] = row.get(col, 0) + cnt
 
         # DFS performance
-        n_expl = epm.stats.get("states_explored", 0)
-        n_ssm  = epm.stats.get("ssm_found",       0)
-        n_dead = epm.stats.get("leaves_found",     0)
+        n_expl = elem.stats.get("states_explored", 0)
+        n_ssm  = elem.stats.get("ssm_found",       0)
+        n_dead = elem.stats.get("leaves_found",     0)
         row["dfs_explored"]         = n_expl
         row["dfs_branching"]        = max(0, n_expl - n_ssm - n_dead)
-        row["dfs_canonical_pruned"] = epm.stats.get("canonical_pruned", 0)
+        row["dfs_canonical_pruned"] = elem.stats.get("canonical_pruned", 0)
 
         # Dead-ends by length
-        for n, cnt in epm.stats.get("dead_by_length", {}).items():
+        for n, cnt in elem.stats.get("dead_by_length", {}).items():
             row[_leaves_col(int(n))] = cnt
     else:
-        row["n_epms"] = row["n_leaves"] = 0
+        row["n_elem"] = row["n_leaves"] = 0
         row["dfs_explored"] = row["dfs_branching"] = row["dfs_canonical_pruned"] = 0
 
-    # ── ESPM / SO counts ──────────────────────────────────────────────────────
-    if espm is not None:
-        row["n_espms"] = espm.total_espm()
-        row["n_sos"]   = len(espm.all_so_masks)
-        for k, masks in espm.espm_by_order.items():
-            row[_espm_col(int(k))] = len(masks)
+    # ── Higher-order SO counts ───────────────────────────────────────────────
+    if so_hier is not None:
+        row["n_so_higher"] = so_hier.total_so()
+        row["n_sos"]        = len(so_hier.all_so_masks)
+        for k, masks in so_hier.so_by_order.items():
+            row[_so_col(int(k))] = len(masks)
     else:
-        # No ESPM computed: the only SOs we know are the EPMs themselves (order 0)
-        n_ep = len(epm.all_epm_masks) if epm else 0
-        row["n_espms"] = n_ep
-        row["n_sos"]   = n_ep
+        # No higher-order search: the only SOs we know are the elementary
+        # ones themselves (order 0).
+        n_ep = len(elem.all_elementary_masks) if elem else 0
+        row["n_so_higher"] = n_ep
+        row["n_sos"]         = n_ep
         if n_ep:
-            row[_espm_col(0)] = n_ep
+            row[_so_col(0)] = n_ep
 
     # ── Timing ────────────────────────────────────────────────────────────────
     key_map = {
         "load": "t_load_ms", "erc":  "t_erc_ms",  "hier": "t_hier_ms",
         "syn":  "t_syn_ms",  "comp": "t_comp_ms",  "gen":  "t_gen_ms",
-        "epm":  "t_epm_ms",  "espm": "t_espm_ms",
+        "elem": "t_elem_ms", "so":   "t_so_ms",
     }
     for k, col in key_map.items():
         row[col] = round(timing_ms.get(k, 0.0), 1)
@@ -208,10 +209,10 @@ def update_results_csv(csv_path: str, new_row: dict) -> None:
         existing.append(new_row)
 
     # ── Discover max dynamic indices across ALL rows (including the new one) ──
-    max_epm, max_espm, max_leaves = _scan_maximums(existing)
+    max_elem, max_so, max_leaves = _scan_maximums(existing)
 
     # ── Build full ordered column list ───────────────────────────────────────
-    cols = _column_order(max_epm, max(max_espm, 0), max_leaves)
+    cols = _column_order(max_elem, max(max_so, 0), max_leaves)
 
     # ── Write ─────────────────────────────────────────────────────────────────
     os.makedirs(os.path.dirname(os.path.abspath(csv_path)), exist_ok=True)

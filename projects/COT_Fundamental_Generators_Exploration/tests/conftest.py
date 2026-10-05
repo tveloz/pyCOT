@@ -27,7 +27,7 @@ for _p in [_proj, os.path.join(_repo, "src")]:
 from pyCOT.io.functions import read_txt
 from pyCOT.analysis.organizations.io_pyCOT import build_rndata
 
-_DATA_DIR = os.path.join(_repo, "data", "biomodels", "BioMD_other")
+_DATA_DIR = os.path.join(_repo, "data", "biochemical_databases", "BioMD_other")
 _BIOMD237 = os.path.join(_DATA_DIR, "BIOMD0000000237.txt")
 
 

@@ -1,0 +1,11 @@
+INFLOW_glc: => 1 glc_s;
+INFLOW_o2:  => 1 o2_s;
+INFLOW_adp: => 1 adp_s;
+INFLOW_pi:  => 1 pi_s;
+INFLOW_nad: => 1 nad_s;
+INFLOW_fe:  => 1 fe_s;
+INFLOW_s:   => 1 s_s;
+GLYC_S: 1 glc_s + 2 adp_s + 2 pi_s + 2 nad_s => 2 pyr_s + 2 atp_s + 2 nadh_s;
+OXID: 1 pyr_s + 1 nad_s => 1 co2_s + 1 nadh_s;
+ETC: 1 nadh_s + 1 o2_s + 3 adp_s + 3 pi_s => 1 nad_s + 3 atp_s;
+ISC: 1 fe_s + 1 s_s + 1 atp_s => 1 fescluster_s + 1 adp_s;

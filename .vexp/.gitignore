@@ -4,8 +4,8 @@ index.db
 index.db-wal
 index.db-shm
 index.lock
-vexp.log
-daemon.log
+vexp.log*
+daemon.log*
 daemon.sock
 daemon.pid
 daemon.pipe
@@ -13,3 +13,15 @@ mcp.port
 healthy
 parent_workspace.json
 token-savings-report.md
+start-blocked
+stop-gate-*.done
+idle-gate-*.done
+task-*.txt
+coverage.json
+edit-hints/
+search-hints/
+read-hints/
+daemon-job-warning
+mcp.token
+backups/
+vexp-report.md

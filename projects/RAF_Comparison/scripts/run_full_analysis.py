@@ -20,7 +20,7 @@ RAF layer:
 
 COT decomposition layer:
   - The FULL semi-organization lattice (cot_gen's own ERC/hierarchy/
-    synergy/complementarity/EPM/ESPM pipeline -- no catalysis notion at
+    synergy/complementarity/SO0/SOi pipeline -- no catalysis notion at
     all), decomposed order by order (E/F/fragile circuits/is_organization
     for every semi-organization, via Decomposition_Theorem's engine).
 
@@ -126,7 +126,7 @@ elif NETWORK_CHOICE == "ecoli_none":
 else:
     raise ValueError(f"unknown NETWORK_CHOICE: {NETWORK_CHOICE!r}")
 
-ESPM_MAX_ORDER = 60          # cap on how large a semi-organization ESPM search explores
+SO_MAX_ORDER = 60            # cap on how large a semi-organization SO-hierarchy search explores
 OUTPUT_DIR = os.path.join(_here, "..", "figures")
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -144,7 +144,7 @@ from pyCOT.analysis.organizations import (  # noqa: E402
     build_hierarchy,
     compute_synergies_basis_first,
     compute_complementarities,
-    compute_epms, compute_espm,
+    compute_elementary_sos, compute_so_hierarchy,
 )
 from cot_gen.deep_report import build_so_lattice  # noqa: E402
 
@@ -219,14 +219,14 @@ ercs = compute_ercs(rn_data, verify=False)
 hier = build_hierarchy(ercs)
 syn = compute_synergies_basis_first(ercs, hier)
 comp = compute_complementarities(ercs, hier, syn)
-epm_result = compute_epms(rn_data, ercs, hier, syn, comp, verbose=False)
-espm_result = compute_espm(rn_data, ercs, hier, syn, comp, epm_result,
-                            max_order=ESPM_MAX_ORDER, verbose=False)
-so_order = {sp: 0 for sp in epm_result.all_epm_masks}
-for order, masks in espm_result.espm_by_order.items():
+elem_result = compute_elementary_sos(rn_data, ercs, hier, syn, comp, verbose=False)
+so_result = compute_so_hierarchy(rn_data, ercs, hier, syn, comp, elem_result,
+                            max_order=SO_MAX_ORDER, verbose=False)
+so_order = {sp: 0 for sp in elem_result.all_elementary_masks}
+for order, masks in so_result.so_by_order.items():
     for sp in masks:
         so_order[sp] = order
-so_lattice = build_so_lattice(espm_result.all_so_masks, so_order)
+so_lattice = build_so_lattice(so_result.all_so_masks, so_order)
 S_full = build_full_stoich(rn_pycot)
 results = decompose_hierarchy(so_lattice, rn_data, S_full, verbose=False)
 n_org = sum(1 for r in results.values() if r.is_organization)

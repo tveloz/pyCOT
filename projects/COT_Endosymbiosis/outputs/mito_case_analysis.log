@@ -1,0 +1,92 @@
+=== Host alone: ..\real_data\mito_host_fermentative.txt ===
+  [Stage 1] Finding single-ERC EPMs...
+  [Stage 2] Building fundamental graph...
+  [Stage 2] Running Mode-1 DFS...
+  species=72 reactions=137 ERCs=47
+  E0 (food closure) = ['co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+  EPMs: n=15, sizes=[13, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 16, 17], max=17, mean=15.1
+    - ['co2_c', 'co2_e', 'f6p_c', 'g6p_c', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['akg_c', 'akg_e', 'co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['acald_c', 'acald_e', 'co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['accoa_c', 'actp_c', 'co2_c', 'co2_e', 'coa_c', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['ac_c', 'ac_e', 'co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['adp_c', 'amp_c', 'atp_c', 'co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nad_c', 'nadh_c', 'nadp_c', 'nadph_c', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e', 'pyr_c', 'pyr_e']
+    - ['co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e', 'succ_c', 'succ_e']
+    - ['co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'lac__D_c', 'lac__D_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'etoh_c', 'etoh_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'for_c', 'for_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'glc__D_e', 'glu__L_c', 'glu__L_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'fum_c', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'mal__L_c', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+
+=== Symbiont alone: ..\real_data\mito_symbiont_aerobic.txt ===
+  [Stage 1] Finding single-ERC EPMs...
+  [Stage 2] Building fundamental graph...
+  [Stage 2] Running Mode-1 DFS...
+  species=72 reactions=141 ERCs=49
+  E0 (food closure) = ['co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+  EPMs: n=15, sizes=[13, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 16, 17], max=17, mean=15.1
+    - ['co2_c', 'co2_e', 'f6p_c', 'g6p_c', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['akg_c', 'akg_e', 'co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['acald_c', 'acald_e', 'co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['accoa_c', 'actp_c', 'co2_c', 'co2_e', 'coa_c', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['ac_c', 'ac_e', 'co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['adp_c', 'amp_c', 'atp_c', 'co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nad_c', 'nadh_c', 'nadp_c', 'nadph_c', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e', 'pyr_c', 'pyr_e']
+    - ['co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e', 'succ_c', 'succ_e']
+    - ['co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'lac__D_c', 'lac__D_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'etoh_c', 'etoh_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'for_c', 'for_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'glc__D_e', 'glu__L_c', 'glu__L_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'fum_c', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'mal__L_c', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+    - ['co2_c', 'co2_e', 'glc__D_e', 'h2o_c', 'h2o_e', 'h_c', 'h_e', 'nh4_c', 'nh4_e', 'o2_c', 'o2_e', 'pi_c', 'pi_e']
+
+=== Merged: ..\real_data\mito_merged.txt ===
+  [Stage 1] Finding single-ERC EPMs...
+  [Stage 2] Building fundamental graph...
+  [Stage 2] Running Mode-1 DFS...
+  species=144 reactions=280 ERCs=95
+  E0 (food closure, size 26) = ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+  EPMs: n=27, sizes=[26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 29, 29, 29, 30, 30], max=30, mean=28.2
+
+  Classified merged EPMs:
+    host-only:    (none)
+    symbiont-only:(none)
+    HYBRID (both):n=27, sizes=[26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 29, 29, 29, 30, 30], max=30, mean=28.2
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'f6p_c', 'g6p_c', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['akg_c', 'akg_e', 'co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['acald_c', 'acald_e', 'co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['accoa_c', 'actp_c', 'co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'coa_c', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['ac_c', 'ac_e', 'co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['adp_c', 'amp_c', 'atp_c', 'co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nad_c', 'nadh_c', 'nadp_c', 'nadph_c', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo', 'succ_c', 'succ_e']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'lac__D_c', 'lac__D_e', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'etoh_c', 'etoh_e', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'for_c', 'for_e', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'glu__L_c', 'glu__L_e', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'fum_c', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'mal__L_c', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'f6p_c__endo', 'g6p_c__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['akg_c__endo', 'akg_e__endo', 'co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['acald_c__endo', 'acald_e__endo', 'co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['accoa_c__endo', 'actp_c__endo', 'co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'coa_c__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['ac_c__endo', 'ac_e__endo', 'co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nad_c__endo', 'nadh_c__endo', 'nadp_c__endo', 'nadph_c__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo', 'pyr_c__endo', 'pyr_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo', 'succ_c__endo', 'succ_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'lac__D_c__endo', 'lac__D_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'etoh_c__endo', 'etoh_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'for_c__endo', 'for_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'glu__L_c__endo', 'glu__L_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'fum_c__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'mal__L_c__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+    hybrid EPM species: ['co2_c', 'co2_c__endo', 'co2_e', 'co2_e__endo', 'glc__D_e', 'glc__D_e__endo', 'h2o_c', 'h2o_c__endo', 'h2o_e', 'h2o_e__endo', 'h_c', 'h_c__endo', 'h_e', 'h_e__endo', 'nh4_c', 'nh4_c__endo', 'nh4_e', 'nh4_e__endo', 'o2_c', 'o2_c__endo', 'o2_e', 'o2_e__endo', 'pi_c', 'pi_c__endo', 'pi_e', 'pi_e__endo']
+
+=== Complexification summary ===
+  baseline (host EPMs ⊔ symbiont EPMs, no interface): n=30, max=17, mean=15.1
+  merged: n=27, max=30, mean=28.2
+  Delta max size: +13
+  Delta E0 size (host+symbiont E0 vs merged E0, no double count): 26 vs 26 (+0)
+  Hybrid EPMs found: 27

@@ -1,0 +1,8 @@
+INFLOW_glc: => 1 glc_h;
+INFLOW_adp: => 1 adp_h;
+INFLOW_pi:  => 1 pi_h;
+INFLOW_nad: => 1 nad_h;
+GLYC: 1 glc_h + 2 adp_h + 2 pi_h + 2 nad_h => 2 pyr_h + 2 atp_h + 2 nadh_h;
+FERM: 1 pyr_h + 1 nadh_h => 1 lac_h + 1 nad_h;
+MAINT: 1 atp_h => 1 adp_h + 1 pi_h;
+BIOSYN: 1 atp_h + 1 fescluster_h + 1 nad_h => 1 macromol_h + 1 adp_h;

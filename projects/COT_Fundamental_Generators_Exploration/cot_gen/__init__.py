@@ -2,13 +2,13 @@
 cot_gen — COT_Fundamental_Generators_Exploration-specific reporting/exploration tools.
 
 The core generative-organization engine (types, closure, ERC discovery,
-hierarchy, synergy, complementarity, fundamental graph, EPM/ESPM search,
+hierarchy, synergy, complementarity, fundamental graph, SO0/SOi search,
 maxSemiOrganization, generators, metrics, io) has moved to the pyCOT core
 library at `pyCOT.analysis.organizations` — see that package's docstring
 for the full pipeline and a quick-start example. This package now only
 holds project-specific tooling built on top of that engine:
 
-  deep_report / deep_report_viz  : instrumented EPM/ESPM search + degeneracy
+  deep_report / deep_report_viz  : instrumented SO0/SOi search + degeneracy
                                     statistics, HTML/PNG report generation
   explorer                        : interactive GraphExplorer for manual
                                     ERC-by-ERC generator exploration
