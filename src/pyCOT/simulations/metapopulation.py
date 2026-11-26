@@ -402,23 +402,44 @@ def _transport_terms(L: np.ndarray, s: str, p: int):
     Symbolic transport terms for species `s` in patch `p`:
         sum_q L[p, q] * s_q
     Returns a list of strings like ['-0.02*A_1', '+0.02*A_2'].
+
+    Each term carries its own sign glued to the coefficient, with no
+    separating space. That is the same convention used by
+    `_local_rhs_terms`, so both lists can be concatenated and normalized
+    once by `_clean_join` instead of being pasted together with a '+'.
     """
     parts = []
     for q in range(L.shape[0]):
         coeff = L[p, q]
         if abs(coeff) > 0:
             sign = "+" if coeff >= 0 else "-"
-            parts.append(f"{sign} {abs(coeff):.4g}*{s}_{q + 1}")
+            parts.append(f"{sign}{abs(coeff):.4g}*{s}_{q + 1}")
     return parts
 
 
 def _clean_join(terms):
-    """Join a list of signed terms, removing the leading '+ '."""
+    """
+    Join a list of signed terms into a readable right-hand side.
+
+    Every term is expected to carry its own leading '+' or '-'. The terms
+    are separated by a single space and the leading '+' of the first term
+    is dropped, so the result never contains a '+ -' or '+ +' pair. An
+    empty list (or one with only blank entries) yields '0'.
+
+    A leading '+ ' with a space is also accepted, so terms produced by
+    older callers keep working.
+    """
     if not terms:
         return "0"
-    s = " ".join(terms)
-    if s.startswith("+ "):
-        s = s[2:]
+
+    s = " ".join(t.strip() for t in terms if t and t.strip())
+
+    if not s:
+        return "0"
+
+    if s.startswith("+"):
+        s = s[1:].lstrip()
+
     return s
 
 
@@ -572,22 +593,14 @@ def _print_full_system(
 
             lhs = f"d{s}_{p + 1}/dt"
 
-            if local_terms.get(s):
-                local_str = _clean_join(local_terms[s])
-            else:
-                local_str = "0"
+            # Local reaction terms and transport terms already carry their
+            # own sign, so they are concatenated as a single list and the
+            # sign is normalized once. Pasting the two joined strings with
+            # a '+' was what produced the '+ -' pairs.
+            terms = list(local_terms.get(s) or [])
+            terms += _transport_terms(L_species[s], s, p)
 
-            L = L_species[s]
-            transport_str = _clean_join(_transport_terms(L, s, p))
-
-            if transport_str == "0":
-                rhs = local_str
-            elif local_str == "0":
-                rhs = transport_str
-            else:
-                rhs = f"{local_str} + {transport_str}"
-
-            print(f"    {lhs} = {rhs}")
+            print(f"    {lhs} = {_clean_join(terms)}")
 
     print("\n" + "=" * ancho)
 
